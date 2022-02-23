@@ -1,7 +1,10 @@
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
-
+--[[Changelog:
+1. Removed useless things and optimized script (maybe)
+2. Added fakelags back
+--]]
 getgenv().values = {}
 local library = {} 
 local Signal = loadstring(game:HttpGet("https://raw.githubusercontent.com/Quenty/NevermoreEngine/version2/Modules/Shared/Events/Signal.lua"))()
@@ -19,12 +22,7 @@ makefolder("pastedstormy")
 
 
 
--- caching  
-local CLAMP = math.clamp 
-local DEG = math.deg 
-local FLOOR = math.floor 
-local ACOS = math.acos 
-local RANDOM = math.random 
+-- caching   
 local ATAN2 = math.atan2 
 local HUGE = math.huge 
 local RAD = math.rad 
@@ -1287,16 +1285,16 @@ function library:New(name)
 							inCP = false 
 						end) 
 
-						ColorH = (CLAMP(Huedrag.AbsolutePosition.Y-Huepick.AbsolutePosition.Y, 0, Huepick.AbsoluteSize.Y)/Huepick.AbsoluteSize.Y) 
-						ColorS = 1-(CLAMP(ColorDrag.AbsolutePosition.X-Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X) 
-						ColorV = 1-(CLAMP(ColorDrag.AbsolutePosition.Y-Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y) 
+						ColorH = (math.clamp(Huedrag.AbsolutePosition.Y-Huepick.AbsolutePosition.Y, 0, Huepick.AbsoluteSize.Y)/Huepick.AbsoluteSize.Y) 
+						ColorS = 1-(math.clamp(ColorDrag.AbsolutePosition.X-Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X) 
+						ColorV = 1-(math.clamp(ColorDrag.AbsolutePosition.Y-Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y) 
 
 						if data.default.Color ~= nil then 
 							ColorH, ColorS, ColorV = data.default.Color:ToHSV() 
 
-							ColorH = CLAMP(ColorH,0,1) 
-							ColorS = CLAMP(ColorS,0,1) 
-							ColorV = CLAMP(ColorV,0,1) 
+							ColorH = math.clamp(ColorH,0,1) 
+							ColorS = math.clamp(ColorS,0,1) 
+							ColorV = math.clamp(ColorV,0,1) 
 							ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0) 
 							Colorpick.ImageColor3 = Color3.fromHSV(ColorH, 1, 1) 
 
@@ -1314,8 +1312,8 @@ function library:New(name)
 						end) 
 
 						local function updateColor() 
-							local ColorX = (CLAMP(mouse.X - Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X) 
-							local ColorY = (CLAMP(mouse.Y - Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y) 
+							local ColorX = (math.clamp(mouse.X - Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X) 
+							local ColorY = (math.clamp(mouse.Y - Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y) 
 							ColorDrag.Position = UDIM2(ColorX, 0, ColorY, 0) 
 							ColorS = 1-ColorX 
 							ColorV = 1-ColorY 
@@ -1326,7 +1324,7 @@ function library:New(name)
 							callback(Element.value) 
 						end 
 						local function updateHue() 
-							local y = CLAMP(mouse.Y - Huepick.AbsolutePosition.Y, 0, 148) 
+							local y = math.clamp(mouse.Y - Huepick.AbsolutePosition.Y, 0, 148) 
 							Huedrag.Position = UDIM2(0, 0, 0, y) 
 							hue = y/148 
 							ColorH = 1-hue 
@@ -1377,9 +1375,9 @@ function library:New(name)
 							Element.value = value 
 							local duplicate = Color3.new(value.Color.R, value.Color.G, value.Color.B) 
 							ColorH, ColorS, ColorV = duplicate:ToHSV() 
-							ColorH = CLAMP(ColorH,0,1) 
-							ColorS = CLAMP(ColorS,0,1) 
-							ColorV = CLAMP(ColorV,0,1) 
+							ColorH = math.clamp(ColorH,0,1) 
+							ColorS = math.clamp(ColorS,0,1) 
+							ColorV = math.clamp(ColorV,0,1) 
 
 							ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0) 
 							Colorpick.ImageColor3 = Color3.fromHSV(ColorH, 1, 1) 
@@ -1578,16 +1576,16 @@ function library:New(name)
 							inCP = false 
 						end) 
 
-						ColorH = (CLAMP(Huedrag.AbsolutePosition.Y-Huepick.AbsolutePosition.Y, 0, Huepick.AbsoluteSize.Y)/Huepick.AbsoluteSize.Y) 
-						ColorS = 1-(CLAMP(ColorDrag.AbsolutePosition.X-Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X) 
-						ColorV = 1-(CLAMP(ColorDrag.AbsolutePosition.Y-Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y) 
+						ColorH = (math.clamp(Huedrag.AbsolutePosition.Y-Huepick.AbsolutePosition.Y, 0, Huepick.AbsoluteSize.Y)/Huepick.AbsoluteSize.Y) 
+						ColorS = 1-(math.clamp(ColorDrag.AbsolutePosition.X-Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X) 
+						ColorV = 1-(math.clamp(ColorDrag.AbsolutePosition.Y-Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y) 
 
 						if data.default.Color ~= nil then 
 							ColorH, ColorS, ColorV = data.default.Color:ToHSV() 
 
-							ColorH = CLAMP(ColorH,0,1) 
-							ColorS = CLAMP(ColorS,0,1) 
-							ColorV = CLAMP(ColorV,0,1) 
+							ColorH = math.clamp(ColorH,0,1) 
+							ColorS = math.clamp(ColorS,0,1) 
+							ColorV = math.clamp(ColorV,0,1) 
 							ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0) 
 							Colorpick.ImageColor3 = Color3.fromHSV(ColorH, 1, 1) 
 
@@ -1609,8 +1607,8 @@ function library:New(name)
 						end) 
 
 						local function updateColor() 
-							local ColorX = (CLAMP(mouse.X - Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X) 
-							local ColorY = (CLAMP(mouse.Y - Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y) 
+							local ColorX = (math.clamp(mouse.X - Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X) 
+							local ColorY = (math.clamp(mouse.Y - Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y) 
 							ColorDrag.Position = UDIM2(ColorX, 0, ColorY, 0) 
 							ColorS = 1-ColorX 
 							ColorV = 1-ColorY 
@@ -1622,7 +1620,7 @@ function library:New(name)
 							callback(Element.value) 
 						end 
 						local function updateHue() 
-							local y = CLAMP(mouse.Y - Huepick.AbsolutePosition.Y, 0, 148) 
+							local y = math.clamp(mouse.Y - Huepick.AbsolutePosition.Y, 0, 148) 
 							Huedrag.Position = UDIM2(0, 0, 0, y) 
 							hue = y/148 
 							ColorH = 1-hue 
@@ -1634,7 +1632,7 @@ function library:New(name)
 							callback(Element.value) 
 						end 
 						local function updateTrans() 
-							local x = CLAMP(mouse.X - Transpick.AbsolutePosition.X, 0, 178) 
+							local x = math.clamp(mouse.X - Transpick.AbsolutePosition.X, 0, 178) 
 							Transdrag.Position = UDIM2(0, x, 0, 0) 
 							Element.value.Transparency = (x/178) 
 							values[tabname][sectorname][tabtext][text] = Element.value 
@@ -1694,9 +1692,9 @@ function library:New(name)
 							Element.value = value 
 							local duplicate = Color3.new(value.Color.R, value.Color.G, value.Color.B) 
 							ColorH, ColorS, ColorV = duplicate:ToHSV() 
-							ColorH = CLAMP(ColorH,0,1) 
-							ColorS = CLAMP(ColorS,0,1) 
-							ColorV = CLAMP(ColorV,0,1) 
+							ColorH = math.clamp(ColorH,0,1) 
+							ColorS = math.clamp(ColorS,0,1) 
+							ColorV = math.clamp(ColorV,0,1) 
 
 							ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0) 
 							Colorpick.ImageColor3 = Color3.fromHSV(ColorH, 1, 1) 
@@ -1975,14 +1973,14 @@ function library:New(name)
 						local mouse = game.Players.LocalPlayer:GetMouse() 
 						local val 
 						Button.MouseButton1Down:Connect(function() 
-							Frame.Size = UDIM2(0, CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
+							Frame.Size = UDIM2(0, math.clamp(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
 							val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) or 0 
 							Value.Text = val 
 							Element.value.Slider = val 
 							values[tabname][sectorname][tabtext][text] = Element.value 
 							callback(Element.value) 
 							moveconnection = mouse.Move:Connect(function() 
-								Frame.Size = UDIM2(0, CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
+								Frame.Size = UDIM2(0, math.clamp(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
 								val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) 
 								Value.Text = val 
 								Element.value.Slider = val 
@@ -1991,7 +1989,7 @@ function library:New(name)
 							end) 
 							releaseconnection = uis.InputEnded:Connect(function(Mouse) 
 								if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then 
-									Frame.Size = UDIM2(0, CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
+									Frame.Size = UDIM2(0, math.clamp(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
 									val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) 
 									values[tabname][sectorname][tabtext][text] = Element.value 
 									callback(Element.value) 
@@ -3364,16 +3362,16 @@ function library:New(name)
 						inCP = false      
 					end)      
 
-					ColorH = (CLAMP(Huedrag.AbsolutePosition.Y-Huepick.AbsolutePosition.Y, 0, Huepick.AbsoluteSize.Y)/Huepick.AbsoluteSize.Y)      
-					ColorS = 1-(CLAMP(ColorDrag.AbsolutePosition.X-Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X)      
-					ColorV = 1-(CLAMP(ColorDrag.AbsolutePosition.Y-Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y)      
+					ColorH = (math.clamp(Huedrag.AbsolutePosition.Y-Huepick.AbsolutePosition.Y, 0, Huepick.AbsoluteSize.Y)/Huepick.AbsoluteSize.Y)      
+					ColorS = 1-(math.clamp(ColorDrag.AbsolutePosition.X-Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X)      
+					ColorV = 1-(math.clamp(ColorDrag.AbsolutePosition.Y-Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y)      
 
 					if data.default and data.default.Color ~= nil then      
 						ColorH, ColorS, ColorV = data.default.Color:ToHSV()      
 
-						ColorH = CLAMP(ColorH,0,1)      
-						ColorS = CLAMP(ColorS,0,1)      
-						ColorV = CLAMP(ColorV,0,1)      
+						ColorH = math.clamp(ColorH,0,1)      
+						ColorS = math.clamp(ColorS,0,1)      
+						ColorV = math.clamp(ColorV,0,1)      
 						ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0)      
 						Colorpick.ImageColor3 = Color3.fromHSV(ColorH, 1, 1)      
 
@@ -3393,8 +3391,8 @@ function library:New(name)
 					end)      
 
 					local function updateColor()      
-						local ColorX = (CLAMP(mouse.X - Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X)      
-						local ColorY = (CLAMP(mouse.Y - Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y)      
+						local ColorX = (math.clamp(mouse.X - Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X)      
+						local ColorY = (math.clamp(mouse.Y - Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y)      
 						ColorDrag.Position = UDIM2(ColorX, 0, ColorY, 0)      
 						ColorS = 1-ColorX      
 						ColorV = 1-ColorY      
@@ -3405,7 +3403,7 @@ function library:New(name)
 						callback(Element.value)      
 					end      
 					local function updateHue()      
-						local y = CLAMP(mouse.Y - Huepick.AbsolutePosition.Y, 0, 148)      
+						local y = math.clamp(mouse.Y - Huepick.AbsolutePosition.Y, 0, 148)      
 						Huedrag.Position = UDIM2(0, 0, 0, y)      
 						hue = y/148      
 						ColorH = 1-hue      
@@ -3456,9 +3454,9 @@ function library:New(name)
 						Element.value = value      
 						local duplicate = Color3.new(value.Color.R, value.Color.G, value.Color.B)      
 						ColorH, ColorS, ColorV = duplicate:ToHSV()      
-						ColorH = CLAMP(ColorH,0,1)      
-						ColorS = CLAMP(ColorS,0,1)      
-						ColorV = CLAMP(ColorV,0,1)      
+						ColorH = math.clamp(ColorH,0,1)      
+						ColorS = math.clamp(ColorS,0,1)      
+						ColorV = math.clamp(ColorV,0,1)      
 
 						ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0)      
 						Colorpick.ImageColor3 = Color3.fromHSV(ColorH, 1, 1)      
@@ -3659,16 +3657,16 @@ function library:New(name)
 						inCP = false      
 					end)      
 
-					ColorH = (CLAMP(Huedrag.AbsolutePosition.Y-Huepick.AbsolutePosition.Y, 0, Huepick.AbsoluteSize.Y)/Huepick.AbsoluteSize.Y)      
-					ColorS = 1-(CLAMP(ColorDrag.AbsolutePosition.X-Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X)      
-					ColorV = 1-(CLAMP(ColorDrag.AbsolutePosition.Y-Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y)      
+					ColorH = (math.clamp(Huedrag.AbsolutePosition.Y-Huepick.AbsolutePosition.Y, 0, Huepick.AbsoluteSize.Y)/Huepick.AbsoluteSize.Y)      
+					ColorS = 1-(math.clamp(ColorDrag.AbsolutePosition.X-Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X)      
+					ColorV = 1-(math.clamp(ColorDrag.AbsolutePosition.Y-Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y)      
 
 					if data.default and data.default.Color ~= nil then      
 						ColorH, ColorS, ColorV = data.default.Color:ToHSV()      
 
-						ColorH = CLAMP(ColorH,0,1)      
-						ColorS = CLAMP(ColorS,0,1)      
-						ColorV = CLAMP(ColorV,0,1)      
+						ColorH = math.clamp(ColorH,0,1)      
+						ColorS = math.clamp(ColorS,0,1)      
+						ColorV = math.clamp(ColorV,0,1)      
 						ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0)      
 						Colorpick.ImageColor3 = Color3.fromHSV(ColorH, 1, 1)      
 
@@ -3690,8 +3688,8 @@ function library:New(name)
 					end)      
 
 					local function updateColor()      
-						local ColorX = (CLAMP(mouse.X - Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X)      
-						local ColorY = (CLAMP(mouse.Y - Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y)      
+						local ColorX = (math.clamp(mouse.X - Colorpick.AbsolutePosition.X, 0, Colorpick.AbsoluteSize.X)/Colorpick.AbsoluteSize.X)      
+						local ColorY = (math.clamp(mouse.Y - Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y)      
 						ColorDrag.Position = UDIM2(ColorX, 0, ColorY, 0)      
 						ColorS = 1-ColorX      
 						ColorV = 1-ColorY      
@@ -3703,7 +3701,7 @@ function library:New(name)
 						callback(Element.value)      
 					end      
 					local function updateHue()      
-						local y = CLAMP(mouse.Y - Huepick.AbsolutePosition.Y, 0, 148)      
+						local y = math.clamp(mouse.Y - Huepick.AbsolutePosition.Y, 0, 148)      
 						Huedrag.Position = UDIM2(0, 0, 0, y)      
 						hue = y/148      
 						ColorH = 1-hue      
@@ -3715,7 +3713,7 @@ function library:New(name)
 						callback(Element.value)      
 					end      
 					local function updateTrans()      
-						local x = CLAMP(mouse.X - Transpick.AbsolutePosition.X, 0, 178)      
+						local x = math.clamp(mouse.X - Transpick.AbsolutePosition.X, 0, 178)      
 						Transdrag.Position = UDIM2(0, x, 0, 0)      
 						Element.value.Transparency = (x/178)      
 						values[tabname][sectorname][text] = Element.value      
@@ -3782,9 +3780,9 @@ function library:New(name)
 						Element.value = value 
 						local duplicate = Color3.new(value.Color.R, value.Color.G, value.Color.B) 
 						ColorH, ColorS, ColorV = duplicate:ToHSV() 
-						ColorH = CLAMP(ColorH,0,1) 
-						ColorS = CLAMP(ColorS,0,1) 
-						ColorV = CLAMP(ColorV,0,1) 
+						ColorH = math.clamp(ColorH,0,1) 
+						ColorS = math.clamp(ColorS,0,1) 
+						ColorV = math.clamp(ColorV,0,1) 
 
 						ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0) 
 						Colorpick.ImageColor3 = Color3.fromHSV(ColorH, 1, 1) 
@@ -4353,14 +4351,14 @@ end)
 					local mouse = game.Players.LocalPlayer:GetMouse() 
 					local val 
 					Button.MouseButton1Down:Connect(function() 
-						Frame.Size = UDIM2(0, CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
+						Frame.Size = UDIM2(0, math.clamp(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
 						val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) or 0 
 						Value.Text = val 
 						Element.value.Slider = val 
 						values[tabname][sectorname][text] = Element.value 
 						callback(Element.value) 
 						moveconnection = mouse.Move:Connect(function() 
-							Frame.Size = UDIM2(0, CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
+							Frame.Size = UDIM2(0, math.clamp(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
 							val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) 
 							Value.Text = val 
 							Element.value.Slider = val 
@@ -4369,7 +4367,7 @@ end)
 						end) 
 						releaseconnection = uis.InputEnded:Connect(function(Mouse) 
 							if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then 
-								Frame.Size = UDIM2(0, CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
+								Frame.Size = UDIM2(0, math.clamp(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
 								val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) 
 								values[tabname][sectorname][text] = Element.value 
 								callback(Element.value) 
@@ -4488,6 +4486,8 @@ local GetIcon = require(game.ReplicatedStorage.GetIcon)
 local BodyVelocity = Instance.new("BodyVelocity") 
 BodyVelocity.MaxForce = Vector3.new(HUGE, 0, HUGE) 
 local Collision = {Camera, workspace.Ray_Ignore, workspace.Debris}  
+local FakelagFolder = Instance.new("Folder", workspace) 
+FakelagFolder.Name = "Fakelag" 
 local FakeAnim = Instance.new("Animation", workspace) 
 FakeAnim.AnimationId = "rbxassetid://0" 
 local Gloves = ReplicatedStorage.Gloves 
@@ -4774,8 +4774,8 @@ end
 local function GetDeg(pos1, pos2) 
 	local start = pos1.LookVector 
 	local vector = CFrame.new(pos1.Position, pos2).LookVector 
-	local angle = ACOS(start:Dot(vector)) 
-	local deg = DEG(angle) 
+	local angle = math.acos(start:Dot(vector)) 
+	local deg = math.deg(angle) 
 	return deg 
 end 
 local Ping = game.Stats.PerformanceStats.Ping:GetValue() 
@@ -5281,7 +5281,23 @@ AddLegit(sniper)
 local settings = legit:Sector("settings", "Right") 
 settings:Element("Toggle", "free for all") 
 settings:Element("Toggle", "forcefield check") 
+settings:Element("ToggleColor", "draw fov", nil, function(tbl) 
+	if tbl.Toggle then
+		local FOVCircle = Drawing.new("Circle")
+		FOVCircle.Radius = values.legit.main["FOV"].Slider
+		FOVCircle.Visible = values.legit.settings["draw fov"].Toggle
+		FOVCircle.Thickness = 0.2
+		FOVCircle.Color = values.legit.settings["draw fov"].Color
+		Mouse.Move:Connect(function()
+		if FOVCircle.Visible then
+		FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
+		end
+        end)
 
+	else
+	FOVCircle:Destroy()
+	end
+end)
 
 local aimbot = rage:Sector("aimbot", "Left") -- values.rage.aimbot.enabled.Toggle --local aimbot = rage:Sector("aimbot", "Left")
 aimbot:Element("Toggle", "enabled") 
@@ -5334,10 +5350,8 @@ AddRage(auto)
 local antiaim = rage:Sector("angles", "Right") 
 antiaim:Element("Toggle", "enabled")
 local Client = getsenv(game.Players.LocalPlayer.PlayerGui.Client)
-fakeduckloop = false  
 antiaim:Element("Toggle", "fake duck",{},function(tbl)
-	fakeduckloop = tbl.Toggle
-	while fakeduckloop and syn do
+	while tbl.Active and tbl.Toggle and syn do
 		pcall(function()
 			wait(1)
 			local Client = getsenv(game.Players.LocalPlayer.PlayerGui.Client)
@@ -5352,7 +5366,7 @@ antiaim:Element("Toggle", "fake duck",{},function(tbl)
 		end)
 	end
 end)
-local headdesync = 0
+--[[local headdesync = 0
 antiaim:Element("Toggle", "head desync", {}, function(tbl)
 	if tbl.Toggle then
 		local Weld = Instance.new('Weld',game:GetService("Players").LocalPlayer.Character.Head)
@@ -5379,6 +5393,7 @@ antiaim:Element("Toggle", "head desync", {}, function(tbl)
 		Weld2:Destroy()
 	end
 end)
+--]]
 antiaim:Element("Slider", "head desync height", {min = -50, max = 50, default = 5})
 antiaim:Element("Slider", "head desync speed", {min = -180, max = 180, default = 25})
 antiaim:Element("Dropdown", "yaw base", {options = {"camera", "targets", "spin", "random", "stutter", "wasd yaw base", "3 head"}}) 
@@ -5421,10 +5436,91 @@ others:Element("Toggle", "remove head")
 others:Element("Toggle", "no animations") 
 others:Element("Dropdown", "leg movement", {options = {"off", "slide 1", "slide 2", "no jump anim"}})
 
+local LagTick = 0 
+local fakelag = rage:Sector("fakelag", "Right") 
+fakelag:Element("Toggle", "enabled", {default = {Toggle = false}}, function(tbl) 
+	if tbl.Toggle then 
+	else 
+		FakelagFolder:ClearAllChildren() 
+		game:GetService("NetworkClient"):SetOutgoingKBPSLimit(9e9) 
+	end 
+end) 
+fakelag:Element("Dropdown", "amount", {options = {"static", "dynamic"}}) 
+fakelag:Element("Slider", "limit", {min = 1, max = 16, default = 8}) 
+fakelag:Element("ToggleColor", "visualize lag", {default = {Toggle = false, Color = Color3.fromRGB(255,255,255)}}, function(tbl) 
+	if tbl.Toggle then 
+		for _,obj in pairs(FakelagFolder:GetChildren()) do 
+			obj.Color = tbl.Color 
+		end 
+	else 
+		FakelagFolder:ClearAllChildren() 
+	end 
+end) 
+fakelag:Element("ToggleKeybind", "ping spike") 
+coroutine.wrap(function() 
+	while wait(1/16) do 
+		LagTick = math.clamp(LagTick + 1, 0, values.rage.fakelag.limit.Slider) 
+		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("UpperTorso") and values.rage.fakelag.enabled.Toggle then 
+			if LagTick == (values.rage.fakelag.amount.Dropdown == "static" and values.rage.fakelag.limit.Slider or math.random(1, values.rage.fakelag.limit.Slider)) then 
+				game:GetService("NetworkClient"):SetOutgoingKBPSLimit(9e9) 
+				FakelagFolder:ClearAllChildren() 
+				LagTick = 0 
+				if values.rage.fakelag["visualize lag"].Toggle then 
+					for _,hitbox in pairs(LocalPlayer.Character:GetChildren()) do 
+						if hitbox:IsA("BasePart") and hitbox.Name ~= "HumanoidRootPart" then 
+							local part = INST("Part") 
+							part.CFrame = hitbox.CFrame 
+							part.Anchored = true 
+							part.CanCollide = false 
+							part.Material = Enum.Material.ForceField 
+							part.Color = values.rage.fakelag["visualize lag"].Color 
+							part.Name = hitbox.Name 
+							part.Transparency = 0 
+							part.Size = hitbox.Size 
+							part.Parent = FakelagFolder 
+						end 
+					end 
+				end 
+			else 
+				if values.rage.fakelag.enabled.Toggle then 
+					game:GetService("NetworkClient"):SetOutgoingKBPSLimit(1) 
+				end 
+			end 
+		else 
+			FakelagFolder:ClearAllChildren() 
+			game:GetService("NetworkClient"):SetOutgoingKBPSLimit(9e9) 
+		end 
+	end 
+end)()
+
 local exploits = rage:Sector("exploits", "Left") 
 exploits:Element('ToggleKeybind', 'custom tap')
 exploits:Element('Slider', 'tap amount', {min = 2, max = 10, default = 0})     
-exploits:Element("ToggleKeybind", "kill all") 
+exploits:Element("ToggleKeybind", "kill all", {}, function(tbl)
+	if tbl.Toggle and tbl.Active then
+	_G.stomrykillall = false
+		RS.RenderStepped:Connect(function()
+		if _G.stormykillall then return end
+				for _,Player in pairs(Players:GetPlayers()) do
+					if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild("UpperTorso") then
+						local oh1 = Player.Character.Head
+						local oh2 = Player.Character.Head.CFrame.p
+						local oh3 = Client.gun.Name
+						local oh4 = 4096
+						local oh5 = LocalPlayer.Character.Gun
+						local oh8 = 15
+						local oh9 = false
+						local oh10 = false
+						local oh11 = Vector3.new(0,0,0)
+						local oh12 = 16868
+						local oh13 = Vector3.new(0, 0, 0)
+						game:GetService("ReplicatedStorage").Events.HitPart:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
+					end
+				end
+		end)
+	else _G.stormykillall = true
+	end
+end)
 exploits:Element("Slider", "damage modifier", {min = 1, max = 5, default = 1}) 
 exploits:Element("ToggleKeybind", "hexagon kill all", {}, function(tbl) 
 if tbl.Toggle then
@@ -5455,7 +5551,6 @@ hexagonkillall = RS.RenderStepped:Connect(function()
 end)
     else
 	_G.Disable = true
-		print("gae")
 	end
 end)
 exploits:Element("ToggleKeybind", "quick peek")
@@ -6097,9 +6192,6 @@ function IsAlive(plr)
     return (plr and plr.Character and plr.Character:FindFirstChild("Head") and plr.Status.Alive.Value == true and true) or false
 end
 
-local function GetTeam(plr)
-	return game.Teams[plr.Team.Name]
-end   
 
 client:Element("Toggle", "x-ray", {}, function(tbl)
 if tbl.Toggle then
@@ -7214,7 +7306,13 @@ local Filter = false
 local LastStep 
 local TriggerDebounce = false 
 local DisableAA = false 
-
+Ping = game.Stats.PerformanceStats.Ping:GetValue()
+local CamCFrame = Camera.CFrame 
+local CamLook = CamCFrame.LookVector 
+function PlayerIsAlive()
+return LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 and LocalPlayer.Character:FindFirstChild("UpperTorso")
+end
+	local Character = LocalPlayer.Character 
 local Fov = Drawing.new("Circle") 
 Fov.Filled = true 
 Fov.Color = Color3.fromRGB(15,15,15) 
@@ -7226,23 +7324,16 @@ RunService.RenderStepped:Connect(function(step)
 	LastStep = step 
 	Ping = game.Stats.PerformanceStats.Ping:GetValue() 
 	RageTarget = nil 
-	local CamCFrame = Camera.CFrame 
-	local CamLook = CamCFrame.LookVector 
-	local PlayerIsAlive = false 
-	local Character = LocalPlayer.Character 
 	RageTarget = nil 
-	Spin = CLAMP(Spin + values.rage.angles["spin speed"].Slider, 0, 360) 
-	if Spin == 360 then Spin = 0 end 
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 and LocalPlayer.Character:FindFirstChild("UpperTorso") then 
-		PlayerIsAlive = true 
-	end 
+	Spin = math.clamp(Spin + values.rage.angles["spin speed"].Slider, 0, 360) 
+	if Spin == 360 then Spin = 0 end  
 	for i,v in pairs(ChamItems) do 
 		if v.Parent == nil then 
 			TBLREMOVE(ChamItems, i) 
 		end 
 	end 
 	Fov.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2) 
-	if PlayerIsAlive then 
+	if PlayerIsAlive() then 
 		local SelfVelocity = LocalPlayer.Character.HumanoidRootPart.Velocity 
 		local Root = LocalPlayer.Character.HumanoidRootPart 
 		if values.misc.client["infinite crouch"].Toggle then 
@@ -7296,24 +7387,6 @@ RunService.RenderStepped:Connect(function(step)
 				workspace:FindFirstChild("FreezeCharacter"):Remove()
 			end
 		end
-		if values.rage.exploits["kill all"].Toggle and values.rage.exploits["kill all"].Active and LocalPlayer.Character:FindFirstChild("UpperTorso") and LocalPlayer.Character:FindFirstChild("Gun") then
-			for _,Player in pairs(Players:GetPlayers()) do
-				if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild("UpperTorso") then
-					local oh1 = Player.Character.Head
-					local oh2 = Player.Character.Head.CFrame.p
-					local oh3 = Client.gun.Name
-					local oh4 = 4096
-					local oh5 = LocalPlayer.Character.Gun
-					local oh8 = 15
-					local oh9 = false
-					local oh10 = false
-					local oh11 = Vector3.new(0,0,0)
-					local oh12 = 16868
-					local oh13 = Vector3.new(0, 0, 0)
-					game:GetService("ReplicatedStorage").Events.HitPart:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
-				end
-			end
-		end 
 		if TBLFIND(values.visuals.effects.removals.Jumbobox, "scope lines") then 
 			NewScope.Enabled = LocalPlayer.Character:FindFirstChild("AIMING") and true or false 
 			PlayerGui.GUI.Crosshairs.Scope.Visible = false 
@@ -7609,7 +7682,7 @@ end)
 													if part.Transparency == 1 or part.CanCollide == false or part.Name == "Glass" or part.Name == "Cardboard" then
 														modifier = 0
 													end
-													local direction = (Hitbox.Position - pos).unit * CLAMP(Client.gun.Range.Value, 1, 100)
+													local direction = (Hitbox.Position - pos).unit * math.clamp(Client.gun.Range.Value, 1, 100)
 													local ray = RAY(pos + direction * 1, direction * -2)
 													local _,endpos = workspace:FindPartOnRayWithWhitelist(ray, {part}, true)
 													local thickness = (endpos - pos).Magnitude
@@ -7907,7 +7980,7 @@ end)
 						Angle = Angle + math.rad(math.random(1, 180))
 					end 
 					if values.rage.angles["yaw base"].Dropdown == "stutter" then 
-						Angle = Angle + RAD(RANDOM(0, 90))
+						Angle = Angle + RAD(math.random(0, 90))
 					end
 					if values.rage.angles["yaw base"].Dropdown == "wasd yaw base" then 
 							 if UserInputService:IsKeyDown("W") then
@@ -8075,7 +8148,7 @@ end)
 			if values.visuals.players.health.Toggle then 
 				tbl.Health.Color = Color3.new(0,1,0) 
 				tbl.Health.From = Vector2.new((tbl.Box.Position.X - 5), tbl.Box.Position.Y + tbl.Box.Size.Y) 
-				tbl.Health.To = Vector2.new(tbl.Health.From.X, tbl.Health.From.Y - CLAMP(Player.Character.Humanoid.Health / Player.Character.Humanoid.MaxHealth, 0, 1) * tbl.Box.Size.Y) 
+				tbl.Health.To = Vector2.new(tbl.Health.From.X, tbl.Health.From.Y - math.clamp(Player.Character.Humanoid.Health / Player.Character.Humanoid.MaxHealth, 0, 1) * tbl.Box.Size.Y) 
 				tbl.Health.Visible = OnScreen 
 				if Drawings then 
 					tbl.HealthOutline.From = Vector2.new(tbl.Health.From.X, tbl.Box.Position.Y + tbl.Box.Size.Y + 1) 
@@ -8272,7 +8345,7 @@ mt.__namecall = function(self, ...)
 						end 
 					end 
 
-					local Hit = RANDOM(1, 100) <= Stats.hitchance.Slider 
+					local Hit = math.random(1, 100) <= Stats.hitchance.Slider 
 					if Target ~= nil and Hit then 
 						args[1] = RAY(Camera.CFrame.Position, (Target.Position - Camera.CFrame.Position).unit * (Target.Position - Camera.CFrame.Position).magnitude) 
 					end 
@@ -8421,16 +8494,7 @@ mt.__namecall = function(self, ...)
 						end 
 					end 
 				end)() 
-			end 
-			--[[if values.visuals.self["silent dog shit"].Toggle then
-			coroutine.wrap(function()
-			local someshit = ViewmodelOffset:PointToWorldSpace(Vector3.new(0, 0, -3)):Lerp(args[2], .1)
-			ViewmodelOffset = CFrame.lookAt(ViewmodelOffset, someshit)
-			wait(2)
-			ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFAngles(0, 0, values.visuals.self.roll.Slider/50) 
-			end)()
 			end
-			]]--
 		end 
 	end 
 	if method == "FireServer" and self.Name == "HitPart" and tick() - lasthittick > 0.005 then
@@ -9457,25 +9521,3 @@ end
 		ChatScript.moveOldMessages()
 		ChatScript.createNewMessage("SamuelPaste","Thanks cideware, tinp0g and mad for sending me pastes",MainUIColor,Color3.new(1,1,1),0.01,nil)
 		print("Hello bucks script user :D")
-settings:Element("ToggleColor", "draw fov", nil, function(tbl) 
-	if tbl.Toggle then
-		local Players = game:GetService("Players") 
-		local LocalPlayer = Players.LocalPlayer 
-		local Mouse = LocalPlayer:GetMouse()
-		local FOVCircle = Drawing.new("Circle")
-		FOVCircle.Radius = values.legit.main["FOV"].Slider
-		FOVCircle.Visible = values.legit.settings["draw fov"].Toggle
-		FOVCircle.Thickness = 0.2
-		FOVCircle.Color = values.legit.settings["draw fov"].Color
-		local Mouse = LocalPlayer:GetMouse()
-		
-		Mouse.Move:Connect(function()
-		if FOVCircle.Visible then
-		FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
-		end
-        end)
-
-	else
-	FOVCircle:Destroy()
-	end
-end)
