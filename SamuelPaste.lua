@@ -4,7 +4,7 @@
 if game.CoreGui:FindFirstChild("electric boogalo") then return end
 getgenv().PasteDisabled = false
 local wait = task.wait -- small test
-getgenv().values = {}
+getgenv().values = {} --blahwrlqwrqwr
 local library = {tabs = {}}
 local Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/backup_signal"))()
 --local Api = loadstring(game:HttpGet("https://pastebin.com/raw/5L3wV43u"))() 
