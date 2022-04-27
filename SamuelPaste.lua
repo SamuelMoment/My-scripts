@@ -1,56 +1,121 @@
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
-
+if game.CoreGui:FindFirstChild("electric boogalo") then return end
+getgenv().PasteDisabled = false
+local wait = task.wait -- small test
 getgenv().values = {}
 local library = {tabs = {}}
-local Signal = loadstring(game:HttpGet("https://raw.githubusercontent.com/Quenty/NevermoreEngine/version2/Modules/Shared/Events/Signal.lua"))()
+local Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/backup_signal"))()
 --local Api = loadstring(game:HttpGet("https://pastebin.com/raw/5L3wV43u"))() 
 local ConfigSave = Signal.new("ConfigSave") 
 local ConfigLoad = Signal.new("ConfigLoad")
 local ConfigLoad1 = Signal.new("ConfigLoad1")
 ConfigSave1 = Signal.new("ConfigSave") 
+ConfigUpdateCfgList = Signal.new('ConfigUpdateCfgList')
+ConfigUpdateCfgList2 = Signal.new('ConfigUpdateCfgList2')
+VisualizeSilentAngles = Signal.new('VisualizeSilentAngles')
+function insertwithoutdupes(tab, thethingyouneedtoinsert) -- my own code :sunglasses:
+	if not table.find(tab, thethingyouneedtoinsert) then
+		table.insert(tab, thethingyouneedtoinsert)
+	end
+end	
+function removewithoutdupes(tab, thethingyouneedtoremove) -- my own code :sunglasses:
+	if table.find(tab, thethingyouneedtoremove) then
+		table.remove(tab, table.find(tab, thethingyouneedtoremove))
+	end
+end	
+
+local function GetTeam(plr)
+	return game.Teams[plr.Team.Name]
+end   
+
+
+local bordercolorlist = {}
+
+function toInteger(color)
+	return math.floor(color.r*255)*256^2+math.floor(color.g*255)*256+math.floor(color.b*255)
+end
+
+function toHex(color)
+	local int = toInteger(color)
+	
+	local current = int
+	local final = ""
+	
+	local hexChar = {
+		"A", "B", "C", "D", "E", "F"
+	}
+	
+	repeat local remainder = current % 16
+		local char = tostring(remainder)
+		
+		if remainder >= 10 then
+			char = hexChar[1 + remainder - 10]
+		end
+		
+		current = math.floor(current/16)
+		final = final..char
+	until current <= 0
+	
+	return "#"..string.reverse(final)
+end
+
+function findtextrandom(text)
+    if text:find(' @r ') then 
+        local b = text:split(' @r ')
+        return b[math.random(#b)]
+    else 
+        return text
+    end
+end
+function textboxtriggers(text)
+	local triggers = {
+		['@user'] = game.Players.LocalPlayer.Name,
+		['@ping'] = game.Stats.PerformanceStats.Ping:GetValue(),
+		['@time'] = os.date('%H:%M:%S'),
+	}
+
+	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild('Humanoid') then 
+		triggers['@health'] = game.Players.LocalPlayer.Character.Humanoid.Health
+	end
+
+	for a,b in next, triggers do 
+		text = string.gsub(text, a, b)
+	end
+
+	return findtextrandom(text)
+end
 
 local txt = game:GetService("TextService") 
 function library:Tween(...) game:GetService("TweenService"):Create(...):Play() end 
 local cfglocation = "pastedstormy/pastedstormycfgs/"
  
 makefolder("pastedstormy") 
+makefolder("pastedstormy/pastedstormycfgs/")
  
  local Players = game:GetService("Players") 
 local LocalPlayer = Players.LocalPlayer 
 
-local RAD = math.rad 
-local MIN = math.min 
-local POW = math.pow 
-local UDIM2 = UDim2.new 
-local CFAngles = CFrame.Angles 
-
-local FIND = string.find 
-local LEN = string.len 
-local SUB = string.sub 
-local GSUB = string.gsub 
-local RAY = Ray.new 
-
-local INSERT = table.insert 
-local TBLFIND = table.find 
-local TBLREMOVE = table.remove 
-local TBLSORT = table.sort 
 
 local MainUIColor = Color3.fromRGB(255,20,147)
 
-local RS = game:GetService("RunService")
-local Stats = game:GetService("Stats")
-local RES = game:GetService("ReplicatedStorage")
 
 local planting = false
 local defusing = false
 -- i see those pastes lying around\
 
 local loopkillplr = {}
+
+
 for _,v in pairs(game.Players:GetPlayers()) do 
 	table.insert(loopkillplr, v.Name)
 end
+
+	if #loopkillplr == 0 then
+		table.insert(loopkillplr, 'none')
+	end
+
 																																																																												-- Bad 9672 & WetIDreamz 0001 & zeox 9999												
 local emojis = {
 	[":clown:"] = utf8.char(129313);
@@ -58,10 +123,16 @@ local emojis = {
 	[":neutral:"] = utf8.char(128528);
 	[":sob:"] = utf8.char(128557);
 }
+local allcfgs = {} 
 
-function rgbtotbl(rgb) 
-	return {R = rgb.R, G = rgb.G, B = rgb.B} 
-end 
+for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+	local cfgname = string.gsub(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+	table.insert(allcfgs, cfgname) 
+end
+if #allcfgs == 0 then
+table.insert(allcfgs, 'shit so script wont crash')
+end
+
 function tbltorgb(tbl) 
 	return Color3.new(tbl.R, tbl.G, tbl.B) 
 end 
@@ -132,7 +203,7 @@ function library:SaveConfig1(cfg)
 	end 
 	writefile(cfglocation..cfg.."", game:GetService("HttpService"):JSONEncode(copy)) 
 end 
-
+local ovascreengui = nil
 			function library:New(name) 
 				local menu = {} 
 				local Lunar = Instance.new("ScreenGui") 
@@ -141,7 +212,7 @@ end
 				local TabButtons = Instance.new("Frame") 
 				local UIListLayout = Instance.new("UIListLayout") 
 				local Tabs = Instance.new("Frame") 
-				local ImageLabel = Instance.new("ImageLabel")
+				--local ImageLabel = Instance.new('ImageLabel')
 
 				Lunar.Name = "electric boogalo" 
 				Lunar.ResetOnSpawn = false 
@@ -155,12 +226,7 @@ end
 					UIScale.Scale = scale 
 				end 
 
-				ImageLabel.Parent = Menu
-				ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-				ImageLabel.Position = UDim2.new(0.00700000022, 0, 0.00800000038, 0)
-				ImageLabel.Size = UDim2.new(0, 568, 0, 560)
-				ImageLabel.Image = "rbxassetid://8893436115"
+
 
 				local but = Instance.new("TextButton") 
 				but.Modal = true 
@@ -176,12 +242,11 @@ end
 				cursor.Image = "rbxassetid://518398610" 
 				cursor.ZIndex = 1000 
 				cursor.ImageColor3 = Color3.fromRGB(255,255,255) 
-
-				local Players = game:GetService("Players") 
-				local LocalPlayer = Players.LocalPlayer 
+				
+				
 				local Mouse = LocalPlayer:GetMouse() 
 
-				game:GetService("RunService").RenderStepped:connect(function() 
+				game:GetService('RunService').RenderStepped:connect(function() 
 					cursor.Visible = Lunar.Enabled 
 					cursor.Position = UDim2.new(0,Mouse.X-3,0,Mouse.Y+1) 
 				end) 
@@ -191,20 +256,24 @@ end
 				Menu.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				Menu.BorderColor3 = Color3.fromRGB(0, 0, 0)
 				Menu.Position = UDim2.new(0.5, -300, 0.5, -300)
-				Menu.Size = UDim2.new(0, 578, 0, 570)
-				Menu.Image = "rbxassetid://8893436115"
+				Menu.Size = UDim2.new(0, 600, 0, 610)
+				Menu.Image = ""
 				Menu.ImageColor3 = Color3.fromRGB(180, 180, 180)
+				
+				--[[ImageLabel.Parent = Lunar
+				ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+				ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+				ImageLabel.Position = UDim2.new(0.5, -300, 0.5, -300)
+				ImageLabel.Size = UDim2.new(0, 600, 0, 610)
+				ImageLabel.Image = "rbxassetid://8893436115"--]]
 
 				library.uiopen = true 
-
-				game:GetService("UserInputService").InputBegan:Connect(function(key) 
-					if key.KeyCode == Enum.KeyCode.Insert then 
-						Lunar.Enabled = not Lunar.Enabled 
-						library.uiopen = Lunar.Enabled 
-					end 
-				end) 
-				
-				
+	ovascreengui = { 
+		['ova'] = Lunar,
+		['menu'] = Menu,
+		['cursor'] = cursor,
+	} 
+			
 			local SpectatorsList = Instance.new("ScreenGui")
 do
 			local Spectators = Instance.new("Frame")
@@ -323,7 +392,7 @@ do
 			end
 				function library:SetSpectatorVisible(rit)
 					SpectatorsList.Enabled = rit
-				end	
+				end		
 
 	local KeybindList = Instance.new("ScreenGui") 
 	do 
@@ -338,8 +407,8 @@ do
 		TextLabel.Parent = KeybindList 
 		TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0) 
 		TextLabel.BorderColor3 = MainUIColor
-		TextLabel.Position = UDIM2(0, 1, 0.300000012, 0) 
-		TextLabel.Size = UDIM2(0, 155, 0, 24) 
+		TextLabel.Position = UDim2.new(0, 1, 0.300000012, 0) 
+		TextLabel.Size = UDim2.new(0, 155, 0, 24) 
 		TextLabel.ZIndex = 2 
 		TextLabel.Font = Enum.Font.SourceSansSemibold 
 		TextLabel.Text = "keybinds" 
@@ -349,8 +418,8 @@ do
 		Frame.Parent = TextLabel 
 		Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
 		Frame.BackgroundTransparency = 1.000 
-		Frame.Position = UDIM2(0, 0, 1, 1) 
-		Frame.Size = UDIM2(1, 0, 1, 0) 
+		Frame.Position = UDim2.new(0, 0, 1, 1) 
+		Frame.Size = UDim2.new(1, 0, 1, 0) 
 
 		UIListLayout.Parent = Frame 
 		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
@@ -365,7 +434,7 @@ do
 			TextLabel.BackgroundColor3 = Color3.fromRGB(1, 1, 1) 
 			TextLabel.BorderColor3 = Color3.fromRGB(255,20,147) 
 			TextLabel.BorderSizePixel = 0 
-			TextLabel.Size = UDIM2(0, 155, 0, 24) 
+			TextLabel.Size = UDim2.new(0, 155, 0, 24) 
 			TextLabel.ZIndex = 2 
 			TextLabel.Font = Enum.Font.SourceSansSemibold 
 			TextLabel.Text = ""..text.." : Enabled"
@@ -382,7 +451,7 @@ do
 			TextLabel.BackgroundColor3 = Color3.fromRGB(1, 1, 1) 
 			TextLabel.BorderColor3 = Color3.fromRGB(255,20,147) 
 			TextLabel.BorderSizePixel = 0 
-			TextLabel.Size = UDIM2(0, 155, 0, 24) 
+			TextLabel.Size = UDim2.new(0, 155, 0, 24) 
 			TextLabel.ZIndex = 2 
 			TextLabel.Font = Enum.Font.SourceSansSemibold 
 			TextLabel.Text = ""..text.." : Held"
@@ -402,19 +471,9 @@ do
 	function library:SetKeybindVisible(Joe) 
 		KeybindList.Enabled = Joe 
 	end 
-
-
-
-
-
-
-
-
-
-
 				library.dragging = false 
 				do 
-					local UserInputService = game:GetService("UserInputService") 
+					local UserInputService = UserInputService
 					local a = Menu 
 					local dragInput 
 					local dragStart 
@@ -441,7 +500,7 @@ do
 							dragInput = input 
 						end 
 					end) 
-					UserInputService.InputChanged:Connect(function(input) 
+					game:GetService('UserInputService').InputChanged:Connect(function(input) 
 						if input == dragInput and library.dragging then 
 							update(input) 
 						end 
@@ -456,7 +515,7 @@ do
 				Holder.BackgroundTransparency = 0.400
 				Holder.BorderColor3 = Color3.fromRGB(7, 0, 0)
 				Holder.Position = UDim2.new(0, 0, 0, -26)
-				Holder.Size = UDim2.new(0, 578, 0, 25)
+				Holder.Size = UDim2.new(0, 600, 0, 25)
 
 
 					TextLabel.Parent = Holder
@@ -488,7 +547,7 @@ do
 				Tabs.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
 				Tabs.BackgroundTransparency = 1.000 
 				Tabs.Position = UDim2.new(0, 0, 0, 2) 
-				Tabs.Size = UDim2.new(0, 600, 0, 559) 
+				Tabs.Size = UDim2.new(0, 590, 0, 600) 
 				
 				setreadonly(Instance, false)
 
@@ -540,14 +599,19 @@ do
 					local Right = Instance.new("Frame") 
 					local UIListLayout_2 = Instance.new("UIListLayout") 
 
-					TabGui.Name = "TabGui" 
-					TabGui.Parent = Tabs 
-					TabGui.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
-					TabGui.BackgroundTransparency = 1.000 
-					TabGui.Size = UDim2.new(1, 0, 1, 0) 
-					TabGui.Position = UDim2.new(0, -10, 0, 4) 
-					TabGui.Visible = false 
-					TabGui.ScrollBarThickness = 0
+		TabGui.Name = 'TabGui'
+		TabGui.Parent = Tabs
+		TabGui.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+		TabGui.BorderColor3 = Color3.fromRGB(25, 25, 25)
+		TabGui.BackgroundTransparency = 1
+		TabGui.ScrollBarThickness = 4
+		TabGui.BorderSizePixel = 0
+		TabGui.ScrollBarImageTransparency = 0.9
+		TabGui.Position = UDim2.new(0, 5, 0, 2)
+		TabGui.Size = UDim2.new(0, 590, 1, 0)
+		TabGui.Visible = false
+		TabGui.CanvasSize = UDim2.new(0, 0, 4.5, 0)
+
 
 					Left.Name = "Left" 
 					Left.Parent = TabGui 
@@ -794,8 +858,8 @@ do
 									local function updatetext() 
 										local old = {} 
 										for i,v in ipairs(data.options) do 
-											if TBLFIND(Element.value.Jumbobox, v) then 
-												INSERT(old, v) 
+											if table.find(Element.value.Jumbobox, v) then 
+												table.insert(old, v) 
 											else 
 											end 
 										end 
@@ -859,15 +923,15 @@ do
 											TextLabel.ZIndex = 6 
 
 											Button.MouseButton1Down:Connect(function() 
-												if TBLFIND(Element.value.Jumbobox, v) then 
+												if table.find(Element.value.Jumbobox, v) then 
 													for i,a in pairs(Element.value.Jumbobox) do 
 														if a == v then 
-															TBLREMOVE(Element.value.Jumbobox, i) 
+															table.remove(Element.value.Jumbobox, i) 
 														end 
 													end 
-													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)}) 
 												else 
-													INSERT(Element.value.Jumbobox, v) 
+													table.insert(Element.value.Jumbobox, v) 
 													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
 												end 
 												updatetext() 
@@ -876,13 +940,13 @@ do
 												callback(Element.value) 
 											end) 
 											Button.MouseEnter:Connect(function() 
-												if not TBLFIND(Element.value.Jumbobox, v) then 
+												if not table.find(Element.value.Jumbobox, v) then 
 													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
 												end 
 											end) 
 											Button.MouseLeave:Connect(function() 
-												if not TBLFIND(Element.value.Jumbobox, v) then 
-													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+												if not table.find(Element.value.Jumbobox, v) then 
+													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
 												end 
 											end) 
 
@@ -893,7 +957,7 @@ do
 										Element.value = val 
 										for i,v in pairs(Drop:GetChildren()) do 
 											if v.Name ~= "UIListLayout" then 
-												if TBLFIND(val.Jumbobox, v.Name) then 
+												if table.find(val.Jumbobox, v.Name) then 
 													v.TextLabel.TextColor3 = Color3.fromRGB(175, 175, 175) 
 												else 
 													v.TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200) 
@@ -958,7 +1022,7 @@ do
 
 								elseif type == "ToggleKeybind" then 
 									tabsize = tabsize + UDim2.new(0,0,0,16) 
-									Element.value = {Toggle = data.default and data.default.Toggle or false, Key, Type = "Always", Active = true} 
+									Element.value = {Toggle = data.default and data.default.Toggle or false, Key = data.default and data.default.Key or nil, Type = "Toggle", Active = true} 
 
 									local Toggle = Instance.new("Frame") 
 									local Button = Instance.new("TextButton") 
@@ -1106,7 +1170,7 @@ do
 												button.MouseButton1Down:Connect(function() 
 													Element.value.Type = button.Text 
 													Frame.Visible = false 
-													Element.value.Active = Element.value.Type == "Always" and true or false 
+													Element.value.Active = Element.value.Type == "Toggle" and true or false 
 													if Element.value.Type == "Always" then 
 														keybindremove(text) 
 													end 
@@ -1180,7 +1244,7 @@ do
 												end 
 											else 
 												if Element.value.Key ~= nil then 
-													if FIND(Element.value.Key, "Mouse") then 
+													if string.find(Element.value.Key, "Mouse") then 
 														if input.UserInputType == Enum.UserInputType[Element.value.Key] then 
 															if Element.value.Type == "Hold" then 
 																Element.value.Active = true 
@@ -1226,7 +1290,7 @@ do
 										end) 
 										game:GetService("UserInputService").InputEnded:Connect(function(input) 
 											if Element.value.Key ~= nil then 
-												if FIND(Element.value.Key, "Mouse") then 
+												if string.find(Element.value.Key, "Mouse") then 
 													if input.UserInputType == Enum.UserInputType[Element.value.Key] then 
 														if Element.value.Type == "Hold" then 
 															Element.value.Active = false 
@@ -1386,6 +1450,14 @@ do
 										values[tabname][sectorname][tabtext][text] = Element.value 
 										callback(Element.value) 
 									end 
+
+
+
+
+
+
+
+
 
 									local ColorH,ColorS,ColorV 
 
@@ -1578,7 +1650,7 @@ do
 									values[tabname][sectorname][tabtext][text] = Element.value 
 									function Element:SetValue(value) 
 										Element.value = value 
-										local duplicate = COL3(value.Color.R, value.Color.G, value.Color.B) 
+										local duplicate = Color3.new(value.Color.R, value.Color.G, value.Color.B) 
 										ColorH, ColorS, ColorV = duplicate:ToHSV() 
 										ColorH = math.clamp(ColorH,0,1) 
 										ColorS = math.clamp(ColorS,0,1) 
@@ -1895,7 +1967,7 @@ do
 									values[tabname][sectorname][tabtext][text] = Element.value 
 									function Element:SetValue(value) 
 										Element.value = value 
-										local duplicate = COL3(value.Color.R, value.Color.G, value.Color.B) 
+										local duplicate = Color3.new(value.Color.R, value.Color.G, value.Color.B) 
 										ColorH, ColorS, ColorV = duplicate:ToHSV() 
 										ColorH = math.clamp(ColorH,0,1) 
 										ColorS = math.clamp(ColorS,0,1) 
@@ -2189,7 +2261,7 @@ do
 									Value.Text = Element.value.Slider 
 									Frame.Size = UDim2.new(a,0,1,0) 
 									values[tabname][sectorname][tabtext][text] = Element.value 
-									local uis = game:GetService("UserInputService") 
+									local uis = UserInputService
 									local mouse = game.Players.LocalPlayer:GetMouse() 
 									local val 
 									Button.MouseButton1Down:Connect(function() 
@@ -2260,7 +2332,19 @@ do
 									Button_2.MouseButton1Down:Connect(function() 
 										TextLabel.TextColor3 = MainUIColor 
 										library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
-										callback() 
+										local lmfaooo, lol = pcall(function()
+										callback()
+											end)
+										if lmfaooo then
+										TextLabel.Text = 'Success!'
+										wait(1)
+										TextLabel.Text = text
+										else 
+										TextLabel.Text = 'Error!'
+										wait(1)
+										TextLabel.Text = text
+										print(lol)
+										end
 									end) 
 									Button_2.MouseEnter:Connect(function() 
 										library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)}) 
@@ -2288,7 +2372,7 @@ do
 
 							if firs then 
 								coroutine.wrap(function() 
-									game:GetService("RunService").RenderStepped:Wait() 
+									game:GetService('RunService').RenderStepped:Wait() 
 									Section.Size = tabsize 
 								end)() 
 								selected = text 
@@ -2367,15 +2451,15 @@ do
 								if data.alphabet then 
 									local copy = {} 
 									for i,v in pairs(data.options) do 
-										INSERT(copy, i) 
+										table.insert(copy, i) 
 									end 
-									TBLSORT(copy, function(a,b) 
+									table.sort(copy, function(a,b) 
 										return a < b 
 									end) 
 									joe = copy 
 								else 
 									for i,v in pairs(data.options) do 
-										INSERT(joe, i) 
+										table.insert(joe, i) 
 									end 
 								end 
 
@@ -2690,7 +2774,7 @@ do
 								local amount = data.Amount or 6 
 								Section.Size = Section.Size + UDim2.new(0,0,0,amount * 16 + 8) 
 								if data.alphabet then 
-									TBLSORT(data.options, function(a,b) 
+									table.sort(data.options, function(a,b) 
 										return a < b 
 									end) 
 								end 
@@ -2799,7 +2883,141 @@ do
 									values[tabname][sectorname][text] = Element.value 
 									callback(Element.value) 
 								end 
-								values[tabname][sectorname][text] = Element.value 
+								values[tabname][sectorname][text] = Element.value
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+							elseif type == "cfgtype" then 
+							local amount = data.Amount or 6 
+								Section.Size = Section.Size + UDim2.new(0,0,0,amount * 16 + 8) 
+								if data.alphabet then 
+									table.sort(data.options, function(a,b) 
+										return a < b 
+									end) 
+								end 
+								Element.value = {Scroll = data.default and data.default.Scroll or data.options[1]}
+
+								local Scroll = Instance.new("Frame") 
+								local Frame = Instance.new("ScrollingFrame") 
+								local UIListLayout = Instance.new("UIListLayout") 
+
+								Scroll.Name = "Scroll" 
+								Scroll.Parent = Inner 
+								Scroll.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								Scroll.BackgroundTransparency = 1.000 
+								Scroll.Position = UDim2.new(0, 0, 00, 0) 
+								Scroll.Size = UDim2.new(1, 0, 0, amount * 16 + 8) 
+
+
+								Frame.Name = "Frame" 
+								Frame.Parent = Scroll --  
+								Frame.Active = true 
+								Frame.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
+								Frame.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+								Frame.Position = UDim2.new(0, 30, 0, 0) 
+								Frame.Size = UDim2.new(0, 175, 0, 16 * amount) 
+								Frame.BottomImage = "http://www.roblox.com/asset/?id=6724808282" 
+								Frame.CanvasSize = UDim2.new(0, 0, 0, 0) 
+								Frame.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
+								Frame.ScrollBarThickness = 4 
+								Frame.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
+								Frame.AutomaticCanvasSize = "Y" 
+								Frame.ScrollBarImageColor3 = MainUIColor 
+
+								UIListLayout.Parent = Frame 
+								UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
+								UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder 
+								local first = true 
+ConfigUpdateCfgList:Connect(function() 
+								for i,v in ipairs(data.options) do 
+									local Button = Instance.new("TextButton") 
+									local TextLabel = Instance.new("TextLabel") 
+
+									Button.Name = v 
+									Button.Parent = Frame 
+									Button.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
+									Button.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+									Button.BorderSizePixel = 0 
+									Button.Position = UDim2.new(0, 30, 0, 16) 
+									Button.Size = UDim2.new(1, 0, 0, 16) 
+									Button.AutoButtonColor = false 
+									Button.Font = Enum.Font.SourceSans 
+									Button.Text = "" 
+									Button.TextColor3 = Color3.fromRGB(0, 0, 0) 
+									Button.TextSize = 11.000
+
+									TextLabel.Parent = Button 
+									TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+									TextLabel.BackgroundTransparency = 1.000 
+									TextLabel.BorderColor3 = Color3.fromRGB(27, 42, 53) 
+									TextLabel.Position = UDim2.new(0, 4, 0, -1) 
+									TextLabel.Size = UDim2.new(1, 1, 1, 1) 
+									TextLabel.Font = Enum.Font.Gotham 
+									TextLabel.Text = v 
+									TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200) 
+									TextLabel.TextSize = 11.000
+									TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
+									if first then first = false 
+										TextLabel.TextColor3 = MainUIColor 
+									end 
+ConfigUpdateCfgList2:Connect(function()
+Button:Destroy()
+TextLabel:Destroy()
+end)
+									Button.MouseButton1Down:Connect(function() 
+
+										for i,v in pairs(Frame:GetChildren()) do 
+											if v:IsA("TextButton") then 
+												library:Tween(v.TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+											end 
+										end 
+
+										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+
+										Element.value.Scroll = v 
+
+										values[tabname][sectorname][text] = Element.value 
+										callback(Element.value) 
+									end) 
+									Button.MouseEnter:Connect(function() 
+										if Element.value.Scroll ~= v then 
+											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+										end 
+									end) 
+									Button.MouseLeave:Connect(function() 
+										if Element.value.Scroll ~= v then 
+											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+										end 
+									end) 
+								end
+end)
+ConfigUpdateCfgList:Fire()
+
+								function Element:SetValue(val) 
+									Element.value = val 
+
+									for i,v in pairs(Frame:GetChildren()) do 
+										if v:IsA("TextButton") then 
+											library:Tween(v.TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+										end 
+									end 
+
+									library:Tween(Frame[Element.value.Scroll].TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)}) 
+									values[tabname][sectorname][text] = Element.value 
+									callback(Element.value) 
+								end 
+								values[tabname][sectorname][text] = Element.value								
 							elseif type == "Jumbobox" then 
 								Section.Size = Section.Size + UDim2.new(0,0,0,39) 
 								Element.value = {Jumbobox = {}} 
@@ -2885,8 +3103,8 @@ do
 								local function updatetext() 
 									local old = {} 
 									for i,v in ipairs(data.options) do 
-										if TBLFIND(Element.value.Jumbobox, v) then 
-											INSERT(old, v) 
+										if table.find(Element.value.Jumbobox, v) then 
+											table.insert(old, v) 
 										else 
 										end 
 									end 
@@ -2917,11 +3135,6 @@ do
 
 									abcd.Text = str 
 								end 
-								function shitineedformenuaccent2()
-																			if not TBLFIND(Element.value.Jumbobox, v) then 
-												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
-											end 
-											end
 								for i,v in ipairs(data.options) do 
 									do 
 										local Button = Instance.new("TextButton") 
@@ -2955,15 +3168,15 @@ do
 										TextLabel.ZIndex = 6 
 
 										Button.MouseButton1Down:Connect(function() 
-											if TBLFIND(Element.value.Jumbobox, v) then 
+											if table.find(Element.value.Jumbobox, v) then 
 												for i,a in pairs(Element.value.Jumbobox) do 
 													if a == v then 
-														TBLREMOVE(Element.value.Jumbobox, i) 
+														table.remove(Element.value.Jumbobox, i) 
 													end 
 												end 
 												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)}) 
 											else 
-												INSERT(Element.value.Jumbobox, v) 
+												table.insert(Element.value.Jumbobox, v) 
 												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
 											end 
 											updatetext() 
@@ -2972,10 +3185,12 @@ do
 											callback(Element.value) 
 										end) 
 										Button.MouseEnter:Connect(function() 
-											shitineedformenuaccent2()
+											if not table.find(Element.value.Jumbobox, v) then 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+											end 
 										end) 
 										Button.MouseLeave:Connect(function() 
-											if not TBLFIND(Element.value.Jumbobox, v) then 
+											if not table.find(Element.value.Jumbobox, v) then 
 												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
 											end 
 										end) 
@@ -2987,7 +3202,7 @@ do
 									Element.value = val 
 									for i,v in pairs(Drop:GetChildren()) do 
 										if v.Name ~= "UIListLayout" then 
-											if TBLFIND(val.Jumbobox, v.Name) then 
+											if table.find(val.Jumbobox, v.Name) then 
 												v.TextLabel.TextColor3 = MainUIColor 
 											else 
 												v.TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200) 
@@ -3050,8 +3265,8 @@ do
 								end) 
 							elseif type == "ToggleKeybind" then 
 								Section.Size = Section.Size + UDim2.new(0,0,0,16) 
-								Element.value = {Toggle = data.default and data.default.Toggle or false, Key, Type = "Always", Active = true} 
-
+								Element.value = {Toggle = data.default and data.default.Toggle or false, Key = data.default and data.default.Key or nil, Type = "Toggle", Active = true} 
+								Element.value.Key = data.default and data.default.Key or nil
 								local Toggle = Instance.new("Frame") 
 								local Button = Instance.new("TextButton") 
 								local Color = Instance.new("Frame") 
@@ -3123,15 +3338,16 @@ do
 									local UIListLayout = Instance.new("UIListLayout") 
 									local Hold = Instance.new("TextButton") 
 									local Toggle = Instance.new("TextButton") 
+									local ButtonKey = Instance.new('TextButton')
 
 									Keybind.Name = "Keybind" 
 									Keybind.Parent = Button 
 									Keybind.BackgroundColor3 = Color3.fromRGB(31, 31, 31) 
 									Keybind.BorderColor3 = Color3.fromRGB(18, 18, 16) 
 									Keybind.Position = UDim2.new(0, 270, 0.5, -6) 
-									Keybind.Text = "none" 
+									Keybind.Text = data.default and data.default.Key or 'none'
 									Keybind.Size = UDim2.new(0, 43, 0, 12) 
-									Keybind.Size = UDIM2(0,txt:GetTextSize("NONE", 14, Enum.Font.SourceSansSemibold, Vector2.new(700, 12)).X + 5,0, 12)
+									Keybind.Size = UDim2.new(0,txt:GetTextSize("NONE", 14, Enum.Font.SourceSansSemibold, Vector2.new(700, 12)).X + 5,0, 12)
 									Keybind.AutoButtonColor = false 
 									Keybind.Font = Enum.Font.Gotham 
 									Keybind.TextColor3 = Color3.fromRGB(200, 200, 200) 
@@ -3276,7 +3492,7 @@ do
 											callback(Element.value) 
 										else 
 											if Element.value.Key ~= nil then 
-												if FIND(Element.value.Key, "Mouse") then 
+												if string.find(Element.value.Key, "Mouse") then 
 													if input.UserInputType == Enum.UserInputType[Element.value.Key] then 
 														if Element.value.Type == "Hold" then 
 															Element.value.Active = true 
@@ -3294,7 +3510,7 @@ do
 															else 
 																keybindremove(text) 
 															end 
-														end 
+														end
 													end 
 												else 
 													if input.KeyCode == Enum.KeyCode[Element.value.Key] then 
@@ -3313,8 +3529,9 @@ do
 																keybindadd(text) 
 															else 
 																keybindremove(text) 
-															end 
+															end
 														end 
+														
 													end 
 												end 
 											else 
@@ -3325,7 +3542,7 @@ do
 									end) 
 									game:GetService("UserInputService").InputEnded:Connect(function(input) 
 										if Element.value.Key ~= nil then 
-											if FIND(Element.value.Key, "Mouse") then 
+											if string.find(Element.value.Key, "Mouse") then 
 												if input.UserInputType == Enum.UserInputType[Element.value.Key] then 
 													if Element.value.Type == "Hold" then 
 														Element.value.Active = false 
@@ -3483,7 +3700,8 @@ do
 										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
 									end 
 									values[tabname][sectorname][text] = Element.value 
-								end 
+								end
+
 
 								local ColorH,ColorS,ColorV 
 
@@ -3507,13 +3725,91 @@ do
 								ColorP.TextColor3 = Color3.fromRGB(200, 200, 200) 
 								ColorP.TextSize = 11.000
 
+
+
+
+
+
 								Frame.Parent = ColorP 
 								Frame.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
 								Frame.BorderColor3 = Color3.fromRGB(18, 18, 16) 
 								Frame.Position = UDim2.new(-0.666666687, -170, 1.375, 0) 
-								Frame.Size = UDim2.new(0, 200, 0, 170) 
+								Frame.Size = UDim2.new(0, 200, 0, 190) 
 								Frame.Visible = false 
 								Frame.ZIndex = 3 
+
+								local Button5 = Instance.new("Frame") 
+								local Button_25 = Instance.new("TextButton") 
+								local TextLabel5 = Instance.new("TextLabel") 
+
+								Button5.Name = "Button" 
+								Button5.Parent = Frame 
+								Button5.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								Button5.BackgroundTransparency = 1.000 
+								Button5.Position = UDim2.new(0, -18, 0.9, 0) 
+								Button5.Size = UDim2.new(1, 0, 0, 15) 
+								Button5.ZIndex = 3
+
+								Button_25.Name = "Button" 
+								Button_25.Parent = Button5
+								Button_25.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
+								Button_25.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+								Button_25.Position = UDim2.new(0, 30, 0.5, -9) 
+								Button_25.Size = UDim2.new(0, 175, 0, 18) 
+								Button_25.AutoButtonColor = false 
+								Button_25.Font = Enum.Font.SourceSans 
+								Button_25.Text = "" 
+								Button_25.TextColor3 = Color3.fromRGB(0, 0, 0) 
+								Button_25.TextSize = 11.000
+								Button_25.ZIndex = 3
+
+								TextLabel5.Parent = Button_25
+								TextLabel5.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								TextLabel5.BackgroundTransparency = 1.000 
+								TextLabel5.BorderColor3 = Color3.fromRGB(27, 42, 53) 
+								TextLabel5.Size = UDim2.new(1, 0, 1, 0) 
+								TextLabel5.Font = Enum.Font.Gotham 
+								TextLabel5.Text = 'Copy colors' 
+								TextLabel5.TextColor3 = Color3.fromRGB(200, 200, 200) 
+								TextLabel5.TextSize = 11.000
+								TextLabel5.ZIndex = 3
+
+
+								Button_25.MouseButton1Down:Connect(function() 
+									TextLabel5.TextColor3 = MainUIColor 
+									library:Tween(TextLabel5, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+								local retarded, lmao = pcall(function()
+								
+								local l,m,a = math.floor((Element.value.Color.R*255)+0.5),math.floor((Element.value.Color.G*255)+0.5),math.floor((Element.value.Color.B*255)+0.5)
+
+									if values.others.other['Copy colors type'].Dropdown == 'RGB' then
+									setclipboard(''..l..','..m..','..a) -- o
+									elseif values.others.other['Copy colors type'].Dropdown == 'HEX' then
+									setclipboard(toHex(Color3.fromRGB(l,m,a)))
+									elseif values.others.other['Copy colors type'].Dropdown == 'HSV' then 
+									local H,S,V = Color3.new(l,m,a):ToHSV() --hsl, cmyk
+									setclipboard(''..H..','..S..','..V)
+									end
+									end)
+									if retarded then
+									TextLabel5.Text = 'Success!'
+									wait(1.5)
+									TextLabel5.Text = 'Copy colors'
+									else
+																		TextLabel5.Text = 'Error!'
+									wait(1.5)
+									TextLabel5.Text = 'Copy colors'
+									print(lmao)
+									print(Element.value.Color)
+									print(Element.value.Color.value)
+									end
+								end) 
+								Button_25.MouseEnter:Connect(function() 
+									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)}) 
+								end) 
+								Button_25.MouseLeave:Connect(function() 
+									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+								end) 
 
 								Colorpick.Name = "Colorpick" 
 								Colorpick.Parent = Frame 
@@ -3678,7 +3974,7 @@ do
 								values[tabname][sectorname][text] = Element.value 
 								function Element:SetValue(value) 
 									Element.value = value 
-									local duplicate = COL3(value.Color.R, value.Color.G, value.Color.B) 
+									local duplicate = Color3.new(value.Color.R, value.Color.G, value.Color.B) 
 									ColorH, ColorS, ColorV = duplicate:ToHSV() 
 									ColorH = math.clamp(ColorH,0,1) 
 									ColorS = math.clamp(ColorS,0,1) 
@@ -3773,9 +4069,82 @@ do
 								Frame.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
 								Frame.BorderColor3 = Color3.fromRGB(18, 18, 16) 
 								Frame.Position = UDim2.new(-0.666666687, -170, 1.375, 0) 
-								Frame.Size = UDim2.new(0, 200, 0, 190) 
+								Frame.Size = UDim2.new(0, 200, 0, 210) 
 								Frame.Visible = false 
 								Frame.ZIndex = 3 
+
+								local Button5 = Instance.new("Frame") 
+								local Button_25 = Instance.new("TextButton") 
+								local TextLabel5 = Instance.new("TextLabel") 
+
+								Button5.Name = "Button" 
+								Button5.Parent = Frame 
+								Button5.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								Button5.BackgroundTransparency = 1.000 
+								Button5.Position = UDim2.new(0, -18, 0.9, 0) 
+								Button5.Size = UDim2.new(1, 0, 0, 15) 
+								Button5.ZIndex = 3
+
+								Button_25.Name = "Button" 
+								Button_25.Parent = Button5
+								Button_25.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
+								Button_25.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+								Button_25.Position = UDim2.new(0, 30, 0.5, -9) 
+								Button_25.Size = UDim2.new(0, 175, 0, 18) 
+								Button_25.AutoButtonColor = false 
+								Button_25.Font = Enum.Font.SourceSans 
+								Button_25.Text = "" 
+								Button_25.TextColor3 = Color3.fromRGB(0, 0, 0) 
+								Button_25.TextSize = 11.000
+								Button_25.ZIndex = 3
+
+								TextLabel5.Parent = Button_25
+								TextLabel5.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								TextLabel5.BackgroundTransparency = 1.000 
+								TextLabel5.BorderColor3 = Color3.fromRGB(27, 42, 53) 
+								TextLabel5.Size = UDim2.new(1, 0, 1, 0) 
+								TextLabel5.Font = Enum.Font.Gotham 
+								TextLabel5.Text = 'Copy colors' 
+								TextLabel5.TextColor3 = Color3.fromRGB(200, 200, 200) 
+								TextLabel5.TextSize = 11.000
+								TextLabel5.ZIndex = 3
+
+
+								Button_25.MouseButton1Down:Connect(function() 
+									TextLabel5.TextColor3 = MainUIColor 
+									library:Tween(TextLabel5, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+								local retarded, lmao = pcall(function()
+								local l,m,a = math.floor((Element.value.Color.R*255)+0.5),math.floor((Element.value.Color.G*255)+0.5),math.floor((Element.value.Color.B*255)+0.5)
+									if values.others.other['Copy colors type'].Dropdown == 'RGB' then
+									setclipboard(''..l..','..m..','..a) -- o
+									elseif values.others.other['Copy colors type'].Dropdown == 'HEX' then
+									setclipboard(toHex(Color3.fromRGB(l,m,a)))
+									elseif values.others.other['Copy colors type'].Dropdown == 'HSV' then 
+									local H,S,V = Color3.new(l,m,a):ToHSV() --hsl, cmyk
+									setclipboard(''..H..','..S..','..V)
+									end
+									end)
+									if retarded then
+									TextLabel5.Text = 'Success!'
+									wait(1.5)
+									TextLabel5.Text = 'Copy colors'
+									else
+																		TextLabel5.Text = 'Error!'
+									wait(1.5)
+									TextLabel5.Text = 'Copy colors'
+									print(lmao)
+									print(Element.value.Color)
+									print(Element.value.Color.value)
+									end
+								end) 
+								Button_25.MouseEnter:Connect(function() 
+									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)}) 
+								end) 
+								Button_25.MouseLeave:Connect(function() 
+									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+								end) 
+
+
 
 								Colorpick.Name = "Colorpick" 
 								Colorpick.Parent = Frame 
@@ -4004,7 +4373,7 @@ do
 								values[tabname][sectorname][text] = Element.value 
 								function Element:SetValue(value) 
 									Element.value = value 
-									local duplicate = COL3(value.Color.R, value.Color.G, value.Color.B) 
+									local duplicate = Color3.new(value.Color.R, value.Color.G, value.Color.B) 
 									ColorH, ColorS, ColorV = duplicate:ToHSV() 
 									ColorH = math.clamp(ColorH,0,1) 
 									ColorS = math.clamp(ColorS,0,1) 
@@ -4047,8 +4416,8 @@ do
 									values[tabname][sectorname][text] = Element.value 
 
 									TextBox:GetPropertyChangedSignal("Text"):Connect(function() 
-										if LEN(TextBox.Text) > 20 then 
-											TextBox.Text = SUB(TextBox.Text, 1, 20) 
+										if string.len(TextBox.Text) > 20 then 
+											TextBox.Text = string.sub(TextBox.Text, 1, 20) 
 										end 
 										Element.value.Text = TextBox.Text 
 										values[tabname][sectorname][text] = Element.value 
@@ -4060,6 +4429,37 @@ do
 										values[tabname][sectorname][text] = Element.value 
 										TextBox.Text = Element.value.Text 
 									end 
+
+
+
+							elseif type == "Label" then 
+								Section.Size = Section.Size + UDim2.new(0,0,0,17) 
+								Element.value = {Text = data.default and data.options.text or '', stringchange} 
+
+								local Toggle = Instance.new("Frame") 
+								local TextLabel = Instance.new("TextLabel") 
+
+								Toggle.Name = "Toggle" 
+								Toggle.Parent = Inner 
+								Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								Toggle.BackgroundTransparency = 1.000 
+								Toggle.Size = UDim2.new(1, 0, 0, 15) 
+
+								TextLabel.Parent = Toggle 
+								TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								TextLabel.BackgroundTransparency = 1.000 
+								TextLabel.Position = UDim2.new(0, 32, 0, -1) 
+								TextLabel.Size = UDim2.new(0.111913361, 208, 1, 0) 
+								TextLabel.Font = Enum.Font.Gotham 
+								TextLabel.Text = text 
+								TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200) 
+								TextLabel.TextSize = 12.000
+								TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
+								Element.value.stringchange = function(text)
+								TextLabel.Text = text
+								end
+								
+								values[tabname][sectorname][text] = Element.value
 
 							elseif type == "Dropdown" then 
 								Section.Size = Section.Size + UDim2.new(0,0,0,39) 
@@ -4380,27 +4780,67 @@ do
 							end
 gay()
 
-local function insertwithoutdupes(tab, thethingyouneedtoinsert) -- my own code :sunglasses:
-	if not table.find(tab, thethingyouneedtoinsert) then
-		table.insert(tab, thethingyouneedtoinsert)
-	end
-end	
-local function removewithoutdupes(tab, thethingyouneedtoremove) -- my own code :sunglasses:
-	if table.find(tab, thethingyouneedtoremove) then
-		table.remove(tab, table.find(tab, thethingyouneedtoremove))
-	end
-end	
 
-Players.PlayerAdded:Connect(function(player)
-insertwithoutdupes(data.options, player.Name)
- gay()
+
+Players.PlayerAdded:Connect(function()
+table.clear(data.options)
+for i,v in pairs(game.Players:GetPlayers()) do
+table.insert(data.options, v.Name)
+end
+	gay()
 end)
  
-Players.PlayerRemoving:Connect(function(player) 
-removewithoutdupes(data.options, player.Name)
+Players.PlayerRemoving:Connect(function() 
+table.clear(data.options)
+for i,v in pairs(game.Players:GetPlayers()) do
+table.insert(data.options, v.Name)
+end
 	gay()
 end)
 
+--[[for _,Player in pairs(game.Players:GetPlayers()) do
+	if Player ~= LocalPlayer then
+		table.clear(data.options)
+		data.options = {}
+		if  GetTeam(Player) ~= "TTT" and GetTeam(Player) ~= GetTeam(LocalPlayer) then
+			insertwithoutdupes(data.options, Player.Name)
+			gay()
+			print(Player.Name.. "has been added in list in getplayers")
+		elseif GetTeam(Player) ~= "TTT" then
+			removewithoutdupes(data.options, Player.Name)
+			gay()
+			print(Player.Name.. "has been deleted from list in getplayers")
+		end
+	end
+end
+
+for _, team in pairs(game:GetService("Teams"):GetTeams()) do
+if team ~= "TTT" then
+    team.PlayerAdded:connect(function(player)
+		if player.Name == LocalPlayer then
+			for i,v in pairs(data.options) do
+				if GetTeam(i) == GetTeam(LocalPlayer) and GetTeam(LocalPlayer) ~= 'TTT' then
+					removewithoutdupes(data.options, v)
+					print("removed in list "..v.. " in localplayer teamchanged event")
+					gay()
+				elseif GetTeam(i) ~= GetTeam(LocalPlayer) and GetTeam(LocalPlayer) ~= 'TTT' then
+					insertwithoutdupes(data.options, v)
+					print("added in list "..v.. " in localplayer teamchanged event")
+					gay()
+				end
+			end
+		else
+			if team ~= GetTeam(LocalPlayer) then
+				insertwithoutdupes(data.options, player.Name)
+				gay()
+			else
+				removewithoutdupes(data.options, player.Name)
+				gay()
+			end
+		end
+    end)
+end
+end--]]
 								function Element:SetValue(val) 
 									Element.value = val 
 									abcd.Text = val.Dropdown 
@@ -4546,7 +4986,7 @@ end)
 								Value.Text = Element.value.Slider 
 								Frame.Size = UDim2.new(a,0,1,0) 
 								values[tabname][sectorname][text] = Element.value 
-								local uis = game:GetService("UserInputService") 
+								local uis = game:GetService('UserInputService')
 								local mouse = game.Players.LocalPlayer:GetMouse() 
 								local val 
 								Button.MouseButton1Down:Connect(function() 
@@ -4575,7 +5015,81 @@ end)
 										end 
 									end) 
 								end) 
-							elseif type == "Button" then 
+							elseif type == "Button2" then 
+
+								Section.Size = Section.Size + UDim2.new(0,0,0,24) 
+								local Button = Instance.new("Frame") 
+								local Button_2 = Instance.new("TextButton") 
+								local TextLabel = Instance.new("TextLabel") 
+
+								Button.Name = "Button" 
+								Button.Parent = Inner 
+								Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								Button.BackgroundTransparency = 1.000 
+								Button.Position = UDim2.new(0, 0, 0.236059487, 0) 
+								Button.Size = UDim2.new(1, 0, 0, 24) 
+
+								Button_2.Name = "Button" 
+								Button_2.Parent = Button 
+								Button_2.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
+								Button_2.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+								Button_2.Position = UDim2.new(0, 30, 0.5, -9) 
+								Button_2.Size = UDim2.new(0, 175, 0, 18) 
+								Button_2.AutoButtonColor = false 
+								Button_2.Font = Enum.Font.SourceSans 
+								Button_2.Text = "" 
+								Button_2.TextColor3 = Color3.fromRGB(0, 0, 0) 
+								Button_2.TextSize = 11.000
+
+								TextLabel.Parent = Button_2 
+								TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								TextLabel.BackgroundTransparency = 1.000 
+								TextLabel.BorderColor3 = Color3.fromRGB(27, 42, 53) 
+								TextLabel.Size = UDim2.new(1, 0, 1, 0) 
+								TextLabel.Font = Enum.Font.Gotham 
+								TextLabel.Text = text 
+								TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200) 
+								TextLabel.TextSize = 11.000
+
+								function Element:SetValue() 
+								end 
+								
+								
+								local pressedButton = false
+								Button_2.MouseButton1Down:Connect(function() 
+									TextLabel.TextColor3 = MainUIColor 
+									library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+									if TextLabel.Text ~= 'Are you sure?' then
+										TextLabel.Text = 'Are you sure?'
+										wait(4)
+										if not pressedButton then
+											TextLabel.Text = text
+										end
+									elseif TextLabel.Text == 'Are you sure?' then
+										pressedButton = true
+										local lmfaooo, lol = pcall(function()
+											callback()
+										end)
+											if lmfaooo then
+												TextLabel.Text = 'Success!'
+												wait(1)
+												TextLabel.Text = text
+											else 
+												TextLabel.Text = 'Error!'
+												wait(1)
+												TextLabel.Text = text
+												print(lol)
+											end
+										pressedButton = false
+									end
+								end) 
+								Button_2.MouseEnter:Connect(function() 
+									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)}) 
+								end) 
+								Button_2.MouseLeave:Connect(function() 
+									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+								end)
+														elseif type == "Button" then 
 
 								Section.Size = Section.Size + UDim2.new(0,0,0,24) 
 								local Button = Instance.new("Frame") 
@@ -4617,7 +5131,19 @@ end)
 								Button_2.MouseButton1Down:Connect(function() 
 									TextLabel.TextColor3 = MainUIColor 
 									library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
-									callback() 
+																		local lmfaooo, lol = pcall(function()
+										callback()
+											end)
+										if lmfaooo then
+										TextLabel.Text = 'Success!'
+										wait(1)
+										TextLabel.Text = text
+										else 
+										TextLabel.Text = 'Error!'
+										wait(1)
+										TextLabel.Text = text
+										print(lol)
+										end
 								end) 
 								Button_2.MouseEnter:Connect(function() 
 									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)}) 
@@ -4625,6 +5151,9 @@ end)
 								Button_2.MouseLeave:Connect(function() 
 									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
 								end) 
+							
+							
+							
 							end 
 							ConfigLoad:Connect(function(cfg) 
 								pcall(function() 
@@ -4752,16 +5281,19 @@ end)
 	end
 	CreateHitElement(" Welcome "..LocalPlayer.Name.." to totally not pasted script!  ",MainUIColor,5, 0, 340, 0, 22)
 	wait(0.5)
-	CreateHitElement(" Press INSERT or DELETE to open and close the menu!  ",MainUIColor,5, 0, 340, 0, 30)
+	CreateHitElement(" Go in misc tab and set up keybind yourself  ",MainUIColor,5, 0, 340, 0, 30)
 	CreateHitElement(" !!!  IMPORTANT  !!!\
  This script is totally not (yes) pasted,\
  there may be a lot of cheat bugs!\
  Report any issues to my server!  ",MainUIColor,15, 0, 230, 0, 120)
+ 
 local UserInputService = game:GetService("UserInputService") 
 local ReplicatedStorage = game:GetService("ReplicatedStorage") 
 local RunService = game:GetService("RunService") 
 local Lighting = game:GetService("Lighting") 
 local PlayerGui = LocalPlayer.PlayerGui
+local Crosshairs = PlayerGui.GUI.Crosshairs
+local Crosshair = PlayerGui.GUI.Crosshairs.Crosshair
 local Mouse = LocalPlayer:GetMouse() 
 local Camera = workspace.CurrentCamera 
 local ClientScript = LocalPlayer.PlayerGui.Client 
@@ -4788,6 +5320,8 @@ local FakelagFolder = Instance.new("Folder", workspace)
 FakelagFolder.Name = "Fakelag" 
 local backtrackfolder = Instance.new("Folder", workspace)
 backtrackfolder.Name = "backtrackfolder"
+local fowardtrackFolder = Instance.new("Folder", workspace)
+fowardtrackFolder.Name = "FowardtrackFolder"
 local FakeAnim = Instance.new("Animation", workspace) 
 FakeAnim.AnimationId = "rbxassetid://0" 
 local Gloves = ReplicatedStorage.Gloves 
@@ -4880,7 +5414,7 @@ do
 	NewScope = ScreenGui 
 end 
 local oldSkybox 
-local ownerJoined = {"GetRealGetFpsGui", "jjbetterthansynapse"}
+local ownerJoined = {"GetRealGetFpsGui", "jjbetterthansynapse", 'SamuelThePaster'}
 Players.PlayerAdded:Connect(function(plr)
 	if table.find(ownerJoined, plr.Name) then
 		CreateHitElement(" !!!HOLY FUCKING SHIT!!! OWNER OF SCRIPT JOINED PREPARE TO GET FUCKED UP!!! ",MainUIColor,15, 0, 380, 0, 22)
@@ -5042,7 +5576,7 @@ local function ChangeCharacter(NewCharacter)
 		String.Value = LocalPlayer.Character:FindFirstChildOfClass("Shirt").ShirtTemplate 
 		String.Parent = LocalPlayer.Character:FindFirstChildOfClass("Shirt") 
 
-		if TBLFIND(values.visuals.effects.removals.Jumbobox, "clothes") then 
+		if table.find(values.visuals.effects.removals.Jumbobox, "clothes") then 
 			LocalPlayer.Character:FindFirstChildOfClass("Shirt").ShirtTemplate = "" 
 		end 
 	end 
@@ -5052,13 +5586,13 @@ local function ChangeCharacter(NewCharacter)
 		String.Value = LocalPlayer.Character:FindFirstChildOfClass("Pants").PantsTemplate 
 		String.Parent = LocalPlayer.Character:FindFirstChildOfClass("Pants") 
 
-		if TBLFIND(values.visuals.effects.removals.Jumbobox, "clothes") then 
+		if table.find(values.visuals.effects.removals.Jumbobox, "clothes") then 
 			LocalPlayer.Character:FindFirstChildOfClass("Pants").PantsTemplate = "" 
 		end 
 	end 
 	for i,v in pairs(LocalPlayer.Character:GetChildren()) do 
 		if v:IsA("BasePart") and v.Transparency ~= 1 then 
-			INSERT(SelfObj, v) 
+			table.insert(SelfObj, v) 
 			local Color = Instance.new("Color3Value") 
 			Color.Name = "OriginalColor" 
 			Color.Value = v.Color 
@@ -5069,7 +5603,7 @@ local function ChangeCharacter(NewCharacter)
 			String.Value = v.Material.Name 
 			String.Parent = v 
 		elseif v:IsA("Accessory") and v.Handle.Transparency ~= 1 then 
-			INSERT(SelfObj, v.Handle) 
+			table.insert(SelfObj, v.Handle) 
 			local Color = Instance.new("Color3Value") 
 			Color.Name = "OriginalColor" 
 			Color.Value = v.Handle.Color 
@@ -5099,6 +5633,7 @@ local function GetDeg(pos1, pos2)
 	return deg 
 end 
 local Ping = game.Stats.PerformanceStats.Ping:GetValue() 
+local ping = game.Stats.PerformanceStats.Ping:GetValue() 
 
 for i,v in pairs(Viewmodels:GetChildren()) do 
 	if v:FindFirstChild("HumanoidRootPart") and v.HumanoidRootPart.Transparency ~= 1 then 
@@ -5107,11 +5642,11 @@ for i,v in pairs(Viewmodels:GetChildren()) do
 end 
 
 
-local ChrModels = game:GetObjects("rbxassetid://7642937303")[1] 
+local ChrModels = game:GetObjects("rbxassetid://7951832105")[1]
 repeat wait() until ChrModels ~= nil 
 
 
-     local Models = game:GetObjects("rbxassetid://7285197035")[1]      
+     local Models = game:GetObjects("rbxassetid://7285197035")[1]    
      repeat wait() until Models ~= nil           
 
 
@@ -5139,13 +5674,13 @@ for _,fldr in pairs(Gloves:GetChildren()) do
 	if fldr ~= GloveModels and fldr.Name ~= "Racer" then 
 		AllGloves[fldr.Name] = {} 
 		for _2,modl in pairs(fldr:GetChildren()) do 
-			INSERT(AllGloves[fldr.Name], modl.Name) 
+			table.insert(AllGloves[fldr.Name], modl.Name) 
 		end 
 	end 
 end 
 
 for i,v in pairs(Models.Knives:GetChildren()) do 
-	INSERT(AllKnives, v.Name) 
+	table.insert(AllKnives, v.Name) 
 end 
 
 local AllSkins = {} 
@@ -5153,7 +5688,7 @@ local AllWeapons = {}
 local AllCharacters = {} 
 
 for i,v in pairs(ChrModels:GetChildren()) do 
-	INSERT(AllCharacters, v.Name) 
+	table.insert(AllCharacters, v.Name) 
 end 
 
 local skins = { 
@@ -5174,19 +5709,19 @@ for _,skin in pairs (skins) do
 end 
 
 for i,v in pairs(Skins:GetChildren()) do 
-	INSERT(AllWeapons, v.Name) 
+	table.insert(AllWeapons, v.Name) 
 end 
 
-TBLSORT(AllWeapons, function(a,b) 
+table.sort(AllWeapons, function(a,b) 
 	return a < b 
 end) 
 
 for i,v in ipairs(AllWeapons) do 
 	AllSkins[v] = {} 
-	INSERT(AllSkins[v], "Inventory") 
+	table.insert(AllSkins[v], "Inventory") 
 	for _,v2 in pairs(Skins[v]:GetChildren()) do 
 		if not v2:FindFirstChild("Animated") then 
-			INSERT(AllSkins[v], v2.Name) 
+			table.insert(AllSkins[v], v2.Name) 
 		end 
 	end 
 end 
@@ -5198,19 +5733,13 @@ makefolder("pastedstormy/lua")
 local allluas = {} 
 
 for _,lua in pairs(listfiles("pastedstormy/lua")) do 
-	local luaname = GSUB(lua, "pastedstormy/lua\\", "") 
-	INSERT(allluas, luaname) 
+	local luaname = string.gsub(lua, "pastedstormy/lua\\", "") 
+	table.insert(allluas, luaname) 
 end 
 
-makefolder("pastedstormy/pastedstormycfgs")
 
 
-local allcfgs = {} 
-
-for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-	local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
-	INSERT(allcfgs, cfgname) 
-end 
+ 
 RunService.RenderStepped:Wait() 
 
 local gui = library:New("SamuelPaste") 
@@ -5219,8 +5748,8 @@ local rage = gui:Tab("rage")
 local visuals = gui:Tab("visuals") 
 local misc = gui:Tab("misc") 
 local skins = gui:Tab("skins") 
-local luas = gui:Tab("other")
-local nn = gui:Tab ("Made by nn called Samuel") 
+local others = gui:Tab("others")
+
 
 
 
@@ -5234,16 +5763,24 @@ end
 api.newelement = function(section, type, name, data, callback) 
 	section:Element(type, name, data, callback) 
 end 
-		local knife = skins:Sector("knife", "Left")      
-		knife:Element("Toggle", "knife changer")      
-		knife:Element("Scroll", "model", {options = AllKnives, Amount = 15})   
+local knife = skins:Sector('knife', 'Left')
+knife:Element('Toggle', 'knife changer')
+knife:Element('Scroll', 'model', {options = AllKnives, Amount = 15})
 
-local luascripts = luas:Sector("luas", "Left") 
-luascripts:Element("Scroll", "lua", {options = allluas, Amount = 5}) 
-luascripts:Element("Button", "load", {}, function() 
-	loadstring(readfile("pastedstormy/lua\\"..values.luas["other"].lua.Scroll))() 
+local glove = skins:Sector('glove', 'Left')
+glove:Element('Toggle', 'glove changer')
+glove:Element('ScrollDrop', 'model', {options = AllGloves, Amount = 9})
+
+local skin = skins:Sector('skins', 'Right')
+skin:Element('Toggle', 'skin changer')
+skin:Element('ScrollDrop', 'skin', {options = AllSkins, Amount = 15, alphabet = true})
+
+local other = others:Sector("other", "Left") 
+other:Element("Scroll", "lua", {options = allluas, Amount = 5}) 
+other:Element("Button", "load", {}, function() 
+	loadstring(readfile("pastedstormy/lua\\"..values.others["other"].lua.Scroll))() 
 end) 
-luascripts:Element("Button", "Watermark", nil, function()
+--[[other:Element("Button", "Watermark", nil, function()
         -- Instances:
 
        local watermark = Instance.new("ScreenGui")
@@ -5408,10 +5945,10 @@ local function IPHCOC_fake_script() -- welcome.LocalScript
 end
 coroutine.wrap(IPHCOC_fake_script)()
     end)
-	
+	--]]
 local function predict(part, ping)
     local oldPos = part.Position
-    local step = RS.RenderStepped:Wait()
+    local step = RunService.RenderStepped:Wait()
     local newPos = part.Position
 
     local playerSpeed = (newPos - oldPos).magnitude / step
@@ -5422,14 +5959,14 @@ local function predict(part, ping)
     return final
 end 
 
-local luascripts2 = luas:Sector("Scripts", "Right")
-luascripts2:Element("Button", "Rejoin", nil, function()
+local luas2 = others:Sector("Scripts", "Right")
+luas2:Element("Button", "Rejoin", nil, function()
 tpservice= game:GetService("TeleportService")
 plr = game.Players.LocalPlayer
 
 tpservice:Teleport(game.PlaceId, plr)
 end)
-luascripts2:Element("Button", "Serverhop", nil, function()
+luas2:Element("Button", "Serverhop", nil, function()
 	local x = {}
 	for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
 		if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
@@ -5442,7 +5979,7 @@ luascripts2:Element("Button", "Serverhop", nil, function()
 		return print("Failed")
 	end
 end)
-luascripts:Element("Button", "Faggot got potato pc so he needs fps boost", nil, function()
+other:Element("Button", "Faggot got potato pc so he needs fps boost", nil, function()
  repeat wait() until game:IsLoaded()
  for _,v in pairs(workspace:GetDescendants()) do
 if v.ClassName == "Part"
@@ -5462,9 +5999,86 @@ end
 end
 end)
 
+other:Element('Button', 'dick size', {}, function()
+local dicksize = '='
+local dicksizerep = string.rep(dicksize, math.random(0, 20))
+CreateHitElement(" Your dick is 8"..dicksizerep.."D",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+if string.len(dicksizerep) == 0 then
+CreateHitElement(" small penis hhhhh noob get good ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+elseif string.len(dicksizerep) == 20 then
+CreateHitElement(" omg biggest penis ever real ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+end
+end)
+
+other:Element('Button', 'how gay you are', {}, function()
+local procent = math.random(1, 100)
+CreateHitElement(" You're "..procent.. '% gay',values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+	if procent == 100 then
+		CreateHitElement(" Lmao clipped ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+		elseif procent == 50 then
+		CreateHitElement(" Does that mean you're a femboy? ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+		elseif procent == 0 then
+		CreateHitElement(" Holy shit real you're not gay ?!?!?!?!?!",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+	end
+end)
+
+other:Element('Button', 'skill issue rate', {}, function()
+local procent = math.random(1, 100)
+CreateHitElement(" You're "..procent.. '% skill issue ',values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+	if procent == 100 then
+		CreateHitElement(" Lmao clipped noob get good kid ez ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 200, 0, 22)
+		elseif procent == 50 then
+		CreateHitElement(" Ok ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+		elseif procent == 0 then
+		CreateHitElement(" Pro ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+	end
+end)
+
+other:Element('Dropdown', 'Copy colors type', {options = {'RGB', 'HSV', 'HEX',}}) --hsl, cmyk
+other:Element('Button2', 'UnLoad script', {}, function()
+writefile(cfglocation..'unload script cfg.txt', game:HttpGet("https://raw.githubusercontent.com/SamuelMoment/SamuelMoment/main/nothing.cfg"))
+--big ass code (not big ass)
+ConfigLoad1:Fire('unload script cfg.txt')
+wait(1)
+RunService:UnbindFromRenderStep("Rage")
+RunService:UnbindFromRenderStep("Legit")
+RunService:UnbindFromRenderStep("Resolvers")
+delfile(cfglocation..'unload script cfg.txt')
+game.CoreGui['electric boogalo']:Destroy()
+getgenv().PasteDisabled = true
+end)
+local daddy = others:Sector('Change weapon', 'Left')
+
+daddy:Element('Button', 'hook weapon', {}, function()
+-- pasted from google
+ -- AWP, AK47, G3SG1, ect.
+local givefunc
+for _, v in pairs(getgc()) do
+local parentScript = rawget(getfenv(v), "script")
+
+    if type(v) == "function" and parentScript == game:GetService("Players").LocalPlayer.PlayerGui.Client and islclosure(v) and not is_synapse_function(v) and debug.getinfo(v).name == "giveTool" then
+        givefunc = v
+        break
+    end
+end
+debug.setupvalue(givefunc, (values.others['Change weapon']['what slot'].Dropdown == 'knife' and 5 or values.others['Change weapon']['what slot'].Dropdown == 'pistol' and 7 or values.others['Change weapon']['what slot'].Dropdown == 'primary' and 8 or values.others['Change weapon']['what slot'].Dropdown == '1th greande slot' and 9 or values.others['Change weapon']['what slot'].Dropdown == '2nd grenade slot' and 10 or values.others['Change weapon']['what slot'].Dropdown == '3rd grendae slot' and 11 or values.others['Change weapon']['what slot'].Dropdown == '4th grenade slot' and 12 or values.others['Change weapon']['what slot'].Dropdown == 'bomb slot' and 13), values.others['Change weapon']['weapon'].Scroll[values.others['Change weapon']['weapon'].Dropdown]) -- index 7 = secondary wep, index 8 = primary wep (i think lol. forgor)
+end)
+
+local mydadbeatsme = { 
+	Pistol = {"USP", "P2000", "Glock", "DualBerettas", "P250", "FiveSeven", "Tec9", "CZ", "DesertEagle", "R8"}, 
+	SMG = {"MP9", "MAC10", "MP7", "UMP", "P90", "Bizon"}, 
+	Rifle = {"M4A4", "M4A1", "AK47", "Famas", "Galil", "AUG", "SG"}, 
+	Sniper = {"AWP", "Scout", "G3SG1"},
+	Other = {'XM', 'Nova', 'M249', 'MAG7', 'Negev', 'SawedOff', 'C4'}
+} 
+
+daddy:Element('Dropdown', 'what slot', {options = {'knife', 'pistol', 'primary', '1st grenade slot', '2nd grenade slot', '3rd grenade slot', '4th grenade slot', 'bomb slot'}})
+daddy:Element('ScrollDrop', 'weapon', {options = mydadbeatsme})
 
 
-local copy = nn:Sector("Disord links", "Left") 
+
+
+local copy = others:Sector("Disord links", "Right") 
 copy:Element("Button", "My discord", {}, function() 
 	setclipboard("IAmSamuel#9008") 
 end)
@@ -5477,6 +6091,7 @@ end)
 copy:Element("Button", "tinp0g", {}, function() 
 	setclipboard("tinp0g#8576")
 end)
+
 
 local characters = skins:Sector("characters", "Right") 
 characters:Element("Toggle", "character changer", nil, function(tbl) 
@@ -5493,19 +6108,22 @@ characters:Element("Scroll", "skin", {options = AllCharacters, Amount = 9, alpha
 		end 
 	end 
 end) 
+local retardskins = skins:Sector('Misc', 'Right')
+retardskins:Element('Toggle', 'Remove sleeves')
+
 local aimbot = legit:Sector("aimbot", "Left") 
 aimbot:Element("ToggleKeybind", "aim assist") 
 aimbot:Element("ToggleKeybind", "silent aim") 
 aimbot:Element("ToggleKeybind", "triggerbot") 
 
 local main = legit:MSector("main", "Left") 
-local default = main:Tab("default") 
-local pistol = main:Tab("pistol") 
-local smg = main:Tab("smg") 
-local rifle = main:Tab("rifle") 
-local sniper = main:Tab("sniper") 
+local default = main:Tab('default')
+--local pistol = main:Tab("pistol") 
+--local smg = main:Tab("smg") 
+--local rifle = main:Tab("rifle") 
+--local sniper = main:Tab("sniper") 
 
-local function AddLegit(Tab) 
+--[[local function AddLegit(Tab) 
 	Tab:Element("Jumbobox", "conditions", {options = {"visible", "standing", "blind", "smoke"}}) 
 	Tab:Element("Dropdown", "target", {options = {"crosshair", "health", "distance"}}) 
 	Tab:Element("Dropdown", "hitbox", {options = {"closest", "head", "chest"}}) 
@@ -5517,25 +6135,40 @@ local function AddLegit(Tab)
 	Tab:Element("Toggle", "triggerbot") 
 	Tab:Element("Slider", "delay (ms)", {min = 0, max = 300, default = 200}) 
 	Tab:Element("Slider", "minimum dmg", {min = 0, max = 100, default = 15}) 
-end 
+end --]]
 
-AddLegit(default) 
 
-pistol:Element("Toggle", "override default") 
-AddLegit(pistol) 
 
-smg:Element("Toggle", "override default") 
-AddLegit(smg) 
+	default:Element("Jumbobox", "conditions", {options = {"visible", "standing", "blind", "smoke"}}) 
+	default:Element("Dropdown", "target", {options = {"crosshair", "health", "distance"}}) 
+	default:Element("Dropdown", "hitbox", {options = {"closest", "head", "chest"}}) 
+	default:Element("Slider", "FOV", {min = 30, max = 420, default = 120}) 
+	default:Element("Slider", "smoothing", {min = 1, max = 50, default = 1}) 
+	default:Element("Toggle", "silent aim") 
+	default:Element("Slider", "hitchance", {min = 1, max = 100, default = 100}) 
+	default:Element("Dropdown", "priority", {options = {"closest", "head", "chest"}}) 
+	default:Element("Toggle", "triggerbot") 
+	default:Element("Slider", "delay (ms)", {min = 0, max = 300, default = 200}) 
+	default:Element("Slider", "minimum dmg", {min = 0, max = 100, default = 15})
 
-rifle:Element("Toggle", "override default") 
-AddLegit(rifle) 
+--pistol:Element("Toggle", "override default") 
+--AddLegit(pistol) 
 
-sniper:Element("Toggle", "override default") 
-AddLegit(sniper) 
+--smg:Element("Toggle", "override default") 
+--AddLegit(smg) 
+
+--rifle:Element("Toggle", "override default") 
+--AddLegit(rifle) 
+
+--sniper:Element("Toggle", "override default") 
+--AddLegit(sniper) 
 			 
 
 local settings = legit:Sector("settings", "Right") 
 settings:Element("Toggle", "free for all") 
+settings:Element('ToggleTrans', 'draw fov', {default = {Color = Color3.fromRGB(255,255,255), Transparency = 0}})
+settings:Element('Toggle', 'filled fov')
+settings:Element('Slider', 'fov thickness', {min = 1, max = 10, default = 1})
 settings:Element("Toggle", "forcefield check") 
 
 
@@ -5545,47 +6178,66 @@ aimbot:Element("Dropdown", "origin", {options = {"character", "camera"}})
 aimbot:Element("Toggle", "silent aim") 
 aimbot:Element("Dropdown", "automatic fire", {options = {"off", "standard", "hitpart"}}) 
 aimbot:Element("Toggle", "automatic penetration")
-aimbot:Element("Slider", "automatic penetration modifier", {min = 1, max = 100, default = 1})
+aimbot:Element("Slider", "automatic penetration modifier", {min = 1, max = 500, default = 1})
 aimbot:Element("ToggleColor", "Hitlogs", {default = {Color = MainUIColor}})
 aimbot:Element('Slider', 'log time', {min = 1, max = 10, default = 2})
-aimbot:Element("Jumbobox", "resolver", {options = {"pitch", "front track", "roll", "cortez step", "animation"}})
+aimbot:Element("Jumbobox", "resolver", {options = {"pitch", "roll", "arms", "animation", 'bhop'}})
+aimbot:Element("Toggle", "front track")
+aimbot:Element("Slider", "X distance", {min = -50, max = 50, default = -5})
+aimbot:Element('Slider', 'Y distance', {min = 1, max = 50, default = 5})
 aimbot:Element("Toggle", "delay shot") 
 aimbot:Element("ToggleKeybind", "force hit")
-aimbot:Element("Dropdown", "prediction", {options = {"off", "cframe", "velocity", "sex package"}}) 
+aimbot:Element('Dropdown', 'prediction', {options = {'off', 'cframe', 'velocity', 'automatic'}})
+aimbot:Element("Slider", "automatic multiplier", {min = -100, max = 100, default = 0})
+aimbot:Element("Slider", "automatic multiplier2", {min = -100, max = 100, default = 0})
 aimbot:Element("Toggle", "teammates") 
+aimbot:Element('Toggle', 'ignore on start')
 aimbot:Element("Toggle", "auto baim") 
 			aimbot:Element("Toggle", "knifebot")
 			aimbot:Element("Dropdown", "knifebot type", {options = {"normal", "rapid"}}) 
 			aimbot:Element("Slider", "Knifebot Radius", {min = -1, max = 9000, default = 20})
 			aimbot:Element("Toggle", "knife wallcheck")
 local weapons = rage:MSector("weapons", "Left") 
-local default = weapons:Tab("default") 
+local default = weapons:Tab("default")
+default:Element("Jumbobox", "hitboxes", {options = {"head", "torso", "legs"}})
+	default:Element("Toggle", "prefer body") 
+	default:Element("Slider", "minimum damage", {min = -100, max = 100, default = 20})
+	default:Element("Slider", "max fov", {min = 1, max = 180, default = 180}) 
 
-local function AddRage(Tab) 
-	Tab:Element("Jumbobox", "hitboxes", {options = {"head", "torso", "pelvis"}}) 
-	Tab:Element("Toggle", "prefer body") 
-	Tab:Element("Slider", "minimum damage", {min = -100, max = 100, default = 20})
-	Tab:Element("Slider", "max fov", {min = 1, max = 180, default = 180}) 
-end 
 
-AddRage(default) 
-
- 
+local loopkillloop
 
 local Loopkill = rage:Sector("Loop kill", "Right") 
-Loopkill:Element("lmao", "Player1", {options = loopkillplr, Amount = 20})
+Loopkill:Element("lmao", "Player", {options = loopkillplr, Amount = 20}, function(tbl)
+	pcall(function()
+		loopkillloop:Disconnect()
+	end)
+ 	if game.Players:FindFirstChild(tbl.Dropdown) then
+		loopkillloop = RunService.RenderStepped:Connect(function()
+			wait(0.1)
+			values.rage["Loop kill"]['Alive: '].stringchange('Alive: '..(IsAlive(game.Players:FindFirstChild(tbl.Dropdown)) and 'yes' or 'no'))
+			values.rage['Loop kill']['Team: '].stringchange('Team: '..game.Players:FindFirstChild(tbl.Dropdown).Team.Name)
+			values.rage['Loop kill']['Account age: '].stringchange('Account age: '..game.Players:FindFirstChild(tbl.Dropdown).AccountAge..' days')
+		end)
+		
+		values.rage["Loop kill"]['Alive: '].stringchange('Alive: ')
+		values.rage['Loop kill']['Team: '].stringchange('Team: ')
+		values.rage['Loop kill']['Account age: '].stringchange('Account age: ')
+	end
+ end)
+
 Loopkill:Element("Toggle", "Loop kill for hexagon retards", nil, function(tbl)
 if tbl.Toggle then
 
-_G.Disable2 = false
+
 local step2
-	step2 = game:GetService("RunService").RenderStepped:Connect(function()
-	if _G.Disable2 then step2:Disconnect() return end
-	--values.luas.luascripts.Player.Dropdown
-				if Players[values.rage["Loop kill"].Player1.Dropdown].Character and Players[values.rage["Loop kill"].Player1.Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"].Player1.Dropdown].Character:FindFirstChild("UpperTorso") then
-                game:GetService("ReplicatedStorage").Events.HitPart:FireServer(
-                    Players[values.rage["Loop kill"].Player1.Dropdown].Character.Head, -- 1
-                    predict(Players[values.rage["Loop kill"].Player1.Dropdown].Character.Head, Stats.PerformanceStats.Ping:GetValue()), --2
+	step2 = RunService.RenderStepped:Connect(function()
+	if not (tbl.Toggle) then step2:Disconnect() return end
+	--values.other.other.Player.Dropdown
+				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
+                ReplicatedStorage.Events.HitPart:FireServer(
+                    Players[values.rage["Loop kill"]['Player'].Dropdown].Character.Head, -- 1
+                    predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.Head, game:GetService("Stats").PerformanceStats.Ping:GetValue()), --2
                     "Banana", --3
                     100, -- Range --4
                     game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
@@ -5600,22 +6252,18 @@ local step2
                 )
 				end
 	end)
-    else
-	_G.Disable2 = true
-		print("gae")
 	end
 end)
 
 Loopkill:Element("Toggle", "Loop kill that uses stormy's kill all", nil, function(tbl)
 if tbl.Toggle then
-_G.Disable1 = false
 local step1
-	step1 = game:GetService("RunService").RenderStepped:Connect(function()
-	if _G.Disable1 then step1:Disconnect() return end
-	--values.luas.luascripts.Player.Dropdown
-				if Players[values.rage["Loop kill"].Player1.Dropdown].Character and Players[values.rage["Loop kill"].Player1.Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"].Player1.Dropdown].Character:FindFirstChild("UpperTorso") then
-					local oh1 = Players[values.rage["Loop kill"].Player1.Dropdown].Character.Head
-					local oh2 = Players[values.rage["Loop kill"].Player1.Dropdown].Character.Head.CFrame.p
+	step1 = RunService.RenderStepped:Connect(function()
+	if not (tbl.Toggle) then step1:Disconnect() return end
+	--values.other.other.Player.Dropdown
+				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
+					local oh1 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.Head
+					local oh2 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.Head.CFrame.p
 					local oh3 = Client.gun.Name
 					local oh4 = 4096
 					local oh5 = LocalPlayer.Character.Gun
@@ -5625,18 +6273,168 @@ local step1
 					local oh11 = Vector3.new(0,0,0)
 					local oh12 = 16868
 					local oh13 = Vector3.new(0, 0, 0)
-					game:GetService("ReplicatedStorage").Events.HitPart:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
+					ReplicatedStorage.Events.HitPart:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
 				end
 	end)
-    else
-	_G.Disable1 = true
-		print("gae")
 	end
 end)
 
-local antiaim = rage:Sector("angles", "Right") 
-antiaim:Element("Toggle", "enabled")
-local Client = getsenv(game.Players.LocalPlayer.PlayerGui.Client)
+Loopkill:Element('ToggleTrans', 'Target Chams', {default = {Color = Color3.fromRGB(255,255,255)}}, function(tbl)
+	for _,Player in pairs(Players:GetPlayers()) do
+		if Player.Character and Player.Name == values.rage["Loop kill"]['Player'].Dropdown then
+			for _2,Obj in pairs(Player.Character:GetDescendants()) do
+				if Obj.Name == 'VisibleCham' then
+					if tbl.Toggle then
+						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
+							Obj.Visible = true
+						else
+							Obj.Visible = false
+						end
+					else
+						Obj.Visible = false
+					end
+					Obj.Color3 = tbl.Color
+					Obj.Transparency = tbl.Transparency
+				end
+			end
+		end
+	end
+Players.PlayerAdded:Connect(function(Player)
+	Player:GetPropertyChangedSignal("Team"):Connect(function()
+		wait()
+		if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and Player.Name == values.rage["Loop kill"]['Player'].Dropdown then
+			for _2,Obj in pairs(Player.Character:GetDescendants()) do
+				if Obj.Name == "VisibleCham" then
+					if tbl.Toggle then
+						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
+							Obj.Visible = true
+						else
+							Obj.Visible = false
+						end
+					else
+						Obj.Visible = false
+					end
+					Obj.Color3 = tbl.Color
+					Obj.Transparency = tbl.Transparency
+				end
+			end
+		end
+	end)
+end)
+	LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function(new)
+	for _,Player in pairs(Players:GetPlayers()) do
+		if Player.Character and Player.Name == values.rage["Loop kill"]['Player'].Dropdown then
+			for _2,Obj in pairs(Player.Character:GetDescendants()) do
+				if Obj.Name == 'VisibleCham' then
+					if tbl.Toggle then
+						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
+							Obj.Visible = true
+						else
+							Obj.Visible = false
+						end
+					else
+						Obj.Visible = false
+					end
+					Obj.Color3 = tbl.Color
+					Obj.Transparency = tbl.Transparency
+				end
+			end
+		end
+	end
+	end)
+end)
+
+Loopkill:Element('ToggleTrans', 'Target Vchams', {default = {Color = Color3.fromRGB(255,255,255)}}, function(tbl)
+	for _,Player in pairs(Players:GetPlayers()) do
+		if Player.Character and Player.Name == values.rage["Loop kill"]['Player'].Dropdown then
+			for _2,Obj in pairs(Player.Character:GetDescendants()) do
+				if Obj.Name == 'WallCham' then
+					if tbl.Toggle then
+						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
+							Obj.Visible = true
+						else
+							Obj.Visible = false
+						end
+					else
+						Obj.Visible = false
+					end
+					Obj.Color3 = tbl.Color
+					Obj.Transparency = tbl.Transparency
+				end
+			end
+		end
+	end
+Players.PlayerAdded:Connect(function(Player)
+	Player:GetPropertyChangedSignal("Team"):Connect(function()
+		wait()
+		if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and Player.Name == values.rage["Loop kill"]['Player'].Dropdown then
+			for _2,Obj in pairs(Player.Character:GetDescendants()) do
+				if Obj.Name == "WallCham" then
+					if tbl.Toggle then
+						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
+							Obj.Visible = true
+						else
+							Obj.Visible = false
+						end
+					else
+						Obj.Visible = false
+					end
+					Obj.Color3 = tbl.Color
+					Obj.Transparency = tbl.Transparency
+				end
+			end
+		end
+	end)
+end)
+	LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function(new)
+	for _,Player in pairs(Players:GetPlayers()) do
+		if Player.Character and Player.Name == values.rage["Loop kill"]['Player'].Dropdown then
+			for _2,Obj in pairs(Player.Character:GetDescendants()) do
+				if Obj.Name == 'WallCham' then
+					if tbl.Toggle then
+						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
+							Obj.Visible = true
+						else
+							Obj.Visible = false
+						end
+					else
+						Obj.Visible = false
+					end
+					Obj.Color3 = tbl.Color
+					Obj.Transparency = tbl.Transparency
+				end
+			end
+		end
+	end
+	end)
+end)
+
+Loopkill:Element("ToggleColor", "Target box", {default = {Color = Color3.fromRGB(255,255,255)}}) 
+Loopkill:Element("ToggleColor", "Target name", {default = {Color = Color3.fromRGB(255,255,255)}}) 
+Loopkill:Element("ToggleColor", "Target health", {default = {Color = Color3.fromRGB(0,1,0)}}) 
+Loopkill:Element("ToggleColor", "Target weapon", {default = {Color = Color3.fromRGB(255,255,255)}}) 
+Loopkill:Element("ToggleColor", "Target weapon icon", {default = {Color = Color3.fromRGB(255,255,255)}})
+local ragebotwhitelist = {}
+Loopkill:Element('Button', 'Add in ragebot whitelist', {}, function()
+	if #ragebotwhitelist == 0 then
+		table.insert(ragebotwhitelist,game.Players[values.rage["Loop kill"]['Player'].Dropdown].Character)
+	else
+		insertwithoutdupes(ragebotwhitelist, game.Players[values.rage["Loop kill"]['Player'].Dropdown].Character)
+	end
+end)
+Loopkill:Element('Button2', 'Clear whitelist', {}, function()
+		table.clear(ragebotwhitelist)
+end)
+
+Loopkill:Element('Label', 'Alive: ')
+Loopkill:Element('Label', 'Team: ')
+Loopkill:Element('Label', 'Account age: ')
+
+
+
+local pitches = {'none', 'up', 'down', 'zero', '180', 'spin', 'random', 'among'}
+local antiaim = rage:Sector('angles', 'Right')
+antiaim:Element('ToggleKeybind', 'enabled')
 fakeduckloop = false  
 antiaim:Element("Toggle", "fake duck",{},function(tbl)
 	fakeduckloop = tbl.Toggle
@@ -5655,47 +6453,81 @@ antiaim:Element("Toggle", "fake duck",{},function(tbl)
 		end)
 	end
 end)
-antiaim:Element("Dropdown", "yaw base", {options = {"camera", "targets", "spin", "random", "stutter", "wasd yaw base", "3 head"}}) 
-antiaim:Element("Slider", "yaw offset", {min = -180, max = 180, default = 0}) 
-antiaim:Element("ToggleKeybind", "reset yaw") 
-antiaim:Element("Toggle", "jitter") 
-antiaim:Element("Slider", "jitter offset", {min = -180, max = 180, default = 0}) 
-antiaim:Element("Dropdown", "pitch", {options = {
-	"Sus_down", 
-	"freak", 
-	"up", 
-	"down", 
-	"imposter", 
-	"glitch",
-	"zero",
-	"random", 
-	"Bodyarm", 
-	"negative",
-	"huge", 
-	"180", 
-	"180+", 
-	"random", 
-	"crazy", 
-	"normal", 
-	"normal+", 
-	"weird", 
-	"down+", 
-	"up+", 
-	"extend",
-	"fake nohead", 
-	"testing"}}) 
-antiaim:Element("Toggle", "extend pitch")  
-antiaim:Element("Dropdown", "body roll", {options = {"off", "180", "360","spin"}}) 
-antiaim:Element("Slider", "body roll offset", {min = -180, max = 180, default = 0}) 
-antiaim:Element("Slider", "spin speed", {min = 1, max = 69, default = 4})
-antiaim:Element("Slider", "random speed", {min = 1, max = 69, default = 4})
+antiaim:Element('Dropdown', 'yaw base', {options = {'camera', 'targets', 'spin', 'random', "wasd yaw base", 'stormy breaker'}})
+antiaim:Element('Slider', 'yaw offset', {min = -180, max = 180, default = 0})
+antiaim:Element('Toggle', 'jitter')
+antiaim:Element('Slider', 'jitter offset', {min = -180, max = 180, default = 0})
+antiaim:Element('Slider', 'jitter pitch', {min = -100, max = 100, default = 0})
+antiaim:Element('Slider', 'jitter wait (ms)', {min = 0, max = 100, default = 0})
+antiaim:Element('Toggle', 'shoot pitch')
+antiaim:Element('Slider', 'offset', {min = -180, max = 180, default = 0})
+antiaim:Element('Slider', 'pitch', {min = -100, max = 100, default = 0})
+antiaim:Element('Slider', 'wait (ms)', {min = 0, max = 100, default = 0})
+local shotthingy = false
+game:GetService("Workspace").FunFacts["Shots were fired"].Changed:Connect(function()
+	if not shotthingy then
+		shotthingy = true 
+
+		if values.rage.angles['shoot pitch'].Toggle then
+			spawn(function()
+				for i=1,10 do wait()
+					pcall(function()
+						game.ReplicatedStorage.Events.ControlTurn:FireServer(values.rage.angles['pitch'].Slider/7, game.Players.LocalPlayer.Character:FindFirstChild('Climbing') and true or false)
+					end)
+				end
+			end)
+		end
+
+		wait(values.rage.angles['wait (ms)'].Slider/100)
+
+		shotthingy = false
+	end
+end)
+antiaim:Element('Dropdown', 'pitch', {options = pitches})
+antiaim:Element('Toggle', 'custom pitch')
+antiaim:Element('Slider', 'pitch value', {min = -100, max = 100, default = 0})
+
+antiaim:Element('Toggle', 'extend pitch')
+antiaim:Element('Dropdown', 'body roll', {options = {'off', '180', 'switch'}})
+antiaim:Element('Slider', 'roll offset', {min = -200, max = 200, default = 0})
+
+antiaim:Element('Slider', 'spin speed', {min = 1, max = 200, default = 4})
+
+antiaim:Element('ToggleKeybind', 'overwrite keybind')
+antiaim:Element('Dropdown', 'overwrite pitch', {options = pitches})
+antiaim:Element('ToggleKeybind', 'lock yaw')
 
 local others = rage:Sector("others", "Right") 
 others:Element("Toggle", "remove head") 
 others:Element("Toggle", "no animations") 
 others:Element("Dropdown", "leg movement", {options = {"off", "slide 1", "slide 2", "no jump anim"}})
-local LagTick = 0      
-local fakelag = rage:Sector("fakelag", "Right")      
+			local LagTick = 0
+			local fakelag = rage:Sector('fakelag', 'Right')
+
+			fakelag:Element('Toggle', 'DDOS', {Type = "Toggle", Key = "T"},function(tbl)
+				if tbl.Toggle then
+					spawn(function()
+						while values.rage.fakelag["DDOS"].Toggle   do
+
+								RunService.RenderStepped:Wait()
+								RunService.RenderStepped:Wait()
+								for i = 1,values.rage.fakelag["DDOS Amount"].Slider,1 do
+									local ohInstance1 = LocalPlayer.Character.Gun.Mag              
+									ReplicatedStorage.Events.DropMag:FireServer(ohInstance1)
+									for i,v in pairs(workspace["Ray_Ignore"]:GetChildren()) do
+										if v.Name == "MagDrop" then
+											v:Destroy()
+										end
+									end
+								end
+       
+						end 
+					end)
+				end
+			end)
+			fakelag:Element('Slider', 'DDOS Amount', {min = 1, max = 10, default = 1})
+
+			fakelag:Element('Slider', 'set ping', {min = -100, max = 100, default = 0})
 			fakelag:Element('ToggleKeybind', 'enabled', {default = {Toggle = false}}, function(tbl)
 				if tbl.Toggle then
 				else
@@ -5706,12 +6538,11 @@ local fakelag = rage:Sector("fakelag", "Right")
 			fakelag:Element("Toggle", "fakelag indicator", {}, function(tbl)    
 				game:GetService("CoreGui")["fl indicator"].Enabled = tbl.Toggle
 			end)
-                        fakelag:Element('Dropdown', 'fakelag', {options = {'esta', 'quebrado', 'não', 'use <3'}})
 			fakelag:Element('Dropdown', 'amount', {options = {'static', 'freeze', 'tfreeze', 'underfreeze'}})
 			fakelag:Element('Slider', 'limit', {min = 1, max = 106, default = 8})
 			fakelag:Element('Slider', 'under y', {min = 1, max = 50, default = 8})
 			fakelag:Element('Toggle', 'random')
-			fakelag:Element('ToggleColor', 'visualize lag', {default = {Toggle = false, Color = MainUIColor}}, function(tbl)
+			fakelag:Element('ToggleColor', 'visualize lag', {default = {Toggle = false, Color = Color3.fromRGB(255,255,255)}}, function(tbl)
 				if tbl.Toggle then
 					for _,obj in pairs(FakelagFolder:GetChildren()) do
 						obj.Color = tbl.Color
@@ -5726,7 +6557,6 @@ local fakelag = rage:Sector("fakelag", "Right")
 			savedcamerapart.CanCollide = false
 			savedcamerapart.Size = Vector3.new(1, 1, 1)
 			savedcamerapart.Transparency = 1
-			fakelag:Element('ToggleKeybind', 'ping spike')
 			coroutine.wrap(function()
 				local flindicator = Instance.new("ScreenGui")
 				local wgrgerqgerq = Instance.new("TextLabel")
@@ -5848,7 +6678,7 @@ local fakelag = rage:Sector("fakelag", "Right")
 								wait(0.1)
 								lolfaggot:TweenSize(UDim2.new(0, 102, 0, 14),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0.1,true)
 								pcall(function()
-									local part = INST('Part', workspace)
+									local part = Instance.new('Part', workspace)
 
 									part.Size = Vector3.new(30, 1, 30) 
 
@@ -5860,31 +6690,29 @@ local fakelag = rage:Sector("fakelag", "Right")
 									part.Name = 'FreezeCharacter2'
 
 
-									local weld = INST('Weld',part)
+									local weld = Instance.new('Weld',part)
 									weld.Part0 = part
 									weld.Part1 = game.Players.LocalPlayer.Character.HumanoidRootPart
 
 
-									if values.rage.fakelag['visualize lag'].Toggle then
-										for _,hitbox in pairs(LocalPlayer.Character:GetChildren()) do
-											if hitbox:IsA('BasePart') and hitbox.Name ~= 'HumanoidRootPart' then
-												local Part = Instance.new("Part")
-												Part.Anchored = true
-												Part.BottomSurface = Enum.SurfaceType.Smooth
-												Part.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-												Part.Color = values.rage.fakelag['visualize lag'].Color
-												Part.Material = Enum.Material.ForceField
-												Part.Reflectance = 1
-												Part.Shape = Enum.PartType.Ball
-												Part.Size = Vector3.new(2, 2, 2)
-												Part.Transparency = 0.8
-												Part.CanCollide = false
-												Part.Parent = FakelagFolder
-												Part.Position = LocalPlayer.Character.HumanoidRootPart.Position
-
-											end
+								if values.rage.fakelag['visualize lag'].Toggle then
+									for _,hitbox in pairs(LocalPlayer.Character:GetChildren()) do
+										if hitbox:IsA('BasePart') and hitbox.Name ~= 'HumanoidRootPart' then
+											local Part = Instance.new("Part")
+											Part.BottomSurface = Enum.SurfaceType.Smooth
+											Part.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+											Part.Color = values.rage.fakelag['visualize lag'].Color
+											Part.Material = Enum.Material.ForceField
+											Part.Shape = Enum.PartType.Ball
+											Part.Size = Vector3.new(2, 2, 2)
+											Part.TopSurface = Enum.SurfaceType.Smooth
+											Part.Parent = FakelagFolder
+											Part.Anchored = true
+											Part.CanCollide = false
+											Part.Position = LocalPlayer.Character.HumanoidRootPart.Position
 										end
 									end
+								end
 								end)
 
 								wait(0.1)
@@ -5912,7 +6740,7 @@ local fakelag = rage:Sector("fakelag", "Right")
 								wait(0.15)
 								lolfaggot:TweenSize(UDim2.new(0, 102, 0, 14),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0.15,true)
 								pcall(function()
-									local part = INST('Part', workspace)
+									local part = Instance.new('Part', workspace)
 
 									part.Size = Vector3.new(30, 1, 30) 
 
@@ -5924,27 +6752,29 @@ local fakelag = rage:Sector("fakelag", "Right")
 									part.Name = 'FreezeCharacter2'
 
 
-									local weld = INST('Weld',part)
+									local weld = Instance.new('Weld',part)
 									weld.Part0 = part
 									weld.Part1 = game.Players.LocalPlayer.Character.HumanoidRootPart
 
 
-									if values.rage.fakelag['visualize lag'].Toggle then
-										for _,hitbox in pairs(LocalPlayer.Character:GetChildren()) do
-											if hitbox:IsA('BasePart') and hitbox.Name ~= 'HumanoidRootPart' then
-												local part = INST('Part')
-												part.CFrame = hitbox.CFrame
-												part.Anchored = true
-												part.CanCollide = false
-												part.Material = Enum.Material.ForceField
-												part.Color = values.rage.fakelag['visualize lag'].Color
-												part.Name = hitbox.Name
-												part.Transparency = 0
-												part.Size = hitbox.Size
-												part.Parent = FakelagFolder
-											end
+								if values.rage.fakelag['visualize lag'].Toggle then
+									for _,hitbox in pairs(LocalPlayer.Character:GetChildren()) do
+										if hitbox:IsA('BasePart') and hitbox.Name ~= 'HumanoidRootPart' then
+											local Part = Instance.new("Part")
+											Part.BottomSurface = Enum.SurfaceType.Smooth
+											Part.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+											Part.Color = values.rage.fakelag['visualize lag'].Color
+											Part.Material = Enum.Material.ForceField
+											Part.Shape = Enum.PartType.Ball
+											Part.Size = Vector3.new(2, 2, 2)
+											Part.TopSurface = Enum.SurfaceType.Smooth
+											Part.Parent = FakelagFolder
+											Part.Anchored = true
+											Part.CanCollide = false
+											Part.Position = LocalPlayer.Character.HumanoidRootPart.Position
 										end
 									end
+								end
 								end)
 
 								wait(0.01)
@@ -5958,7 +6788,7 @@ local fakelag = rage:Sector("fakelag", "Right")
 
 								wait(0.1)
 								lolfaggot:TweenSize(UDim2.new(0, 102, 0, 14),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0.1,true)
-							elseif values.rage.fakelag.amount.Dropdown == 'underfreeze'  and allowedtofreeze then 
+							elseif values.rage.fakelag.amount.Dropdown == 'underfreeze' and allowedtofreeze then 
 								LagTick = 0
 								FakelagFolder:ClearAllChildren()
 
@@ -5979,7 +6809,7 @@ local fakelag = rage:Sector("fakelag", "Right")
 								wait(0.15)
 								lolfaggot:TweenSize(UDim2.new(0, 0, 0, 14),Enum.EasingDirection.In,Enum.EasingStyle.Sine,0.15,true)
 								pcall(function()
-									local part = INST('Part', workspace)
+									local part = Instance.new('Part', workspace)
 
 									part.Size = Vector3.new(30, 1, 30) 
 
@@ -5991,27 +6821,29 @@ local fakelag = rage:Sector("fakelag", "Right")
 									part.Name = 'FreezeCharacter2'
 
 
-									local weld = INST('Weld',part)
+									local weld = Instance.new('Weld',part)
 									weld.Part0 = part
 									weld.Part1 = game.Players.LocalPlayer.Character.HumanoidRootPart
 
 
-									if values.rage.fakelag['visualize lag'].Toggle then
-										for _,hitbox in pairs(LocalPlayer.Character:GetChildren()) do
-											if hitbox:IsA('BasePart') and hitbox.Name ~= 'HumanoidRootPart' then
-												local part = INST('Part')
-												part.CFrame = hitbox.CFrame
-												part.Anchored = true
-												part.CanCollide = false
-												part.Material = Enum.Material.ForceField
-												part.Color = values.rage.fakelag['visualize lag'].Color
-												part.Name = hitbox.Name
-												part.Transparency = 0
-												part.Size = hitbox.Size
-												part.Parent = FakelagFolder
-											end
+								if values.rage.fakelag['visualize lag'].Toggle then
+									for _,hitbox in pairs(LocalPlayer.Character:GetChildren()) do
+										if hitbox:IsA('BasePart') and hitbox.Name ~= 'HumanoidRootPart' then
+											local Part = Instance.new("Part")
+											Part.BottomSurface = Enum.SurfaceType.Smooth
+											Part.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+											Part.Color = values.rage.fakelag['visualize lag'].Color
+											Part.Material = Enum.Material.ForceField
+											Part.Shape = Enum.PartType.Ball
+											Part.Size = Vector3.new(2, 2, 2)
+											Part.TopSurface = Enum.SurfaceType.Smooth
+											Part.Parent = FakelagFolder
+											Part.Anchored = true
+											Part.CanCollide = false
+											Part.Position = LocalPlayer.Character.HumanoidRootPart.Position
 										end
 									end
+								end
 								end)
 
 								wait(0.01)
@@ -6090,8 +6922,40 @@ end
 
 
 
-
 local exploits = rage:Sector("exploits", "Left") 
+--[[exploits:Element('Toggle', 'Remove teammates (less lags for ragebot)', {}, function(tbl)
+	for _,Player in pairs(game.Players:GetPlayers()) do
+		if tbl.Toggle and Player.Team == LocalPlayer.Team and Player.Character then
+			Player.Character.Parent = game.Lighting
+		else
+			Player.Character.Parent = game.workspace
+		end
+		Player.CharacterAdded:Connect(function(nigger)
+			if tbl.Toggle then
+				nigger.Parent = game.Lighting
+			else 
+				nigger.Parent = game.Workspace 
+			end
+		end)
+		Player:GetPropertyChangedSignal('Team'):Connect(function()
+			if Player.Team == LocalPlayer.Team and Player.Character and tbl.Toggle then
+				Player.Character.Parent = game.Lighting
+			else
+				Player.Character.Parent = game.Workspace
+			end
+		end)
+	end
+	Players.PlayerAdded:Connect(function(h)
+		h.CharacterAdded:Connect(function(w)
+			if h.Team == LocalPlayer.Team then
+				w.Parent = game.Lighting
+			else
+				w.Parent = game.Workspace
+			end
+		end)
+	end)
+end)--]]
+				
 exploits:Element("Button", "plant c4", {}, function()
 	pcall(function()
 	if IsAlive(LocalPlayer) and workspace.Map.Gamemode.Value == "defusal" and workspace.Status.Preparation.Value == false and not planting then 
@@ -6140,26 +7004,58 @@ end)
 
 exploits:Element("Dropdown", "Plant c4 type", {options = {"Normal", "Instant", "Anywhere"}})
 exploits:Element("Dropdown", "Defuse c4 type", {options = {"Normal", "Instant", "Anywhere"}})
-exploits:Element("Button","dudos hitbox",{},function()
-	game.ReplicatedStorage.Events.FallDamage:FireServer(LocalPlayer.Character.Humanoid.Health-123123132123123123123232321231231231231231231231233121231231231233121123231123)
-end)
 exploits:Element("ToggleKeybind", "otw knife")
+exploits:Element('ToggleKeybind', 'around the world')
+exploits:Element('Slider', 'height', {min = -200, max = 200, default = 0})
+exploits:Element('Slider', 'distance', {min = 1, max = 500, default = 0})
+exploits:Element('Slider', 'speed', {min = 1, max = 100, default = 0})
+exploits:Element('Button', 'God Mode', {}, function()
+local ApplyGun = ReplicatedStorage.Events.ApplyGun;
+ApplyGun:FireServer({
+    Model = ReplicatedStorage.Hostage.Hostage,
+    Name = "USP"
+}, game.Players.LocalPlayer);
+end)
+
 exploits:Element('ToggleKeybind', 'custom tap')
 exploits:Element('Slider', 'tap amount', {min = 2, max = 20, default = 0})     
-exploits:Element("ToggleKeybind", "kill all") 
+exploits:Element("ToggleKeybind", "kill all", {}, function(tbl)
+local stormykillall
+stormykillall = RunService.RenderStepped:Connect(function()
+         if not (tbl.Active and tbl.Toggle) then stormykillall:Disconnect() return end
+		for _,Player in pairs(Players:GetPlayers()) do
+			if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild('UpperTorso') then
+				game:GetService('ReplicatedStorage').Events.HitPart:FireServer(
+						Player.Character.Head,
+						Player.Character.Head.CFrame.p,
+						Client.gun.Name,
+						4096,
+						LocalPlayer.Character.Gun,
+						15,
+						false,
+						false,
+						Vector3.new(0,0,0),
+						16868,
+						Vector3.new(0, 0, 0)
+					)
+			end
+		end
+	end)
+end)			
 exploits:Element("Slider", "damage modifier", {min = 1, max = 5, default = 1}) 
 exploits:Element("ToggleKeybind", "hexagon kill all", {}, function(tbl) 
+
 if tbl.Toggle then
 
-_G.Disable = false
+
 local hexagonkillall
-hexagonkillall = RS.RenderStepped:Connect(function()
-         if _G.Disable then hexagonkillall:Disconnect() return end
+hexagonkillall = RunService.RenderStepped:Connect(function()
+         if not (tbl.Active and tbl.Toggle) then hexagonkillall:Disconnect() return end
         for i,v in ipairs(Players:GetPlayers()) do
             if v ~= Player and v.Team ~= game.Players.LocalPlayer.Team and IsAlive(v) and IsAlive(game.Players.LocalPlayer) then
-                RES.Events.HitPart:FireServer(
+                ReplicatedStorage.Events.HitPart:FireServer(
                     v.Character.Head,
-                    predict(v.Character.Head, Stats.PerformanceStats.Ping:GetValue()),
+                    predict(v.Character.Head, game:GetService("Stats").PerformanceStats.Ping:GetValue()),
                     "Banana",
                     100, -- Range
                     game.Players.LocalPlayer.Character:WaitForChild("Gun"),
@@ -6175,81 +7071,320 @@ hexagonkillall = RS.RenderStepped:Connect(function()
             end
         end
 end)
-    else
-	_G.Disable = true
-		print("gae")
 	end
 end)
-exploits:Element("ToggleKeybind", "quick peek")
-exploits:Element("Dropdown", "peek method", {options = {"freeze", "teleport", "tween", "my method"}})
-exploits:Element("Slider", "tween speed", {min = 1, max = 100, default = 1,})
-exploits:Element("Toggle", "limit peak")
-exploits:Element("Slider", "limit distance", {min = 1, max = 200, default = 10,}) 
+
+exploits:Element('Toggle', 'whizz all', {}, function(tbl)
+	while tbl.Toggle and LocalPlayer.Character:FindFirstChild('Gun') do
+		for _,Player in pairs(Players:GetPlayers()) do
+			game:GetService('ReplicatedStorage').Events.Whizz:FireServer(Player)
+		end
+	end
+end)	
+local quickpeekshit = rage:Sector('Quick peeks', 'Right')
+quickpeekshit:Element('ToggleKeybind', 'quick peek')
+quickpeekshit:Element('Slider', 'wbr', {min = 1, max = 100, default = 1,})
+quickpeekshit:Element('ToggleTrans', 'visualize circle', {default = {Color = Color3.fromRGB(255,255,255)}})
+quickpeekshit:Element('Toggle', 'unfreeze shoot')
+quickpeekshit:Element('Dropdown', 'peek method', {options = {'freeze', 'teleport', 'tween'}})
+quickpeekshit:Element('Slider', 'tween speed', {min = 1, max = 100, default = 1,})
+
+quickpeekshit:Element('Toggle', 'limit peek')
+quickpeekshit:Element('Slider', 'limit distance', {min = 1, max = 200, default = 10,})
+
+peektimewait = 0
+quickpeekshit:Element('Toggle', 'time limit')
+quickpeekshit:Element('Slider', 'time duration', {min = 1, max = 85, default = 5,})
+
+OldClientFireBullet = Client.firebullet
+
+quickpeekshit:Element('ToggleKeybind', 'quick peek (left)', {}, function(tbl)
+if tbl.Toggle and tbl.Active then
+	local oldpos = LocalPlayer.Character.HumanoidRootPart.CFrame
+	LocalPlayer.Character.HumanoidRootPart.CFrame = oldpos + Vector3.new(values.rage.exploits['distance'].Slider,0,0)
+	wait(0.3)
+	LocalPlayer.Character.HumanoidRootPart.CFrame = oldpos
+end --values.rage.exploits['quick peek'].Toggle
+end)
+quickpeekshit:Element('ToggleKeybind', 'quick peek (right)', {}, function(tbl)
+if tbl.Toggle and tbl.Active then
+	local oldpos = LocalPlayer.Character.HumanoidRootPart.CFrame
+	LocalPlayer.Character.HumanoidRootPart.CFrame = oldpos + Vector3.new(0,0,values.rage.exploits['distance'].Slider)
+	wait(0.3)
+	LocalPlayer.Character.HumanoidRootPart.CFrame = oldpos
+end
+end)
+
+quickpeekshit:Element('Slider', 'distance', {min = 1, max = 50, default = 5})
+
 exploits:Element("Toggle","debris clear",{},function(tbl)
     while values.rage.exploits["debris clear"].Toggle == true do
         wait(1)
         for i,v in pairs(workspace.Debris:GetDescendants()) do
-            game:GetService("ReplicatedStorage").Events.DestroyObject:FireServer(v)
+            ReplicatedStorage.Events.DestroyObject:FireServer(v)
         end 
     end
 end)
-
-OldClientFireBullet = Client.firebullet
 
 
 local players = visuals:Sector("players", "Left") 
 players:Element("Toggle", "teammates") 
 players:Element("ToggleColor", "box", {default = {Color = Color3.fromRGB(255,255,255)}}) 
 players:Element("ToggleColor", "name", {default = {Color = Color3.fromRGB(255,255,255)}}) 
-players:Element("Toggle", "health") 
+players:Element("ToggleColor", "health", {default = {Color = Color3.fromRGB(0,1,0)}}) 
 players:Element("ToggleColor", "weapon", {default = {Color = Color3.fromRGB(255,255,255)}}) 
 players:Element("ToggleColor", "weapon icon", {default = {Color = Color3.fromRGB(255,255,255)}}) 
 players:Element("Jumbobox", "indicators", {options = {"armor"}}) 
 players:Element("Jumbobox", "outlines", {options = {"drawings", "text"}, default = {Jumbobox = {"drawings", "text"}}}) 
 players:Element("Dropdown", "font", {options = {"Plex", "Monospace", "System", "UI"}}) 
 players:Element("Slider", "size", {min = 12, max = 16, default = 13}) 
-players:Element("ToggleTrans", "visible chams", {default = {Color = Color3.fromRGB(255,255,255), Transparency = 0}}, function(tbl) 
-	for _,Player in pairs(Players:GetPlayers()) do 
-		if Player.Character then 
-			for _2,Obj in pairs(Player.Character:GetDescendants()) do 
-				if Obj.Name == "VisibleCham" then 
-					if tbl.Toggle then 
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then 
-							Obj.Visible = true 
-						else 
-							Obj.Visible = false 
-						end 
-					else 
-						Obj.Visible = false 
-					end 
-					Obj.Color3 = tbl.Color
-					Obj.Transparency = tbl.Transparency
-				end 
-			end 
-		end 
-	end 
-end) 
-players:Element("ToggleTrans", "wall chams", {default = {Color = Color3.fromRGB(255,255,255), Transparency = 0}}, function(tbl)
-	for _,Player in pairs(Players:GetPlayers()) do 
-		if Player.Character then 
-			for _2,Obj in pairs(Player.Character:GetDescendants()) do 
-				if Obj.Name == "WallCham" then 
-					if tbl.Toggle then 
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then 
-							Obj.Visible = true 
-						else 
-							Obj.Visible = false 
-						end 
-					else 
-						Obj.Visible = false 
-					end 
-					Obj.Color3 = tbl.Color
-					Obj.Transparency = tbl.Transparency
-				end 
-			end 
-		end 
-	end 
+players:Element('Slider', 'cham thickness', {min = 0, max = 10, default = 0})
+
+players:Element('ToggleTrans', 'chams', {default = {Color = Color3.fromRGB(255,255,255), Transparency = 0}}, function(tbl)
+	for _,Player in pairs(Players:GetPlayers()) do
+		if Player.Character then
+		--local savedname = Player.Name
+			for _2,Obj in pairs(Player.Character:GetDescendants()) do
+				if Obj.Name == 'WallCham' then
+					if tbl.Toggle then
+						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
+							Obj.Visible = true
+							
+						else
+							Obj.Visible = false
+						end
+					else
+						Obj.Visible = false
+					end
+					Obj.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or tbl.Color)
+					Obj.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
+				end
+			end
+		end
+	end
 end)
+
+players:Element('Slider', 'vcham thickness', {min = 0, max = 10, default = 0})
+
+players:Element('ToggleTrans', 'visible chams',  {default = {Color = Color3.fromRGB(255,255,255), Transparency = 0}}, function(tbl)
+	for _,Player in pairs(Players:GetPlayers()) do
+		if Player.Character then
+			for _2,Obj in pairs(Player.Character:GetDescendants()) do
+				if Obj.Name == 'VisibleCham' then
+					if tbl.Toggle then
+						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
+							Obj.Visible = true
+						else
+							Obj.Visible = false
+						end
+					else
+						Obj.Visible = false
+					end
+					Obj.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or tbl.Color)
+					Obj.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or tbl.Transparency)
+				end
+			end
+		end
+	end
+end)
+--big ass code incoming
+local function DrawLine()
+    local l = Drawing.new("Line")
+    l.Visible = false
+    l.From = Vector2.new(0, 0)
+    l.To = Vector2.new(1, 1)
+    l.Color = values.visuals.players['skeleton esp'].Color
+    l.Thickness = 1
+    l.Transparency = 1
+    return l
+end
+
+local function DrawESP(plr)
+    repeat wait() until plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil
+    local limbs = {}
+    local R15 = (plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R15) and true or false
+    if R15 then 
+        limbs = {
+            -- Spine
+            Head_UpperTorso = DrawLine(),
+            UpperTorso_LowerTorso = DrawLine(),
+            -- Left Arm
+            UpperTorso_LeftUpperArm = DrawLine(),
+            LeftUpperArm_LeftLowerArm = DrawLine(),
+            LeftLowerArm_LeftHand = DrawLine(),
+            -- Right Arm
+            UpperTorso_RightUpperArm = DrawLine(),
+            RightUpperArm_RightLowerArm = DrawLine(),
+            RightLowerArm_RightHand = DrawLine(),
+            -- Left Leg
+            LowerTorso_LeftUpperLeg = DrawLine(),
+            LeftUpperLeg_LeftLowerLeg = DrawLine(),
+            LeftLowerLeg_LeftFoot = DrawLine(),
+            -- Right Leg
+            LowerTorso_RightUpperLeg = DrawLine(),
+            RightUpperLeg_RightLowerLeg = DrawLine(),
+            RightLowerLeg_RightFoot = DrawLine(),
+        }
+    else 
+        limbs = {
+            Head_Spine = DrawLine(),
+            Spine = DrawLine(),
+            LeftArm = DrawLine(),
+            LeftArm_UpperTorso = DrawLine(),
+            RightArm = DrawLine(),
+            RightArm_UpperTorso = DrawLine(),
+            LeftLeg = DrawLine(),
+            LeftLeg_LowerTorso = DrawLine(),
+            RightLeg = DrawLine(),
+            RightLeg_LowerTorso = DrawLine()
+        }
+    end
+    local function Visibility(state)
+        for i, v in pairs(limbs) do
+            v.Visible = state
+        end
+    end
+
+    local function Colorize(color)
+        for i, v in pairs(limbs) do
+            v.Color = color
+        end
+    end
+
+        local connection
+        connection = RunService.RenderStepped:Connect(function()
+            if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 then
+                local HUM, vis = Camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+                if vis then
+                    -- Head
+                    local H = Camera:WorldToViewportPoint(plr.Character.Head.Position)
+                    if limbs.Head_UpperTorso.From ~= Vector2.new(H.X, H.Y) then
+                        --Spine
+                        local UT = Camera:WorldToViewportPoint(plr.Character.UpperTorso.Position)
+                        local LT = Camera:WorldToViewportPoint(plr.Character.LowerTorso.Position)
+                        -- Left Arm
+                        local LUA = Camera:WorldToViewportPoint(plr.Character.LeftUpperArm.Position)
+                        local LLA = Camera:WorldToViewportPoint(plr.Character.LeftLowerArm.Position)
+                        local LH = Camera:WorldToViewportPoint(plr.Character.LeftHand.Position)
+                        -- Right Arm
+                        local RUA = Camera:WorldToViewportPoint(plr.Character.RightUpperArm.Position)
+                        local RLA = Camera:WorldToViewportPoint(plr.Character.RightLowerArm.Position)
+                        local RH = Camera:WorldToViewportPoint(plr.Character.RightHand.Position)
+                        -- Left leg
+                        local LUL = Camera:WorldToViewportPoint(plr.Character.LeftUpperLeg.Position)
+                        local LLL = Camera:WorldToViewportPoint(plr.Character.LeftLowerLeg.Position)
+                        local LF = Camera:WorldToViewportPoint(plr.Character.LeftFoot.Position)
+                        -- Right leg
+                        local RUL = Camera:WorldToViewportPoint(plr.Character.RightUpperLeg.Position)
+                        local RLL = Camera:WorldToViewportPoint(plr.Character.RightLowerLeg.Position)
+                        local RF = Camera:WorldToViewportPoint(plr.Character.RightFoot.Position)
+
+                        --Head
+                        limbs.Head_UpperTorso.From = Vector2.new(H.X, H.Y)
+                        limbs.Head_UpperTorso.To = Vector2.new(UT.X, UT.Y)
+
+                        --Spine
+                        limbs.UpperTorso_LowerTorso.From = Vector2.new(UT.X, UT.Y)
+                        limbs.UpperTorso_LowerTorso.To = Vector2.new(LT.X, LT.Y)
+
+                        -- Left Arm
+                        limbs.UpperTorso_LeftUpperArm.From = Vector2.new(UT.X, UT.Y)
+                        limbs.UpperTorso_LeftUpperArm.To = Vector2.new(LUA.X, LUA.Y)
+
+                        limbs.LeftUpperArm_LeftLowerArm.From = Vector2.new(LUA.X, LUA.Y)
+                        limbs.LeftUpperArm_LeftLowerArm.To = Vector2.new(LLA.X, LLA.Y)
+
+                        limbs.LeftLowerArm_LeftHand.From = Vector2.new(LLA.X, LLA.Y)
+                        limbs.LeftLowerArm_LeftHand.To = Vector2.new(LH.X, LH.Y)
+
+                        -- Right Arm
+                        limbs.UpperTorso_RightUpperArm.From = Vector2.new(UT.X, UT.Y)
+                        limbs.UpperTorso_RightUpperArm.To = Vector2.new(RUA.X, RUA.Y)
+
+                        limbs.RightUpperArm_RightLowerArm.From = Vector2.new(RUA.X, RUA.Y)
+                        limbs.RightUpperArm_RightLowerArm.To = Vector2.new(RLA.X, RLA.Y)
+
+                        limbs.RightLowerArm_RightHand.From = Vector2.new(RLA.X, RLA.Y)
+                        limbs.RightLowerArm_RightHand.To = Vector2.new(RH.X, RH.Y)
+
+                        -- Left Leg
+                        limbs.LowerTorso_LeftUpperLeg.From = Vector2.new(LT.X, LT.Y)
+                        limbs.LowerTorso_LeftUpperLeg.To = Vector2.new(LUL.X, LUL.Y)
+
+                        limbs.LeftUpperLeg_LeftLowerLeg.From = Vector2.new(LUL.X, LUL.Y)
+                        limbs.LeftUpperLeg_LeftLowerLeg.To = Vector2.new(LLL.X, LLL.Y)
+
+                        limbs.LeftLowerLeg_LeftFoot.From = Vector2.new(LLL.X, LLL.Y)
+                        limbs.LeftLowerLeg_LeftFoot.To = Vector2.new(LF.X, LF.Y)
+
+                        -- Right Leg
+                        limbs.LowerTorso_RightUpperLeg.From = Vector2.new(LT.X, LT.Y)
+                        limbs.LowerTorso_RightUpperLeg.To = Vector2.new(RUL.X, RUL.Y)
+
+                        limbs.RightUpperLeg_RightLowerLeg.From = Vector2.new(RUL.X, RUL.Y)
+                        limbs.RightUpperLeg_RightLowerLeg.To = Vector2.new(RLL.X, RLL.Y)
+
+                        limbs.RightLowerLeg_RightFoot.From = Vector2.new(RLL.X, RLL.Y)
+                        limbs.RightLowerLeg_RightFoot.To = Vector2.new(RF.X, RF.Y)
+                    end
+
+                    if limbs.Head_UpperTorso.Visible ~= true then
+                        Visibility(true)
+                    end
+                else 
+                    if limbs.Head_UpperTorso.Visible ~= false then
+                        Visibility(false)
+                    end
+                end
+            else 
+                if limbs.Head_UpperTorso.Visible ~= false then
+                    Visibility(false)
+                end
+                if game.Players:FindFirstChild(plr.Name) == nil then 
+                    for i, v in pairs(limbs) do
+						v.Transparency = 0
+                        v:Remove()
+                    end
+                    connection:Disconnect()
+                end
+				if GetTeam(plr) == GetTeam(LocalPlayer) and not (values.visuals.players.teammates.Toggle) then
+					Visibility(false)
+				   for i, v in pairs(limbs) do
+						v.Transparency = 0
+                        v:Remove()
+                    end
+                    connection:Disconnect()
+				end
+            end
+				if not values.visuals.players['skeleton esp'].Toggle then 
+				Visibility(false)
+				   for i, v in pairs(limbs) do
+						v.Transparency = 0
+                        v:Remove()
+                    end
+                    connection:Disconnect()
+				end			
+			
+        end)
+
+
+end
+
+players:Element('ToggleColor', 'skeleton esp', {default = {Color = Color3.fromRGB(255,255,255)}}, function(tbl)
+	if tbl.Toggle then
+		for i, v in pairs(game:GetService("Players"):GetPlayers()) do
+			if v.Name ~= LocalPlayer.Name and (values.visuals.players.teammates.Toggle and true or v.Team ~= LocalPlayer) then
+				DrawESP(v)
+			end
+		end
+		game.Players.PlayerAdded:Connect(function(newplr)
+			if newplr.Name ~= LocalPlayer.Name and tbl.Toggle then
+				DrawESP(newplr)
+			end
+		end)
+	end
+end)
+
 
 local effects = visuals:Sector("effects", "Right") 
 effects:Element("ToggleTrans", "weapon chams", {default = {Color = Color3.fromRGB(255,255,255), Transparency = 0}}, function(tbl) 
@@ -6338,7 +7473,7 @@ effects:Element("Dropdown", "accessory material", {options = {"Smooth","ForceFie
 		end 
 		if LSleeve ~= nil then 
 			UpdateAccessory(LSleeve) 
-		end 
+		end
 	end 
 end) 
 effects:Element("ToggleTrans", "arm chams", {default = {Color = Color3.fromRGB(255,255,255)}}, function(val) 
@@ -6359,7 +7494,7 @@ end)
 
 effects:Element("Jumbobox", "removals", {options = {"scope", "scope lines", "flash", "smoke", "decals", "shadows", "clothes"}}, function(val) 
 	local tbl = val.Jumbobox 
-	if TBLFIND(tbl, "decals") then 
+	if table.find(tbl, "decals") then 
 		Client.createbullethole = function() end 
 		for i,v in pairs(workspace.Debris:GetChildren()) do 
 			if v.Name == "Bullet" or v.Name == "SurfaceGui" then 
@@ -6369,7 +7504,7 @@ effects:Element("Jumbobox", "removals", {options = {"scope", "scope lines", "fla
 	else 
 		Client.createbullethole = oldcreatebullethole 
 	end 
-	if TBLFIND(tbl, "clothes") then 
+	if table.find(tbl, "clothes") then 
 		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("UpperTorso") then 
 			if LocalPlayer.Character:FindFirstChild("Shirt") then 
 				LocalPlayer.Character:FindFirstChild("Shirt").ShirtTemplate = "" 
@@ -6388,7 +7523,7 @@ effects:Element("Jumbobox", "removals", {options = {"scope", "scope lines", "fla
 			end 
 		end 
 	end 
-	if TBLFIND(tbl, "scope") then 
+	if table.find(tbl, "scope") then 
 		PlayerGui.GUI.Crosshairs.Scope.ImageTransparency = 1 
 		PlayerGui.GUI.Crosshairs.Scope.Scope.ImageTransparency = 1 
 		PlayerGui.GUI.Crosshairs.Frame1.Transparency = 1 
@@ -6403,10 +7538,10 @@ effects:Element("Jumbobox", "removals", {options = {"scope", "scope lines", "fla
 		PlayerGui.GUI.Crosshairs.Frame3.Transparency = 0 
 		PlayerGui.GUI.Crosshairs.Frame4.Transparency = 0 
 	end 
-	PlayerGui.Blnd.Enabled = not TBLFIND(tbl, "flash") and true or false 
-	Lighting.GlobalShadows = not TBLFIND(tbl, "shadows") and true or false 
+	PlayerGui.Blnd.Enabled = not table.find(tbl, "flash") and true or false 
+	Lighting.GlobalShadows = not table.find(tbl, "shadows") and true or false 
 	if workspace.Ray_Ignore:FindFirstChild("Smokes") then 
-		if TBLFIND(tbl, "smoke") then 
+		if table.find(tbl, "smoke") then 
 			for i,smoke in pairs(workspace.Ray_Ignore.Smokes:GetChildren()) do 
 				smoke.ParticleEmitter.Rate = 0 
 			end 
@@ -6498,17 +7633,17 @@ self:Element("Slider", "fov changer", {min = 0, max = 120, default = 80}, functi
 end) 
 self:Element("Toggle", "on scope") 
 self:Element("Toggle", "viewmodel changer") 
-self:Element("Slider", "viewmodel x", {min = -10, max = 10}, function(val) 
-	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFAngles(0, 0, values.visuals.self.roll.Slider/50) 
+self:Element("Slider", "viewmodel x", {min = -20, max = 20}, function(val) 
+	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFrame.Angles(0, 0, values.visuals.self.roll.Slider/50) 
 end) 
-self:Element("Slider", "viewmodel y", {min = -10, max = 10}, function(val) 
-	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFAngles(0, 0, values.visuals.self.roll.Slider/50) 
+self:Element("Slider", "viewmodel y", {min = -20, max = 20}, function(val) 
+	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFrame.Angles(0, 0, values.visuals.self.roll.Slider/50) 
 end) 
-self:Element("Slider", "viewmodel z", {min = -10, max = 10}, function(val) 
-	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFAngles(0, 0, values.visuals.self.roll.Slider/50) 
+self:Element("Slider", "viewmodel z", {min = -20, max = 20}, function(val) 
+	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFrame.Angles(0, 0, values.visuals.self.roll.Slider/50) 
 end) 
 self:Element("Slider", "roll", {min = -100, max = 100}, function(val) 
-	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFAngles(0, 0, values.visuals.self.roll.Slider/50) 
+	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFrame.Angles(0, 0, values.visuals.self.roll.Slider/50) 
 end)  
 			self:Element("Toggle", "visualize silent angle")
 			self:Element("Slider", "silent angle speed", {min = 0, max = 30, default = 5}) 
@@ -6531,7 +7666,7 @@ self:Element("ToggleColor", "self chams", {default = {Color = Color3.fromRGB(255
 end) 
 --self:Element("Toggle", "silent dog shit")
 self:Element("Dropdown", "self chams material", {options = {"ForceField", "Neon", "Glass"}}, function(val)
-	if TBLFIND(val, "ForceField") then
+	if table.find(val, "ForceField") then
 		for _,obj in pairs(SelfObj) do 
 			if obj.Parent ~= nil then 
 				obj.Material = Enum.Material.ForceField
@@ -6539,7 +7674,7 @@ self:Element("Dropdown", "self chams material", {options = {"ForceField", "Neon"
 			end
 		end
 	else
-		if TBLFIND(val, "Neon") then
+		if table.find(val, "Neon") then
 			for _,obj in pairs(SelfObj) do 
 				if obj.Parent ~= nil then
 					obj.Material = Enum.Material.Neon
@@ -6547,7 +7682,7 @@ self:Element("Dropdown", "self chams material", {options = {"ForceField", "Neon"
 				end
 			end
 		else
-			if TBLFIND(val, "Glass") then
+			if table.find(val, "Glass") then
 				for _,obj in pairs(SelfObj) do
 					if obj.Parent ~= nil then
 						obj.Material = Enum.Material.Glass
@@ -6582,6 +7717,24 @@ Client.updateads = function(self, ...)
 	return ads(self, ...) 
 end 
 
+local trail = visuals:Sector('trail', 'Left')
+
+trail:Element('Toggle', 'enable', {Toggle = true})
+
+trail:Element('Toggle', 'face camera', {Toggle = false})
+
+trail:Element('ToggleColor', 'custom color', {default = {Color = Color3.fromRGB(255,255,255)}})
+
+trail:Element('Slider', 'size (x,z)', {min = 1, max = 50, default = 10})
+
+trail:Element('Slider', 'offset (y)', {min = 1, max = 50, default = 10})
+
+trail:Element('Slider', 'max length', {min = 1, max = 100, default = 20})
+
+trail:Element('Dropdown', 'image type', {options = {"normal", "lightning 2", "lightning 3", "custom"}}) -- normal, lighting 4, lighting 5
+
+trail:Element('TextBox', 'image', {placeholder = 'image id here'})
+
 local world = visuals:Sector("world", "Left") 
 world:Element("ToggleTrans", "molly radius", {default = {Color = Color3.fromRGB(255,0,0)}}, function(tbl) 
 	if workspace.Ray_Ignore:FindFirstChild("Fires") == nil then return end 
@@ -6609,85 +7762,80 @@ world:Element("ToggleColor", "smoke radius", {default = {Color = Color3.fromRGB(
 		end 
 	end 
 end)
-world:Element("Dropdown", "bullet tracers type", {options = {"normal", "lightning 1", "lightning 2", "lightning 3", "lightning 4", "lightning 5"}})
-world:Element("ToggleColor", "bullet tracers", {default = {Color = Color3.fromRGB(255, 255, 255)}})
-local Services = {
-	Players = game:GetService("Players"),
-	UserInputService = game:GetService("UserInputService"),
-	RunService = game:GetService("RunService")
-}
+world:Element('Dropdown', 'Tracers', {options = {'BS', 'Line'}})
+world:Element("ToggleColor", "bullet tracers", {default = {Color = Color3.fromRGB(255, 255, 255)}}) 
+world:Element('Slider', 'Duration', {min = 0, max = 10, default = 0.5})
+local Folder = Instance.new("Folder")
+	Folder.Parent = game:GetService("Workspace")
 
-local Local = {
-	Player = Services.Players.LocalPlayer,
-	Mouse = Services.Players.LocalPlayer:GetMouse()
-}
-
-local Other = {
-	Camera = workspace.CurrentCamera,
-	BeamPart = Instance.new("Part", workspace)
-}
-
-Other.BeamPart.Name = "BeamPart"
-Other.BeamPart.Transparency = 1
-
-local Settings = {
-	StartColor = Color3.new(1, 1, 1),
-	EndColor = Color3.new(1, 0, 0),
-	StartWidth = 0.63,
-	EndWidth = 0.63,
-	ShowImpactPoint = false,
-	ImpactTransparency = 0,
-	ImpactColor = Color3.new(1, 1, 1)
-}
-
-local rs = game:GetService("RunService").RenderStepped
-
-function createbullettracer(v1, v2)
-	local colorSequence = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Settings.StartColor),
-		ColorSequenceKeypoint.new(1, Settings.EndColor),
-	})
-	local Part = Instance.new("Part", Other.BeamPart)
-	Part.Size = Vector3.new(0, 0, 0)
-	Part.Transparency = ShowImpactPoint and Settings.ImpactTransparency or 1
+	local Settings = {
+		StartColor = Color3.new(1, 1, 1),
+		EndColor = Color3.new(1, 0, 0),
+		StartWidth = 0.63,
+		EndWidth = 0.63,
+		ShowImpactPoint = false,
+		ImpactTransparency = 0,
+		ImpactColor = Color3.new(1, 1, 1),
+		Time = values.visuals.world['Duration'].Slider
+	}
+	local funcs = {}
+	function createbullettracer(v1, v2)
+		local colorSequence = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Settings.StartColor),
+			ColorSequenceKeypoint.new(1, Settings.EndColor),
+		})
+	local Part = Instance.new("Part")
 	Part.CanCollide = false
 	Part.CFrame = CFrame.new(v1)
+	Part.Size = Vector3.new(0, 0, 0)
+	Part.TopSurface = Enum.SurfaceType.Smooth
+	Part.Parent = Folder
+	Part.Transparency = Settings.ShowImpactPoint and Settings.ImpactTransparency or 1
 	Part.Anchored = true
-	local Attachment = Instance.new("Attachment", Part)
-	local Part2 = Instance.new("Part", Other.BeamPart)
-	Part2.Size = Vector3.new(0, 0, 0)
-	Part2.Transparency = ShowImpactPoint and Settings.ImpactTransparency or 1
-	Part2.CanCollide = false
+
+
+	local Part2 = Instance.new("Part")
+
 	Part2.CFrame = CFrame.new(v2)
+	Part2.Size = Vector3.new(0, 0, 0)
+	Part2.Transparency = Settings.ShowImpactPoint and Settings.ImpactTransparency or 1
+	Part2.Parent = Folder
 	Part2.Anchored = true
-	Part2.Color = Settings.ImpactColor
-	local Attachment2 = Instance.new("Attachment", Part2)
-	local Beam = Instance.new("Beam", Part)
-	Beam.FaceCamera = true
-	Beam.Texture = values.visuals.world["bullet tracers type"].Dropdown == "normal" and "rbxassetid://5854341017" or values.visuals.world["bullet tracers type"].Dropdown == "lightning 1" and "rbxassetid://7151777149" or values.visuals.world["bullet tracers type"].Dropdown == "lightning 2" and "rbxassetid://7501973572" or values.visuals.world["bullet tracers type"].Dropdown == "lightning 3" and "rbxassetid://257173628" or values.visuals.world["bullet tracers type"].Dropdown == "lightning 4" and "rbxasssetid://7062832223" or values.visuals.world["bullet tracers type"].Dropdown == "lightning 5" and "rbxassetid:/446111271"
-	Beam.TextureLength = 22
-	Beam.TextureMode = Enum.TextureMode.Static
-	Beam.TextureSpeed = 2.6
-	Beam.Transparency = NumberSequence.new(0.3, 0.3)
+	Part2.CanCollide = false
+		
+	local Object1 = Instance.new("Attachment")
+	Object1.Name = "1"
+	Object1.Parent = Part
+
+	local Object2 = Instance.new("Attachment")
+	Object2.Name = "2"
+	Object2.Parent = Part2
+
+	local Beam = Instance.new("Beam")
+	Beam.Attachment0 = Object1
+	Beam.Attachment1 = Object2
+	Beam.LightInfluence = 1
+	Beam.Texture = values.visuals.world["Tracers"].Dropdown == "Line" and "rbxassetid://4872917021" or values.visuals.world["Tracers"].Dropdown == "BS" and "rbxassetid://446111271"
+	Beam.Parent = Folder
 	Beam.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, values.visuals.world["bullet tracers"].Color), ColorSequenceKeypoint.new(1, values.visuals.world["bullet tracers"].Color)}
-	Beam.Attachment0 = Attachment
-	Beam.Attachment1 = Attachment2
-	Beam.LightEmission = 1
-	Beam.LightInfluence = 0
-	Beam.Segments = 10
-	Beam.Width0 = Settings.StartWidth
-	Beam.Width1 = Settings.EndWidth
-	spawn(function()
-		wait(2)
-		for i = 0.3, 1, 0.02 do
-			rs:Wait()
+	delay(Settings.Time, function()
+		for i = 0.5, 1, 0.02 do
+			wait()
 			Beam.Transparency = NumberSequence.new(i)
 		end
-		Beam:Destroy()
 		Part:Destroy()
 		Part2:Destroy()
 	end)
-end
+	end
+world:Element("Slider", "time changer", {min = 0, max = 15, default = 0}, function(tbl)
+    while wait() do
+      if game.Lighting.ClockTime ~= tbl.Slider then
+         game.Lighting.ClockTime = tbl.Slider
+      end
+   end
+end)
+
+
 world:Element("ToggleColor", "impacts", {default = {Color = Color3.fromRGB(255, 0, 0)}}) 
 world:Element("ToggleColor", "hit chams", {default = {Color = Color3.fromRGB(0, 0, 255)}}) 
 world:Element("Dropdown", "hitsound", {options = {"none", "skeet", "neverlose", "rust", "bag", "baimware", "osu", "Tf2", "Tf2 pan", "M55solix", "Slap", "1", "Minecraft", "jojo", "vibe", "supersmash", "epic", "retro", "quek", "SEMI"}}) 
@@ -6713,31 +7861,49 @@ end)
 world:Element("ToggleColor", "item esp", {default = {Color = Color3.fromRGB(255, 255, 255)}}, function(tbl) 
 	for i,weapon in pairs(workspace.Debris:GetChildren()) do 
 		if weapon:IsA("BasePart") and Weapons:FindFirstChild(weapon.Name) then 
-			weapon.BillboardGui.ImageLabel.Visible = tbl.Toggle and TBLFIND(values.visuals.world["types"].Jumbobox, "icon") and true or false 
+			weapon.BillboardGui.ImageLabel.Visible = tbl.Toggle and table.find(values.visuals.world["types"].Jumbobox, "icon") and true or false 
 		end 
 	end 
 end) 
 world:Element("Jumbobox", "types", {options = {"icon"}}, function(tbl) 
 	for i,weapon in pairs(workspace.Debris:GetChildren()) do 
 		if weapon:IsA("BasePart") and Weapons:FindFirstChild(weapon.Name) then 
-			weapon.BillboardGui.ImageLabel.Visible = values.visuals.world["item esp"].Toggle and TBLFIND(tbl.Jumbobox, "icon") and true or false 
+			weapon.BillboardGui.ImageLabel.Visible = values.visuals.world["item esp"].Toggle and table.find(tbl.Jumbobox, "icon") and true or false 
 			weapon.BillboardGui.ImageLabel.ImageColor3 = values.visuals.world["item esp"].Color 
 		end 
 	end 
 end) 
 local configs = misc:Sector("configs", "Left") 
 configs:Element("TextBox", "config", {placeholder = "config name"}) -- values.misc.configs.config.Text
-configs:Element("Button", "save new cfg", {}, function() if values.misc.configs.config.Text ~= "" then library:SaveConfig(values.misc.configs.config.Text) end end) 
+configs:Element("Button", "save new cfg", {}, function() 
+	if values.misc.configs.config.Text ~= "" then 
+		library:SaveConfig(values.misc.configs.config.Text) 
+		insertwithoutdupes(allcfgs, ""..values.misc.configs.config.Text..".txt")
+	end
+	ConfigUpdateCfgList2:Fire()
+	ConfigUpdateCfgList:Fire()
+end) 
 configs:Element("Button", "load", {}, function() 
 	ConfigLoad:Fire(values.misc["configs"].config.Text)
 end)
-configs:Element("Scroll", "cfgs", {options = allcfgs, Amount = 5})
+configs:Element("cfgtype", "cfgs", {options = allcfgs, Amount = 5})
 configs:Element("Button", "load from list", {}, function() 
 	ConfigLoad1:Fire(values.misc.configs.cfgs.Scroll)
 end)
 configs:Element("Button", "Update cfg in list", {}, function()
 	library:SaveConfig1(values.misc["configs"].cfgs.Scroll)
 end)
+configs:Element("Button", "Refresh cfg list", {}, function()
+table.clear(allcfgs)
+
+for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+	local cfgname = string.gsub(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+	table.insert(allcfgs, cfgname) 
+end
+	ConfigUpdateCfgList2:Fire()
+	ConfigUpdateCfgList:Fire()
+end)
+
 configs:Element("Toggle", "keybind list", nil, function(tbl) 
 	library:SetKeybindVisible(tbl.Toggle) 
 end) 
@@ -6990,7 +8156,7 @@ local function UpdateCrosshair()
 		PlayerGui.GUI.Crosshairs.Crosshair.TopFrame.Size = UDim2.new(0, 2, 0, length) 
 		PlayerGui.GUI.Crosshairs.Crosshair.BottomFrame.Size = UDim2.new(0, 2, 0, length) 
 		for _,frame in pairs(PlayerGui.GUI.Crosshairs.Crosshair:GetChildren()) do 
-			if FIND(frame.Name, "Frame") then 
+			if string.find(frame.Name, "Frame") then 
 				frame.BorderColor3 = Color3.new(0,0,0) 
 				if values.misc["crosshair editor"].border.Toggle then 
 					frame.BorderSizePixel = 1 
@@ -7005,7 +8171,7 @@ local function UpdateCrosshair()
 		PlayerGui.GUI.Crosshairs.Crosshair.TopFrame.Size = UDim2.new(0, 2, 0, 10) 
 		PlayerGui.GUI.Crosshairs.Crosshair.BottomFrame.Size = UDim2.new(0, 2, 0, 10) 
 		for _,frame in pairs(PlayerGui.GUI.Crosshairs.Crosshair:GetChildren()) do 
-			if FIND(frame.Name, "Frame") then 
+			if string.find(frame.Name, "Frame") then 
 				frame.BorderSizePixel = 0 
 			end 
 		end 
@@ -7016,6 +8182,11 @@ crosshaireditor:Element("Slider", "length", {min = 1, max = 15, default = 10}, U
 crosshaireditor:Element("Toggle", "border", nil, UpdateCrosshair) 
 
 local client = misc:Sector("client", "Right") 
+client:Element('Toggle', 'auto join team')
+client:Element('Dropdown', 'team', {options = {'CT', 'T'}})
+
+
+
 client:Element("Toggle", "infinite cash", nil, function(tbl) 
 	if tbl.Toggle then 
 		LocalPlayer.Cash.Value = 90000000000 
@@ -7057,9 +8228,6 @@ function IsAlive(plr)
     return (plr and plr.Character and plr.Character:FindFirstChild("Head") and plr.Status.Alive.Value == true and true) or false
 end
 
-local function GetTeam(plr)
-	return game.Teams[plr.Team.Name]
-end   
 
 
 
@@ -7078,7 +8246,7 @@ else
 		end
 end
 end)
-local character = LocalPlayer.Character
+
 
 
 
@@ -7095,10 +8263,10 @@ end
 client:Element("Toggle", "old sounds", {}, function(tbl)
 if tbl.Toggle then
 --maked by encgldapp, remaked by erog, that script has all bolt shoot etc sounds from cb 2018 (no dual berretas because im gay), enjoy! :) (ion is hot)
-_G.Sounds = false
+
 local oldsounds
-oldsounds = game:GetService("RunService").RenderStepped:Connect(function()
-if _G.Sounds then oldsounds:Disconnect() return end
+oldsounds = RunService.RenderStepped:Connect(function()
+if not (tbl.Toggle) then oldsounds:Disconnect() return end
 	pcall(function()
 		local player = game:GetService("Players").LocalPlayer.Character
 		if player.EquippedTool.Value == "AK47" then
@@ -7378,8 +8546,6 @@ player.Gun.Shoot.PlaybackSpeed = 1
 end)
 
 
-else
-	 _G.Sounds = true
 end
 end)
 
@@ -7405,7 +8571,6 @@ Backtrack:Element("ToggleColor", "enabled", {}, function(tbl)
 						BacktrackTag.Parent = NewBacktrackPart
 						BacktrackTag.Name = "PlayerName"
 						BacktrackTag.Value = v
-						
 						spawn(function() -- values.misc.movement["noclip"].Toggle
 							wait(values.misc.Backtrack["Time (ms)"].Slider/1000)
 							NewBacktrackPart:Destroy()
@@ -7421,19 +8586,37 @@ end)
 
 Backtrack:Element("Slider", "Time (ms)", {min = 0, max = 1000, default = 200})
 Backtrack:Element("Slider", "Transparency (0.01 = 1)", {min = 1, max = 100, default = 0})
-local movement = misc:Sector("movement", "Left") 
-movement:Element("Toggle", "bunny hop") 
-movement:Element("Dropdown", "direction", {options = {"forward", "directional", "directional 2"}}) 
-movement:Element("Dropdown", "type", {options = {"gyro", "cframe", "fuck"}}) 
-movement:Element("Dropdown", "gyro type", {options = {"no fling", "fling"}}) 
-movement:Element("Slider", "speed", {min = 15, max = 300, default = 40}) 
-movement:Element("ToggleKeybind", "jump bug") 
-movement:Element("ToggleKeybind", "edge jump") 
-movement:Element("ToggleKeybind", "edge bug") 
+local movement = misc:Sector('movement', 'Left')
+movement:Element('Toggle', 'bunny hop')
+movement:Element('Dropdown', 'direction', {options = {'forward', 'directional', 'directional 2'}})
+movement:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity' , 'idk'}})
+movement:Element('Slider', 'speed', {min = 0, max = 200, default = 40})
+movement:Element('ToggleKeybind', 'overwrite')
+movement:Element('Slider', 'overwrite speed', {min = 0, max = 200, default = 40})
+movement:Element('Toggle', 'no gun')
+
+movement:Element('Toggle', 'no velocity')
+
+movement:Element('ToggleKeybind', 'no launch')
+
+movement:Element('Slider', 'launch block (y velocity)', {min = 0, max = 100, default = 40})
+
+movement:Element('ToggleKeybind', 'jump bug')
+movement:Element('ToggleKeybind', 'edge jump')
+movement:Element('ToggleKeybind', 'edge bug')
+
+movement:Element('ToggleKeybind', 'gravity change')
+movement:Element('Slider', 'gravity amount', {min = 0, max = 300, default = 80})
+
+movement:Element('Toggle', 'height change')
+movement:Element('Slider', 'height amount', {min = -35, max = 35, default = 0})
+
+movement:Element('Toggle', 'client offset')
+movement:Element('Slider', 'offset (y)', {min = -45, max = 45, default = 0})
 		movement:Element("ToggleKeybind", "noclip",{},function(tbl)
 			spawn(function()
 				while values.misc.movement["noclip"].Toggle and values.misc.movement["noclip"].Active do
-					game:GetService("RunService").Stepped:Wait()
+					RunService.Stepped:Wait()
 					if LocalPlayer.Character then
 						for i,v in pairs(LocalPlayer.Character:GetDescendants()) do
 							if v:IsA("BasePart") then
@@ -7444,18 +8627,12 @@ movement:Element("ToggleKeybind", "edge bug")
 				end
 			end)
 		end)
-movement:Element("ToggleKeybind", "hrpclip", {}, function(tbl)
-	if tbl.Toggle and tbl.Active then
-		LocalPlayer.Character.HumanoidRootPart.Anchored = true
-		else
-		LocalPlayer.Character.HumanoidRootPart.Anchored = false
-				end
-			end) 		
+		movement:Element('ToggleKeybind', 'noclip v2')
+	
 movement:Element("Toggle", "fly mode", {}, function(tbl)
 if tbl.Toggle then
-_G.flymode = false
-		FlyLoop = game:GetService("RunService").Stepped:Connect(function()
-		if _G.flymode == true then FlyLoop:Disconnect() return end
+		FlyLoop = RunService.Stepped:Connect(function()
+		if not (tbl.Toggle) then FlyLoop:Disconnect() return end
 				spawn(function()
 					pcall(function()
 						local velocity = Vector3.new(0, 1, 0)
@@ -7479,16 +8656,14 @@ _G.flymode = false
 				end)
 		end)
 		
-		NoclipLoop = game:GetService("RunService").Stepped:Connect(function()
-		if _G.flymode == true then NoclipLoop:Disconnect() return end
+		NoclipLoop = RunService.Stepped:Connect(function()
+		if not (tbl.Toggle) then NoclipLoop:Disconnect() return end
 			for i,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
 				if v:IsA("BasePart") and v.CanCollide == true then
 					v.CanCollide = false
 				end
 			end
 		end)
-	else
-		_G.flymode = true
 	end
 end)
 
@@ -7525,28 +8700,93 @@ local chatmessages_Racist = {
 	"blackie L"
 }
 
+local emojis = {
+	[":clown:"] = utf8.char(129313);
+	[":cold_face:"] = utf8.char(129398);
+	[":neutral:"] = utf8.char(128528);
+	[":sob:"] = utf8.char(128557);
+	[":flushed:"] = utf8.char(128563);
+	[":rofl:"] = utf8.char(129315);
+	[':yawn:'] = utf8.char(129393);
+}
 
+function emoteReplace(str)
+	for i,v in pairs(emojis) do
+		if str:find(i) then
+			gay = string.gsub(str, i, v)
+			shit = string.rep(gay, 18)
+		end
+	end
+	return shit
+end
+local number = 0
+local femboy = 1
+local emojiesspam = {}
+for i,v in pairs(emojis) do
+table.insert(emojiesspam, i)
+end
 local chat = misc:Sector("chat", "Left") 
 chat:Element("Toggle", "chat spam", nil, function(tbl) 
 	if tbl.Toggle then 
-		while values.misc.chat["chat spam"].Toggle do 
-			game:GetService("ReplicatedStorage").Events.PlayerChatted:FireServer(
-			values.misc.chat.type.Dropdown == "SamuelPaste" and "$$$ I'm using SamuelPaste stormy lol $$$" 
-			or values.misc.chat.type.Dropdown == "MOM" and "I FUCKED UR MOM NIGGA I FUCKED UR MOM NIGGA I FUCKED UR MOM NIGGA" 
+		while values.misc.chat["chat spam"].Toggle and values.misc.chat.type.Dropdown ~= "emojie" and values.misc.chat.type.Dropdown ~= "femboy" do 
+			wait(values.misc.chat["speed (ms)"].Slider/1000)
+			ReplicatedStorage.Events.PlayerChatted:FireServer(
+			values.misc.chat.type.Dropdown == "Text" and values.misc.chat['chat spam message'].Text
+			or values.misc.chat.type.Dropdown == "SamuelPaste" and "$$$ I'm using SamuelPaste stormy lol $$$" 
 			or values.misc.chat.type.Dropdown == "SEMI" and "||| RATTED BY SEMI ||| DONT FUCK WITH BLOXSENSE USERS |||" 
-			or values.misc.chat.type.Dropdown == "disable_pls" and "Aww I'm sooo sorry that i made you sad i will never cheat again because i made you sad i dont wanna make people sad pls forgive me"
 			or values.misc.chat.type.Dropdown == "bloxsense.gay" and "BloxSense.gay winning $$$"
 			or values.misc.chat.type.Dropdown == "hexagon winning" and "Hexagon is the best!"
 			or values.misc.chat.type.Dropdown == "hexagon losing" and "Hexagon sucks ass!!" -- randomkillsay[math.random(#randomkillsay)
 			or values.misc.chat.type.Dropdown == "losing to samuel paste (random)" and chatmessages_pasteed[math.random(#chatmessages_pasteed)]
 			or values.misc.chat.type.Dropdown == "racism (random)" and chatmessages_Racist[math.random(#chatmessages_Racist)]
 			, false, "Innocent", false, true)
-			wait(values.misc.chat["speed (ms)"].Slider/1000) 
+		end
+		while tbl.Toggle and (values.misc.chat.type.Dropdown == "emojie" or values.misc.chat.type.Dropdown == "femboy") do 
+		wait(0.5)
+			if values.misc.chat.type.Dropdown ~= "emojie" then
+				number = 1
+			else
+				number += 1
+			end
+			if number > #emojiesspam then 
+				number = 1
+			end
+			if values.misc.chat.type.Dropdown == 'femboy' then
+				femboy += 1
+				if femboy == 3 then
+				femboy = 1
+				end
+			end
+			ReplicatedStorage.Events.PlayerChatted:FireServer(
+			values.misc.chat.type.Dropdown == 'femboy' and femboy == 1 and 'I am gay dm me to get my pics '..values.misc.chat['femboy discord'].Text
+			or values.misc.chat.type.Dropdown == 'femboy' and femboy == 2 and 'DM me to get femboy pics '..values.misc.chat['femboy discord'].Text
+			or number == 1 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+			or number == 2 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+			or number == 3 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+			or number == 4 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+			or number == 5 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+			or number == 6 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+			or number == 7 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+			, false, "Innocent", false, true)
+
 		end 
-	end 
+	end
 end) 
-chat:Element("Dropdown", "type", {options = {"SamuelPaste", "MOM", "SEMI", "disable_pls", "bloxsense.gay", "hexagon winning", "hexagon losing", "losing to samuel paste (random)", "racism (random)"}}) 
-chat:Element("Slider", "speed (ms)", {min = 15, max = 300, default = 50}) 
+chat:Element("Dropdown", "type", {options = {
+	'Text',
+	"SamuelPaste", 
+	"SEMI", 
+	"bloxsense.gay", 
+	"hexagon winning", 
+	"hexagon losing", 
+	"losing to samuel paste (random)", 
+	"racism (random)", 
+	"emojie",
+	'femboy'
+	}}) 
+chat:Element("Slider", "speed (ms)", {min = 30, max = 400, default = 50}) 
+chat:Element('TextBox', 'chat spam message', {placeholder = 'chat spam message'})
+chat:Element('TextBox', 'femboy discord', {placeholder = 'write your discord nickname'})
 chat:Element("Toggle", "kill say")
 chat:Element("Dropdown", "kill say type", {options = {"default", "random"}})
 chat:Element("TextBox", "message", {placeholder = "message"})
@@ -7557,12 +8797,12 @@ coroutine.wrap(function()
 	while true do 
 		wait(0.5) 
 		if values.misc.grenades["spam grenades"].Toggle and values.misc.grenades["spam grenades"].Active then 
-			local oh1 = game:GetService("ReplicatedStorage").Weapons[values.misc.grenades.grenade.Dropdown].Model 
+			local oh1 = ReplicatedStorage.Weapons[values.misc.grenades.grenade.Dropdown].Model 
 			local oh3 = 25 
 			local oh4 = 35 
 			local oh6 = "" 
 			local oh7 = "" 
-			game:GetService("ReplicatedStorage").Events.ThrowGrenade:FireServer(oh1, nil, oh3, oh4, Vector3.new(0,-100,0), oh6, oh7) 
+			ReplicatedStorage.Events.ThrowGrenade:FireServer(oh1, nil, oh3, oh4, Vector3.new(0,-100,0), oh6, oh7) 
 		end 
 	end 
 end)() 
@@ -7571,84 +8811,85 @@ grenades:Element("Button", "crash server", {}, function()
 CreateHitElement("Crashing server...",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
     while true do
         pcall(function()
-            game:GetService("RunService").RenderStepped:Wait()
+            RunService.RenderStepped:Wait()
             for i = 1,100,1 do
                 local ohInstance1 = LocalPlayer.Character.Gun.Mag                                                                                                                                                                                                                                                                                                    -- Server Crasher exploit by property (Mexicanhook). mis hermanos solo usan mexicanhook
 
-                game:GetService("ReplicatedStorage").Events.DropMag:FireServer(ohInstance1)
+                ReplicatedStorage.Events.DropMag:FireServer(ohInstance1)
             end
         end)
     end
-end)
-grenades:Element("ToggleKeybind", "ping exploit", {Type = "Toggle", Key = "T"}, function(tbl)      
-    spawn(function()
-        while values.misc.grenades["ping exploit"].Toggle and values.misc.grenades["ping exploit"].Active do
-        
-                pcall(function()
-                    game:GetService("RunService").RenderStepped:Wait()
-                    for i = 1,values.misc.grenades["ping limit"].Slider,1 do
-                        game:GetService("ReplicatedStorage").Events.DropMag:FireServer(LocalPlayer.Character.Gun.Mag)
-                        for i,v in pairs(workspace["Ray_Ignore"]:GetChildren()) do
-                            if v.Name == "MagDrop" then
-                                v:Destroy()
-                            end
-                        end
-                    end
-                end)
-            
-        end 
-    end)    
-end)      
-grenades:Element("Slider", "ping limit", {min = 1, max = 4, default = 2})  
-grenades:Element("Toggle", "anti-ping", {}, function(tbl)      
-    spawn(function()
-        while values.misc.grenades["anti-ping"].Toggle do
-            pcall(function()
-                game:GetService("RunService").RenderStepped:Wait()
-                for i,v in pairs(workspace["Ray_Ignore"]:GetChildren()) do
-					if v.Name == "MagDrop" then
-						v:Destroy()
-					end
-				end
-            end)
-        end 
-    end)    
-end) 
+end)    
 
 local Dance = Instance.new("Animation") 
-Dance.AnimationId = "rbxassetid://5917459365" 
+Dance.AnimationId = ''
+Dance.Name = 'Dance'
 
-local LoadedAnim 
+local LoadedAnim
 
-local animations = misc:Sector("animations", "Left") 
-animations:Element("ToggleKeybind", "enabled", nil, function(tbl) 
-	pcall(function() 
-		LoadedAnim:Stop() 
-	end) 
-	if not tbl.Toggle or tbl.Toggle and not tbl.Active then 
-	else 
-		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then 
-			LoadedAnim = LocalPlayer.Character.Humanoid:LoadAnimation(Dance) 
-			LoadedAnim.Priority = Enum.AnimationPriority.Action 
-			LoadedAnim:Play() 
-		end 
-	end 
-end) 
-animations:Element("Dropdown", "animation", {options = {"floss", "default", "lil nas x", "dolphin", "monkey", "Fake swim", "Fake walk", "Fake jump", "Fake sit"}}, function(tbl) 
-    Dance.AnimationId = tbl.Dropdown == "floss" and "rbxassetid://5917459365" or tbl.Dropdown == "default" and "rbxassetid://3732699835" or tbl.Dropdown == "lil nas x" and "rbxassetid://5937558680" or tbl.Dropdown == "dolphin" and "rbxassetid://5918726674" or tbl.Dropdown == "monkey" and "rbxassetid://3333499508" or tbl.Dropdown == "barrel roll" and "rbxassetid://136801964" or tbl.Dropdown == "Fake swim" and "rbxassetid://616119360" or tbl.Dropdown == "Fake walk" and "rbxassetid://1330180905"  or tbl.Dropdown == "Fake sit" and "rbxassetid://507768133" or tbl.Dropdown == "Fake jump" and "rbxassetid://896586529"
-	
+local animations = misc:Sector('animations', 'Right')
+animations:Element('ToggleKeybind', 'enabled', nil)
+
+animations:Element('Slider', 'animation speed', {min = 0, max = 100, default = 1}, function()
+	pcall(function()
+		LoadedAnim:Stop()
+	end)
+end)
+
+local animationsplay = {
+	['idle'] = 'rbxassetid://2510196951',
+	['fall over'] = 'rbxassetid://3716468774',
+	['float'] = 'rbxassetid://1467170425',
+	['sit down'] = 'rbxassetid://1467173451',
+	['crouch'] = 'rbxassetid://896341616',
+	['crunch'] = 'rbxassetid://4526742158',
+    ['end spin'] = 'rbxassetid://6157859952',
+	['headless pass'] = 'rbxassetid://5819194191',
+	['floss'] = 'rbxassetid://5917459365',
+	['default'] = 'rbxassetid://3732699835',
+    ['Nothing'] = 'rbxassetid://2597335002',
+	['toy walk'] = 'rbxassetid://6080889050',
+	['laugh'] = 'rbxassetid://4529383951',
+    ['Praisin'] = 'rbxassetid://2804019904',
+	['grabbed'] = 'rbxassetid://5855133419',
+	['getting eaten'] = 'rbxassetid://5855127786',
+    ['No Touchin'] = 'rbxassetid://2805054405',
+    ['Default'] = 'rbxassetid://3732699835',
+    ['Thriller'] = 'rbxassetid://4174360426',
+    ['Showtime Swing'] = 'rbxassetid://4802193849',
+    ['Skateboard'] = 'rbxassetid://3725767158',
+    ['Crazy Chainsaw'] = 'rbxassetid://5822705079',
+    ['Summer Slack'] = 'rbxassetid://3226145532',
+	['happy sit'] = 'rbxassetid://2743669791',
+	['air sit'] = 'rbxassetid://5593420812',
+	['sleep'] = 'rbxassetid://4165553098',
+	['flying ragdoll'] = 'rbxassetid://5855128842',
+	['naruto run'] = 'rbxassetid://4189480820',
+	['hands on head'] = 'rbxassetid://6698274740',
+	['sit'] = 'rbxassetid://507768133'
+}
+
+local animlist = {}
+
+for a,b in next, animationsplay do 
+	table.insert(animlist, a)
+end
+animations:Element('Dropdown', 'animation', {options = animlist}, function(tbl)
 	pcall(function()
 		LoadedAnim:Stop()
 	end)
 
-	if values.misc.animations.enabled.Toggle and values.misc.animations.enabled.Active then
-		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-			LoadedAnim = LocalPlayer.Character.Humanoid:LoadAnimation(Dance)
-			LoadedAnim.Priority = Enum.AnimationPriority.Action
-			LoadedAnim:Play()
-		end
-	end
+	Dance.AnimationId = animationsplay[tbl.Dropdown]
 end)
+
+animations:Element('TextBox', 'custom animation', {placeholder = 'animation id'}, function(tbl)
+	pcall(function()
+		LoadedAnim:Stop()
+	end)
+
+	Dance.AnimationId = 'rbxassetid://'..tbl.Text
+end)
+
 				local addons = misc:Sector("addons", "Left") 
 				addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
 					if tbl.Toggle then
@@ -7732,81 +8973,281 @@ end)
 					end
 				end)
 				
+				watermarkthemes = {}
+watermarklocation = nil
+fonts = {
+	'Legacy',
+	'Arial',
+	'ArialBold',
+	'SourceSans',
+	'SourceSansBold',
+	'SourceSansSemibold',
+	'SourceSansLight',
+	'SourceSansItalic',
+	'Bodoni',
+	'Garamond',
+	'Cartoon',
+	'Code',
+	'Highway',
+	'SciFi',
+	'Arcade',
+	'Fantasy',
+	'Antique',
+	'Gotham',
+	'GothamSemibold',
+	'GothamBold',
+	'GothamBlack',
+	'AmaticSC',
+	'Bangers',
+	'Creepster',
+	'DenkOne',
+	'Fondamento',
+	'FredokaOne',
+	'GrenzeGotisch',
+	'IndieFlower',
+	'JosefinSans',
+	'Jura',
+	'Kalam',
+	'LuckiestGuy',
+	'Merriweather',
+	'Michroma',
+	'Nunito',
+	'Oswald',
+	'PatrickHand',
+	'PermanentMarker',
+	'Roboto',
+	'RobotoCondensed',
+	'RobotoMono',
+	'Sarpanch',
+	'SpecialElite',
+	'TitilliumWeb',
+	'Ubuntu',
+}
+
+function instancethewatermark()
+	local watermark = Instance.new('ScreenGui')
+	local watermark_2 = Instance.new('Frame')
+	local title = Instance.new('TextLabel')
+	local none = Instance.new('UIGradient')
+	local linetop = Instance.new('UIGradient')
+	local linetopandbottem = Instance.new('UIGradient')
+	local shadowatbottem = Instance.new('UIGradient')
+	local shadowattop = Instance.new('UIGradient')
+	local shadowattopandbottom = Instance.new('UIGradient')
+
+	watermarklocation = watermark
+
+	watermark.Name = 'watermark'
+	watermark.Parent = game.CoreGui
+	watermark.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+	watermark_2.Name = 'watermark'
+	watermark_2.Parent = watermark
+	watermark_2.BackgroundColor3 = Color3.fromRGB(29, 29, 29)
+	watermark_2.BorderColor3 = Color3.fromRGB(255, 255, 255)
+	watermark_2.Position = UDim2.new(0.912, 0, 0.00858895481, 0)
+	watermark_2.Size = UDim2.new(0, 89, 0, 20)
+	
+	title.Name = 'title'
+	title.Parent = watermark_2
+	title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	title.BackgroundTransparency = 1.000
+	title.Position = UDim2.new(0, 0, 0.0597654358, 0)
+	title.Size = UDim2.new(0, 0, 0, 18)
+	title.Font = Enum.Font.Nunito
+	title.LineHeight = 1.21
+	title.Text = '         yes.no'
+	title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	title.TextSize = 16.000
+	title.TextStrokeColor3 = Color3.fromRGB(25, 25, 25)
+	title.TextStrokeTransparency = 0.000
+	title.TextXAlignment = Enum.TextXAlignment.Left
+
+	none.Enabled = false
+	none.Color =ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
+	none.Rotation = 0
+	none.Name = 'none'
+	none.Parent = watermark_2
+
+	linetop.Enabled = false
+	linetop.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(0.00, Color3.fromRGB(56, 56, 56)), ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(0.99, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
+	linetop.Rotation = -90
+	linetop.Name = 'linetop'
+	linetop.Parent = watermark_2
+	
+	shadowatbottem.Enabled = false
+	shadowatbottem.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))}
+	shadowatbottem.Rotation = 90
+	shadowatbottem.Name = 'shadowatbottem'
+	shadowatbottem.Parent = watermark_2
+
+	shadowattop.Enabled = false
+	shadowattop.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))}
+	shadowattop.Rotation = -90
+	shadowattop.Name = 'shadowattop'
+	shadowattop.Parent = watermark_2
+
+	shadowattopandbottom.Enabled = false
+	shadowattopandbottom.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(25, 25, 25)), ColorSequenceKeypoint.new(0.59, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 25, 25))}
+	shadowattopandbottom.Rotation = -90
+	shadowattopandbottom.Name = 'shadowattopandbottom'
+	shadowattopandbottom.Parent = watermark_2
+
+	for a,b in next, watermark_2:GetChildren() do -- inserts all the theme names into 'watermarkthemes'
+		if b:IsA('UIGradient') then
+			table.insert(watermarkthemes, b.Name)
+		end
+	end
+end
+
+instancethewatermark()
+themebackground = {
+	['Default'] = 8893436115,
+    ['Shiba.gang'] = 2151741365,
+    ['Hearts'] = 6073763717,
+    ['Abstract'] = 6073743871,
+    ['Hexagon'] = 6073628839,
+    ['Circles'] = 6071579801,
+    ['Lace With Flowers'] = 6071575925,
+    ['Floral'] = 5553946656,
+}
+
+Images_names = {}
+table.insert(Images_names, 'Default')
+for a,b in next, themebackground do 
+    insertwithoutdupes(Images_names, a)
+end
+				
+			addons:Element('ToggleColor', 'ui border', {default = {Color = Color3.fromRGB(255,255,255)}})	
+				
+				addons:Element('ToggleKeybind', 'gui keybind', {default = {Key = RightShift, Type = Toggle, Toggle = true}}, function(tbl)
+	if tbl.Toggle then
+		watermarklocation.watermark.Draggable = tbl.Active
+		ovascreengui['ova'].Enabled = tbl.Active
+		library.uiopen = tbl.Active
+	end
+end)
 				addons:Element("TextBox", "mnt", {placeholder = "Custom cheat name"}, function()
 					game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TextLabel.Text = values.misc.addons.mnt.Text
 					valuewtr = values.misc.addons.mnt.Text
 					print(valuewtr)
 				end)
 
-local objects = {} 
-local utility = {} 
-do 
-	utility.default = { 
-		Line = { 
-			Thickness = 1.5, 
-			Color = Color3.fromRGB(255, 255, 255), 
-			Visible = false 
-		}, 
-		Text = { 
-			Size = 13, 
-			Center = true, 
-			Outline = true, 
-			Font = Drawing.Fonts.Plex, 
-			Color = Color3.fromRGB(255, 255, 255), 
-			Visible = false 
-		}, 
-		Square = { 
-			Thickness = 1.5, 
-			Filled = false, 
-			Color = Color3.fromRGB(255, 255, 255), 
-			Visible = false 
-		}, 
-	} 
-	function utility.create(type, isOutline) 
-		local drawing = Drawing.new(type) 
-		for i, v in pairs(utility.default[type]) do 
-			drawing[i] = v 
-		end 
-		if isOutline then 
-			drawing.Color = Color3.new(0,0,0) 
-			drawing.Thickness = 3 
-		end 
-		return drawing 
-	end 
-	function utility.add(plr) 
-		if not objects[plr] then 
-			objects[plr] = { 
-				Name = utility.create("Text"), 
-				Weapon = utility.create("Text"), 
-				Armor = utility.create("Text"), 
-				BoxOutline = utility.create("Square", true), 
-				Box = utility.create("Square"), 
-				HealthOutline = utility.create("Line", true), 
-				Health = utility.create("Line"), 
-			} 
-		end 
-	end 
-	for _,plr in pairs(Players:GetPlayers()) do 
-		if Player ~= LocalPlayer then 
-			utility.add(plr) 
-		end 
-	end 
-	Players.PlayerAdded:Connect(utility.add) 
-	Players.PlayerRemoving:Connect(function(plr) 
-		wait() 
-		if objects[plr] then 
-			for i,v in pairs(objects[plr]) do 
-				for i2,v2 in pairs(v) do 
-					if v then 
-						v:Remove() 
-					end 
-				end 
-			end 
 
-			objects[plr] = nil 
-		end 
-	end) 
-end 
+
+addons:Element('Dropdown', 'background', {options = Images_names})
+
+addons:Element('ToggleTrans', 'background color', {default = {Color = Color3.fromRGB(180,180,180), Transparency = 0}})
+
+local watermark = misc:Sector('watermark', 'Right')
+
+watermark:Element('Toggle', 'enabled', {default = {Toggle = true}}, function(tbl)
+	watermarklocation.Enabled = tbl.Toggle
+end)
+
+watermark:Element('Dropdown', 'themes', {options = watermarkthemes})
+
+
+watermark:Element('TextBox', 'watermark text', {placeholder = 'text here', default = {text = '         yes.no'}}, function(tbl)
+
+	local textierawr = textboxtriggers(tbl.Text)
+	watermarklocation.watermark.title.Text = textierawr
+end)
+
+watermark:Element('Dropdown', 'text font', {options = fonts}, function(tbl)
+	watermarklocation.watermark.title.Font = Enum.Font[tbl.Dropdown]
+end)
+
+watermark:Element('Slider', 'text size', {min = 0, max = 50, default = watermarklocation.watermark.title.TextSize}, function(tbl)
+	watermarklocation.watermark.title.TextSize = tbl.Slider
+end)
+
+watermark:Element('Slider', 'text line height', {min = -50, max = 50, default = watermarklocation.watermark.title.LineHeight}, function(tbl)
+	watermarklocation.watermark.title.LineHeight = 1.1 * (tbl.Slider / 10)
+end)
+
+watermark:Element('Slider', 'watermark lenght', {min = 0, max = 100, default = watermarklocation.watermark.Size.X.Scale}, function(tbl)
+	watermarklocation.watermark.Size = UDim2.new(0, tbl.Slider * 5, 0, 20)
+end)
+
+watermark:Element('ToggleColor', 'border color', {default = {Color = Color3.fromRGB(255,255,255)}}, function(tbl)
+	watermarklocation.watermark.BorderColor3 = tbl.Color
+end)
+
+watermark:Element('ToggleColor', 'text color', {default = {Color = Color3.fromRGB(255,255,255)}}, function(tbl)
+	watermarklocation.watermark.title.TextColor3 = tbl.Color
+end)
+local objects = {}
+local utility = {} 
+
+do
+	utility.default = {
+		Line = {
+			Thickness = 1.5,
+			Color = Color3.fromRGB(255, 255, 255),
+			Visible = false
+		},
+		Text = {
+			Size = 13,
+			Center = true,
+			Outline = true,
+			Font = Drawing.Fonts.Plex,
+			Color = Color3.fromRGB(255, 255, 255),
+			Visible = false
+		},
+		Square = {
+			Thickness = 1.5,
+			Filled = false,
+			Color = Color3.fromRGB(255, 255, 255),
+			Visible = false
+		},
+	}
+	function utility.create(type, isOutline)
+		local drawing = Drawing.new(type)
+		for i, v in pairs(utility.default[type]) do
+			drawing[i] = v
+		end
+		if isOutline then
+			drawing.Color = Color3.new(0,0,0)
+			drawing.Thickness = 3
+		end
+		return drawing
+	end
+	function utility.add(plr)
+		if not objects[plr] then
+			objects[plr] = {
+				Name = utility.create('Text'),
+				Weapon = utility.create('Text'),
+				Armor = utility.create('Text'),
+				--Crouching = utility.create('Text'),
+				BoxOutline = utility.create('Square', true),
+				Box = utility.create('Square'),
+				HealthOutline = utility.create('Line', true),
+				Health = utility.create('Line'),
+			}
+		end
+	end
+	for _,plr in pairs(Players:GetPlayers()) do
+		if Player ~= LocalPlayer then
+			utility.add(plr)
+		end
+	end
+	Players.PlayerAdded:Connect(utility.add)
+	Players.PlayerRemoving:Connect(function(plr)
+		wait()
+		if objects[plr] then
+			for i,v in pairs(objects[plr]) do
+				for i2,v2 in pairs(v) do
+					if v then
+						v:Remove()
+					end
+				end
+			end
+
+			objects[plr] = nil
+		end
+	end)
+end
 local Items = Instance.new("ScreenGui") 
 Items.Name = "Items" 
 Items.Parent = game.CoreGui 
@@ -7853,7 +9294,7 @@ workspace.Debris.ChildAdded:Connect(function(obj)
 		ImageLabel.ImageColor3 = values.visuals.world["item esp"].Color 
 		ImageLabel.Image = GetIcon.getWeaponOfKiller(obj.Name) 
 		ImageLabel.ScaleType = Enum.ScaleType.Fit 
-		ImageLabel.Visible = values.visuals.world["item esp"].Toggle and TBLFIND(values.visuals.world["types"].Jumbobox, "icon") and true or false 
+		ImageLabel.Visible = values.visuals.world["item esp"].Toggle and table.find(values.visuals.world["types"].Jumbobox, "icon") and true or false 
 
 		BillboardGui.Parent = obj 
 	end 
@@ -7874,19 +9315,15 @@ for _, obj in pairs(workspace.Debris:GetChildren()) do
 		ImageLabel.ImageColor3 = values.visuals.world["item esp"].Color 
 		ImageLabel.Image = GetIcon.getWeaponOfKiller(obj.Name) 
 		ImageLabel.ScaleType = Enum.ScaleType.Fit 
-		ImageLabel.Visible = values.visuals.world["item esp"].Toggle and TBLFIND(values.visuals.world["types"].Jumbobox, "icon") and true or false 
+		ImageLabel.Visible = values.visuals.world["item esp"].Toggle and table.find(values.visuals.world["types"].Jumbobox, "icon") and true or false 
 
 		BillboardGui.Parent = obj 
 	end 
 end 
 local function YROTATION(cframe) 
 	local x, y, z = cframe:ToOrientation() 
-	return CFrame.new(cframe.Position) * CFAngles(0,y,0) 
-end 
-local function XYROTATION(cframe) 
-	local x, y, z = cframe:ToOrientation() 
-	return CFrame.new(cframe.Position) * CFAngles(x,y,0) 
-end 
+	return CFrame.new(cframe.Position) * CFrame.Angles(0,y,0) 
+end
 local weps = { 
 	Pistol = {"USP", "P2000", "Glock", "DualBerettas", "P250", "FiveSeven", "Tec9", "CZ", "DesertEagle", "R8"}, 
 	SMG = {"MP9", "MAC10", "MP7", "UMP", "P90", "Bizon"}, 
@@ -7900,7 +9337,7 @@ local weps2 = {
 	Sniper = {"AWP", "Scout", "G3SG1"} 
 } 
 local function GetWeaponRage(weapon) 
-	return TBLFIND(weps.Pistol, weapon) and "pistol" or TBLFIND(weps.Rifle, weapon) and "rifle" or weapon == "AWP" and "awp" or weapon == "G3SG1"  and "auto" or weapon == "Scout" and "scout" or "default" 
+	return table.find(weps.Pistol, weapon) and "pistol" or table.find(weps.Rifle, weapon) and "rifle" or weapon == "AWP" and "awp" or weapon == "G3SG1"  and "auto" or weapon == "Scout" and "scout" or "default" 
 end 
 local function GetStatsRage(weapon) 
 	if weapon == "default" then 
@@ -7908,18 +9345,14 @@ local function GetStatsRage(weapon)
 	end 
 end 
 local function GetWeaponLegit(weapon) 
-	return TBLFIND(weps2.Pistol, weapon) and "pistol" or TBLFIND(weps2.Rifle, weapon) and "rifle" or TBLFIND(weps2.SMG, weapon) and "smg" or TBLFIND(weps2.Sniper, weapon) and "sniper" or "default" 
+	return table.find(weps2.Pistol, weapon) and "pistol" or table.find(weps2.Rifle, weapon) and "rifle" or table.find(weps2.SMG, weapon) and "smg" or table.find(weps2.Sniper, weapon) and "sniper" or "default" 
 end 
 local function GetStatsLegit(weapon) 
 	if weapon == "default" then 
 		return values.legit.main.default 
 	else 
-		if values.legit.main[weapon]["override default"].Toggle then 
-			return values.legit.main[weapon] 
-		else 
 			return values.legit.main.default 
 		end 
-	end 
 end 
 
 UserInputService.InputBegan:Connect(function(key, isFocused)
@@ -7945,9 +9378,13 @@ end)
 
 
 
-
-local Jitter = false 
+switchtrigger = {false, nil, nil}
+savedspinpitch = 0
+Jitter = false
+jitterwait = false
+lockyaw = false
 local Spin = 0 
+allowedtofreeze = true
 local RageTarget 
 local Filter = false 
 local LastStep 
@@ -7960,103 +9397,19 @@ Fov.Color = Color3.fromRGB(15,15,15)
 Fov.Transparency = 0.5 
 Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 16) 
 Fov.Radius = 120 
-RunService.RenderStepped:Connect(function(step) 
-	Fov.Visible = false 
-	LastStep = step 
-	Ping = game.Stats.PerformanceStats.Ping:GetValue() 
-	RageTarget = nil 
-	local CamCFrame = Camera.CFrame 
-	local CamLook = CamCFrame.LookVector 
-	local PlayerIsAlive = false 
-	local Character = LocalPlayer.Character 
-	RageTarget = nil 
-	Spin = math.clamp(Spin + values.rage.angles["spin speed"].Slider, 0, 360) 
-	if Spin == 360 then Spin = 0 end 
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 and LocalPlayer.Character:FindFirstChild("UpperTorso") then 
-		PlayerIsAlive = true 
-	end 
-	for i,v in pairs(ChamItems) do 
-		if v.Parent == nil then 
-			TBLREMOVE(ChamItems, i) 
-		end 
-	end 
-	Fov.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2) 
-	if PlayerIsAlive then
+
+RunService:BindToRenderStep('Rage', 400, function(step)
+	LastStep = step
+	if IsAlive(LocalPlayer) then
 	local Root = LocalPlayer.Character.HumanoidRootPart
 		local RageGuy 
 		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
-			if values.rage.aimbot.enabled.Toggle then
+			if values.rage.aimbot.enabled.Toggle and (LocalPlayer.Character.Humanoid.WalkSpeed ~= 0 or values.rage.aimbot['ignore on start'].Toggle) then
 				local Origin = values.rage.aimbot.origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vector3.new(0, 2.5, 0) or CamCFrame.p
 				local Stats = GetStatsRage(GetWeaponRage(Client.gun.Name))
 				for _,Player in pairs(Players:GetPlayers()) do
-					if TBLFIND(values.misc.client["gun modifiers"].Jumbobox, "firerate") then
+					if table.find(values.misc.client["gun modifiers"].Jumbobox, "firerate") then
 						Client.DISABLED = false
-					end
-					 
-					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer then
-						if table.find(values.rage.aimbot.resolver.Jumbobox, "pitch") then
-							Player.Character.UpperTorso.Waist.C0 = CFrame.new(Vector3.new(0,0.6,0))
-							Player.Character.Head.CFrame = CFrame.new(Player.Character.Head.Position)
-						end
-						if table.find(values.rage.aimbot.resolver.Jumbobox, "roll") then
-							Player.Character.Humanoid.MaxSlopeAngle = 0
-						end
-						if table.find(values.rage.aimbot.resolver.Jumbobox, "animation") then
-							for i2,Animation in pairs(Player.Character.Humanoid:GetPlayingAnimationTracks()) do
-								Animation:Stop()
-							end
-						end
-						if table.find(values.rage.aimbot.resolver.Jumbobox, "bhop") then   
-							Player.Character.Head.CFrame = CFrame.new(Player.Character.Head.Position)
-							Player.Character.UpperTorso.CFrame = CFrame.new(Player.Character.UpperTorso.Position)
-							Player.Character.LowerTorso.CFrame = CFrame.new(Player.Character.LowerTorso.Position)
-							Player.Character.LeftLowerArm.CFrame = CFrame.new(Player.Character.LeftLowerArm.Position)
-							Player.Character.LeftUpperArm.CFrame = CFrame.new(Player.Character.LeftUpperArm.Position)
-							Player.Character.RightLowerArm.CFrame = CFrame.new(Player.Character.RightLowerArm.Position)
-							Player.Character.RightUpperArm.CFrame = CFrame.new(Player.Character.RightUpperArm.Position)
-							Player.Character.LeftLowerLeg.CFrame = CFrame.new(Player.Character.LeftLowerLeg.Position)
-							Player.Character.LeftUpperLeg.CFrame = CFrame.new(Player.Character.LeftUpperLeg.Position)
-							Player.Character.RightLowerLeg.CFrame = CFrame.new(Player.Character.RightLowerLeg.Position)
-							Player.Character.RightUpperLeg.CFrame = CFrame.new(Player.Character.RightUpperLeg.Position)
-						end
-						if table.find(values.rage.aimbot.resolver.Jumbobox, "cortez step") then     
-							for i, j in next, game.Players:GetChildren() do 
-								if j ~= game.Players.LocalPlayer and j.Team ~= game.Players.LocalPlayer.Team  then
-									pcall(function()
-										local a = j.Character.HumanoidRootPart.CFrame
-										wait()
-										local b = j.Character.HumanoidRootPart.CFrame
-
-										if ( b.x ~= a.x ) and ( b.z ~= a.z ) then
-											if ( b.x > a.x ) and ( b.z > a.z ) then 
-												j.Character.Head.Neck.C0 = CFrame.new(13, 0, 13)
-											elseif ( b.x < a.x ) and ( b.z < a.z ) then
-												j.Character.Head.Neck.C0 = CFrame.new(-13, 0, -13)
-											elseif ( b.x > a.x ) and ( b.z < a.z ) then 
-												j.Character.Head.Neck.C0 = CFrame.new(13, 0, -13)
-											else
-												j.Character.Head.Neck.C0 = CFrame.new(-13, 0, 13)
-											end
-										elseif (  b.x ~= a.x ) then
-											if ( b.x > a.x ) then 
-												j.Character.Head.Neck.C0 = CFrame.new(13, 0, 0)
-											else
-												j.Character.Head.Neck.C0 = CFrame.new(-13, 0, 0)
-											end
-										else
-											if ( b.z > a.z ) then 
-												j.Character.Head.Neck.C0 = CFrame.new(0, 0, 13)
-											else
-												j.Character.Head.Neck.C0 = CFrame.new(0, 0, -13)
-											end
-										end
-									end)
-								end
-							end
-						end
-						if table.find(values.rage.aimbot.resolver.Jumbobox, "front track") then 
-							Player.Character.Head.Neck.C0 = CFrame.new(0,5,-5) * CFAngles(0, 0, 0) 
-						end   
 					end
 					if Player.Character and Player.Character:FindFirstChild("Humanoid") and not Client.DISABLED and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and not Player.Character:FindFirstChildOfClass("ForceField") and GetDeg(CamCFrame, Player.Character.Head.Position) <= values.rage.weapons.default["max fov"].Slider and Player ~= LocalPlayer then
 						if Player.Team ~= LocalPlayer.Team or values.rage.aimbot.teammates.Toggle and Player:FindFirstChild("Status") and Player.Status.Team.Value ~= LocalPlayer.Status.Team.Value and Player.Status.Alive.Value then
@@ -8077,6 +9430,11 @@ RunService.RenderStepped:Connect(function(step)
 								LocalPlayer.Character.HumanoidRootPart.CFrame = AutoPeek.OldPeekPosition
 							end
 								local Ignore = {unpack(Collision)}
+								if #ragebotwhitelist ~= 0 then
+									for i,v in pairs(ragebotwhitelist) do
+										table.insert(v, Ignore)
+									end
+								end
 								if values.rage.aimbot["knifebot type"].Dropdown == "rapid" then
 									Client.DISABLED = false
 								end
@@ -8109,7 +9467,7 @@ RunService.RenderStepped:Connect(function(step)
 --arguments
 										--[1] = Hit,
 										--[2] = Hit.Position,
-                game:GetService("ReplicatedStorage").Events.HitPart:FireServer(
+                ReplicatedStorage.Events.HitPart:FireServer(
                     Hit, -- 1
                     predict(Hit, Ping), --2
                     "Banana", --3
@@ -8124,10 +9482,14 @@ RunService.RenderStepped:Connect(function(step)
                     100,
                     Vector3.new()
                 )
-				
 								end
 							else
 								local Ignore = {unpack(Collision)}
+								if #ragebotwhitelist ~= 0 then
+									for i,v in pairs(ragebotwhitelist) do
+										table.insert(v, Ignore)
+									end
+								end
 								table.insert(Ignore, workspace.Map.Clips)
 								table.insert(Ignore, workspace.Map.SpawnPoints)
 								table.insert(Ignore, LocalPlayer.Character)
@@ -8140,41 +9502,47 @@ RunService.RenderStepped:Connect(function(step)
 								end
 								local Hitboxes = {}
 								for _,Hitbox in ipairs(values.rage.weapons.default.hitboxes.Jumbobox) do
-									if values.rage.weapons.default["prefer body"].Toggle then
+									if values.rage.weapons.default["prefer body"].Toggle and (values.rage.aimbot.teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then
 										if Hitbox == "head" and (not values.rage.aimbot["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead")) then
 											table.insert(Hitboxes, Player.Character.Head)
+											if values.misc.Backtrack.enabled.Toggle then 
+												table.insert(Hitboxes, workspace.backtrackfolder[Player.Name].PlayerName.Value.Character.Head)
+											end
 										elseif Hitbox == "torso" then
 											table.insert(Hitboxes, Player.Character.UpperTorso)
 										else
 											table.insert(Hitboxes, Player.Character.LowerTorso)
 										end
-									else
+									elseif (values.rage.aimbot.teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then 
 										if Hitbox == "torso" then
 											table.insert(Hitboxes, Player.Character.UpperTorso)
+											table.insert(Hitboxes, Player.Character.LowerTorso)
 										elseif Hitbox == "arms" then
 											table.insert(Hitboxes, Player.Character.LeftLowerArm)
 											table.insert(Hitboxes, Player.Character.LeftUpperArm)
+											table.insert(Hitboxes, Player.Character.LeftArm)
 											table.insert(Hitboxes, Player.Character.RightLowerArm)
 											table.insert(Hitboxes, Player.Character.RightUpperArm)
+											table.insert(Hitboxes, Player.Character.RightHand)
 										elseif Hitbox == "legs" then
 											table.insert(Hitboxes, Player.Character.LeftLowerLeg)
 											table.insert(Hitboxes, Player.Character.LeftUpperLeg)
+											table.insert(Hitboxes, Player.Character.LeftFoot)
 											table.insert(Hitboxes, Player.Character.RightLowerLeg)
 											table.insert(Hitboxes, Player.Character.RightUpperLeg)
-										elseif Hitbox == "feet" then
-											table.insert(Hitboxes, Player.Character.LeftFoot)
 											table.insert(Hitboxes, Player.Character.RightFoot)
-										elseif Hitbox == "pelvis" then
-											table.insert(Hitboxes, Player.Character.LowerTorso)
 										elseif not values.rage.aimbot["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead") then
 											table.insert(Hitboxes, Player.Character.Head)
+										elseif not (Player.Character:FindFirstChild("FakeHead") or Player.Character:FindFirstChild("HeadHB") or Player.Character:FindFirstChild("Head")) then
+											table.insert(Hitboxes, Player.Character.UpperTorso)
+											table.insert(Hitboxes, Player.Character.LowerTorso)
 										end
 									end
 								end
 								for _,Hitbox in ipairs(Hitboxes) do 
 									local Ignore2 = {unpack(Ignore)} 
 									for _,Part in pairs(Player.Character:GetChildren()) do 
-										if Part ~= Hitbox then INSERT(Ignore2, Part) end 
+										if Part ~= Hitbox then table.insert(Ignore2, Part) end 
 									end 
 									if values.rage.aimbot["automatic penetration"].Toggle then 
 									    local Hits = {}
@@ -8214,13 +9582,14 @@ RunService.RenderStepped:Connect(function(step)
 													Filter = true
 													if values.rage.aimbot["automatic fire"].Dropdown == "standard" then
 														Client.firebullet()
+														VisualizeSilentAngles:Fire(RageTarget.Position)
+													if values.rage.aimbot.Hitlogs.Toggle then -- 
+														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+													end
 													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
 														end
-													end
-													if values.rage.aimbot.Hitlogs.Toggle then -- 
-													CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name,values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
 													end
 													elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
 														Client.firebullet()
@@ -8238,6 +9607,7 @@ RunService.RenderStepped:Connect(function(step)
 															[13] = Vector3.new()
 														}
 														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+														VisualizeSilentAngles:Fire(RageTarget.Position)
 														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
@@ -8258,7 +9628,7 @@ RunService.RenderStepped:Connect(function(step)
 														end
 													end
 													if values.rage.aimbot.Hitlogs.Toggle then
-													CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name,values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name,values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
 													end
 													end
 													Filter = false
@@ -8292,16 +9662,16 @@ RunService.RenderStepped:Connect(function(step)
 														modifier = 0
 													end
 													local direction = (Hitbox.Position - pos).unit * math.clamp(Client.gun.Range.Value, 1, 100)
-													local ray = RAY(pos + direction * 1, direction * -2)
+													local ray = Ray.new(pos + direction * 1, direction * -2)
 													local _,endpos = workspace:FindPartOnRayWithWhitelist(ray, {part}, true)
 													local thickness = (endpos - pos).Magnitude
 													thickness = thickness * modifier
-													limit = MIN(penetration, limit + thickness)
+													limit = math.min(penetration, limit + thickness)
 													dmgmodifier = 1 - limit / penetration
 												end
 												local Damage = Client.gun.DMG.Value * Multipliers[EndHit.Name] * dmgmodifier
 												if Player:FindFirstChild("Kevlar") then
-													if FIND(EndHit.Name, "Head") then
+													if string.find(EndHit.Name, "Head") then
 														if Player:FindFirstChild("Helmet") then
 															Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
 														end
@@ -8319,51 +9689,53 @@ RunService.RenderStepped:Connect(function(step)
 													Filter = true
 													if values.rage.aimbot["automatic fire"].Dropdown == "standard" then
 														Client.firebullet()
+														VisualizeSilentAngles:Fire(RageTarget.Position)
+													if values.rage.aimbot.Hitlogs.Toggle then -- 
+														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+													end
 													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
 														end
 													end
-													if values.rage.aimbot.Hitlogs.Toggle then
-			                                        CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name,values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
-													end													
+												
 													elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
 														Client.firebullet()
-														local Arguments = {
-															[1] = EndHit,
-															[2] = EndHit.Position,
-															[3] = LocalPlayer.Character.EquippedTool.Value,
-															[4] = 100,
-															[5] = LocalPlayer.Character.Gun,
-															[8] = values.rage.exploits["damage modifier"].Slider,
-															[9] = false,
-															[10] = false,
-															[11] = Vector3.new(),
-															[12] = 100,
-															[13] = Vector3.new()
-														}
-														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+														game.ReplicatedStorage.Events.HitPart:FireServer(
+															EndHit,
+															EndHit.Position,
+															LocalPlayer.Character.EquippedTool.Value,
+															100,
+															LocalPlayer.Character.Gun,
+															values.rage.exploits["damage modifier"].Slider,
+															false,
+															false,
+															Vector3.new(),
+															100,
+															Vector3.new()
+														)
+														VisualizeSilentAngles:Fire(RageTarget.Position)
 														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
-															local Arguments = {
-																[1] = EndHit,
-																[2] = EndHit.Position,
-																[3] = LocalPlayer.Character.EquippedTool.Value,
-																[4] = 100,
-																[5] = LocalPlayer.Character.Gun,
-																[8] = values.rage.exploits["damage modifier"].Slider,
-																[9] = false,
-																[10] = false,
-																[11] = Vector3.new(),
-																[12] = 100,
-																[13] = Vector3.new()
-															}
-															game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+															game.ReplicatedStorage.Events.HitPart:FireServer(
+																EndHit,
+																EndHit.Position,
+																LocalPlayer.Character.EquippedTool.Value,
+																100,
+																LocalPlayer.Character.Gun,
+																values.rage.exploits["damage modifier"].Slider,
+																false,
+																false,
+																Vector3.new(),
+																100,
+																Vector3.new()
+															)
+															
 														end
 													end
-													if values.rage.aimbot.Hitlogs.Toggle then
-													CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name,values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+													if values.rage.aimbot.Hitlogs.Toggle then -- 
+														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
 													end
 													end
 													Filter = false
@@ -8372,12 +9744,13 @@ RunService.RenderStepped:Connect(function(step)
 											end
 										end
 									else
-										local Ray = RAY(Origin, (Hitbox.Position - Origin).unit * (Hitbox.Position - Origin).magnitude)
+										local Ray = Ray.new(Origin, (Hitbox.Position - Origin).unit * (Hitbox.Position - Origin).magnitude)
 										local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray, Ignore2, false, true)
 										if Hit and Multipliers[Hit.Name] ~= nil then
+										EndHit = Hit
 											local Damage = Client.gun.DMG.Value * Multipliers[Hit.Name]
 											if Player:FindFirstChild("Kevlar") then
-												if FIND(Hit.Name, "Head") then
+												if string.find(Hit.Name, "Head") then											
 													if Player:FindFirstChild("Helmet") then
 														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
 													end
@@ -8395,6 +9768,10 @@ RunService.RenderStepped:Connect(function(step)
 												Filter = true
 												if values.rage.aimbot["automatic fire"].Dropdown == "standard" then
 													Client.firebullet()
+													VisualizeSilentAngles:Fire(RageTarget.Position)
+													if values.rage.aimbot.Hitlogs.Toggle then -- 
+														CreateHitElement(" Hit "..Hit.Parent.Name.." in the "..Hit.Name.."  ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+													end
                                                     if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
                                                         for chingchong = 2, values.rage.exploits['tap amount'].Slider do
                                                             Client.firebullet()
@@ -8402,38 +9779,40 @@ RunService.RenderStepped:Connect(function(step)
                                                     end
 												elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
 													Client.firebullet()
-													local Arguments = {
-														[1] = EndHit,
-														[2] = EndHit.Position,
-														[3] = LocalPlayer.Character.EquippedTool.Value,
-														[4] = 100,
-														[5] = LocalPlayer.Character.Gun,
-														[8] = values.rage.exploits["damage modifier"].Slider,
-														[9] = false,
-														[10] = false,
-														[11] = Vector3.new(),
-														[12] = 100,
-														[13] = Vector3.new()
-													}
-													game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+													game.ReplicatedStorage.Events.HitPart:FireServer(
+														EndHit,
+														EndHit.Position,
+														LocalPlayer.Character.EquippedTool.Value,
+														100,
+														LocalPlayer.Character.Gun,
+														values.rage.exploits["damage modifier"].Slider,
+														false,
+														false,
+														Vector3.new(),
+														100,
+														Vector3.new()
+													)
+													VisualizeSilentAngles:Fire(RageTarget.Position)
 													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
-															local Arguments = {
-																[1] = EndHit,
-																[2] = EndHit.Position,
-																[3] = LocalPlayer.Character.EquippedTool.Value,
-																[4] = 100,
-																[5] = LocalPlayer.Character.Gun,
-																[8] = values.rage.exploits["damage modifier"].Slider,
-																[9] = false,
-																[10] = false,
-																[11] = Vector3.new(),
-																[12] = 100,
-																[13] = Vector3.new()
-															}
-															game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+															game.ReplicatedStorage.Events.HitPart:FireServer(
+																EndHit,
+																EndHit.Position,
+																LocalPlayer.Character.EquippedTool.Value,
+																100,
+																LocalPlayer.Character.Gun,
+																values.rage.exploits["damage modifier"].Slider,
+																false,
+																false,
+																Vector3.new(),
+																100,
+																Vector3.new()
+															)
 														end
+													end
+													if values.rage.aimbot.Hitlogs.Toggle then -- 
+														CreateHitElement(" Hit "..Hit.Parent.Name.." in the "..Hit.Name.."  ",values.rage.aimbot.Hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
 													end
 												end
 												Filter = false
@@ -8455,12 +9834,12 @@ RunService.RenderStepped:Connect(function(step)
 				Fov.Visible =  values.legit.settings["draw fov"].Toggle 
 				Fov.Color =  values.legit.settings["draw fov"].Color 
 
-				if not TBLFIND(Stats.conditions.Jumbobox, "smoke") then 
-					INSERT(Ignore, workspace.Ray_Ignore) 
+				if not table.find(Stats.conditions.Jumbobox, "smoke") then 
+					table.insert(Ignore, workspace.Ray_Ignore) 
 				end 
 
-				if not TBLFIND(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
-					if not TBLFIND(Stats.conditions.Jumbobox, "standing") or SelfVelocity.Magnitude < 3 then 
+				if not table.find(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
+					if not table.find(Stats.conditions.Jumbobox, "standing") or SelfVelocity.Magnitude < 3 then 
 						for _,Player in pairs(Players:GetPlayers()) do 
 							if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 then 
 								if not values.legit.settings["forcefield check"].Toggle or not Player.Character:FindFirstChildOfClass("ForceField") then 
@@ -8482,10 +9861,10 @@ RunService.RenderStepped:Connect(function(step)
 													end 
 												end 
 												if Hitbox ~= nil then 
-													if not TBLFIND(Stats.conditions.Jumbobox, "visible") then 
+													if not table.find(Stats.conditions.Jumbobox, "visible") then 
 														Target = Hitbox 
 													else 
-														local Ray1 = RAY(Camera.CFrame.Position, (Hitbox.Position - Camera.CFrame.Position).unit * (Hitbox.Position - Camera.CFrame.Position).magnitude) 
+														local Ray1 = Ray.new(Camera.CFrame.Position, (Hitbox.Position - Camera.CFrame.Position).unit * (Hitbox.Position - Camera.CFrame.Position).magnitude) 
 														local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray1, Ignore, false, true) 
 														if Hit and Hit:FindFirstAncestor(Player.Name) then 
 															Target = Hitbox 
@@ -8510,8 +9889,8 @@ RunService.RenderStepped:Connect(function(step)
 			if not values.rage.aimbot.enabled.Toggle and values.legit.aimbot["triggerbot"].Toggle and values.legit.aimbot["triggerbot"].Active and not TriggerDebounce then 
 				local Stats = GetStatsLegit(GetWeaponLegit(Client.gun.Name)) 
 				if Stats.triggerbot.Toggle then 
-					if not TBLFIND(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
-						if not TBLFIND(Stats.conditions.Jumbobox, "standing") or SelfVelocity.Magnitude < 3 then 
+					if not table.find(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
+						if not table.find(Stats.conditions.Jumbobox, "standing") or SelfVelocity.Magnitude < 3 then 
 							if Mouse.Target and Mouse.Target.Parent and Players:GetPlayerFromCharacter(Mouse.Target.Parent) and Multipliers[Mouse.Target.Name] ~= nil and Client.gun.DMG.Value * Multipliers[Mouse.Target.Name] >= Stats["minimum dmg"].Slider then 
 								local OldTarget = Mouse.Target 
 								local Player = Players:GetPlayerFromCharacter(Mouse.Target.Parent) 
@@ -8532,95 +9911,315 @@ RunService.RenderStepped:Connect(function(step)
 					end 
 				end 
 			end 
-		end 	
-		local SelfVelocity = LocalPlayer.Character.HumanoidRootPart.Velocity 
-		if values.rage.fakelag["ping spike"].Toggle and values.rage.fakelag["ping spike"].Active then      
-			for count = 1, 20  do      
-				game:GetService("ReplicatedStorage").Events.RemoteEvent:FireServer({[1] = "createparticle", [2] = "bullethole", [3] = LocalPlayer.Character.Head, [4] = Vec3(0,0,0)})       
-			end      
 		end 
-		 
-		if values.misc.client["infinite crouch"].Toggle then 
-			Client.crouchcooldown = 0 
+	end
+end)
+
+
+RunService:BindToRenderStep('Resolvers', 500, function()
+				for _,Player in pairs(Players:GetPlayers()) do
+					if table.find(values.misc.client["gun modifiers"].Jumbobox, "firerate") then
+						Client.DISABLED = false
+					end
+					 
+					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer then
+						if table.find(values.rage.aimbot.resolver.Jumbobox, 'pitch') then
+							Player.Character.UpperTorso.Waist.C0 = CFrame.new(0, 0.5, 0)
+                            Player.Character.Head.Neck.C0 = CFrame.new(0, 0.7, 0)
+						end
+						if table.find(values.rage.aimbot.resolver.Jumbobox, 'roll') then
+							Player.Character.Humanoid.MaxSlopeAngle = 0
+						end
+						if table.find(values.rage.aimbot.resolver.Jumbobox, 'arms') then
+							Player.Character.RightUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(1.5, 0.549999952, -0.2)
+							Player.Character.LeftUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(-1.5, 0.549999952, -0.2)
+						end
+						if table.find(values.rage.aimbot.resolver.Jumbobox, 'animation') then
+							for a, b in next, Player.Character.Humanoid:GetPlayingAnimationTracks() do
+								b:Stop()
+							end
+						end
+						if table.find(values.rage.aimbot.resolver.Jumbobox, "bhop") then   
+							Player.Character.Head.CFrame = CFrame.new(Player.Character.Head.Position)
+							Player.Character.UpperTorso.CFrame = CFrame.new(Player.Character.UpperTorso.Position)
+							Player.Character.LowerTorso.CFrame = CFrame.new(Player.Character.LowerTorso.Position)
+							Player.Character.LeftLowerArm.CFrame = CFrame.new(Player.Character.LeftLowerArm.Position)
+							Player.Character.LeftUpperArm.CFrame = CFrame.new(Player.Character.LeftUpperArm.Position)
+							Player.Character.RightLowerArm.CFrame = CFrame.new(Player.Character.RightLowerArm.Position)
+							Player.Character.RightUpperArm.CFrame = CFrame.new(Player.Character.RightUpperArm.Position)
+							Player.Character.LeftLowerLeg.CFrame = CFrame.new(Player.Character.LeftLowerLeg.Position)
+							Player.Character.LeftUpperLeg.CFrame = CFrame.new(Player.Character.LeftUpperLeg.Position)
+							Player.Character.RightLowerLeg.CFrame = CFrame.new(Player.Character.RightLowerLeg.Position)
+							Player.Character.RightUpperLeg.CFrame = CFrame.new(Player.Character.RightUpperLeg.Position)
+						end
+						if values.rage.aimbot["front track"].Toggle then
+							Player.Character.Head.Neck.C0 = CFrame.new(0,values.rage.aimbot["Y distance"].Slider,values.rage.aimbot["X distance"].Slider) * CFrame.Angles(0, 0, 0)
+						end
+					end
+				end
+end)
+
+RunService:BindToRenderStep('Legit', 200, function()	
+	CamCFrame = Camera.CFrame
+	CamLook = CamCFrame.LookVector
+
+	RageTarget = nil
+	
+	pcall(function()
+		Fov.Visible = values.legit.settings['draw fov'].Toggle
+
+		Fov.Transparency = values.legit.settings['draw fov'].Transparency
+	
+		Fov.Color =  values.legit.settings['draw fov'].Color
+		Fov.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+		Fov.Radius = GetStatsLegit(GetWeaponLegit(Client.gun.Name))['field of view'].Slider
+		Fov.Thickness = values.legit.settings['fov thickness'].Slider
+		Fov.Filled = values.legit.settings['filled fov'].Toggle
+	end)
+
+
+
+
+	for i,v in pairs(ChamItems) do 
+		if v.Parent == nil then 
+			table.remove(ChamItems, i) 
+		end 
+	end 
+pcall(function()
+	for i,v in pairs(ChamItems) do
+		local cham = v[1]
+		local fromobject = v[2]
+			if cham.Name == 'WallCham' then 
+				if cham:IsA('BoxHandleAdornment') then 
+					cham.Size = fromobject.Size + Vector3.new( (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10))
+				elseif cham:IsA('CylinderHandleAdornment') then 
+					cham.Height = 1.2 + (values.visuals.players['cham thickness'].Slider/10)
+					cham.Radius = 0.61 + (values.visuals.players['cham thickness'].Slider/10)
+				end
+			elseif cham.Name == 'VisibleCham' then
+				if cham:IsA('BoxHandleAdornment') then 
+					cham.Size = fromobject.Size + Vector3.new( (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10))
+				elseif cham:IsA('CylinderHandleAdornment') then 
+					cham.Height = 1.2 + (values.visuals.players['vcham thickness'].Slider/10)
+					cham.Radius = 0.61 + (values.visuals.players['vcham thickness'].Slider/10)
+				end
+			end
+		end
+end)
+
+	if IsAlive(LocalPlayer) then
+		if values.rage.exploits['around the world'].Toggle and values.rage.exploits['around the world'].Active then 
+			for i,v in next, Players:GetChildren() do
+				if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team then
+					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+						aroundtheworld_value=aroundtheworld_value + (0.01 * values.rage.exploits['speed'].Slider)
+						LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame*CFrame.Angles(0, aroundtheworld_value, 0)*CFrame.new(0, values.rage.exploits['height'].Slider, values.rage.exploits['distance'].Slider)
+						break
+					end
+				end
+			end
+		end
+		if values.visuals.trail['enable'].Toggle then
+			pcall(function()
+			if not LocalPlayer.Character.HumanoidRootPart:FindFirstChild('Trail') then 
+				Part = LocalPlayer.Character.HumanoidRootPart
+				offset = -2
+				local Attachment = Instance.new('Attachment')
+				Attachment.Name = 'A1'
+				Attachment.Position = Vector3.new(-0.55602997541428, offset, 0)
+				Attachment.Parent = Part
+				
+				local Trail = Instance.new('Trail')
+				Trail.LightInfluence = 0
+				Trail.TextureMode = Enum.TextureMode.Static
+				Trail.LightEmission = 1
+				Trail.MaxLength = 10
+				Trail.Texture = 'rbxassetid://7485088415'
+				Trail.Parent = Part
+				Trail.Transparency = NumberSequence.new(0)
+				Trail.FaceCamera = false
+
+				local Attachment1 = Instance.new('Attachment')
+				Attachment1.Name = 'A2'
+				Attachment1.Position = Vector3.new(0.55602943897247, offset, 0)
+				Attachment1.Parent = Part
+
+
+				Trail.Attachment0 = Attachment
+				Trail.Attachment1 = Attachment1
+			else 
+				local trail = LocalPlayer.Character.HumanoidRootPart.Trail
+				local a1 = LocalPlayer.Character.HumanoidRootPart.A1
+				local a2 = LocalPlayer.Character.HumanoidRootPart.A2
+
+				trail.MaxLength = values.visuals.trail['max length'].Slider
+				
+				trail.Texture = values.visuals.trail['image type'].Dropdown == "normal" and "rbxassetid://5854341017" or values.visuals.trail['image type'].Dropdown == "lightning 2" and "rbxasssetid://7062832223" or values.visuals.trail['image type'].Dropdown == "lightning 3" and "rbxassetid:/446111271" or values.visuals.trail['image type'].Dropdown == 'custom' and 'rbxassetid://'..values.visuals.trail['image'].Text
+
+				if values.visuals.trail['custom color'].Toggle then 
+					trail.Color = ColorSequence.new(values.visuals.trail['custom color'].Color)
+				else 
+					trail.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255))
+				end
+
+				a1.Position = Vector3.new(values.visuals.trail['size (x,z)'].Slider/10, 5-(values.visuals.trail['offset (y)'].Slider)/5, 0)
+				a2.Position = Vector3.new(-values.visuals.trail['size (x,z)'].Slider/10, 5-(values.visuals.trail['offset (y)'].Slider/5), 0)
+				trail.FaceCamera = values.visuals.trail['face camera'].Toggle
+
+			end
+		    end)
+		elseif LocalPlayer.Character.HumanoidRootPart:FindFirstChild('Trail') then 
+			LocalPlayer.Character.HumanoidRootPart.Trail:Remove()
+		end
+		
+		local SelfVelocity = LocalPlayer.Character.HumanoidRootPart.Velocity
+
+		if values.misc.animations.enabled.Toggle then
+			if LoadedAnim then 
+				if savedanimationdance ~= Dance then 
+					savedanimationdance = Dance
+					LoadedAnim:Stop()
+				end
+				if not LoadedAnim.IsPlaying then 
+					savedanimationdance = Dance
+					LoadedAnim = LocalPlayer.Character.Humanoid:LoadAnimation(Dance)
+					LoadedAnim.Priority = Enum.AnimationPriority.Action
+					LoadedAnim:Play()
+					LoadedAnim:AdjustSpeed(values.misc.animations['animation speed'].Slider)
+				end
+			else 
+				savedanimationdance = Dance
+				LoadedAnim = LocalPlayer.Character.Humanoid:LoadAnimation(Dance)
+				LoadedAnim.Priority = Enum.AnimationPriority.Action
+				LoadedAnim:Play()
+				LoadedAnim:AdjustSpeed(values.misc.animations['animation speed'].Slider)
+			end
+		else 
+			if LoadedAnim then 
+				LoadedAnim:Stop()
+			end
 		end
 
-		
-		if TBLFIND(values.misc.client["gun modifiers"].Jumbobox, "firerate") then 
-			Client.DISABLED = false 
+
+		Root = LocalPlayer.Character.HumanoidRootPart
+		frchr = workspace:FindFirstChild('FreezeCharacter2') or workspace:FindFirstChild('FreezeCharacter')
+		if frchr and frchr.Size.x >= 5 then 
+			Root = frchr
 		end
-		       if values.rage.exploits["quick peek"].Toggle then
-			if values.rage.exploits["quick peek"].Active then 
-				if not workspace:FindFirstChild("FreezeCharacter") then 
-					local part = Instance.new('Part',workspace)
-					if values.rage.exploits['peek method'].Dropdown == 'freeze' then
-						part.Size = Vector3.new(10, 0, 10)
+		if values.misc.client['infinite crouch'].Toggle then
+			Client.crouchcooldown = 0
+		end
+		if values.misc.client['auto join team'].Toggle then
+			game:GetService('ReplicatedStorage').Events.JoinTeam:FireServer(values.misc.client['team'].Dropdown)
+		end
+		if table.find(values.misc.client['gun modifiers'].Jumbobox, 'firerate') then
+			Client.DISABLED = false
+		end
+		peektimewait=peektimewait+1
+		if values.rage['Quick peeks']['quick peek'].Toggle and allowedtofreeze  then
+			if values.rage['Quick peeks']['quick peek'].Active then 
+				if not workspace:FindFirstChild('FreezeCharacter') then 
+					local part = Instance.new('Part', workspace)
+
+					if values.rage['Quick peeks']['peek method'].Dropdown == 'freeze' then
+						part.Size = Vector3.new(15,1,15) 
 					else 
 						part.Size = Vector3.new(0, 0, 0)
 					end
-					part.Position = game.Players.LocalPlayer.Character.PrimaryPart.Position
+
+					part.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+					part.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity
 					part.CanCollide = false
 					part.Transparency = 1
 					part.Name = 'FreezeCharacter'
 		
+
 					local weld = Instance.new('Weld',part)
 					weld.Part0 = part
-					weld.Part1 = game.Players.LocalPlayer.Character.PrimaryPart
-		
-					local visualize = Instance.new('Part', part)
-					visualize.Size = Vector3.new(4,0.2,4) 
+					weld.Part1 = game.Players.LocalPlayer.Character.HumanoidRootPart
+
+					local visualize = Instance.new('MeshPart', part)
+					visualize.Size = Vector3.new(0.5, 0.2, 0.5) 
 					visualize.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position+Vector3.new(0, -3 , 0)
 					visualize.CanCollide = false
 					visualize.Anchored = true
-					visualize.Transparency = 0.3
+					visualize.MeshId = 'rbxassetid://5536195161'
 					visualize.Material = 'Neon'
+					visualize.Color = values.rage.exploits['visualize circle'].Color
+
 					visualize.Name = 'no'
+					if values.rage['Quick peeks']['visualize circle'].Toggle then
+						visualize.Transparency = values.rage['Quick peeks']['visualize circle'].Transparency
+					else 
+						visualize.Transparency = 1
+					end
+
 				else 
-					if values.rage.exploits["limit peak"].Toggle then
-						if (workspace.FreezeCharacter.no.Position - workspace.Camera.Focus.p).Magnitude > values.rage.exploits["limit distance"].Slider then 
-							workspace.FreezeCharacter:Remove()
+					if not freezebusy2 and values.rage['Quick peeks']['time limit'].Toggle then 
+						if peektimewait >= values.rage['Quick peeks']['time duration'].Slider then 
+							peektimewait = 0
+							freezebusy2 = true
+
+							wait(0.2)
+
+							pcall(function()
+								workspace.FreezeCharacter.Size = Vector3.new(0,0,0)
+
+								wait(values.rage['Quick peeks']['wbr'].Slider/100)
+	
+								workspace.FreezeCharacter:Remove()
+							end)
+
+
+							freezebusy2 = false
+						end
+					end
+					if not freezebusy1 and values.rage['Quick peeks']['limit peek'].Toggle then
+						if workspace:FindFirstChild('FreezeCharacter') and (workspace.FreezeCharacter.no.Position - workspace.Camera.Focus.p).Magnitude > values.rage['Quick peeks']['limit distance'].Slider then
+							freezebusy1 = true
+
+							wait(0.2)
+
+							pcall(function()
+								workspace.FreezeCharacter.Size = Vector3.new(0,0,0)
+								
+								wait(values.rage['Quick peeks']['wbr'].Slider/100)
+
+								workspace.FreezeCharacter:Remove()
+							end)
+
+							freezebusy1 = false
 						end
 					end
 				end
 			else 
-				if workspace:FindFirstChild("FreezeCharacter") then 
-					workspace:FindFirstChild("FreezeCharacter"):Remove()
+				peektimewait=0
+
+				if workspace:FindFirstChild('FreezeCharacter') then 
+					workspace:FindFirstChild('FreezeCharacter'):Remove()
 				end
 			end 
 		else 
-			if workspace:FindFirstChild("FreezeCharacter") then 
-				workspace:FindFirstChild("FreezeCharacter"):Remove()
+			peektimewait=0
+
+			if workspace:FindFirstChild('FreezeCharacter') then 
+				workspace:FindFirstChild('FreezeCharacter'):Remove()
 			end
 		end
-		if values.rage.exploits["kill all"].Toggle and values.rage.exploits["kill all"].Active and LocalPlayer.Character:FindFirstChild("UpperTorso") and LocalPlayer.Character:FindFirstChild("Gun") then
-			for _,Player in pairs(Players:GetPlayers()) do
-				if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild("UpperTorso") then
-					local oh1 = Player.Character.Head
-					local oh2 = Player.Character.Head.CFrame.p
-					local oh3 = Client.gun.Name
-					local oh4 = 4096
-					local oh5 = LocalPlayer.Character.Gun
-					local oh8 = 15
-					local oh9 = false
-					local oh10 = false
-					local oh11 = Vector3.new(0,0,0)
-					local oh12 = 16868
-					local oh13 = Vector3.new(0, 0, 0)
-					game:GetService("ReplicatedStorage").Events.HitPart:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
-				end
-			end
-		end 
-		if TBLFIND(values.visuals.effects.removals.Jumbobox, "scope lines") then 
-			NewScope.Enabled = LocalPlayer.Character:FindFirstChild("AIMING") and true or false 
-			PlayerGui.GUI.Crosshairs.Scope.Visible = false 
-		else 
-			NewScope.Enabled = false 
-		end 
-		BodyVelocity:Destroy() 
-		BodyVelocity = Instance.new("BodyVelocity") 
-		BodyVelocity.MaxForce = Vector3.new(math.huge,0,math.huge) 
-		if UserInputService:IsKeyDown("Space") and values.misc.movement["bunny hop"].Toggle then 
-			local add = 0 
-			if values.misc.movement.direction.Dropdown == "directional" or values.misc.movement.direction.Dropdown == "directional 2" then 
+		
+		if table.find(values.visuals.effects.removals.Jumbobox, 'scope lines') then 
+			NewScope.Enabled = LocalPlayer.Character:FindFirstChild('AIMING') and true or false
+			Crosshairs.Scope.Visible = false
+		else
+			NewScope.Enabled = false
+		end
+		
+		BodyVelocity:Destroy()
+		BodyVelocity = Instance.new('BodyVelocity')
+		BodyVelocity.MaxForce = Vector3.new(math.huge,0,math.huge)
+		if UserInputService:IsKeyDown('Space') and values.misc.movement['bunny hop'].Toggle then
+			local add = 0
+			if values.misc.movement.direction.Dropdown == 'directional' or values.misc.movement.direction.Dropdown == 'directional 2' then
 				if UserInputService:IsKeyDown("A") then add = 90 end 
 				if UserInputService:IsKeyDown("S") then add = 180 end 
 				if UserInputService:IsKeyDown("D") then add = 270 end 
@@ -8628,83 +10227,106 @@ RunService.RenderStepped:Connect(function(step)
 				if UserInputService:IsKeyDown("D") and UserInputService:IsKeyDown("W") then add = 315 end 
 				if UserInputService:IsKeyDown("D") and UserInputService:IsKeyDown("S") then add = 225 end 
 				if UserInputService:IsKeyDown("A") and UserInputService:IsKeyDown("S") then add = 145 end 
-			end 
-			local rot = YROTATION(CamCFrame) * CFAngles(0,RAD(add),0) 
-			BodyVelocity.Parent = LocalPlayer.Character.UpperTorso 
+			end
+			local rot = YROTATION(CamCFrame) * CFrame.Angles(0,math.rad(add),0)
+			local bhopspeed = values.misc.movement['overwrite'].Toggle and values.misc.movement['overwrite'].Active and values.misc.movement['overwrite speed'].Slider or values.misc.movement['speed'].Slider
+			BodyVelocity.Parent = LocalPlayer.Character.UpperTorso
 			LocalPlayer.Character.Humanoid.Jump = true
-				if values.misc.movement.type.Dropdown == "gyro" and values.misc.movement["gyro type"].Dropdown == "no fling" then 
-					BodyVelocity.MaxForce = Vector3.new(99999,0,99999)
-				else
-					BodyVelocity.MaxForce = Vector3.new(math.huge,0,math.huge)
-				end			
-			BodyVelocity.Velocity = Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * (values.misc.movement["speed"].Slider * 2) 
-			if add == 0 and values.misc.movement.direction.Dropdown == "directional" and not UserInputService:IsKeyDown("W") then 
-				BodyVelocity:Destroy() 
-			else 
-				if values.misc.movement.type.Dropdown == "cframe" then 
-				    BodyVelocity:Destroy()
-					Root.CFrame = Root.CFrame + Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * values.misc.movement["speed"].Slider/50 
-				end 
-			end 
+			BodyVelocity.Velocity = Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * (bhopspeed * 2)
+			if add == 0 and values.misc.movement.direction.Dropdown == 'directional' and not UserInputService:IsKeyDown('W') then
+				BodyVelocity:Destroy()
+			else
+
+
+				if values.misc.movement.type.Dropdown == 'cframe' then
+					BodyVelocity:Destroy()
+					Root.CFrame = Root.CFrame + Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * bhopspeed/50
+				elseif values.misc.movement.type.Dropdown == 'velocity' then
+					BodyVelocity:Destroy()
+					Root.Velocity = Vector3.new(rot.LookVector.X * (bhopspeed * 2), Root.Velocity.y, rot.LookVector.Z * (bhopspeed * 2))
+				elseif values.misc.movement.type.Dropdown == 'idk' then
+					BodyVelocity:Destroy()
+					spawn(function()
+						if not switchtrigger[1]  then 
+							switchtrigger[1] = true
+							wait(0.5)
+							switchtrigger[3] = Root.CFrame
+							Root.CFrame = switchtrigger[2]
+	
+							wait(0.1)
+							Root.CFrame = switchtrigger[3]
+							switchtrigger[1] = false
+						end
+					end)
+					
+					Root.CFrame = Root.CFrame + Vector3.new(rot.LookVector.X, 0, rot.LookVector.Z) * bhopspeed/50
+				end
+			end
 		end
-		if values.misc.movement["edge jump"].Toggle and values.misc.movement["edge jump"].Active then 
-			if LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then 
-				coroutine.wrap(function() 
-					RunService.RenderStepped:Wait() 
-					if LocalPlayer.Character ~= nil and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then 
-						LocalPlayer.Character.Humanoid:ChangeState("Jumping") 
-					end 
-				end)() 
-			end 
+		if values.misc.movement['gravity change'].Toggle and values.misc.movement['gravity change'].Active  then 
+		    workspace.Gravity = values.misc.movement['gravity amount'].Slider
+		else 
+		    workspace.Gravity = 80
 		end
-		Jitter = not Jitter 
-		LocalPlayer.Character.Humanoid.AutoRotate = false 
+
+
+		if values.misc.movement['no launch'].Toggle and values.misc.movement['no launch'].Active then 
+			if Root.Velocity.Y > values.misc.movement['launch block (y velocity)'].Slider then 
+				Root.Velocity = Vector3.new(Root.Velocity.x, 0, Root.Velocity.z)
+			end
+		end
+		if values.misc.movement['edge jump'].Toggle and values.misc.movement['edge jump'].Active then
+			if LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
+				coroutine.wrap(function()
+					RunService.RenderStepped:Wait()
+					if LocalPlayer.Character ~= nil and LocalPlayer.Character:FindFirstChild('Humanoid') and LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
+						LocalPlayer.Character.Humanoid:ChangeState('Jumping')
+					end
+				end)()
+			end
+		end
+
+		spawn(function()
+			if not jitterwait then
+				jitterwait = true
+				Jitter = not Jitter
+				wait(values.rage.angles['jitter wait (ms)'].Slider/100) 
+				jitterwait = false
+			end
+		end)
+			Spin = math.clamp(Spin + values.rage.angles['spin speed'].Slider, 0, 360)
+	if Spin == 360 then Spin = 0 end
+		LocalPlayer.Character.Humanoid.AutoRotate = false
 		if values.rage.angles.enabled.Toggle and not DisableAA then
 			local Angle = -math.atan2(CamLook.Z, CamLook.X) + math.rad(-90)
-			if values.rage.angles["yaw base"].Dropdown == "spin" then
+			if values.rage.angles['yaw base'].Dropdown == 'spin' then
 				Angle = Angle + math.rad(Spin)
 			end
-			if values.rage.angles["yaw base"].Dropdown == "random" then
-				Angle = Angle + math.rad(math.random(0, 360) / values.rage.angles["random speed"].Slider)
+			if values.rage.angles['yaw base'].Dropdown == 'random' then
+				Angle = Angle + math.rad(math.random(0, 360))
 			end
-					if values.rage.angles["yaw base"].Dropdown == "3 head" then
-						Angle = Angle + math.rad(math.random(1, 180))
-					end 
-					if values.rage.angles["yaw base"].Dropdown == "stutter" then 
-						Angle = Angle + RAD(math.random(0, 90))
-					end
-					if values.rage.angles["yaw base"].Dropdown == "wasd yaw base" then 
-							 if UserInputService:IsKeyDown("W") then
-							Angle = Angle + 0
-							elseif values.rage.angles["reset yaw"].Toggle and values.rage.angles["reset yaw"].Active then
-							Angle = -math.atan2(CamLook.Z, CamLook.X) + RAD(-90)
-							end
-							if UserInputService:IsKeyDown("A") then
-							Angle = Angle + 90
-							elseif values.rage.angles["reset yaw"].Toggle and values.rage.angles["reset yaw"].Active then
-							Angle = -math.atan2(CamLook.Z, CamLook.X) + RAD(-90)
-							end
-							if UserInputService:IsKeyDown("S") then
-							Angle = Angle + -180
-							elseif values.rage.angles["reset yaw"].Toggle and values.rage.angles["reset yaw"].Active then
-							Angle = -math.atan2(CamLook.Z, CamLook.X) + RAD(-90)
-							end
-							if UserInputService:IsKeyDown("D") then
-							Angle = Angle + -90
-							elseif values.rage.angles["reset yaw"].Toggle and values.rage.angles["reset yaw"].Active then
-							Angle = -math.atan2(CamLook.Z, CamLook.X) + RAD(-90)
-							end
-						end 
-					if values.rage.angles["reset yaw"].Toggle and values.rage.angles["reset yaw"].Active then
-					Angle = -math.atan2(CamLook.Z, CamLook.X) + RAD(-90) 
+			if values.rage.angles["yaw base"].Dropdown == "wasd yaw base" then 
+				if game:GetService("UserInputService"):IsKeyDown("W") then
+					Angle = Angle + 0
 				end
-			local Offset = math.rad(-values.rage.angles["yaw offset"].Slider - (values.rage.angles.jitter.Toggle and Jitter and values.rage.angles["jitter offset"].Slider or 0))
+				if game:GetService("UserInputService"):IsKeyDown("A") then
+					Angle = Angle + 90
+				end
+				if game:GetService("UserInputService"):IsKeyDown("S") then
+					Angle = Angle + -180
+				end
+				if game:GetService("UserInputService"):IsKeyDown("D") then
+					Angle = Angle + -90
+				end
+			end 
+			local Offset = math.rad(-values.rage.angles['yaw offset'].Slider - (values.rage.angles.jitter.Toggle and Jitter and values.rage.angles['jitter offset'].Slider or values.rage.angles['shoot pitch'].Toggle and shotthingy and values.rage.angles['offset'].Slider or 0))
 			local CFramePos = CFrame.new(Root.Position) * CFrame.Angles(0, Angle + Offset, 0)
-			if values.rage.angles["yaw base"].Dropdown == "targets" then
+
+			if values.rage.angles['yaw base'].Dropdown == 'targets' then
 				local part
-				local closest = 6969
+				local closest = 9999999
 				for _,plr in pairs(Players:GetPlayers()) do
-					if plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character:FindFirstChild("Humanoid").Health > 0 and plr.Team ~= LocalPlayer.Team then
+					if plr.Character and plr.Character:FindFirstChild('Humanoid') and plr.Character:FindFirstChild('Humanoid').Health > 0 and plr.Team ~= LocalPlayer.Team then
 						local pos, onScreen = Camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
 						local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
 						if closest > magnitude then
@@ -8713,214 +10335,258 @@ RunService.RenderStepped:Connect(function(step)
 						end
 					end
 				end
+				
 				if part ~= nil then
 					CFramePos = CFrame.new(Root.Position, part.Position) * CFrame.Angles(0, Offset, 0)
 				end
 			end
-			
-			Root.CFrame = YROTATION(CFramePos)
-			if values.rage.angles["body roll"].Dropdown == "180" then
-				Root.CFrame = Root.CFrame * CFrame.Angles(values.rage.angles["body roll"].Dropdown == "180" and math.rad(180) or 0, 15.8, 0)
-				LocalPlayer.Character.Humanoid.HipHeight = 3
+			if values.rage.angles['lock yaw'].Toggle and values.rage.angles['lock yaw'].Active then 
+				if lockyaw == nil then 
+					lockyaw = Angle
+				end
+				CFramePos = CFrame.new(Root.Position) * CFrame.Angles(0, lockyaw + Offset, 0)
 			else 
+				lockyaw = Angle
+			end
+			Root.CFrame = YROTATION(CFramePos)
+			switch180roll = not switch180roll
+			if values.rage.angles['body roll'].Dropdown == 'switch' then
+				if switch180roll then 
+					Root.CFrame = Root.CFrame * CFrame.Angles(math.rad(180), 0, 0)
+					LocalPlayer.Character.Humanoid.HipHeight = 1.5
+					LocalPlayer.Character.Humanoid.CameraOffset = Vector3.new(0, -2.7, 0)
+				else
+					LocalPlayer.Character.Humanoid.HipHeight = 1.5
+				end
+			end
+
+			if values.rage.angles['body roll'].Dropdown == '180' then
+				Root.CFrame = Root.CFrame * CFrame.Angles(values.rage.angles['body roll'].Dropdown == '180' and math.rad(180 + values.rage.angles['roll offset'].Slider) or 0, 0, 0)
+				LocalPlayer.Character.Humanoid.HipHeight = 2
+			else
 				LocalPlayer.Character.Humanoid.HipHeight = 2
 			end
 
-					Root.CFrame = YROTATION(CFramePos) 
-					if values.rage.angles["body roll"].Dropdown == "360" then 
-						Root.CFrame = Root.CFrame * CFAngles(values.rage.angles["body roll"].Dropdown == "360" and RAD(-values.rage.angles["body roll offset"].Slider or 0) or 0, 1, 0)  
-						LocalPlayer.Character.Humanoid.HipHeight = 1
-					else 
-						LocalPlayer.Character.Humanoid.HipHeight = 1
-					end
-								if values.rage.angles["body roll"].Dropdown == "spin" then 
-				LocalPlayer.Character.LowerTorso.Root.C0 = LocalPlayer.Character.LowerTorso.Root.C0 * CFrame.Angles(0, 0, math.pi/10) * CFrame.new(0, 0, 0)   
-            else
-				LocalPlayer.Character.Humanoid.HipHeight = 2      
-			end  
+			savedspinpitch=savedspinpitch+0.25
+			local Pitch = values.rage.angles['pitch'].Dropdown == 'none' and CamLook.Y or values.rage.angles['pitch'].Dropdown == 'up' and 1 or values.rage.angles['pitch'].Dropdown == 'down' and -1 or values.rage.angles['pitch'].Dropdown == 'zero' and 0 or values.rage.angles['pitch'].Dropdown == 'among' and math.huge or values.rage.angles['pitch'].Dropdown == 'random' and Random.new():NextNumber(-50,50) or values.rage.angles['pitch'].Dropdown == 'spin' and savedspinpitch 
 
+			if values.rage.angles['extend pitch'].Toggle and (values.rage.angles['pitch'].Dropdown == 'up' or values.rage.angles['pitch'].Dropdown == 'down') then
+				Pitch = (Pitch*2)/1.6
+			end
+			if values.rage.angles['custom pitch'].Toggle then
+			    Pitch = values.rage.angles['pitch value'].Slider/7
+			end
+			if values.rage.angles.jitter.Toggle and Jitter then 
+				Pitch = values.rage.angles['jitter pitch'].Slider/7
+			end
 
-			local Pitch = values.rage.angles["pitch"].Dropdown == "Sus_down" and -3  
-			or values.rage.angles["pitch"].Dropdown == "up" and 1 or 
-			values.rage.angles["pitch"].Dropdown == "down" and -1 or 
-			values.rage.angles["pitch"].Dropdown == "negative" and -6 or 
-			values.rage.angles["pitch"].Dropdown == "glitch" and (0 + -5) or 
-			values.rage.angles["pitch"].Dropdown == "Bodyarm" and -15 or 
-			values.rage.angles["pitch"].Dropdown == "imposter" and math.huge -5/0 -1 or 
-			values.rage.angles["pitch"].Dropdown == "zero" and 0 or
-			values.rage.angles["pitch"].Dropdown == "freak" and 5 or 
-			values.rage.angles["pitch"].Dropdown == "random" and math.random(-10, 10)/10 or 2.5 or 
-			values.rage.angles["pitch"].Dropdown == "huge" and math.huge or
-			values.rage.angles["pitch"].Dropdown == "180+" and -9 or 
-			values.rage.angles["pitch"].Dropdown == "weird" and -5/93 -13 or 
-			values.rage.angles["pitch"].Dropdown == "random" and math.random(-25, 25)/25 or 
-			values.rage.angles["pitch"].Dropdown == "crazy" and math.random(-99999999, 100)/100 or 
-			values.rage.angles["pitch"].Dropdown == "normal" and -71 or 
-			values.rage.angles["pitch"].Dropdown == "normal+" and 71 or 
-			values.rage.angles["pitch"].Dropdown == "up+" and 12 or 
-			values.rage.angles["pitch"].Dropdown == "extend" and -12 or 
-			values.rage.angles["pitch"].Dropdown == "fake nohead" and -99 or 
-			values.rage.angles["pitch"].Dropdown == "extend+" and -62 or
-			values.rage.angles["pitch"].Dropdown == "testing" and -15
-			if values.rage.angles["extend pitch"].Toggle and (values.rage.angles["pitch"].Dropdown == "up" or 
-			values.rage.angles["pitch"].Dropdown == "down" or 
-			values.rage.angles["pitch"].Dropdown == "negative" or values.rage.angles["pitch"].Dropdown == "glitch" or 
-			values.rage.angles["pitch"].Dropdown == "Sus_down" or values.rage.angles["pitch"].Dropdown == "180" or 
-			values.rage.angles ["pitch"].Dropdown == "Bodyarm") then 
-				Pitch = (Pitch*2)/1.6 
-			end 
-			game.ReplicatedStorage.Events.ControlTurn:FireServer(Pitch, LocalPlayer.Character:FindFirstChild("Climbing") and true or false)
+			if values.rage.angles['shoot pitch'].Toggle and shotthingy then 
+				Pitch = values.rage.angles['pitch'].Slider/7
+			end
+
+			if values.rage.angles['overwrite keybind'].Toggle and values.rage.angles['overwrite keybind'].Active then
+				Pitch = values.rage.angles['overwrite pitch'].Dropdown == 'none' and CamLook.Y or values.rage.angles['overwrite pitch'].Dropdown == 'up' and 1 or values.rage.angles['overwrite pitch'].Dropdown == 'down' and -1 or values.rage.angles['overwrite pitch'].Dropdown == 'zero' and 0 or values.rage.angles['overwrite pitch'].Dropdown == 'among' and math.huge or values.rage.angles['overwrite pitch'].Dropdown == 'random' and Random.new():NextNumber(0.01,10) or values.rage.angles['overwrite pitch'].Dropdown == 'spin' and savedspinpitch
+		    end
+
+			game.ReplicatedStorage.Events.ControlTurn:FireServer(Pitch, LocalPlayer.Character:FindFirstChild('Climbing') and true or false)
 		else
 			LocalPlayer.Character.Humanoid.HipHeight = 2
-            Root.CFrame = CFrame.new(Root.Position) * CFrame.Angles(0, -math.atan2(CamLook.Z, CamLook.X) + math.rad(270), 0)
-			game.ReplicatedStorage.Events.ControlTurn:FireServer(CamLook.Y, LocalPlayer.Character:FindFirstChild("Climbing") and true or false)
+			Root.CFrame = CFrame.new(Root.Position) * CFrame.Angles(0, -math.atan2(CamLook.Z, CamLook.X) + math.rad(270), 0)
+			game.ReplicatedStorage.Events.ControlTurn:FireServer(CamLook.Y, LocalPlayer.Character:FindFirstChild('Climbing') and true or false)
 		end
-		if values.rage.others["remove head"].Toggle then
-			if LocalPlayer.Character:FindFirstChild("FakeHead") then
-                LocalPlayer.Character.FakeHead:Destroy()
-            end
-            if LocalPlayer.Character:FindFirstChild("HeadHB") then
-                LocalPlayer.Character.HeadHB:Destroy()
-            end
+		if values.rage.others['remove head'].Toggle then
+			if LocalPlayer.Character:FindFirstChild('FakeHead') then
+				LocalPlayer.Character.FakeHead:Destroy()
+			end
+			if LocalPlayer.Character:FindFirstChild('HeadHB') then
+				LocalPlayer.Character.HeadHB:Destroy()
+			end
 		end
-		if table.find(values.misc.client["gun modifiers"].Jumbobox, "recoil") then
+		if table.find(values.misc.client['gun modifiers'].Jumbobox, 'recoil') then
 			Client.resetaccuracy()
-			Client.RecoilX = 0.01
-			Client.RecoilY = 0.01
+			Client.RecoilX = 0
+			Client.RecoilY = 0
 		end
+	else 
+		pcall(function()
+			workspace:FindFirstChild('FreezeCharacter'):Remove()
+		end)
 	end
 	for _,Player in pairs(Players:GetPlayers()) do
-		if Player.Character and Player ~= LocalPlayer and Player.Character:FindFirstChild("HumanoidRootPart") and Player.Character.HumanoidRootPart:FindFirstChild("OldPosition") then
+		if Player.Character and Player ~= LocalPlayer and Player.Character:FindFirstChild('HumanoidRootPart') and Player.Character.HumanoidRootPart:FindFirstChild('OldPosition') then
 			coroutine.wrap(function()
 				local Position = Player.Character.HumanoidRootPart.Position
 				RunService.RenderStepped:Wait()
-				if Player.Character and Player ~= LocalPlayer and Player.Character:FindFirstChild("HumanoidRootPart") then
-					if Player.Character.HumanoidRootPart:FindFirstChild("OldPosition") then
+				if Player.Character and Player ~= LocalPlayer and Player.Character:FindFirstChild('HumanoidRootPart') then
+					if Player.Character.HumanoidRootPart:FindFirstChild('OldPosition') then
 						Player.Character.HumanoidRootPart.OldPosition.Value = Position
 					else
-						local Value = Instance.new("Vector3Value")
-						Value.Name = "OldPosition"
+						local Value = Instance.new('Vector3Value')
+						Value.Name = 'OldPosition'
 						Value.Value = Position
 						Value.Parent = Player.Character.HumanoidRootPart
 					end
 				end
 			end)()
 		end
-	end 
-	for _,Player in pairs(Players:GetPlayers()) do 
-		local tbl = objects[Player] 
-		if tbl == nil then return end 
-		if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and Player.Team ~= "TTT" and (Player.Team ~= LocalPlayer.Team or values.visuals.players.teammates.Toggle) and Player.Character:FindFirstChild("Gun") and Player.Character:FindFirstChild("Humanoid") and Player ~= LocalPlayer then 
-			local HumanoidRootPart = Player.Character.HumanoidRootPart 
-			local RootPosition = HumanoidRootPart.Position 
-			local Pos, OnScreen = Camera:WorldToViewportPoint(RootPosition) 
-			local Size = (Camera:WorldToViewportPoint(RootPosition - Vector3.new(0, 3, 0)).Y - Camera:WorldToViewportPoint(RootPosition + Vector3.new(0, 2.6, 0)).Y) / 2 
+	end
 
-			local Drawings, Text = TBLFIND(values.visuals.players.outlines.Jumbobox, "drawings") ~= nil, TBLFIND(values.visuals.players.outlines.Jumbobox, "text") ~= nil 
+	for _,Player in pairs(Players:GetPlayers()) do
+		local tbl = objects[Player]
+		if tbl == nil then return end
+		if Player.Character and Player.Character:FindFirstChild('HumanoidRootPart') and Player.Team ~= 'TTT' and (Player.Team ~= LocalPlayer.Team or values.visuals.players.teammates.Toggle) and Player.Character:FindFirstChild('Gun') and Player.Character:FindFirstChild('Humanoid') and Player ~= LocalPlayer then
+			local HumanoidRootPart = Player.Character.HumanoidRootPart
+			local RootPosition = HumanoidRootPart.Position
+			local Pos, OnScreen = Camera:WorldToViewportPoint(RootPosition)
+			local Size = (Camera:WorldToViewportPoint(RootPosition - Vector3.new(0, 3, 0)).Y - Camera:WorldToViewportPoint(RootPosition + Vector3.new(0, 2.6, 0)).Y) / 2
 
-			tbl.Box.Color = values.visuals.players.box.Color 
-			tbl.Box.Size = Vector2.new(Size * 1.5, Size * 1.9) 
-			tbl.Box.Position = Vector2.new(Pos.X - Size*1.5 / 2, (Pos.Y - Size*1.6 / 2)) 
+			local Drawings, Text = table.find(values.visuals.players.outlines.Jumbobox, 'drawings') ~= nil, table.find(values.visuals.players.outlines.Jumbobox, 'text') ~= nil
 
-			if values.visuals.players.box.Toggle then 
-				tbl.Box.Visible = OnScreen 
-				if Drawings then 
-					tbl.BoxOutline.Size = tbl.Box.Size 
-					tbl.BoxOutline.Position = tbl.Box.Position 
-					tbl.BoxOutline.Visible = OnScreen 
-				else 
-					tbl.BoxOutline.Visible = false 
-				end 
-			else 
-				tbl.Box.Visible = false 
-				tbl.BoxOutline.Visible = false 
-			end 
+			tbl.Box.Color = (values.rage['Loop kill']['Target box'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown and values.rage['Loop kill']['Target box'].Color or values.visuals.players.box.Color)
+			tbl.Box.Size = Vector2.new(Size * 1.5, Size * 1.9)
+			tbl.Box.Position = Vector2.new(Pos.X - Size*1.5 / 2, (Pos.Y - Size*1.6 / 2))
 
-			if values.visuals.players.health.Toggle then 
-				tbl.Health.Color = Color3.new(0,1,0) 
-				tbl.Health.From = Vector2.new((tbl.Box.Position.X - 5), tbl.Box.Position.Y + tbl.Box.Size.Y) 
-				tbl.Health.To = Vector2.new(tbl.Health.From.X, tbl.Health.From.Y - math.clamp(Player.Character.Humanoid.Health / Player.Character.Humanoid.MaxHealth, 0, 1) * tbl.Box.Size.Y) 
-				tbl.Health.Visible = OnScreen 
-				if Drawings then 
-					tbl.HealthOutline.From = Vector2.new(tbl.Health.From.X, tbl.Box.Position.Y + tbl.Box.Size.Y + 1) 
-					tbl.HealthOutline.To = Vector2.new(tbl.Health.From.X, (tbl.Health.From.Y - 1 * tbl.Box.Size.Y) -1) 
-					tbl.HealthOutline.Visible = OnScreen 
-				else 
-					tbl.HealthOutline.Visible = false 
-				end 
-			else 
-				tbl.Health.Visible = false 
-				tbl.HealthOutline.Visible = false 
-			end 
-
-			if values.visuals.players.weapon.Toggle then 
-				tbl.Weapon.Color = values.visuals.players.weapon.Color 
-				tbl.Weapon.Text = Player.Character.EquippedTool.Value 
-				tbl.Weapon.Position = Vector2.new(tbl.Box.Size.X/2 + tbl.Box.Position.X, tbl.Box.Size.Y + tbl.Box.Position.Y + 1) 
-				tbl.Weapon.Font = Drawing.Fonts[values.visuals.players.font.Dropdown] 
-				tbl.Weapon.Outline = Text 
-				tbl.Weapon.Size = values.visuals.players.size.Slider 
-				tbl.Weapon.Visible = OnScreen 
-			else 
-				tbl.Weapon.Visible = false 
-			end 
-
-			if values.visuals.players["weapon icon"].Toggle then 
-				Items[Player.Name].ImageColor3 = values.visuals.players["weapon icon"].Color 
-				Items[Player.Name].Image = GetIcon.getWeaponOfKiller(Player.Character.EquippedTool.Value) 
-				Items[Player.Name].Position = UDim2.new(0, tbl.Box.Size.X/2 + tbl.Box.Position.X, 0, tbl.Box.Size.Y + tbl.Box.Position.Y + (values.visuals.players.weapon.Toggle and -10 or -22)) 
-				Items[Player.Name].Visible = OnScreen 
-			else 
-				Items[Player.Name].Visible = false 
-			end 
-
-			if values.visuals.players.name.Toggle then 
-				tbl.Name.Color = values.visuals.players.name.Color 
-				tbl.Name.Text = Player.Name 
-				tbl.Name.Position = Vector2.new(tbl.Box.Size.X/2 + tbl.Box.Position.X,  tbl.Box.Position.Y - 16) 
-				tbl.Name.Font = Drawing.Fonts[values.visuals.players.font.Dropdown] 
-				tbl.Name.Outline = Text 
-				tbl.Name.Size = values.visuals.players.size.Slider 
-				tbl.Name.Visible = OnScreen 
-			else 
-				tbl.Name.Visible = false 
-			end 
-			local LastInfoPos = tbl.Box.Position.Y - 1 
-			if TBLFIND(values.visuals.players.indicators.Jumbobox, "armor") and Player:FindFirstChild("Kevlar") then 
-				tbl.Armor.Color = Color3.fromRGB(0, 150, 255) 
-				tbl.Armor.Text = Player:FindFirstChild("Helmet") and "HK" or "K" 
-				tbl.Armor.Position = Vector2.new(tbl.Box.Size.X + tbl.Box.Position.X + 12, LastInfoPos) 
-				tbl.Armor.Font = Drawing.Fonts[values.visuals.players.font.Dropdown] 
-				tbl.Armor.Outline = Text 
-				tbl.Armor.Size = values.visuals.players.size.Slider 
-				tbl.Armor.Visible = OnScreen 
-
-				LastInfoPos = LastInfoPos + values.visuals.players.size.Slider 
-			else 
-				tbl.Armor.Visible = false 
-			end 
-		else 
-			if Player.Name ~= LocalPlayer.Name then 
-				Items[Player.Name].Visible = false 
-				for i,v in pairs(tbl) do 
-					v.Visible = false 
-				end 
-			end 
-		end 
-	end 
-end) 
-
-			local visualsilentangle = nil
-			local last = tick()
-			RunService.RenderStepped:Connect(function()
-				if RageTarget then
-					visualsilentangle = RageTarget.Position
-					last = tick()
+			-- edited
+			
+			if values.visuals.players.box.Toggle or (values.rage['Loop kill']['Target box'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown) then
+				tbl.Box.Visible = OnScreen
+				tbl.Box.Thickness = 0.001
+				if Drawings then
+					tbl.BoxOutline.Size = tbl.Box.Size
+					tbl.BoxOutline.Position = tbl.Box.Position
+					tbl.BoxOutline.Visible = OnScreen
 				else
-					if tick() - last > values.visuals.self["silent angle speed"].Slider/50 then
-						visualsilentangle = nil
+					tbl.BoxOutline.Visible = false
+				end
+			else
+				tbl.Box.Visible = false
+				tbl.BoxOutline.Visible = false
+			end
+
+			if values.visuals.players.health.Toggle or (values.rage['Loop kill']['Target health'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown) then
+				tbl.Health.Color = (values.rage['Loop kill']['Target health'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown and values.rage['Loop kill']['Target health'].Color or values.visuals.players.health.Color)
+				tbl.Health.From = Vector2.new((tbl.Box.Position.X - 5), tbl.Box.Position.Y + tbl.Box.Size.Y)
+				tbl.Health.To = Vector2.new(tbl.Health.From.X, tbl.Health.From.Y - math.clamp(Player.Character.Humanoid.Health / Player.Character.Humanoid.MaxHealth, 0, 1) * tbl.Box.Size.Y)
+				tbl.Health.Visible = OnScreen
+				if Drawings then
+					tbl.HealthOutline.From = Vector2.new(tbl.Health.From.X, tbl.Box.Position.Y + tbl.Box.Size.Y + 1)
+					tbl.HealthOutline.To = Vector2.new(tbl.Health.From.X, (tbl.Health.From.Y - 1 * tbl.Box.Size.Y) -1)
+					tbl.HealthOutline.Visible = OnScreen
+				else
+					tbl.HealthOutline.Visible = false
+				end
+			else
+				tbl.Health.Visible = false
+				tbl.HealthOutline.Visible = false
+			end
+
+			if values.visuals.players.weapon.Toggle or (values.rage['Loop kill']['Target weapon'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown) then
+				tbl.Weapon.Color = (values.rage['Loop kill']['Target weapon'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown and values.rage['Loop kill']['Target weapon'].Color or values.visuals.players.weapon.Color)
+				tbl.Weapon.Text = Player.Character.EquippedTool.Value
+				tbl.Weapon.Position = Vector2.new(tbl.Box.Size.X/2 + tbl.Box.Position.X, tbl.Box.Size.Y + tbl.Box.Position.Y + 1)
+				tbl.Weapon.Font = Drawing.Fonts[values.visuals.players.font.Dropdown]
+				tbl.Weapon.Outline = Text
+				tbl.Weapon.Size = values.visuals.players.size.Slider
+				tbl.Weapon.Visible = OnScreen
+			else
+				tbl.Weapon.Visible = false
+			end
+
+			if values.visuals.players['weapon icon'].Toggle or (values.rage['Loop kill']['Target weapon icon'].Toggle and Player.Name == values.rage['Loop kill']['Player'].Dropdown) then
+				Items[Player.Name].ImageColor3 = (values.rage['Loop kill']['Target weapon icon'].Toggle and Player.Name == values.rage['Loop kill']['Player'].Dropdown and values.rage['Loop kill']['Target weapon icon'].Color or values.visuals.players['weapon icon'].Color)
+				Items[Player.Name].Image = GetIcon.getWeaponOfKiller(Player.Character.EquippedTool.Value)
+				Items[Player.Name].Position = UDim2.new(0, tbl.Box.Size.X/2 + tbl.Box.Position.X, 0, tbl.Box.Size.Y + tbl.Box.Position.Y + (values.visuals.players.weapon.Toggle and -10 or -22))
+				Items[Player.Name].Visible = OnScreen
+			else
+				Items[Player.Name].Visible = false
+			end
+
+			if values.visuals.players.name.Toggle or (values.rage['Loop kill']['Target name'].Toggle and Player.Name == values.rage['Loop kill']['Player'].Dropdown)  then
+				tbl.Name.Color = (values.rage['Loop kill']['Target name'].Toggle and Player.Name == values.rage['Loop kill']['Player'].Dropdown and values.rage['Loop kill']['Target name'].Color or values.visuals.players.name.Color)
+				tbl.Name.Text = Player.Name
+				tbl.Name.Position = Vector2.new(tbl.Box.Size.X/2 + tbl.Box.Position.X,  tbl.Box.Position.Y - 16)
+				tbl.Name.Font = Drawing.Fonts[values.visuals.players.font.Dropdown]
+				tbl.Name.Outline = Text
+				tbl.Name.Size = values.visuals.players.size.Slider
+				tbl.Name.Visible = OnScreen
+			else
+				tbl.Name.Visible = false
+			end
+			local LastInfoPos = tbl.Box.Position.Y - 1
+			if table.find(values.visuals.players.indicators.Jumbobox, 'armor') and Player:FindFirstChild('Kevlar') then
+				tbl.Armor.Color = Color3.fromRGB(0, 150, 255)
+				tbl.Armor.Text = Player:FindFirstChild('Helmet') and 'HK' or 'K'
+				tbl.Armor.Position = Vector2.new(tbl.Box.Size.X + tbl.Box.Position.X + 12, LastInfoPos)
+				tbl.Armor.Font = Drawing.Fonts[values.visuals.players.font.Dropdown]
+				tbl.Armor.Outline = Text
+				tbl.Armor.Size = values.visuals.players.size.Slider
+				tbl.Armor.Visible = OnScreen
+
+				LastInfoPos = LastInfoPos + values.visuals.players.size.Slider
+			else
+				tbl.Armor.Visible = false
+			end
+	--[[		if table.find(values.visuals.players.indicators.Jumbobox, 'Crouching') then
+			local crouch
+			for i,v in pairs(debug.getupvalues(Client.setcharacter)) do
+				if type(v) == "userdata" and v.ClassName == "AnimationTrack" and v.Name == "Idle" then
+					crouch = v																																																																																																																																																																																																																																																																																																																																																						-- this_was_pasted_from_mexicanhook
+				end
+			end
+				for i,v in pairs (Player.Character.Humanoid:GetPlayingAnimationTracks()) do
+					if v == crouch then
+						tbl.Crouching.Color = Color3.fromRGB(255,0,0)
+						tbl.Crouching.Text = 'Crouching'
+						tbl.Crouching.Position = Vector2.new(tbl.Box.Size.X + tbl.Box.Position.X + 13, LastInfoPos + 2)
+						tbl.Crouching.Font = Drawing.Fonts[values.visuals.players.font.Dropdown]
+						tbl.Crouching.Outline = Text
+						tbl.Crouching.Size = values.visuals.players.size.Slider
+						tbl.Crouching.Visible = OnScreen
 					end
 				end
+			end--]]
+		else
+			if Player.Name ~= LocalPlayer.Name then
+				Items[Player.Name].Visible = false
+				for i,v in pairs(tbl) do
+					v.Visible = false
+				end
+			end
+		end
+	end
+
+	if workspace:FindFirstChild('Map') and Client.gun ~= 'none' and Client.gun.Name ~= 'C4' then
+	if values.misc.movement['height change'].Toggle then 
+		pcall(function() LocalPlayer.Character.Humanoid.HipHeight = 2 * (values.misc.movement['height amount'].Slider/5) end)
+	else 
+	    pcall(function() LocalPlayer.Character.Humanoid.HipHeight = 2 end)
+	end
+
+	if values.misc.movement['no velocity'].Toggle then 
+	   pcall(function() LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0, LocalPlayer.Character.HumanoidRootPart.Velocity.y, 0) end)
+	end
+
+	if values.misc.movement['no gun'].Toggle then 
+	   pcall(function() LocalPlayer.Character.Gun:Remove()end)
+	end
+
+	if values.misc.movement['client offset'].Toggle then 
+       pcall(function() LocalPlayer.Character.LowerTorso:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(0, (values.misc.movement['offset (y)'].Slider/5), 0) end)
+    end
+
+	end
+end)
+
+
+
+
+
+
+			local visualsilentangle = nil
+			VisualizeSilentAngles:Connect(function(pos)
+					visualsilentangle = RageTarget.Position
+					wait(values.visuals.self["silent angle speed"].Slider/50)
+					visualsilentangle = nil
 			end)
 
 local mt = getrawmetatable(game) 
@@ -8932,7 +10598,7 @@ setreadonly(mt,false)
 mt.__namecall = function(self, ...) 
 	local method = tostring(getnamecallmethod()) 
 	local args = {...} 
-
+if not getgenv().PasteDisabled then
 	if method == "SetPrimaryPartCFrame" and self.Name == "Arms" then 
 		if values.visuals.self["third person"].Toggle and values.visuals.self["third person"].Active and LocalPlayer.Character then 
 			args[1] = args[1] * CFrame.new(99, 99, 99) 
@@ -8957,22 +10623,27 @@ mt.__namecall = function(self, ...)
 		return 
 	end 
 	if method == "FireServer" then 
-		if LEN(self.Name) == 38 then 
+		if string.len(self.Name) == 38 then 
 			return 
-		elseif self.Name == "FallDamage" and TBLFIND(values.misc.client["damage bypass"].Jumbobox, "fall") or values.misc.movement["jump bug"].Toggle and values.misc.movement["jump bug"].Active then 
+		elseif self.Name == "FallDamage" and table.find(values.misc.client["damage bypass"].Jumbobox, "fall") or values.misc.movement["jump bug"].Toggle and values.misc.movement["jump bug"].Active then 
 			return 
-		elseif self.Name == "BURNME" and TBLFIND(values.misc.client["damage bypass"].Jumbobox, "fire") then 
+		elseif self.Name == "BURNME" and table.find(values.misc.client["damage bypass"].Jumbobox, "fire") then 
 			return 
 		elseif self.Name == "ControlTurn" and not checkcaller() then 
 			return 
 		end 
+		if self.Name == "UpdatePing" then
+		if values.rage.fakelag['set ping'].Slider ~= 0 then
+			args[1] = values.rage.fakelag['set ping'].Slider / 10
+		end
+		end
 		if self.Name == "PlayerChatted" and values.misc.client["chat alive"].Toggle then 
 			args[2] = false 
 			args[3] = "Innocent" 
 			args[4] = false 
 			args[5] = false 
 		end 
-		if self.Name == "PlayerChatted" then
+		if self.Name == "PlayerChatted" and not values.misc.chat["chat spam"].Toggle then
 			for i,v in pairs(emojis) do
 				if args[1]:find(i) then
 					args[1] = string.gsub(args[1], i, v)
@@ -8990,18 +10661,18 @@ mt.__namecall = function(self, ...)
 		if #args[2] == 1 and args[2][1].Name == "SpawnPoints" then 
 			local Team = LocalPlayer.Status.Team.Value 
 
-			if TBLFIND(values.misc.client.shop.Jumbobox, "anywhere") then 
+			if table.find(values.misc.client.shop.Jumbobox, "anywhere") then 
 				return Team == "T" and args[2][1].BuyArea or args[2][1].BuyArea2 
 			end 
 		end 
 	end 
 	if method == "FindPartOnRayWithIgnoreList" and args[2][1] == workspace.Debris then 
 		if not checkcaller() or Filter then 
-			if TBLFIND(values.misc.client["gun modifiers"].Jumbobox, "penetration") then 
-				INSERT(args[2], workspace.Map) 
+			if table.find(values.misc.client["gun modifiers"].Jumbobox, "penetration") then 
+				table.insert(args[2], workspace.Map) 
 			end 
-			if TBLFIND(values.misc.client["gun modifiers"].Jumbobox, "spread") then 
-				args[1] = RAY(Camera.CFrame.p, Camera.CFrame.LookVector * Client.gun.Range.Value) 
+			if table.find(values.misc.client["gun modifiers"].Jumbobox, "spread") then 
+				args[1] = Ray.new(Camera.CFrame.p, Camera.CFrame.LookVector * Client.gun.Range.Value) 
 			end 
 			local Stats = GetStatsLegit(GetWeaponLegit(Client.gun.Name)) 
 			if values.legit.aimbot["silent aim"].Toggle and values.legit.aimbot["silent aim"].Active and Stats["silent aim"].Toggle then 
@@ -9009,13 +10680,13 @@ mt.__namecall = function(self, ...)
 				local Closest = 9999 
 				local Target 
 
-				if not TBLFIND(Stats.conditions.Jumbobox, "smoke") then 
-					INSERT(Ignore, workspace.Ray_Ignore) 
+				if not table.find(Stats.conditions.Jumbobox, "smoke") then 
+					table.insert(Ignore, workspace.Ray_Ignore) 
 				end 
 
 				coroutine.wrap(function() 
-					if not TBLFIND(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
-						if not TBLFIND(Stats.conditions.Jumbobox, "blind") or SelfVelocity.Magnitude < 3 then 
+					if not table.find(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
+						if not table.find(Stats.conditions.Jumbobox, "blind") or SelfVelocity.Magnitude < 3 then 
 							for _,Player in pairs(Players:GetPlayers()) do 
 								if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 then 
 									if not values.legit.settings["forcefield check"].Toggle or not Player.Character:FindFirstChildOfClass("ForceField") then 
@@ -9037,10 +10708,10 @@ mt.__namecall = function(self, ...)
 														end 
 													end 
 													if Hitbox ~= nil then 
-														if not TBLFIND(Stats.conditions.Jumbobox, "visible") then 
+														if not table.find(Stats.conditions.Jumbobox, "visible") then 
 															Target = Hitbox 
 														else 
-															local Ray1 = RAY(Camera.CFrame.Position, (Hitbox.Position - Camera.CFrame.Position).unit * (Hitbox.Position - Camera.CFrame.Position).magnitude) 
+															local Ray1 = Ray.new(Camera.CFrame.Position, (Hitbox.Position - Camera.CFrame.Position).unit * (Hitbox.Position - Camera.CFrame.Position).magnitude) 
 															local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray1, Ignore, false, true) 
 															if Hit and Hit:FindFirstAncestor(Player.Name) then 
 																Target = Hitbox 
@@ -9058,7 +10729,7 @@ mt.__namecall = function(self, ...)
 
 					local Hit = math.random(1, 100) <= Stats.hitchance.Slider 
 					if Target ~= nil and Hit then 
-						args[1] = RAY(Camera.CFrame.Position, (Target.Position - Camera.CFrame.Position).unit * (Target.Position - Camera.CFrame.Position).magnitude) 
+						args[1] = Ray.new(Camera.CFrame.Position, (Target.Position - Camera.CFrame.Position).unit * (Target.Position - Camera.CFrame.Position).magnitude) 
 					end 
 				end)() 
 			end 
@@ -9066,11 +10737,14 @@ mt.__namecall = function(self, ...)
 				local Origin = values.rage.aimbot.origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vector3.new(0, 2.5, 0) or Camera.CFrame.p 
 				if values.rage.aimbot["delay shot"].Toggle then 
 					spawn(function() 
-						args[1] = RAY(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude) 
+						args[1] = Ray.new(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude) 
 					end) 
 				else 
-					args[1] = RAY(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude) 
+					args[1] = Ray.new(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude) 
 				end 
+				--[[if values.rage.aimbot["front track"].Toggle and RageTarget:IsDescendantOf(fowardtrackFolder) then
+				RageTarget = game.Players[RageTarget.Parent.Name].Character[RageTarget.Name]
+				end--]]
 			end 
 		end 
 	end 
@@ -9109,20 +10783,24 @@ mt.__namecall = function(self, ...)
 		if values.rage.aimbot["prediction"].Dropdown ~= "off" and RageTarget ~= nil then
 			coroutine.wrap(function()
 				if Players:GetPlayerFromCharacter(args[1].Parent) or args[1] == RageTarget then
-					if values.rage.aimbot["prediction"].Dropdown == "cframe" then
-						if Players:GetPlayerFromCharacter(args[1].Parent) or args[1] == RageTarget then 
-							local hrp = RageTarget.Parent.HumanoidRootPart.Position 
-							local oldHrp = RageTarget.Parent.HumanoidRootPart.OldPosition.Value 
+					if values.rage.aimbot["prediction"].Dropdown == "automatic" then
+						local hrp = RageTarget.Parent.HumanoidRootPart.Position
+						local oldHrp = RageTarget.Parent.HumanoidRootPart.OldPosition.Value
 		
-							local vel = (Vector3.new(hrp.X, 0, hrp.Z) - Vector3.new(oldHrp.X, 0, oldHrp.Z)) / LastStep 
-							local dir = Vector3.new(vel.X / vel.magnitude, 0, vel.Z / vel.magnitude) 
+						local vel = (Vector3.new(hrp.X, 0, hrp.Z) - Vector3.new(oldHrp.X, 0, oldHrp.Z)) / LastStep
+						local dir = Vector3.new(vel.X / vel.magnitude, 0, vel.Z / vel.magnitude)
 		
-							 
-							args[2] = args[2] + dir * (Ping / (POW(Ping, 1.5)) * (dir / (dir / 2))) 
-							args[4] = 0 
-							args[12] = args[12] - 500 
-						end
-					elseif values.rage.aimbot["prediction"].Dropdown == "velocity" then
+							
+						args[2] = args[2] + dir * (Ping / (math.pow(Ping, (1.5 * (values.rage.aimbot["automatic multiplier"].Slider / 5)))) * (dir / (dir / 2)))
+						args[4] = 0
+						args[12] = args[12] - (500 * (values.rage.aimbot["automatic multiplier2"].Slider / 5))
+					elseif values.rage.aimbot["prediction"].Dropdown == "cframe" then
+						local Velocity = (RageTarget.Parent.HumanoidRootPart.Position - RageTarget.Parent.HumanoidRootPart.OldPosition.Value)/LastStep
+						local Direction = Vector3.new(Velocity.X/Velocity.magnitude, 0, Velocity.Z/Velocity.magnitude)
+						args[2] = args[2] + Direction * ((Velocity.magnitude*(Ping/1000)))
+						args[4] = 0
+						args[12] = args[12] - 500
+					else
 						local Velocity = RageTarget.Parent.HumanoidRootPart.Velocity
 						local Direction = Vector3.new(Velocity.X/Velocity.magnitude, 0, Velocity.Z/Velocity.magnitude)
 						if Velocity.magnitude >= 8 then
@@ -9130,29 +10808,17 @@ mt.__namecall = function(self, ...)
 							args[4] = 0
 							args[12] = args[12] - 500
 						end
-					elseif values.rage.aimbot["prediction"].Dropdown == "sex package" then
-						local hrp = RageTarget.Parent.HumanoidRootPart.Position 
-						local oldHrp = RageTarget.Parent.HumanoidRootPart.OldPosition.Value 
-
-						local vel = (Vector3.new(hrp.X, 0, hrp.Z) - Vector3.new(oldHrp.X, 0, oldHrp.Z)) / LastStep 
-						local dir = Vector3.new(vel.X / vel.magnitude, 0, vel.Z / vel.magnitude) 
-
-					 
-						args[2] = args[2] + dir * (Ping / (POW(Ping, 1.5)) * (dir / (dir / 2))) 
-						args[4] = 0 
-						args[12] = args[12] - 500 
-					
 					end
 				end
 			end)()
 		end
 		spawn(function()
-			if values.rage.exploits['peek method'].Dropdown == 'teleport' then 
+			if values.rage['Quick peeks']['peek method'].Dropdown == 'teleport' then 
 				if workspace:FindFirstChild('FreezeCharacter') then
 					LocalPlayer.Character.PrimaryPart.CFrame = workspace.FreezeCharacter.no.CFrame+Vector3.new(0, 3, 0)
 				end
 			end
-			if values.rage.exploits['peek method'].Dropdown == 'tween' then 
+			if values.rage['Quick peeks']['peek method'].Dropdown == 'tween' then 
 				if workspace:FindFirstChild('FreezeCharacter') then
 					function Tween(Target,Prop,Value,tweeninfo1,tweeninfo2,tweeninfo3)
 						local Tween = game:GetService("TweenService"):Create(Target,TweenInfo.new(tweeninfo1,tweeninfo2,tweeninfo3), {[Prop] = Value})
@@ -9207,34 +10873,36 @@ mt.__namecall = function(self, ...)
 				end)() 
 			end 
 		end 
-		if args[1].Parent == workspace.backtrackfolder then
-			if args[1].PlayerName.Value.Character and args[1].PlayerName.Value.Character.Head ~= nil then
+		if args[1].Parent == workspace.backtrackfolder then 
+			if args[1].PlayerName.Value.Character then
+				if args[1].PlayerName.Value.Character.Head ~= nil then
 				args[1] = args[1].PlayerName.Value.Character.Head
+				end
 			end
 		end
+		--[[if values.rage.aimbot["front track"].Toggle and args[1]:IsDescendantOf(fowardtrackFolder) then
+				args[1] = game.Players[args[1].Parent.Name].Character[args[1].Name]
+				args[2] = args[1].Position
+		end--]]
 	end 
-	if method == "FireServer" and self.Name == "HitPart" and tick() - lasthittick > 0.005 then
-		lasthittick = tick()
-		spawn(function()
-			if values.visuals.world["bullet tracers"].Toggle then
-				if values.visuals.self["third person"].Toggle and values.visuals.self["third person"].Active then
-					pos = LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 1.4, 0) 
-				elseif game.Workspace.Camera:FindFirstChild("Arms") then
-					pos = game.Workspace.Camera.Arms.Flash.Position
+		if method == "FireServer" and self.Name == "HitPart" and tick() - lasthittick > 0.005 then
+			lasthittick = tick()
+			spawn(function()
+				if values.visuals.world["bullet tracers"].Toggle then
+					local Beam = createbullettracer(LocalPlayer.Character.UpperTorso.Position, args[2])	
 				end
-				local Beam = createbullettracer(pos, args[2])
-			end
-		end)
+			end)
+		end
 	end
 	return oldNamecall(self, unpack(args)) 
 end 	
 		local oldIndex
 		oldIndex = hookmetamethod(game,"__index",function(self, key)      
 			local CallingScript = getcallingscript()      
-
+	if not getgenv().PasteDisabled then
 			if not checkcaller() and self == Viewmodels and LocalPlayer.Character ~= nil and LocalPlayer.Character:FindFirstChild("UpperTorso") then      
-				local WeaponName = GSUB(key, "v_", "")      
-				if not FIND(WeaponName, "Arms") then      
+				local WeaponName = string.gsub(key, "v_", "")      
+				if not string.find(WeaponName, "Arms") then      
 					if Weapons[WeaponName]:FindFirstChild("Melee") and values.skins.knife["knife changer"].Toggle then      
 						if Viewmodels:FindFirstChild("v_"..values.skins.knife.model.Scroll) then      
 							return Viewmodels:FindFirstChild("v_"..values.skins.knife.model.Scroll)      
@@ -9246,38 +10914,33 @@ end
 				end      
 			end      
 			if key == "Value" then      
-				if self.Name == "Auto" and TBLFIND(values.misc.client["gun modifiers"].Jumbobox, "automatic") then      
+				if self.Name == "Auto" and table.find(values.misc.client["gun modifiers"].Jumbobox, "automatic") then      
 					return true      
-				elseif self.Name == "ReloadTime" and TBLFIND(values.misc.client["gun modifiers"].Jumbobox, "reload") then      
+				elseif self.Name == "ReloadTime" and table.find(values.misc.client["gun modifiers"].Jumbobox, "reload") then      
 					return 0.001      
-				elseif self.Name == "EquipTime" and TBLFIND(values.misc.client["gun modifiers"].Jumbobox, "equip") then      
+				elseif self.Name == "EquipTime" and table.find(values.misc.client["gun modifiers"].Jumbobox, "equip") then      
 					return 0.001      
-				elseif self.Name == "BuyTime" and TBLFIND(values.misc.client.shop.Jumbobox, "inf time") then      
+				elseif self.Name == "BuyTime" and table.find(values.misc.client.shop.Jumbobox, "inf time") then      
 					return 5      
 				end      
 			end      
-
+	end
 			return oldIndex(self, key)      
 		end)      
 				  
-mt.__newindex = function(self, i, v) 
-	if self:IsA("Humanoid") and i == "JumpPower" and not checkcaller() then 
-		if values.misc.movement["jump bug"].Toggle and values.misc.movement["jump bug"].Active then 
-			v = 24 
-		end 
-		if values.misc.movement["edge bug"].Toggle and values.misc.movement["edge bug"].Active then 
-			v = 0 
-		end 
-	elseif self:IsA("Humanoid") and i == "CameraOffset" then 
-		if values.rage.angles.enabled.Toggle and values.rage.angles["body roll"].Dropdown == "180" and not DisableAA then 
-			v = v + Vector3.new(0, -3.5, 0) 
-		end 
-	end 
-
+				  local noclip = true
+				  --insert here local hook stuff
+				  
+mt.__newindex = function(self, i, v)
+	if self.Parent == LocalPlayer.Character and i == 'CanCollide' and not checkcaller() then
+		if noclip then
+			v = false
+		end
+	end
 	return oldNewIndex(self, i, v) 
 end 
 PlayerGui.GUI.Crosshairs.Scope:GetPropertyChangedSignal("Visible"):Connect(function(current) 
-	if not TBLFIND(values.visuals.effects.removals.Jumbobox, "scope lines") then return end 
+	if not table.find(values.visuals.effects.removals.Jumbobox, "scope lines") then return end 
 
 	if current ~= false then 
 		PlayerGui.GUI.Crosshairs.Scope.Visible = false 
@@ -9292,7 +10955,9 @@ PlayerGui.GUI.Crosshairs.Crosshair:GetPropertyChangedSignal("Visible"):Connect(f
 end) 
 
 LocalPlayer.Additionals.TotalDamage:GetPropertyChangedSignal("Value"):Connect(function(current) 
-	if current == 0 then return end 
+	if current == 0  then return end
+
+	if not current == 0 then
 	coroutine.wrap(function() 
 		if values.misc.client.hitmarker.Toggle then 
 			local Line = Drawing.new("Line") 
@@ -9344,6 +11009,7 @@ LocalPlayer.Additionals.TotalDamage:GetPropertyChangedSignal("Value"):Connect(fu
 			Line2:Remove() 
 			Line3:Remove() 
 			Line4:Remove() 
+			
 		end 
 	end)() 
 	if values.visuals.world.hitsound.Dropdown == "none" then return end 
@@ -9354,6 +11020,7 @@ LocalPlayer.Additionals.TotalDamage:GetPropertyChangedSignal("Value"):Connect(fu
 	sound.Volume = values.visuals.world["sound volume"].Slider      
 	sound.PlayOnRemove = true      
 	sound:Destroy()  
+	end
 end) 
 local randomkillsay = {
 	"Looks like you need a better cheat!",
@@ -9393,12 +11060,12 @@ LocalPlayer.Status.Kills:GetPropertyChangedSignal("Value"):Connect(function(curr
 	if current == 0 then return end 
 	if values.misc.chat["kill say"].Toggle then 
 		if values.misc.chat["kill say type"].Dropdown == "default" then
-			game:GetService("ReplicatedStorage").Events.PlayerChatted:FireServer(
+			ReplicatedStorage.Events.PlayerChatted:FireServer(
 			values.misc.chat["message"].Text ~= "" 
 			and values.misc.chat["message"].Text or "h imagine dying"
 			, false, "Innocent", false, true)
 		else
-		game:GetService("ReplicatedStorage").Events.PlayerChatted:FireServer(
+		ReplicatedStorage.Events.PlayerChatted:FireServer(
 			randomkillsay[math.random(#randomkillsay)]
 		, false, "Innocent", false, true)
 		end
@@ -9422,7 +11089,7 @@ workspace.Ray_Ignore.ChildAdded:Connect(function(obj)
 			OriginalRate.Value = smoke.ParticleEmitter.Rate 
 			OriginalRate.Name = "OriginalRate" 
 			OriginalRate.Parent = smoke 
-			if TBLFIND(values.visuals.effects.removals.Jumbobox, "smokes") then 
+			if table.find(values.visuals.effects.removals.Jumbobox, "smokes") then 
 				smoke.ParticleEmitter.Rate = 0 
 			end 
 			smoke.Material = Enum.Material.ForceField 
@@ -9455,7 +11122,7 @@ if workspace.Ray_Ignore:FindFirstChild("Smokes") then
 		OriginalRate.Value = smoke.ParticleEmitter.Rate 
 		OriginalRate.Name = "OriginalRate" 
 		OriginalRate.Parent = smoke 
-		if TBLFIND(values.visuals.effects.removals.Jumbobox, "smokes") then 
+		if table.find(values.visuals.effects.removals.Jumbobox, "smokes") then 
 			smoke.ParticleEmitter.Rate = 0 
 		end 
 		smoke.Material = Enum.Material.ForceField 
@@ -9513,7 +11180,12 @@ Camera.ChildAdded:Connect(function(obj)
 		end
 	end
 
-	local gunname = Client.gun ~= "none" and Client.gun:FindFirstChild("Melee") or Client.gun ~= "none" and Client.gun.Name
+		local gunname = Client.gun ~= 'none' and values.skins.knife['knife changer'].Toggle and Client.gun:FindFirstChild('Melee') and values.skins.knife.model.Scroll or Client.gun ~= 'none' and Client.gun.Name
+	if values.skins.skins['skin changer'].Toggle and gunname ~= nil and Skins:FindFirstChild(gunname) then
+		if values.skins.skins.skin.Scroll[gunname] ~= 'Inventory' then
+			MapSkin(gunname, values.skins.skins.skin.Scroll[gunname])
+		end
+	end
 	for _,v in pairs(WeaponObj) do
 		if v:IsA("MeshPart") then
 			local OriginalTexture = Instance.new("StringValue")
@@ -9547,6 +11219,14 @@ Camera.ChildAdded:Connect(function(obj)
 			RArm.Transparency = values.visuals.effects["arm chams"].Transparency
 		end
 		RGlove = RArm:FindFirstChild("Glove") or RArm:FindFirstChild("RGlove")
+				if values.skins.glove['glove changer'].Toggle and Client.gun ~= 'none' then
+			if RGlove then RGlove:Destroy() end
+			RGlove = GloveModels[values.skins.glove.model.Dropdown].RGlove:Clone()
+			RGlove.Mesh.TextureId = Gloves[values.skins.glove.model.Dropdown][values.skins.glove.model.Scroll[values.skins.glove.model.Dropdown]].Textures.TextureId
+			RGlove.Parent = RArm
+			RGlove.Transparency = 0
+			RGlove.Welded.Part0 = RArm
+		end
 		if RGlove.Transparency == 1 then
 			RGlove:Destroy()
 			RGlove = nil
@@ -9562,6 +11242,11 @@ Camera.ChildAdded:Connect(function(obj)
 		end
 		RSleeve = RArm:FindFirstChild("Sleeve")
 		if RSleeve ~= nil then
+			if values.skins.Misc["Remove sleeves"].Toggle then
+			pcall(function()
+			RSleeve.Transparency = 1 
+			end)
+			end
 			local SleeveTexture = Instance.new("StringValue")
 			SleeveTexture.Value = RSleeve.Mesh.TextureId
 			SleeveTexture.Name = "StringValue"
@@ -9584,6 +11269,13 @@ Camera.ChildAdded:Connect(function(obj)
 			LArm.Transparency = values.visuals.effects["arm chams"].Transparency
 		end
 		LGlove = LArm:FindFirstChild("Glove") or LArm:FindFirstChild("LGlove")
+				if values.skins.glove['glove changer'].Toggle and Client.gun ~= 'none' then
+			if LGlove then LGlove:Destroy() end
+			LGlove = GloveModels[values.skins.glove.model.Dropdown].LGlove:Clone()
+			LGlove.Mesh.TextureId = Gloves[values.skins.glove.model.Dropdown][values.skins.glove.model.Scroll[values.skins.glove.model.Dropdown]].Textures.TextureId
+			LGlove.Transparency = 0
+			LGlove.Parent = LArm
+			end
 		if LGlove.Transparency == 1 then
 			LGlove:Destroy()
 			LGlove =  nil
@@ -9599,6 +11291,11 @@ Camera.ChildAdded:Connect(function(obj)
 		end
 		LSleeve = LArm:FindFirstChild("Sleeve")
 		if LSleeve ~= nil then
+					if values.skins.Misc["Remove sleeves"].Toggle then
+			pcall(function()
+			LSleeve.Transparency = 1
+			end)
+			end
 			local SleeveTexture = Instance.new("StringValue")
 			SleeveTexture.Value = LSleeve.Mesh.TextureId
 			SleeveTexture.Name = "StringValue"
@@ -9690,11 +11387,11 @@ end)
 
 local function CollisionTBL(obj) 
 	if obj:IsA("Accessory") then 
-		INSERT(Collision, obj) 
+		table.insert(Collision, obj) 
 	end 
 	if obj:IsA("Part") then 
 		if obj.Name == "HeadHB" or obj.Name == "FakeHead" then 
-			INSERT(Collision, obj) 
+			table.insert(Collision, obj) 
 		end 
 	end 
 end 
@@ -9711,7 +11408,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 		String.Value = char:FindFirstChildOfClass("Shirt").ShirtTemplate 
 		String.Parent = char:FindFirstChildOfClass("Shirt") 
 
-		if TBLFIND(values.visuals.effects.removals.Jumbobox, "clothes") then 
+		if table.find(values.visuals.effects.removals.Jumbobox, "clothes") then 
 			char:FindFirstChildOfClass("Shirt").ShirtTemplate = "" 
 		end 
 	end 
@@ -9721,13 +11418,13 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 		String.Value = char:FindFirstChildOfClass("Pants").PantsTemplate 
 		String.Parent = char:FindFirstChildOfClass("Pants") 
 
-		if TBLFIND(values.visuals.effects.removals.Jumbobox, "clothes") then 
+		if table.find(values.visuals.effects.removals.Jumbobox, "clothes") then 
 			char:FindFirstChildOfClass("Pants").PantsTemplate = "" 
 		end 
 	end 
 	for i,v in pairs(char:GetChildren()) do 
 		if v:IsA("BasePart") and v.Transparency ~= 1 then 
-			INSERT(SelfObj, v) 
+			table.insert(SelfObj, v) 
 			local Color = Instance.new("Color3Value") 
 			Color.Name = "OriginalColor" 
 			Color.Value = v.Color 
@@ -9738,7 +11435,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 			String.Value = v.Material.Name 
 			String.Parent = v 
 		elseif v:IsA("Accessory") and v.Handle.Transparency ~= 1 then 
-			INSERT(SelfObj, v.Handle) 
+			table.insert(SelfObj, v.Handle) 
 			local Color = Instance.new("Color3Value") 
 			Color.Name = "OriginalColor" 
 			Color.Value = v.Handle.Color 
@@ -9760,7 +11457,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 	end 
 	LocalPlayer.Character.ChildAdded:Connect(function(Child) 
 		if Child:IsA("Accessory") and Child.Handle.Transparency ~= 1 then 
-			INSERT(SelfObj, Child.Handle) 
+			table.insert(SelfObj, Child.Handle) 
 			local Color = Instance.new("Color3Value") 
 			Color.Name = "OriginalColor" 
 			Color.Value = Child.Handle.Color 
@@ -9791,7 +11488,7 @@ end)
 if LocalPlayer.Character ~= nil then 
 	for i,v in pairs(LocalPlayer.Character:GetChildren()) do 
 		if v:IsA("BasePart") and v.Transparency ~= 1 then 
-			INSERT(SelfObj, v) 
+			table.insert(SelfObj, v) 
 			local Color = Instance.new("Color3Value") 
 			Color.Name = "OriginalColor" 
 			Color.Value = v.Color 
@@ -9802,7 +11499,7 @@ if LocalPlayer.Character ~= nil then
 			String.Value = v.Material.Name 
 			String.Parent = v 
 		elseif v:IsA("Accessory") and v.Handle.Transparency ~= 1 then 
-			INSERT(SelfObj, v.Handle) 
+			table.insert(SelfObj, v.Handle) 
 			local Color = Instance.new("Color3Value") 
 			Color.Name = "OriginalColor" 
 			Color.Value = v.Handle.Color 
@@ -9824,7 +11521,7 @@ if LocalPlayer.Character ~= nil then
 	end 
 	LocalPlayer.Character.ChildAdded:Connect(function(Child) 
 		if Child:IsA("Accessory") and Child.Handle.Transparency ~= 1 then 
-			INSERT(SelfObj, Child.Handle) 
+			table.insert(SelfObj, Child.Handle) 
 			local Color = Instance.new("Color3Value") 
 			Color.Name = "OriginalColor" 
 			Color.Value = Child.Handle.Color 
@@ -9861,8 +11558,8 @@ Players.PlayerAdded:Connect(function(Player)
 					else
 						Obj.Visible = false
 					end
-					Obj.Color3 = values.visuals.players["visible chams"].Color
-					Obj.Transparency = values.visuals.players["visible chams"].Transparency
+					Obj.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
+					Obj.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
 				end
 			end
 		end
@@ -9874,22 +11571,55 @@ Players.PlayerAdded:Connect(function(Player)
         end)
 		wait(1)
 		if Character ~= nil then
-			local Value = Instance.new("Vector3Value")
-			Value.Name = "OldPosition"
+			local Value = Instance.new('Vector3Value')
+			Value.Name = 'OldPosition'
 			Value.Value = Character.HumanoidRootPart.Position
 			Value.Parent = Character.HumanoidRootPart
 			for _,obj in pairs(Character:GetChildren()) do
-				if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
-					local VisibleCham = Instance.new("BoxHandleAdornment")
-					VisibleCham.Name = "VisibleCham"
+				if obj:IsA('BasePart') and Player ~= LocalPlayer and obj.Name ~= 'HumanoidRootPart' and obj.Name ~= 'Head' and obj.Name ~= 'BackC4' and obj.Name ~= 'HeadHB' then
+					local VisibleCham
+					if obj.Name == 'FakeHead' then 
+						VisibleCham = Instance.new('CylinderHandleAdornment')
+						VisibleCham.Height = 1.2 + (values.visuals.players['vcham thickness'].Slider/30)
+						VisibleCham.Radius = 0.61 + (values.visuals.players['vcham thickness'].Slider/20)
+						VisibleCham.CFrame = CFrame.new(0,0,0) * CFrame.Angles(1.6,0,0)
+					else 
+						VisibleCham = Instance.new('BoxHandleAdornment')
+						VisibleCham.Size = obj.Size + Vector3.new( (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10))
+					end
+					VisibleCham.Name = 'VisibleCham'
 					VisibleCham.AlwaysOnTop = false
 					VisibleCham.ZIndex = 8
-					VisibleCham.Size = obj.Size + Vector3.new(0.18,0.18,0.18)
 					VisibleCham.AlwaysOnTop = false
-					VisibleCham.Transparency = 0.05
+					VisibleCham.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
 
+					local WallCham
+					if obj.Name == 'FakeHead' then 
+						WallCham = Instance.new('CylinderHandleAdornment')
+						WallCham.Height = 1.2 + (values.visuals.players['cham thickness'].Slider/20)
+						WallCham.Radius = 0.61 + (values.visuals.players['cham thickness'].Slider/20)
+						WallCham.CFrame = CFrame.new(0,0,0) * CFrame.Angles(1.6,0,0) 
+					else 
+						WallCham = Instance.new('BoxHandleAdornment')
+						WallCham.Size = obj.Size + Vector3.new( (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10))
+					end
+					WallCham.Name = 'WallCham'
+					WallCham.AlwaysOnTop = true
+					WallCham.ZIndex = 5
+					WallCham.AlwaysOnTop = true
+					WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
 
-					if values.visuals.players["visible chams"].Toggle then
+					if values.visuals.players.chams.Toggle then
+						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
+							WallCham.Visible = true
+						else
+							WallCham.Visible = false
+						end
+					else
+						WallCham.Visible = false
+					end
+
+					if values.visuals.players['visible chams'].Toggle then
 						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
 							VisibleCham.Visible = true
 						else
@@ -9899,19 +11629,27 @@ Players.PlayerAdded:Connect(function(Player)
 						VisibleCham.Visible = false
 					end
 
-					table.insert(ChamItems, VisibleCham)
+					table.insert(ChamItems, {VisibleCham, obj})
+					table.insert(ChamItems, {WallCham, obj})
 
-					VisibleCham.Color3 = values.visuals.players["visible chams"].Color
-					VisibleCham.Transparency = values.visuals.players["visible chams"].Transparency
-
-					VisibleCham.AdornCullingMode = "Never"
+					VisibleCham.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
+					WallCham.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
+	
+					VisibleCham.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
+					WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
+			
+					VisibleCham.AdornCullingMode = 'Never'
+					WallCham.AdornCullingMode = 'Never'
 
 					VisibleCham.Adornee = obj
 					VisibleCham.Parent = obj
+
+					WallCham.Adornee = obj
+					WallCham.Parent = obj
 				end
 			end
 		end
-    end)
+	end)
 end)
 for _,Player in pairs(Players:GetPlayers()) do
 	if Player ~= LocalPlayer then
@@ -9919,7 +11657,7 @@ for _,Player in pairs(Players:GetPlayers()) do
 			wait()
 			if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
 				for _2,Obj in pairs(Player.Character:GetDescendants()) do
-					if Obj.Name == "VisibleCham"then
+					if Obj.Name == "VisibleCham" then
 						if values.visuals.players["visible chams"].Toggle then
 							if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
 								Obj.Visible = true
@@ -9929,8 +11667,8 @@ for _,Player in pairs(Players:GetPlayers()) do
 						else
 							Obj.Visible = false
 						end
-						Obj.Color3 = values.visuals.players["visible chams"].Color
-						Obj.Transparency = values.visuals.players["visible chams"].Transparency
+						Obj.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
+						Obj.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
 					end
 				end
 			end
@@ -9951,8 +11689,8 @@ for _,Player in pairs(Players:GetPlayers()) do
 							else
 								Obj.Visible = false
 							end
-							Obj.Color3 = values.visuals.players["visible chams"].Color
-							Obj.Transparency = values.visuals.players["visible chams"].Transparency
+							Obj.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
+							Obj.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
 						end
 					end
 				end
@@ -9966,9 +11704,9 @@ for _,Player in pairs(Players:GetPlayers()) do
         end)
 		wait(1)
 		if Player.Character ~= nil and Player.Character:FindFirstChild("HumanoidRootPart") then
-			local Value = Instance.new("Vector3Value")
+			local Value = Instance.new('Vector3Value')
 			Value.Value = Player.Character.HumanoidRootPart.Position
-			Value.Name = "OldPosition"
+			Value.Name = 'OldPosition'
 			Value.Parent = Player.Character.HumanoidRootPart
 			for _,obj in pairs(Player.Character:GetChildren()) do
 				if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
@@ -9993,8 +11731,8 @@ for _,Player in pairs(Players:GetPlayers()) do
 
 					table.insert(ChamItems, VisibleCham)
 
-					VisibleCham.Color3 = values.visuals.players["visible chams"].Color
-					VisibleCham.Transparency = values.visuals.players["visible chams"].Transparency
+					VisibleCham.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
+					VisibleCham.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
 
 					VisibleCham.AdornCullingMode = "Never"
 
@@ -10005,10 +11743,10 @@ for _,Player in pairs(Players:GetPlayers()) do
 		end
     end)
 	if Player.Character ~= nil and Player.Character:FindFirstChild("UpperTorso") then
-		local Value = Instance.new("Vector3Value")
-		Value.Name = "OldPosition"
-		Value.Value = Player.Character.HumanoidRootPart.Position
-		Value.Parent = Player.Character.HumanoidRootPart
+			local Value = Instance.new('Vector3Value')
+			Value.Value = Player.Character.HumanoidRootPart.Position
+			Value.Name = 'OldPosition'
+			Value.Parent = Player.Character.HumanoidRootPart
 		for _,obj in pairs(Player.Character:GetChildren()) do
 			CollisionTBL(obj)
 			if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
@@ -10033,8 +11771,8 @@ for _,Player in pairs(Players:GetPlayers()) do
 
 				table.insert(ChamItems, VisibleCham)
 
-				VisibleCham.Color3 = values.visuals.players["visible chams"].Color
-				VisibleCham.Transparency = values.visuals.players["visible chams"].Transparency
+				VisibleCham.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
+				VisibleCham.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
 
 				VisibleCham.AdornCullingMode = "Never"
 
@@ -10051,7 +11789,7 @@ Players.PlayerAdded:Connect(function(Player)
 		if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
 			for _2,Obj in pairs(Player.Character:GetDescendants()) do
 				if Obj.Name == "WallCham" then
-					if values.visuals.players["wall chams"].Toggle then
+					if values.visuals.players["chams"].Toggle then
 						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
 							Obj.Visible = true
 						else
@@ -10060,8 +11798,8 @@ Players.PlayerAdded:Connect(function(Player)
 					else
 						Obj.Visible = false
 					end
-					Obj.Color3 = values.visuals.players["wall chams"].Color
-					Obj.Transparency = values.visuals.players["wall chams"].Transparency
+					Obj.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
+					Obj.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
 				end
 			end
 		end
@@ -10073,10 +11811,10 @@ Players.PlayerAdded:Connect(function(Player)
         end)
 		wait(1)
 		if Character ~= nil then
-			local Value = Instance.new("Vector3Value")
-			Value.Name = "OldPosition"
-			Value.Value = Character.HumanoidRootPart.Position
-			Value.Parent = Character.HumanoidRootPart
+			local Value = Instance.new('Vector3Value')
+			Value.Value = Player.Character.HumanoidRootPart.Position
+			Value.Name = 'OldPosition'
+			Value.Parent = Player.Character.HumanoidRootPart
 			for _,obj in pairs(Character:GetChildren()) do
 				if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
 
@@ -10088,7 +11826,7 @@ Players.PlayerAdded:Connect(function(Player)
 					WallCham.AlwaysOnTop = true
 					WallCham.Transparency = 0
 
-					if values.visuals.players["wall chams"].Toggle then
+					if values.visuals.players["chams"].Toggle then
 						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
 							WallCham.Visible = true
 						else
@@ -10100,8 +11838,8 @@ Players.PlayerAdded:Connect(function(Player)
 
 					table.insert(ChamItems, WallCham)
 
-					WallCham.Color3 = values.visuals.players["wall chams"].Color
-					WallCham.Transparency = values.visuals.players["wall chams"].Transparency
+					WallCham.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
+					WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
 
 					WallCham.AdornCullingMode = "Never"
 
@@ -10119,7 +11857,7 @@ for _,Player in pairs(Players:GetPlayers()) do
 			if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
 				for _2,Obj in pairs(Player.Character:GetDescendants()) do
 					if Obj.Name == "WallCham" then
-						if values.visuals.players["wall chams"].Toggle then
+						if values.visuals.players["chams"].Toggle then
 							if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
 								Obj.Visible = true
 							else
@@ -10128,8 +11866,8 @@ for _,Player in pairs(Players:GetPlayers()) do
 						else
 							Obj.Visible = false
 						end
-						Obj.Color3 = values.visuals.players["wall chams"].Color
-						Obj.Transparency = values.visuals.players["wall chams"].Transparency
+						Obj.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
+						Obj.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
 					end
 				end
 			end
@@ -10141,7 +11879,7 @@ for _,Player in pairs(Players:GetPlayers()) do
 				if Player.Character then
 					for _2,Obj in pairs(Player.Character:GetDescendants()) do
 						if Obj.Name == "WallCham" then
-							if values.visuals.players["wall chams"].Toggle then
+							if values.visuals.players["chams"].Toggle then
 								if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
 									Obj.Visible = true
 								else
@@ -10150,8 +11888,8 @@ for _,Player in pairs(Players:GetPlayers()) do
 							else
 								Obj.Visible = false
 							end
-							Obj.Color3 = values.visuals.players["wall chams"].Color
-							Obj.Transparency = values.visuals.players["wall chams"].Transparency
+							Obj.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
+							Obj.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
 						end
 					end
 				end
@@ -10165,9 +11903,9 @@ for _,Player in pairs(Players:GetPlayers()) do
         end)
 		wait(1)
 		if Player.Character ~= nil and Player.Character:FindFirstChild("HumanoidRootPart") then
-			local Value = Instance.new("Vector3Value")
+			local Value = Instance.new('Vector3Value')
 			Value.Value = Player.Character.HumanoidRootPart.Position
-			Value.Name = "OldPosition"
+			Value.Name = 'OldPosition'
 			Value.Parent = Player.Character.HumanoidRootPart
 			for _,obj in pairs(Player.Character:GetChildren()) do
 				if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
@@ -10180,7 +11918,7 @@ for _,Player in pairs(Players:GetPlayers()) do
 					WallCham.AlwaysOnTop = true
 					WallCham.Transparency = 0
 
-					if values.visuals.players["wall chams"].Toggle then
+					if values.visuals.players["chams"].Toggle then
 						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
 							WallCham.Visible = true
 						else
@@ -10192,8 +11930,8 @@ for _,Player in pairs(Players:GetPlayers()) do
 
 					table.insert(ChamItems, WallCham)
 
-					WallCham.Color3 = values.visuals.players["wall chams"].Color
-					WallCham.Transparency = values.visuals.players["wall chams"].Transparency
+					WallCham.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
+					WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
 
 					WallCham.AdornCullingMode = "Never"
 
@@ -10220,7 +11958,7 @@ for _,Player in pairs(Players:GetPlayers()) do
 				WallCham.AlwaysOnTop = true
 				WallCham.Transparency = 0
 
-				if values.visuals.players["wall chams"].Toggle then
+				if values.visuals.players["chams"].Toggle then
 					if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
 						WallCham.Visible = true
 					else
@@ -10232,8 +11970,8 @@ for _,Player in pairs(Players:GetPlayers()) do
 
 				table.insert(ChamItems, WallCham)
 
-				WallCham.Color3 = values.visuals.players["wall chams"].Color
-				WallCham.Transparency = values.visuals.players["wall chams"].Transparency
+				WallCham.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
+				WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
 
 				WallCham.AdornCullingMode = "Never"
 
@@ -10244,35 +11982,36 @@ for _,Player in pairs(Players:GetPlayers()) do
 	end
 end
 
-		ChatScript.moveOldMessages()
-		ChatScript.createNewMessage("SamuelPaste","SamuelPaste is Successfully 100% Loaded",MainUIColor,Color3.new(1,1,1),0.01,nil)
-		ChatScript.moveOldMessages()
+
 		ChatScript.createNewMessage("SamuelPaste","SamuelPaste winning $$$",MainUIColor,Color3.new(1,1,1),0.01,nil)
-		ChatScript.moveOldMessages()
-		ChatScript.createNewMessage("SamuelPaste","I won't say what version is it because i'm retard",MainUIColor,Color3.new(1,1,1),0.01,nil)
 		ChatScript.moveOldMessages()
 		ChatScript.createNewMessage("SamuelPaste","Thanks cideware, tinp0g and mad for sending me pastes",MainUIColor,Color3.new(1,1,1),0.01,nil)
 		print("Hello bucks script user :D")
-settings:Element("ToggleColor", "draw fov", nil, function(tbl) 
-	if tbl.Toggle then
-		local Players = game:GetService("Players") 
-		local LocalPlayer = Players.LocalPlayer 
-		local Mouse = LocalPlayer:GetMouse()
-		local FOVCircle = Drawing.new("Circle")
-		FOVCircle.Radius = values.legit.main["FOV"].Slider
-		FOVCircle.Visible = values.legit.settings["draw fov"].Toggle
-		FOVCircle.Thickness = 0.2
-		FOVCircle.Color = values.legit.settings["draw fov"].Color
-		local Mouse = LocalPlayer:GetMouse()
-		
-		Mouse.Move:Connect(function()
-		if FOVCircle.Visible then
-		FOVCircle.Position = game:GetService("UserInputService"):GetMouseLocation()
+while true do task.wait()
+	for i,b in next, watermarklocation.watermark:GetChildren() do 
+		if b:IsA('UIGradient') then 
+			if b.Name == values.misc.watermark.themes.Dropdown then 
+				b.Enabled = true
+			else
+				b.Enabled = false
+			end
 		end
-        end)
+	end;
 
-	else
-	FOVCircle:Destroy()
-	end
-end)
+	if ovascreengui['menu'].Image ~= 'rbxassetid://'..themebackground[values.misc.addons['background'].Dropdown] then 
+		ovascreengui['menu'].Image = 'rbxassetid://'..themebackground[values.misc.addons['background'].Dropdown]
+	end;
 
+	ovascreengui['menu'].ImageColor3 = values.misc.addons['background color'].Color
+	ovascreengui['menu'].BackgroundColor3 = Color3.fromRGB(1, 1, 1)
+
+	ovascreengui['menu'].ImageTransparency = values.misc.addons['background color'].Transparency
+
+
+	if values.misc.addons['ui border'].Toggle then 
+		ovascreengui['menu'].BorderSizePixel = 1
+		ovascreengui['menu'].BorderColor3 = values.misc.addons['ui border'].Color
+	else 
+		ovascreengui['menu'].BorderSizePixel = 0
+	end;
+end;
