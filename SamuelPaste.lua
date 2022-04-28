@@ -6047,6 +6047,38 @@ delfile(cfglocation..'unload script cfg.txt')
 game.CoreGui['electric boogalo']:Destroy()
 getgenv().PasteDisabled = true
 end)
+
+local trannyenabled = false
+local socks = false
+local niggers = others:Sector("trannyware", "Left") 
+local a = Instance.new("MeshPart",workspace)
+a.Size = Vector3.new(1.35,1.4,1.35)
+a.CanCollide = false
+a.Anchored = true
+a.MeshId = "rbxassetid://4249338569"
+a.TextureID = "rbxassetid://4249293955"
+
+niggers:Element('Toggle', 'skirt', {}, function(tbl)
+    trannyenabled = tbl.Toggle
+end)
+
+niggers:Element('Toggle', 'socks', {}, function(tbl)
+    socks = tbl.Toggle
+end)
+
+game:GetService("RunService").RenderStepped:connect(function()
+    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("LowerTorso") and trannyenabled then
+        a.Position = game.Players.LocalPlayer.Character.LowerTorso.Position
+        a.Rotation = game.Players.LocalPlayer.Character.LowerTorso.Rotation
+    end
+    if socks and game.Players.LocalPlayer.Character then
+        if game.Players.LocalPlayer.Character:FindFirstChild("Pants") then
+            game.Players.LocalPlayer.Character.Pants.PantsTemplate = "rbxassetid://5381345577"
+        end
+    end
+    a.Transparency = trannyenabled and 0 or 1
+end)
+
 local daddy = others:Sector('Change weapon', 'Left')
 
 daddy:Element('Button', 'hook weapon', {}, function()
