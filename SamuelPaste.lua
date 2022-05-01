@@ -1,7 +1,107 @@
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.PlayerBox.GreyPart.PHealth.Position = UDim2.new(0, 5, 0, 0)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.PlayerBox.GreyPart.Plus.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Circle.Transparency = 0.6
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Transparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Buymenu.Base.ImageTransparency = 0.8
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item1.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item2.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item3.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item4.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item5.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item6.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Color.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Info.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Color.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Info.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item7.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Transparency = 0.6
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Transparency = 0.4
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Blue.Label.Text = "NEVER"
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Red.Label.Text = "BLOX"
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.BuyZone.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.BuyZone.Size = UDim2.new(0, 0, 0, 0)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Size = UDim2.new(0, 206, 0, 40)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Position = UDim2.new(0, 6, 0, 230)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.TextSize = 26.000
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Health.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Armor.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.APlus:Destroy()
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Plus:Destroy()
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.Controls.Text = "neverblox.cc"
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.CTScore.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Timer.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.TScore.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoClip.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoReserve.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoClip.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.Slash.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.ImageTransparency = 0.6
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.TextLabel.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.Icon.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.MapVote.TextLabel.Text = "Map vote"
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.MapVote.TextLabel.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Defusal.Defusing.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Defusal.Time.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.Performance.Perf.Visible = false
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Timer.Size = UDim2.new(1, 0, 0, 36)
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Scaler:Destroy()
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
-if game.CoreGui:FindFirstChild("electric boogalo") then return end
+if game.CoreGui:FindFirstChild("electric boogalo") then return error('script is already executed or you executed another script')end
 getgenv().PasteDisabled = false
 local wait = task.wait -- small test
 getgenv().values = {} --blahwrlqwrqwr
@@ -5632,8 +5732,6 @@ local function GetDeg(pos1, pos2)
 	local deg = math.deg(angle) 
 	return deg 
 end 
-local Ping = game.Stats.PerformanceStats.Ping:GetValue() 
-local ping = game.Stats.PerformanceStats.Ping:GetValue() 
 
 for i,v in pairs(Viewmodels:GetChildren()) do 
 	if v:FindFirstChild("HumanoidRootPart") and v.HumanoidRootPart.Transparency ~= 1 then 
@@ -5774,6 +5872,244 @@ glove:Element('ScrollDrop', 'model', {options = AllGloves, Amount = 9})
 local skin = skins:Sector('skins', 'Right')
 skin:Element('Toggle', 'skin changer')
 skin:Element('ScrollDrop', 'skin', {options = AllSkins, Amount = 15, alphabet = true})
+
+
+
+local custom = skins:Sector('custom models', 'Left')
+
+custom:Element("Button", "Reset Knives", {}, function(tbl)
+	game.ReplicatedStorage.Viewmodels["v_CT Knife"]:Destroy()
+	wait()
+	local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+	game:GetObjects('rbxassetid://7311308040')[1].Parent = Model1
+	Model = game.ReplicatedStorage.Viewmodels.Model
+	for _, Child in next, Model:GetChildren() do
+		Child.Parent = Model.Parent
+	end
+	Model:Destroy()
+	wait()
+	game.ReplicatedStorage.Viewmodels["v_T Knife"]:Destroy()
+	wait()
+	local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+	game:GetObjects('rbxassetid://7311365626')[1].Parent = Model1
+	Model = game.ReplicatedStorage.Viewmodels.Model
+	for _, Child in next, Model:GetChildren() do
+		Child.Parent = Model.Parent
+	end
+	Model:Destroy()
+end)
+local customskins = {
+	AWP = {'Mosin', 'CS:GO', 'Codol'},
+	Scout = {'Newan', 'M1 Garand', 'Railgun', 'CS:GO'},
+	AutoSniper = {'Barrett'},
+	AK = {'Dragon'},
+	USP = {'Newan'},
+	Knives = {'Bowie', 'Netherite sword', 'Shadow Daggers Fade'}
+}
+custom:Element('ScrollDrop', 'model', {options = customskins, Amount = 7}, function(tbl)
+		--AWP
+		if values.skins['custom models'].model.Scroll['AWP'] ~= 'None' then
+			if values.skins['custom models'].model.Scroll['AWP'] == 'Mosin' then
+				game.ReplicatedStorage.Viewmodels["v_AWP"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://6482147359')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				game.ReplicatedStorage.Viewmodels["v_Mosin-Nagant Optical"].Name = "v_AWP"
+				
+			elseif values.skins['custom models'].model.Scroll['AWP'] == 'CS:GO' then
+				game.ReplicatedStorage.Viewmodels["v_AWP"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7161319343')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				game.ReplicatedStorage.Viewmodels["awpAZIM"].Name = "v_AWP"
+				
+			else
+				game.ReplicatedStorage.Viewmodels["v_AWP"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7161319343')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				game.ReplicatedStorage.Viewmodels["awpAZIM"].Name = "v_AWP"
+			end
+		end
+		--scout
+		if values.skins['custom models'].model.Scroll['Scout'] ~= 'None' then
+			if values.skins['custom models'].model.Scroll['Scout'] == 'Newan' then
+				game.ReplicatedStorage.Viewmodels["v_Scout"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7161433164')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				game.ReplicatedStorage.Viewmodels["v_Scoutnewan"].Name = "v_Scout"				
+			elseif values.skins['custom models'].model.Scroll['Scout'] == 'M1 Garand' then
+				game.ReplicatedStorage.Viewmodels["v_Scout"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://6477587469')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				game.ReplicatedStorage.Viewmodels["v_M1 Garand"].Name = "v_Scout"
+			elseif values.skins['custom models'].model.Scroll['Scout'] == 'CS:GO' then
+				game.ReplicatedStorage.Viewmodels["v_Scout"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7161407697')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				game.ReplicatedStorage.Viewmodels["v_Scoutfever"].Name = "v_Scout"
+			else
+				game.ReplicatedStorage.Viewmodels["v_Scout"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://6477284418')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				game.ReplicatedStorage.Viewmodels["v_Railgun"].Name = "v_Scout"
+			end
+		end
+		--AutoSniper
+		if values.skins['custom models'].model.Scroll['AutoSniper'] ~= 'None' then
+			game.ReplicatedStorage.Viewmodels["v_G3SG1"]:Destroy()
+			wait()
+			local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+			game:GetObjects('rbxassetid://6477308219')[1].Parent = Model1
+			Model = game.ReplicatedStorage.Viewmodels.Model
+			for _, Child in next, Model:GetChildren() do
+				Child.Parent = Model.Parent
+			end
+			Model:Destroy()
+			game.ReplicatedStorage.Viewmodels["v_Barrett"].Name = "v_G3SG1"
+		end
+		--AK
+		if values.skins['custom models'].model.Scroll['AK'] ~= 'None' then 
+			game.ReplicatedStorage.Viewmodels["v_AK47"]:Destroy()
+			wait()
+			local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+			game:GetObjects('rbxassetid://7161345483')[1].Parent = Model1
+			Model = game.ReplicatedStorage.Viewmodels.Model
+			for _, Child in next, Model:GetChildren() do
+				Child.Parent = Model.Parent
+			end
+			Model:Destroy()
+			game.ReplicatedStorage.Viewmodels["v_AK47drangon"].Name = "v_AK47"
+		end
+		--USP
+		if values.skins['custom models'].model.Scroll['USP'] ~= 'None' then
+			game.ReplicatedStorage.Viewmodels["v_USP"]:Destroy()
+			wait()
+			local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+			game:GetObjects('rbxassetid://7161365495')[1].Parent = Model1
+			Model = game.ReplicatedStorage.Viewmodels.Model
+			for _, Child in next, Model:GetChildren() do
+				Child.Parent = Model.Parent
+			end
+			Model:Destroy()
+			game.ReplicatedStorage.Viewmodels["v_USPnew"].Name = "v_USP"
+		end
+		if values.skins['custom models'].model.Scroll['Knives'] ~= 'None' then
+			if values.skins['custom models'].model.Scroll['Knives'] == 'Bowie' then
+				game.ReplicatedStorage.Viewmodels["v_CT Knife"]:Destroy()
+				game.ReplicatedStorage.Viewmodels["v_T Knife"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7161240289')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7161240289')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				wait()
+				game.ReplicatedStorage.Viewmodels["v_bowknife"].Name = "v_CT Knife"
+				game.ReplicatedStorage.Viewmodels["v_bowknife"].Name = "v_T Knife"
+			elseif values.skins['custom models'].model.Scroll['Knives'] == 'Netherite sword' then
+				game.ReplicatedStorage.Viewmodels["v_CT Knife"]:Destroy()
+				game.ReplicatedStorage.Viewmodels["v_T Knife"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7917769386')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7917769386')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				wait()
+				game.ReplicatedStorage.Viewmodels["SwordMC"].Name = "v_CT Knife"
+				game.ReplicatedStorage.Viewmodels["SwordMC"].Name = "v_T Knife"
+				wait()
+				game.ReplicatedStorage.Viewmodels["v_CT Knife"].Handle.TextureID = "rbxassetid://7375049028"
+				game.ReplicatedStorage.Viewmodels["v_T Knife"].Handle.TextureID = "rbxassetid://7375049028"
+			elseif values.skins['custom models'].model.Scroll['Knives'] == 'Shadow Daggers Fade' then
+				game.ReplicatedStorage.Viewmodels["v_CT Knife"]:Destroy()
+				game.ReplicatedStorage.Viewmodels["v_T Knife"]:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7161082619')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				wait()
+				local Model1 = Instance.new("Model", game.ReplicatedStorage.Viewmodels)
+				game:GetObjects('rbxassetid://7161082619')[1].Parent = Model1
+				Model = game.ReplicatedStorage.Viewmodels.Model
+				for _, Child in next, Model:GetChildren() do
+					Child.Parent = Model.Parent
+				end
+				Model:Destroy()
+				wait()
+				game.ReplicatedStorage.Viewmodels["v_daggers"].Name = "v_CT Knife"
+				game.ReplicatedStorage.Viewmodels["v_daggers"].Name = "v_T Knife"
+			end
+		end
+end)
+
+
+
+
 
 local other = others:Sector("other", "Left") 
 other:Element("Scroll", "lua", {options = allluas, Amount = 5}) 
@@ -7108,6 +7444,7 @@ end)
 
 exploits:Element('Toggle', 'whizz all', {}, function(tbl)
 	while tbl.Toggle and LocalPlayer.Character:FindFirstChild('Gun') do
+	wait()
 		for _,Player in pairs(Players:GetPlayers()) do
 			game:GetService('ReplicatedStorage').Events.Whizz:FireServer(Player)
 		end
@@ -9362,12 +9699,6 @@ local weps = {
 	Rifle = {"M4A4", "M4A1", "AK47", "Famas", "Galil", "AUG", "SG"}, 
 	Sniper = {"AWP", "Scout", "G3SG1"} 
 } 
-local weps2 = { 
-	Pistol = {"USP", "P2000", "Glock", "DualBerettas", "P250", "FiveSeven", "Tec9", "CZ", "DesertEagle", "R8"}, 
-	SMG = {"MP9", "MAC10", "MP7", "UMP", "P90", "Bizon"}, 
-	Rifle = {"M4A4", "M4A1", "AK47", "Famas", "Galil", "AUG", "SG"}, 
-	Sniper = {"AWP", "Scout", "G3SG1"} 
-} 
 local function GetWeaponRage(weapon) 
 	return table.find(weps.Pistol, weapon) and "pistol" or table.find(weps.Rifle, weapon) and "rifle" or weapon == "AWP" and "awp" or weapon == "G3SG1"  and "auto" or weapon == "Scout" and "scout" or "default" 
 end 
@@ -9377,7 +9708,7 @@ local function GetStatsRage(weapon)
 	end 
 end 
 local function GetWeaponLegit(weapon) 
-	return table.find(weps2.Pistol, weapon) and "pistol" or table.find(weps2.Rifle, weapon) and "rifle" or table.find(weps2.SMG, weapon) and "smg" or table.find(weps2.Sniper, weapon) and "sniper" or "default" 
+	return table.find(weps.Pistol, weapon) and "pistol" or table.find(weps.Rifle, weapon) and "rifle" or table.find(weps.SMG, weapon) and "smg" or table.find(weps.Sniper, weapon) and "sniper" or "default" 
 end 
 local function GetStatsLegit(weapon) 
 	if weapon == "default" then 
@@ -9429,7 +9760,7 @@ Fov.Color = Color3.fromRGB(15,15,15)
 Fov.Transparency = 0.5 
 Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 16) 
 Fov.Radius = 120 
-
+local Ping = game.Stats.PerformanceStats.Ping:GetValue()
 RunService:BindToRenderStep('Rage', 400, function(step)
 	LastStep = step
 	if IsAlive(LocalPlayer) then
