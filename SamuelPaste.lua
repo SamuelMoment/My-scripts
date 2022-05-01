@@ -9027,9 +9027,11 @@ if tbl.Toggle then
 		
 		NoclipLoop = RunService.Stepped:Connect(function()
 		if not (tbl.Toggle) then NoclipLoop:Disconnect() return end
-			for i,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
-				if v:IsA("BasePart") and v.CanCollide == true then
-					v.CanCollide = false
+			if IsAlive(LocalPlayer) then
+				for i,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+					if v:IsA("BasePart") and v.CanCollide == true then
+						v.CanCollide = false
+					end
 				end
 			end
 		end)
