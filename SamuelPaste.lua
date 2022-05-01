@@ -8941,7 +8941,7 @@ end)
 							v.ScrollBarImageColor3 = MainUIColor
 						end
 						if v:IsA("UIGradient") and v.Parent.Name == 'Color' or v.Parent.Name == 'Background' then
-							v.ColorSequence.new{ColorSequenceKeypoint.new(0, MainUIColor), ColorSequenceKeypoint.new(1, MainUIColor)}
+							v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainUIColor), ColorSequenceKeypoint.new(1, MainUIColor)}
 						end
 						if v:IsA('Frame') and v.Name == 'Color' and v.Parent.Name == 'Button' and v.BackgroundColor3 == oldUiColor then
 							v.BackgroundColor3 = MainUIColor
@@ -8985,7 +8985,7 @@ end)
 							v.ScrollBarImageColor3 = MainUIColor
 						end
 						if v:IsA("UIGradient") and v.Parent.Name == 'Color' then
-							v.ColorSequence.new{ColorSequenceKeypoint.new(0, MainUIColor), ColorSequenceKeypoint.new(1, MainUIColor)}
+							v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainUIColor), ColorSequenceKeypoint.new(1, MainUIColor)}
 						end
 						if v:IsA('Frame') and v.Name == 'Color' and v.Parent.Name == 'Button' and v.BackgroundColor3 == oldUiColor then
 							v.BackgroundColor3 = MainUIColor
@@ -8994,12 +8994,12 @@ end)
 					  
 						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
 							if v:IsA("TextButton") then
-								v.Gard.BackgroundColor3 = Color3.fromRGB(255,20,147)
+								v.Gard.BackgroundColor3 = Color3.fromRGB(MainUIColor)
 							end
 						end	
 						for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
 							if v:IsA("Frame") then
-								v.Grad.BackgroundColor3 = Color3.fromRGB(255,20,147)
+								v.Grad.BackgroundColor3 = Color3.fromRGB(MainUIColor)
 							end
 						end
 					end
