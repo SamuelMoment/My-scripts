@@ -9471,8 +9471,7 @@ function instancethewatermark()
 	end
 				dragging = false 
 				do 
-					local UserInputService = UserInputService
-					local a = watermark
+					local a = watermark_2
 					local dragInput 
 					local dragStart 
 					local startPos 
