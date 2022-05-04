@@ -6827,6 +6827,15 @@ antiaim:Element('Toggle', 'jitter')
 antiaim:Element('Slider', 'jitter offset', {min = -180, max = 180, default = 0})
 antiaim:Element('Slider', 'jitter pitch', {min = -100, max = 100, default = 0})
 antiaim:Element('Slider', 'jitter wait (ms)', {min = 0, max = 100, default = 0})
+--[[antiaim:Element('Toggle', 'Character rotation', {}, function(tbl)
+	while tbl.Toggle and IsAlive(LocalPlayer) do wait()
+		local x,y,z = LocalPlayer.Character.HumanoidRootPart.Rotation
+		if LocalPlayer.Character.HumanoidRootPart.Rotation.Y ~= values.rage.angles.Degress.Slider then
+			LocalPlayer.Character.HumanoidRootPart.Rotation.Y = values.rage.angles.Degress.Slider
+		end
+	end
+end)
+antiaim:Element('Slider', 'Degress', {min = -180, max = 180, default = 0})--]]
 antiaim:Element('Toggle', 'shoot pitch')
 antiaim:Element('Slider', 'offset', {min = -180, max = 180, default = 0})
 antiaim:Element('Slider', 'pitch', {min = -100, max = 100, default = 0})
