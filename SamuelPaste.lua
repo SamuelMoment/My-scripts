@@ -1,103 +1,3 @@
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.PlayerBox.GreyPart.PHealth.Position = UDim2.new(0, 5, 0, 0)
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.PlayerBox.GreyPart.Plus.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Circle.Transparency = 0.6
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Transparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Buymenu.Base.ImageTransparency = 0.8
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item1.bk.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item2.bk.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item3.bk.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item4.bk.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item5.bk.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item6.bk.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Transparency = 0
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Color.Transparency = 0
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Info.Transparency = 0
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Transparency = 0
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Color.Transparency = 0
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Info.Transparency = 0
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item7.bk.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.bk.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.bk.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Transparency = 0.6
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Transparency = 0.4
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Blue.Label.Text = "NEVER"
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Red.Label.Text = "BLOX"
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.BuyZone.ImageTransparency = 1
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.BuyZone.Size = UDim2.new(0, 0, 0, 0)
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Size = UDim2.new(0, 206, 0, 40)
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Position = UDim2.new(0, 6, 0, 230)
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.TextSize = 26.000
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Health.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Armor.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.APlus:Destroy()
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Plus:Destroy()
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.Controls.Text = "SamuelPaste"
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.CTScore.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Timer.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.TScore.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoClip.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoReserve.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoClip.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.Slash.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.ImageTransparency = 0.6
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.TextLabel.Font = Enum.Font.Gotham
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.Icon.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.MapVote.TextLabel.Text = "Map vote"
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.MapVote.TextLabel.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Defusal.Defusing.Font = Enum.Font.Gotham
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Defusal.Time.Font = Enum.Font.Gotham
-
-game:GetService("Players").LocalPlayer.PlayerGui.Performance.Perf.Visible = false
-
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Timer.Size = UDim2.new(1, 0, 0, 36)
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Scaler:Destroy()
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
@@ -6179,7 +6079,6 @@ v:Destroy()
 end
 end
 end)
-
 other:Element('Button', 'dick size', {}, function()
 local dicksize = '='
 local dicksizerep = string.rep(dicksize, math.random(0, 20))
@@ -6216,6 +6115,108 @@ CreateHitElement(" You're "..procent.. '% skill issue ',values.rage.aimbot.Hitlo
 end)
 
 other:Element('Dropdown', 'Copy colors type', {options = {'RGB', 'HSV', 'HEX',}}) --hsl, cmyk
+other:Element('Button2', 'clean gui', nil, function()
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.PlayerBox.GreyPart.PHealth.Position = UDim2.new(0, 5, 0, 0)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.PlayerBox.GreyPart.Plus.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Circle.Transparency = 0.6
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Transparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Buymenu.Base.ImageTransparency = 0.8
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item1.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item2.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item3.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item4.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item5.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item6.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Color.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Info.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Color.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Info.Transparency = 0
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item7.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.bk.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Transparency = 0.6
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Transparency = 0.4
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Blue.Label.Text = "Samuel"
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Red.Label.Text = "Paste"
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.BuyZone.ImageTransparency = 1
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.BuyZone.Size = UDim2.new(0, 0, 0, 0)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Size = UDim2.new(0, 206, 0, 40)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Position = UDim2.new(0, 6, 0, 230)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.TextSize = 26.000
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Health.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Armor.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.APlus:Destroy()
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Plus:Destroy()
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.Controls.Text = "SamuelPaste"
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.CTScore.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Timer.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.TScore.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoClip.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoReserve.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoClip.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.Slash.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.ImageTransparency = 0.6
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.TextLabel.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.Icon.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.MapVote.TextLabel.Text = "Map vote"
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.MapVote.TextLabel.Font = Enum.Font.Gotham
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Defusal.Defusing.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Defusal.Time.Font = Enum.Font.Gotham
+
+--game:GetService("Players").LocalPlayer.PlayerGui.Performance.Perf.Visible = false
+
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Timer.Size = UDim2.new(1, 0, 0, 36)
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Scaler:Destroy()
+end)
 other:Element('Button2', 'UnLoad script', {}, function()
 writefile(cfglocation..'unload script cfg.txt', game:HttpGet("https://raw.githubusercontent.com/SamuelMoment/SamuelMoment/main/nothing.cfg"))
 --big ass code (not big ass)
