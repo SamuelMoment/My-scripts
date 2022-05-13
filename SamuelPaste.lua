@@ -5100,8 +5100,7 @@ end--]]
 								Button_2.MouseLeave:Connect(function() 
 									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
 								end)
-														elseif type == "Button" then 
-
+elseif type == "Button" then 
 								Section.Size = Section.Size + UDim2.new(0,0,0,24) 
 								local Button = Instance.new("Frame") 
 								local Button_2 = Instance.new("TextButton") 
@@ -5138,11 +5137,81 @@ end--]]
 
 								function Element:SetValue() 
 								end 
+								
+								
+								Button_2.MouseButton1Down:Connect(function() 
+									TextLabel.TextColor3 = MainUIColor 
+									library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+										local lmfaooo, lol = pcall(function()
+											callback()
+										end)
+											if lmfaooo then
+												TextLabel.Text = 'Success!'
+												wait(1)
+												TextLabel.Text = text
+											else 
+												TextLabel.Text = 'Error!'
+												wait(1)
+												TextLabel.Text = text
+												print(lol)
+											end
+								end) 
+								Button_2.MouseEnter:Connect(function() 
+									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255, 255, 255)}) 
+								end) 
+								Button_2.MouseLeave:Connect(function() 
+									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
+								end)		
+								
+								
+								
+								
+								
+								
+							elseif type == "ButtonKeybind" then 
+
+								Section.Size = Section.Size + UDim2.new(0,0,0,24) 
+								Element.value = {Key = data.default and data.default.Key or nil} 
+								local Button = Instance.new("Frame") 
+								local Button_2 = Instance.new("TextButton") 
+								local TextLabel = Instance.new("TextLabel") 
+
+								Button.Name = "Button" 
+								Button.Parent = Inner 
+								Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								Button.BackgroundTransparency = 1.000 
+								Button.Position = UDim2.new(0, 0, 0.236059487, 0) 
+								Button.Size = UDim2.new(1, 0, 0, 24) 
+
+								Button_2.Name = "Button" 
+								Button_2.Parent = Button 
+								Button_2.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
+								Button_2.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+								Button_2.Position = UDim2.new(0, 30, 0.5, -9) 
+								Button_2.Size = UDim2.new(0, 140, 0, 18) 
+								Button_2.AutoButtonColor = false 
+								Button_2.Font = Enum.Font.SourceSans 
+								Button_2.Text = "" 
+								Button_2.TextColor3 = Color3.fromRGB(0, 0, 0) 
+								Button_2.TextSize = 11.000
+
+								TextLabel.Parent = Button_2 
+								TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255) 
+								TextLabel.BackgroundTransparency = 1.000 
+								TextLabel.BorderColor3 = Color3.fromRGB(27, 42, 53) 
+								TextLabel.Size = UDim2.new(1, 0, 1, 0) 
+								TextLabel.Font = Enum.Font.Gotham 
+								TextLabel.Text = text 
+								TextLabel.TextColor3 = Color3.fromRGB(200, 200, 200) 
+								TextLabel.TextSize = 11.000
+
+								function Element:SetValue() 
+								end 
 
 								Button_2.MouseButton1Down:Connect(function() 
 									TextLabel.TextColor3 = MainUIColor 
 									library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
-																		local lmfaooo, lol = pcall(function()
+										local lmfaooo, lol = pcall(function()
 										callback()
 											end)
 										if lmfaooo then
@@ -5161,8 +5230,258 @@ end--]]
 								end) 
 								Button_2.MouseLeave:Connect(function() 
 									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200, 200, 200)}) 
-								end) 
-							
+								end)
+								do 
+									local Keybind = Instance.new("TextButton") 
+									local Frame = Instance.new("Frame") 
+									local Always = Instance.new("TextButton") 
+									local UIListLayout = Instance.new("UIListLayout") 
+									local Hold = Instance.new("TextButton") 
+									local Toggle = Instance.new("TextButton") 
+									local ButtonKey = Instance.new('TextButton')
+
+									Keybind.Name = "Keybind" 
+									Keybind.Parent = Button 
+									Keybind.BackgroundColor3 = Color3.fromRGB(31, 31, 31) 
+									Keybind.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+									Keybind.Position = UDim2.new(0, 270, 0.5, -6) 
+									Keybind.Text = data.default and data.default.Key or 'none'
+									Keybind.Size = UDim2.new(0, 43, 0, 12) 
+									Keybind.Size = UDim2.new(0,txt:GetTextSize("NONE", 14, Enum.Font.SourceSansSemibold, Vector2.new(700, 12)).X + 5,0, 12)
+									Keybind.AutoButtonColor = false 
+									Keybind.Font = Enum.Font.Gotham 
+									Keybind.TextColor3 = Color3.fromRGB(200, 200, 200) 
+									Keybind.TextSize = 11.000
+									Keybind.AnchorPoint = Vector2.new(1,0) 
+									Keybind.ZIndex = 3 
+
+									--[[Frame.Parent = Keybind 
+									Frame.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
+									Frame.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+									Frame.Position = UDim2.new(1, -49, 0, 1) 
+									Frame.Size = UDim2.new(0, 49, 0, 49) 
+									Frame.Visible = false 
+									Frame.ZIndex = 3
+
+									UIListLayout.Parent = Frame 
+									UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
+									UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder 
+
+									Hold.Name = "Hold" 
+									Hold.Parent = Frame 
+									Hold.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
+									Hold.BackgroundTransparency = 1.000 
+									Hold.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+									Hold.Position = UDim2.new(-3.03289485, 231, 0.115384616, -6) 
+									Hold.Size = UDim2.new(1, 0, 0, 16) 
+									Hold.AutoButtonColor = false 
+									Hold.Font = Enum.Font.Gotham 
+									Hold.Text = "Hold" 
+									Hold.TextColor3 = Color3.fromRGB(200, 200, 200) 
+									Hold.TextSize = 11.000
+									Hold.ZIndex = 3
+
+									Toggle.Name = "Toggle" 
+									Toggle.Parent = Frame 
+									Toggle.BackgroundColor3 = Color3.fromRGB(46, 46, 46) 
+									Toggle.BackgroundTransparency = 1.000 
+									Toggle.BorderColor3 = Color3.fromRGB(18, 18, 16) 
+									Toggle.Position = UDim2.new(-3.03289485, 231, 0.115384616, -6) 
+									Toggle.Size = UDim2.new(1, 0, 0, 16) 
+									Toggle.AutoButtonColor = false 
+									Toggle.Font = Enum.Font.Gotham 
+									Toggle.Text = "Toggle" 
+									Toggle.TextColor3 = Color3.fromRGB(200, 200, 200) 
+									Toggle.TextSize = 11.000
+									Toggle.ZIndex = 3 --]]
+
+									--[[for _,button in pairs(Frame:GetChildren()) do 
+										if button:IsA("TextButton") then 
+											button.MouseButton1Down:Connect(function() 
+												Element.value.Type = button.Text 
+												Frame.Visible = false 
+												if Element.value.Active ~= (Element.value.Type == "Always" and true or false) then 
+													Element.value.Active = Element.value.Type == "Always" and true or false 
+													callback(Element.value) 
+												end 
+												if button.Text == "Always" then 
+													keybindremove(text) 
+												end 
+												for _,button in pairs(Frame:GetChildren()) do 
+													if button:IsA("TextButton") and button.Text ~= Element.value.Type then 
+														button.Font = Enum.Font.Gotham 
+														library:Tween(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200,200,200)}) 
+													end 
+												end 
+												button.Font = Enum.Font.SourceSansBold 
+												button.TextColor3 = Color3.fromRGB(173, 24, 74) 
+												values[tabname][sectorname][text] = Element.value 
+											end) 
+											button.MouseEnter:Connect(function() 
+												if Element.value.Type ~= button.Text then 
+													library:Tween(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(255,255,255)}) 
+												end 
+											end) 
+											button.MouseLeave:Connect(function() 
+												if Element.value.Type ~= button.Text then 
+													library:Tween(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = Color3.fromRGB(200,200,200)}) 
+												end 
+											end) 
+										end 
+									end --]]
+									Keybind.MouseButton1Down:Connect(function() 
+										if not binding then 
+											wait() 
+											binding = true 
+											Keybind.Text = "..." 
+											Keybind.Size = UDim2.new(0,txt:GetTextSize("...", 14, Enum.Font.Gotham, Vector2.new(700, 12)).X + 4,0, 12) 
+										end 
+									end) 
+									--[[Keybind.MouseButton2Down:Connect(function() 
+										if not binding then 
+											Frame.Visible = not Frame.Visible 
+										end 
+									end) --]]
+									local Player = game.Players.LocalPlayer 
+									local Mouse = Player:GetMouse() 
+									local InFrame = false 
+									--[[Frame.MouseEnter:Connect(function() 
+										InFrame = true 
+									end) 
+									Frame.MouseLeave:Connect(function() 
+										InFrame = false 
+									end) --]]
+									local InFrame2 = false 
+									Keybind.MouseEnter:Connect(function() 
+										InFrame2 = true 
+									end) 
+									Keybind.MouseLeave:Connect(function() 
+										InFrame2 = false 
+									end) 
+									game:GetService("UserInputService").InputBegan:Connect(function(input) 
+										--[[if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2 and not binding then 
+											if Frame.Visible == true and not InFrame and not InFrame2 then 
+												Frame.Visible = false 
+											end 
+										end --]]
+										if binding then 
+											binding = false 
+											Keybind.Text = input.KeyCode.Name ~= "Unknown" and input.KeyCode.Name:upper() or input.UserInputType.Name:upper() 
+											Keybind.Size = UDim2.new(0,txt:GetTextSize(Keybind.Text, 14, Enum.Font.Gotham, Vector2.new(700, 12)).X + 5,0, 12) 
+											Element.value.Key = input.KeyCode.Name ~= "Unknown" and input.KeyCode.Name or input.UserInputType.Name 
+											if input.KeyCode.Name == "Backspace" then 
+												Keybind.Text = "none" 
+												Keybind.Size = UDim2.new(0,txt:GetTextSize(Keybind.Text, 14, Enum.Font.Gotham, Vector2.new(700, 12)).X + 4,0, 12) 
+												Element.value.Key = nil 
+												--Element.value.Active = true 
+											end 
+											callback(Element.value) 
+										else 
+											if Element.value.Key ~= nil then 
+												if string.find(Element.value.Key, "Mouse") then 
+													if input.UserInputType == Enum.UserInputType[Element.value.Key] then 
+														--[[if Element.value.Type == "Hold" then 
+															Element.value.Active = true 
+															callback(Element.value) 
+															if Element.value.Active and Element.value.Toggle then 
+																keybindhold(text)
+															else 
+																keybindremove(text) 
+															end 
+														elseif Element.value.Type == "Toggle" then 
+															Element.value.Active = not Element.value.Active 
+															callback(Element.value) 
+															if Element.value.Active and Element.value.Toggle then 
+																keybindadd(text) 
+															else 
+																keybindremove(text) 
+															end 
+														end--]]
+														local lmfaooo, lol = pcall(function()
+															callback()
+																end)
+															if lmfaooo then
+															keybindadd('Success!')
+															wait(1)
+															keybindremove('Success!')
+															else 
+															keybindadd('Error!')
+															wait(1)
+															keybindremove('Error!')
+															print(lol)
+														end
+													end 
+												else 
+													if input.KeyCode == Enum.KeyCode[Element.value.Key] then 
+														--[[if Element.value.Type == "Hold" then 
+															Element.value.Active = true 
+															callback(Element.value) 
+															if Element.value.Active and Element.value.Toggle then 
+																keybindhold(text)
+															else 
+																keybindremove(text) 
+															end 
+														elseif Element.value.Type == "Toggle" then 
+															Element.value.Active = not Element.value.Active 
+															callback(Element.value) 
+															if Element.value.Active and Element.value.Toggle then 
+																keybindadd(text) 
+															else 
+																keybindremove(text) 
+															end
+														end--]] 
+														local lmfaooo, lol = pcall(function()
+															callback()
+																end)
+															if lmfaooo then
+															keybindadd('Success!')
+															wait(1)
+															keybindremove('Success!')
+															else 
+															keybindadd('Error!')
+															wait(1)
+															keybindremove('Error!')
+															print(lol)
+														end
+													end 
+												end 
+											--else 
+												--Element.value.Active = true 
+											end 
+										end 
+										values[tabname][sectorname][text] = Element.value 
+									end) 
+									--[[game:GetService("UserInputService").InputEnded:Connect(function(input) 
+										if Element.value.Key ~= nil then 
+											if string.find(Element.value.Key, "Mouse") then 
+												if input.UserInputType == Enum.UserInputType[Element.value.Key] then 
+													if Element.value.Type == "Hold" then 
+														Element.value.Active = false 
+														callback(Element.value) 
+														if Element.value.Active then 
+															keybindhold(text)
+														else 
+															keybindremove(text) 
+														end 
+													end
+												end 
+											else 
+												if input.KeyCode == Enum.KeyCode[Element.value.Key] then 
+													if Element.value.Type == "Hold" then 
+														Element.value.Active = false 
+														callback(Element.value) 
+														if Element.value.Active then 
+															keybindhold(text)
+														else 
+															keybindremove(text) 
+														end 
+													end 
+												end 
+											end 
+										end 
+										values[tabname][sectorname][text] = Element.value 
+									end)--]] 
+								end
 							
 							
 							end 
@@ -6449,8 +6768,8 @@ local step2
 	--values.other.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
                 ReplicatedStorage.Events.HitPart:FireServer(
-                    Players[values.rage["Loop kill"]['Player'].Dropdown].Character.Head, -- 1
-                    predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.Head, game:GetService("Stats").PerformanceStats.Ping:GetValue()), --2
+                    Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, -- 1
+                    predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, game:GetService("Stats").PerformanceStats.Ping:GetValue()), --2
                     "Banana", --3
                     100, -- Range --4
                     game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
@@ -6475,8 +6794,8 @@ local step1
 	if not (tbl.Toggle) then step1:Disconnect() return end
 	--values.other.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
-					local oh1 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.Head
-					local oh2 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.Head.CFrame.p
+					local oh1 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart
+					local oh2 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart.CFrame.p
 					local oh3 = Client.gun.Name
 					local oh4 = 4096
 					local oh5 = LocalPlayer.Character.Gun
@@ -6666,7 +6985,7 @@ antiaim:Element("Toggle", "fake duck",{},function(tbl)
 		end)
 	end
 end)
-antiaim:Element('Dropdown', 'yaw base', {options = {'camera', 'targets', 'spin', 'random', "wasd yaw base", 'stormy breaker'}})
+antiaim:Element('Dropdown', 'yaw base', {options = {'camera', 'targets', 'spin', 'random', "wasd yaw base"}})
 antiaim:Element('Slider', 'yaw offset', {min = -180, max = 180, default = 0})
 antiaim:Element('Toggle', 'jitter')
 antiaim:Element('Slider', 'jitter offset', {min = -180, max = 180, default = 0})
@@ -8810,9 +9129,88 @@ end)
 Backtrack:Element("Slider", "Time (ms)", {min = 0, max = 1000, default = 200})
 Backtrack:Element("Slider", "Transparency (0.01 = 1)", {min = 1, max = 100, default = 0})
 local movement = misc:Sector('movement', 'Left')
-movement:Element('Toggle', 'bunny hop')
+movement:Element('Toggle', 'bunny hop', {})
+--[[ crim code
+local down = false
+	function onButton1Down(cF)
+			if IsAlive(LocalPlayer) and game.Workspace[game.Players.LocalPlayer.Name].Humanoid and values.misc.movement['bunny hop'] and (values.misc.movement.type == "Normal" or values.misc.movement.type == "Crim") then
+				down=true
+				velocity=Instance.new("BodyVelocity")
+				velocity.maxForce=Vector3.new(100000,0,100000)
+				gyro=Instance.new("BodyGyro")
+				gyro.maxTorque=Vector3.new(100000,0,100000)
+			end
+		end
+		
+		hopping = false
+			game:GetService("RunService").Stepped:Connect(function()
+				if game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart and game.Workspace[game.Players.LocalPlayer.Name].Humanoid and values.misc.movement['bunny hop'].Toggle and velocity then				
+					if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+				velocity=Instance.new("BodyVelocity")
+				velocity.maxForce=Vector3.new(100000,0,100000)
+				gyro=Instance.new("BodyGyro")
+				gyro.maxTorque=Vector3.new(100000,0,100000)
+					velocity.Parent=game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart
+					local movedirection=game.Players.LocalPlayer.Character.Humanoid.MoveDirection;BREH=1
+					if values.misc.movement.type == "Crim" then 
+						movedirection=game.Players.LocalPlayer.Character.Humanoid.MoveDirection*-1;BREH=14 
+					elseif values.misc.movement.debug.Toggle then print('not crim') end
+					velocity.velocity=movedirection*0*BREH;gyro.Parent=game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart
+					local percent = values.misc.movement['crim percent'].Slider; --script.Parent.Parent.BHOP.Percent.Value
+					velocity.velocity=movedirection*percent*BREH;
+					--VelocityOfVelocity=velocity.velocity
+					local gyroshit = gyro.Parent.Position+(gyro.Parent.Position-workspace.CurrentCamera.CoordinateFrame.p).unit*5;
+					gyro.CFrame=CFrame.new(gyro.Parent.Position,Vector3.new(gyroshit.x,gyro.Parent.Position.y,gyroshit.z))
+					hopping=true --script.Parent.Hopping.Value
+					else
+					velocity:Destroy()
+					gyro:Destroy()
+					end
+				end
+			end)
+function onButton1Up(cJ)pcall(function()
+				velocity:Destroy()
+				gyro:Destroy()
+				hopping=false 
+			end)
+			down=false 
+		end
+		function onSelected(key)
+			key.KeyDown:connect(function(input)
+				if input:lower()==" "then
+					onButton1Down(key)
+				end 
+			end)
+			key.KeyUp:connect(function(input)
+				if input:lower()==" "then onButton1Up(key) end
+			end)
+		end
+		onSelected(Mouse)
+		game:GetService("RunService").RenderStepped:Connect(function(step) --step
+			if game:GetService('UserInputService'):IsKeyDown(Enum.KeyCode.Space) and values.misc.movement['bunny hop'].Toggle and workspace:FindFirstChild(game.Players.LocalPlayer.Name) and velocity then
+				if values.misc.movement.type =="CFrame" or values.misc.movement.type.Dropdown =="Crim" then --values.misc.movement.type
+					repeat wait() until velocity
+					if values.misc.movement.type.Dropdown =="Crim"then
+						game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame=game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame+game.Workspace[game.Players.LocalPlayer.Name].Humanoid.MoveDirection*(velocity.velocity.Magnitude+8)*step 
+					--else 
+						--game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame=game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame+game.Workspace[game.Players.LocalPlayer.Name].Humanoid.MoveDirection*why*step 
+					end
+					hopping=true 
+				end 
+					
+			else
+			pcall(function()
+				hopping=false
+			end)
+			end 
+		end)
+end)--]]
+
 movement:Element('Dropdown', 'direction', {options = {'forward', 'directional', 'directional 2'}})
-movement:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity' , 'idk'}})
+movement:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity' , , 'idk'}})
+
+movement:Element('Slider', 'crim percent', {min = 0, max = 100, default = 0})
+movement:Element('Toggle', 'debug')
 movement:Element('Slider', 'speed', {min = 0, max = 200, default = 40})
 movement:Element('ToggleKeybind', 'overwrite')
 movement:Element('Slider', 'overwrite speed', {min = 0, max = 200, default = 40})
@@ -10448,9 +10846,9 @@ end)
 		BodyVelocity:Destroy()
 		BodyVelocity = Instance.new('BodyVelocity')
 		BodyVelocity.MaxForce = Vector3.new(math.huge,0,math.huge)
-		if UserInputService:IsKeyDown('Space') and values.misc.movement['bunny hop'].Toggle then
+		if UserInputService:IsKeyDown('Space') and values.misc.movement['bunny hop'].Toggle and values.misc.movement.type.Dropdown ~= "Crim" then
 			local add = 0
-			if values.misc.movement.direction.Dropdown == 'directional' or values.misc.movement.direction.Dropdown == 'directional 2' then
+			if values.misc.movement.direction.Dropdown == 'directional' and values.misc.movement.type.Dropdown ~= "Crim"  or values.misc.movement.direction.Dropdown == 'directional 2' and values.misc.movement.type.Dropdown ~= "Crim"  then
 				if UserInputService:IsKeyDown("A") then add = 90 end 
 				if UserInputService:IsKeyDown("S") then add = 180 end 
 				if UserInputService:IsKeyDown("D") then add = 270 end 
@@ -10469,13 +10867,13 @@ end)
 			else
 
 
-				if values.misc.movement.type.Dropdown == 'cframe' then
+				if values.misc.movement.type.Dropdown == 'cframe' and values.misc.movement.type.Dropdown ~= "Crim"  then
 					BodyVelocity:Destroy()
 					Root.CFrame = Root.CFrame + Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * bhopspeed/50
-				elseif values.misc.movement.type.Dropdown == 'velocity' then
+				elseif values.misc.movement.type.Dropdown == 'velocity' and values.misc.movement.type.Dropdown ~= "Crim"  then
 					BodyVelocity:Destroy()
 					Root.Velocity = Vector3.new(rot.LookVector.X * (bhopspeed * 2), Root.Velocity.y, rot.LookVector.Z * (bhopspeed * 2))
-				elseif values.misc.movement.type.Dropdown == 'idk' then
+				elseif values.misc.movement.type.Dropdown == 'idk' and values.misc.movement.type.Dropdown ~= "Crim"  then
 					BodyVelocity:Destroy()
 					spawn(function()
 						if not switchtrigger[1]  then 
