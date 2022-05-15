@@ -9207,7 +9207,7 @@ function onButton1Up(cJ)pcall(function()
 end)--]]
 
 movement:Element('Dropdown', 'direction', {options = {'forward', 'directional', 'directional 2'}})
-movement:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity' , , 'idk'}})
+movement:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity', 'idk'}})
 
 movement:Element('Slider', 'crim percent', {min = 0, max = 100, default = 0})
 movement:Element('Toggle', 'debug')
