@@ -7567,11 +7567,11 @@ stormykillall = RunService.RenderStepped:Connect(function()
 		for _,Player in pairs(Players:GetPlayers()) do
 			if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild('UpperTorso') then
 				game:GetService('ReplicatedStorage').Events.HitPart:FireServer(
-						Player.Character.Head,
-						Player.Character.Head.CFrame.p,
+						Player.Character.HumanoidRootPart,
+						Player.Character.HumanoidRootPart.CFrame.p,
 						Client.gun.Name,
 						4096,
-						LocalPlayer.Character.Gun,
+						game.Players.LocalPlayer.Character:WaitForChild("Gun"),
 						15,
 						false,
 						false,
@@ -7595,8 +7595,8 @@ hexagonkillall = RunService.RenderStepped:Connect(function()
         for i,v in ipairs(Players:GetPlayers()) do
             if v ~= Player and v.Team ~= game.Players.LocalPlayer.Team and IsAlive(v) and IsAlive(game.Players.LocalPlayer) then
                 ReplicatedStorage.Events.HitPart:FireServer(
-                    v.Character.Head,
-                    predict(v.Character.Head, game:GetService("Stats").PerformanceStats.Ping:GetValue()),
+                    v.Character.HumanoidRootPart,
+                    predict(v.Character.HumanoidRootPart, game:GetService("Stats").PerformanceStats.Ping:GetValue()),
                     "Banana",
                     100, -- Range
                     game.Players.LocalPlayer.Character:WaitForChild("Gun"),
@@ -9208,9 +9208,6 @@ end)--]]
 
 movement:Element('Dropdown', 'direction', {options = {'forward', 'directional', 'directional 2'}})
 movement:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity', 'idk'}})
-
-movement:Element('Slider', 'crim percent', {min = 0, max = 100, default = 0})
-movement:Element('Toggle', 'debug')
 movement:Element('Slider', 'speed', {min = 0, max = 200, default = 40})
 movement:Element('ToggleKeybind', 'overwrite')
 movement:Element('Slider', 'overwrite speed', {min = 0, max = 200, default = 40})
@@ -9290,7 +9287,7 @@ if tbl.Toggle then
 	end
 end)
 
-movement:Element("Slider", "fly speed", {min = 1, max = 100, default = 16})
+movement:Element("Slider", "fly speed", {min = 1, max = 300, default = 16})
 
 local chatmessages_pasteed = {
 	"Lost to SamuelPaste? Who woulda thought",
@@ -10041,11 +10038,11 @@ Fov.Radius = 120
 local Ping = game.Stats.PerformanceStats.Ping:GetValue()
 RunService:BindToRenderStep('Rage', 400, function(step)
 	LastStep = step
-	if IsAlive(LocalPlayer) then
+	if LocalPlayer.Character and LocalPlayer.Character.HumanoidRootPart and Client.gun then
 	local Root = LocalPlayer.Character.HumanoidRootPart
 		local RageGuy 
 		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
-			if values.rage.aimbot.enabled.Toggle then
+			if values.rage.aimbot.enabled.Toggle and LocalPlayer.Character and LocalPlayer.Character.HumanoidRootPart and Client.gun then
 				local Origin = values.rage.aimbot.origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vector3.new(0, 2.5, 0) or CamCFrame.p
 				local Stats = values.rage.weapons.default
 				for _,Player in pairs(Players:GetPlayers()) do
@@ -11684,7 +11681,24 @@ local randomkillsay = {
 	"Ratted, it seems like ur mom is my gf",	
 	"It looks like your face is on 'The Baddest Hvh'.",
 	"Don't you love nature, despite what it did to you?",
-	'h imagine dying'}
+	'h imagine dying',
+	"Lost to SamuelPaste? Who woulda thought",
+	"what was that? Can't hear u over my kill sound",
+	"he shoots! and he misses",
+	"I think im hvhing a homeless person",
+	"SamuelPaste is pasted did you know?",
+	"This hack is approved by invaded",
+	"fun fact: this person is using SamuelPaste",
+	"oww, thats gonna leave a bruise in the morning",
+	"this is a tough workout!",
+	"New years resolution: Keep clapping kids",
+	"No way you're this bad?",
+	"I just stole ur virginity",
+	"Are you a chimney? Coz Im santa claus...",
+	"Looks like you got coal for christmas",
+	"Are you a train? Coz you're getting railed rn",
+	"You and ur mom are very similar, coz both of u are getting raped"
+	}
 
 LocalPlayer.Status.Kills:GetPropertyChangedSignal("Value"):Connect(function(current) 
 	if current == 0 then return end 
@@ -12645,3 +12659,8 @@ while true do task.wait()
 		ovascreengui['menu'].BorderSizePixel = 0
 	end;
 end;
+wait(5)
+
+
+local senv = getsenv(game.Players.LocalPlayer.PlayerGui.Client)
+senv.splatterBlood = function() end
