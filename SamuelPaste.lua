@@ -11632,7 +11632,7 @@ ragefunction = function(step)
 	local Ping = game.Stats.PerformanceStats.Ping:GetValue()
 	LastStep = step
 	if LocalPlayer.Character and LocalPlayer.Character.Head and Client.gun then
-	local Root = LocalPlayer.Character.HumanoidRootPart
+	local Root = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 		local RageGuy 
 		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
 			if values.rage.aimbot.enabled.Toggle and LocalPlayer.Character and LocalPlayer.Character.HumanoidRootPart and Client.gun then
