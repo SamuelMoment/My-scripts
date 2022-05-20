@@ -12361,7 +12361,7 @@ end)
 					visualize.Anchored = true
 					visualize.MeshId = 'rbxassetid://5536195161'
 					visualize.Material = 'Neon'
-					visualize.Color = values.rage.exploits['visualize circle'].Color
+					visualize.Color = values.rage['Quick peeks']['visualize circle'].Color
 
 					visualize.Name = 'no'
 					if values.rage['Quick peeks']['visualize circle'].Toggle then
