@@ -15,6 +15,7 @@ ConfigSave1 = Signal.new("ConfigSave")
 ConfigUpdateCfgList = Signal.new('ConfigUpdateCfgList')
 ConfigUpdateCfgList2 = Signal.new('ConfigUpdateCfgList2')
 VisualizeSilentAngles = Signal.new('VisualizeSilentAngles')
+getgenv().hitlogs = Signal.new('hitlogs')
 function insertwithoutdupes(tab, thethingyouneedtoinsert) -- my own code :sunglasses:
 	if not table.find(tab, thethingyouneedtoinsert) then
 		table.insert(tab, thethingyouneedtoinsert)
@@ -170,7 +171,7 @@ makefolder("pastedstormy/pastedstormycfgs/")
 local LocalPlayer = Players.LocalPlayer 
 
 
-local MainUIColor = COL3RGB(255,20,147)
+local MainUIColor = Color3.fromRGB(255,20,147)
 
 
 local planting = false
@@ -2406,7 +2407,7 @@ do
 										TextLabel.TextColor3 = MainUIColor 
 										library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(200, 200, 200)}) 
 										local lmfaooo, lol = pcall(function()
-										callback()
+										callback(TextLabel, TextLabel.Text)
 											end)
 										if lmfaooo then
 										TextLabel.Text = 'Success!'
@@ -5770,6 +5771,9 @@ elseif type == "Button" then
 			Label:Destroy()
 		end)
 	end
+	hitlogs:Connect(function(text,col,time, size, size2, size3, size4)
+		CreateHitElement(text,col, time, size, size2, size3, size4)
+	end)
 	CreateHitElement(" Welcome "..LocalPlayer.Name.." to totally not pasted script!  ",MainUIColor,5, 0, 340, 0, 22)
 	wait(0.5)
 	CreateHitElement(" Go in misc tab and set up keybind yourself  ",MainUIColor,5, 0, 340, 0, 30)
@@ -6561,35 +6565,35 @@ end)
 other:Element('Button', 'dick size', {}, function()
 local dicksize = '='
 local dicksizerep = string.rep(dicksize, RANDOM(0, 20))
-CreateHitElement(" Your dick is 8"..dicksizerep.."D",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+CreateHitElement(" Your dick is 8"..dicksizerep.."D",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 if LEN(dicksizerep) == 0 then
-CreateHitElement(" small penis hhhhh noob get good ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+CreateHitElement(" small penis hhhhh noob get good ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 elseif LEN(dicksizerep) == 20 then
-CreateHitElement(" omg biggest penis ever real ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+CreateHitElement(" omg biggest penis ever real ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 end
 end)
 
 other:Element('Button', 'how gay you are', {}, function()
 local procent = RANDOM(1, 100)
-CreateHitElement(" You're "..procent.. '% gay',values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+CreateHitElement(" You're "..procent.. '% gay',values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 180, 0, 22)
 	if procent == 100 then
-		CreateHitElement(" Lmao clipped ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+		CreateHitElement(" Lmao clipped ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 180, 0, 22)
 		elseif procent == 50 then
-		CreateHitElement(" Does that mean you're a femboy? ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+		CreateHitElement(" Does that mean you're a femboy? ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 180, 0, 22)
 		elseif procent == 0 then
-		CreateHitElement(" Holy shit real you're not gay ?!?!?!?!?!",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+		CreateHitElement(" Holy shit real you're not gay ?!?!?!?!?!",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 180, 0, 22)
 	end
 end)
 
 other:Element('Button', 'skill issue rate', {}, function()
 local procent = RANDOM(1, 100)
-CreateHitElement(" You're "..procent.. '% skill issue ',values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+CreateHitElement(" You're "..procent.. '% skill issue ',values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 180, 0, 22)
 	if procent == 100 then
-		CreateHitElement(" Lmao clipped noob get good kid ez ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 200, 0, 22)
+		CreateHitElement(" Lmao clipped noob get good kid ez ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 200, 0, 22)
 		elseif procent == 50 then
-		CreateHitElement(" Ok ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+		CreateHitElement(" Ok ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 180, 0, 22)
 		elseif procent == 0 then
-		CreateHitElement(" Pro ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 180, 0, 22)
+		CreateHitElement(" Pro ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 180, 0, 22)
 	end
 end)
 
@@ -6871,7 +6875,6 @@ aimbot:Element("Dropdown", "automatic fire", {options = {"off", "standard", "hit
 aimbot:Element("Toggle", "automatic penetration")
 aimbot:Element("Slider", "automatic penetration modifier", {min = 1, max = 500, default = 1})
 --aimbot:Element("ToggleColor", "Hitlogs", {default = {Color = MainUIColor}})
-aimbot:Element('Slider', 'log time', {min = 1, max = 10, default = 2})
 aimbot:Element("Jumbobox", "resolver", {options = {"pitch", "roll", "arms", "animation", 'bhop'}})
 aimbot:Element("Toggle", "front track")
 aimbot:Element("Slider", "X distance", {min = -50, max = 50, default = -5})
@@ -8914,6 +8917,7 @@ client:Element("Toggle", "remove killers", {}, function(tbl)
 end) 
 client:Element("ToggleColor", "hitmarker", {default = {Color = COL3RGB(255,255,255)}}) 
 client:Element("ToggleColor", "hitlogs", {default = {Color = MainUIColor}})
+client:Element('Slider', 'log time', {min = 1, max = 10, default = 2})
 client:Element("Toggle", "buy any grenade") 
 client:Element("Toggle", "chat alive") 
 client:Element("Jumbobox", "shop", {options = {"inf time", "anywhere"}}) 
@@ -9589,7 +9593,7 @@ coroutine.wrap(function()
 end)() 
 grenades:Element("Dropdown", "grenade", {options = {"Flashbang", "Smoke Grenade", "Molotov", "HE Grenade", "Decoy Grenade"}}) 
 grenades:Element("Button", "crash server", {}, function() 
-CreateHitElement("Crashing server...",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+CreateHitElement("Crashing server...",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
     while true do
         pcall(function()
             RunService.RenderStepped:Wait()
@@ -10404,11 +10408,6 @@ if not getgenv().PasteDisabled then
 			args[1] = RageTarget 
 			args[2] = RageTarget.Position 
 		end
-		if values.misc.client.hitlogs.Toggle and (values.rage.exploits['kill all'].Toggle ~= true) and (values.rage.exploits['hexagon kill all'].Toggle ~= true) then
-			if game.Players[args[1].Parent.Name] then-- 
-				CreateHitElement(" Hit "..(args[1].Parent.Name == RageTarget.Parent.Name and RageTarget.Parent.Name or args[1].Parent.Name).." in the "..(args[1].Name == RageTarget.Name and RageTarget.Name or args[1].Name).."  ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
-			end	
-		end
 		if values.rage.aimbot["prediction"].Dropdown ~= "off" and RageTarget ~= nil then
 			coroutine.wrap(function()
 				if Players:GetPlayerFromCharacter(args[1].Parent) or args[1] == RageTarget then
@@ -10519,6 +10518,9 @@ if not getgenv().PasteDisabled then
 			spawn(function()
 				if values.visuals.world["bullet tracers"].Toggle then
 					local Beam = createbullettracer(LocalPlayer.Character.UpperTorso.Position, args[2])	
+				end
+				if (Players:GetPlayerFromCharacter(args[1].Parent) and values.misc.client.hitlogs.Toggle) or (args[1] == RageTarget and values.misc.client.hitlogs.Toggle) then --(values.rage.exploits['kill all'].Toggle ~= true) and (values.rage.exploits['hexagon kill all'].Toggle ~= true)
+					hitlogs:Fire(" Hit "..args[1].Parent.Name.." in the "..args[1].Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 				end
 			end)
 		end
@@ -11847,7 +11849,7 @@ ragefunction = function(step)
 														Client.firebullet()
 														VisualizeSilentAngles:Fire(RageTarget.Position)
 													--[[if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 													end--]]
 													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
@@ -11891,7 +11893,7 @@ ragefunction = function(step)
 														end
 													end
 													--[[if values.misc.client.hitlogs.Toggle then
-														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name,values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name,values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 													end--]]
 													end
 													Filter = false
@@ -11954,7 +11956,7 @@ ragefunction = function(step)
 														Client.firebullet()
 														VisualizeSilentAngles:Fire(RageTarget.Position)
 													--[[-if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 													end--]]
 													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
@@ -11998,7 +12000,7 @@ ragefunction = function(step)
 														end
 													end
 													--[[if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 													end--]]
 													end
 													Filter = false
@@ -12033,7 +12035,7 @@ ragefunction = function(step)
 													Client.firebullet()
 													VisualizeSilentAngles:Fire(RageTarget.Position)
 													--[[if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..Hit.Parent.Name.." in the "..Hit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+														CreateHitElement(" Hit "..Hit.Parent.Name.." in the "..Hit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 													end--]]
                                                     if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
                                                         for chingchong = 2, values.rage.exploits['tap amount'].Slider do
@@ -12075,7 +12077,7 @@ ragefunction = function(step)
 														end
 													end
 													--[[if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..Hit.Parent.Name.." in the "..Hit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.rage.aimbot["log time"].Slider, 0, 280, 0, 22)
+														CreateHitElement(" Hit "..Hit.Parent.Name.." in the "..Hit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 													end--]]
 												end
 												Filter = false
