@@ -10411,6 +10411,7 @@ if not getgenv().PasteDisabled then
 		if values.rage.aimbot["prediction"].Dropdown ~= "off" and RageTarget ~= nil then
 			coroutine.wrap(function()
 				if Players:GetPlayerFromCharacter(args[1].Parent) or args[1] == RageTarget then
+					local Ping = game.Stats.PerformanceStats.Ping:GetValue()
 					if values.rage.aimbot["prediction"].Dropdown == "automatic" then
 						local hrp = RageTarget.Parent.HumanoidRootPart.Position
 						local oldHrp = RageTarget.Parent.HumanoidRootPart.OldPosition.Value
@@ -11629,9 +11630,8 @@ for _,Player in pairs(Players:GetPlayers()) do
 		end
 	end
 end
-
+local Ping = game.Stats.PerformanceStats.Ping:GetValue()
 ragefunction = function(step) 
-	local Ping = game.Stats.PerformanceStats.Ping:GetValue()
 	LastStep = step
 	if LocalPlayer.Character and LocalPlayer.Character.Head and Client.gun then
 	local Root = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
