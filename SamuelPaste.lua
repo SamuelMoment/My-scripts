@@ -9410,7 +9410,7 @@ movement:Element('Slider', 'offset (y)', {min = -45, max = 45, default = 0})
 				end
 			end)
 		end)
-		movement:Element('ToggleKeybind', 'noclip v2')
+		--movement:Element('ToggleKeybind', 'noclip v2')
 	
 movement:Element("Toggle", "fly mode", {}, function(tbl)
 if tbl.Toggle then
