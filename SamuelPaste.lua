@@ -8576,11 +8576,8 @@ local Folder = INST("Folder")
 	end)
 	end
 world:Element("Slider", "time changer", {min = 0, max = 15, default = 0}, function(tbl)
-    while wait() do
-      if game.Lighting.ClockTime ~= tbl.Slider then
          game.Lighting.ClockTime = tbl.Slider
-      end
-   end
+
 end)
 
 
