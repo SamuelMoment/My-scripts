@@ -15,7 +15,8 @@ ConfigSave1 = Signal.new("ConfigSave")
 ConfigUpdateCfgList = Signal.new('ConfigUpdateCfgList')
 ConfigUpdateCfgList2 = Signal.new('ConfigUpdateCfgList2')
 VisualizeSilentAngles = Signal.new('VisualizeSilentAngles')
-getgenv().hitlogs = Signal.new('hitlogs')
+hitlogs = Signal.new('hitlogs')
+--MenuAccent = Signal.new('MenuAccent')
 function insertwithoutdupes(tab, thethingyouneedtoinsert) -- my own code :sunglasses:
 	if not table.find(tab, thethingyouneedtoinsert) then
 		table.insert(tab, thethingyouneedtoinsert)
@@ -2598,6 +2599,9 @@ do
 								Drop.AutomaticCanvasSize = "Y" 
 								Drop.ZIndex = 5 
 								Drop.ScrollBarImageColor3 = MainUIColor 
+								function MenuAccent(color)
+									Drop.ScrollBarImageColor3 = color
+								end
 
 								UIListLayout.Parent = Drop 
 								UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
@@ -2686,7 +2690,7 @@ do
 										Scroll.Name = v 
 
 
-										Frame.Name = "Frame" 
+										Frame.Name = "Frame"
 										Frame.Parent = Scroll 
 										Frame.Active = true 
 										Frame.BackgroundColor3 = COL3RGB(46, 46, 46) 
@@ -2700,7 +2704,9 @@ do
 										Frame.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
 										Frame.AutomaticCanvasSize = "Y" 
 										Frame.ScrollBarImageColor3 = MainUIColor 
-
+								function MenuAccent(color)
+									Frame.ScrollBarImageColor3 = color
+								end
 										UIListLayout.Parent = Frame 
 										UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
 										UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder 
@@ -2733,9 +2739,10 @@ do
 											TextLabel.TextColor3 = COL3RGB(200, 200, 200) 
 											TextLabel.TextSize = 11.000
 											TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
+											
 											if joll then 
 												joll = false 
-												TextLabel.TextColor3 = MainUIColor 
+												TextLabel.TextColor3 = MainUIColor
 											end 
 
 											Button.MouseButton1Down:Connect(function() 
@@ -2831,6 +2838,9 @@ do
 													bad.TextLabel.TextColor3 = COL3RGB(200, 200, 200) 
 													if bad.Name == Element.value.Scroll[v.Name] then 
 														bad.TextLabel.TextColor3 = MainUIColor 
+														function MenuAccent(color)
+															bad.TextLabel.TextColor3 = color
+														end
 													end 
 												end 
 											end 
@@ -2880,7 +2890,9 @@ do
 								Frame.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
 								Frame.AutomaticCanvasSize = "Y" 
 								Frame.ScrollBarImageColor3 = MainUIColor 
-
+														function MenuAccent(color)
+															Frame.ScrollBarImageColor3 = color
+														end
 								UIListLayout.Parent = Frame 
 								UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
 								UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder 
@@ -2914,7 +2926,10 @@ do
 									TextLabel.TextSize = 11.000
 									TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
 									if first then first = false 
-										TextLabel.TextColor3 = MainUIColor 
+										TextLabel.TextColor3 = MainUIColor
+										function MenuAccent(color)
+											TextLabel.TextColor3 = MainUIColor
+										end								
 									end 
 
 									Button.MouseButton1Down:Connect(function() 
@@ -3008,7 +3023,9 @@ do
 								Frame.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
 								Frame.AutomaticCanvasSize = "Y" 
 								Frame.ScrollBarImageColor3 = MainUIColor 
-
+function MenuAccent(color)
+Frame.ScrollBarImageColor3 = color
+end
 								UIListLayout.Parent = Frame 
 								UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
 								UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder 
@@ -3044,6 +3061,9 @@ ConfigUpdateCfgList:Connect(function()
 									TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
 									if first then first = false 
 										TextLabel.TextColor3 = MainUIColor 
+function MenuAccent(color)
+TextLabel.TextColor3 = color
+end
 									end 
 ConfigUpdateCfgList2:Connect(function()
 Button:Destroy()
@@ -3678,7 +3698,9 @@ ConfigUpdateCfgList:Fire()
 								Color.Parent = Button 
 								
 								Color.BackgroundColor3 = MainUIColor
-								
+	function MenuAccent(color)
+Color.BackgroundColor3 = color
+end						
 								Color.BackgroundColor3 = COL3RGB(46, 46, 46)
 								Color.BorderColor3 = COL3RGB(18, 18, 16) 
 								Color.Position = UDIM2(0, 15, 0.5, -5) 
@@ -5015,10 +5037,6 @@ if team ~= "TTT" then
 end
 end--]]
 								function Element:SetValue(val) 
-									Element.value = val 
-									abcd.Text = val.Dropdown 
-									values[tabname][sectorname][text] = Element.value 
-									callback(val) 
 								end 
 
 								ImageLabel.Parent = Button 
@@ -5774,12 +5792,11 @@ elseif type == "Button" then
 	hitlogs:Connect(function(text,col,time, size, size2, size3, size4)
 		CreateHitElement(text,col, time, size, size2, size3, size4)
 	end)
-	CreateHitElement(" Welcome "..LocalPlayer.Name.." to totally not pasted script!  ",MainUIColor,5, 0, 340, 0, 22)
+	CreateHitElement(" Welcome, "..LocalPlayer.Name.."!",MainUIColor,5, 0, 340, 0, 22)
 	wait(0.5)
-	CreateHitElement(" Go in misc tab and set up keybind yourself  ",MainUIColor,5, 0, 340, 0, 30)
+	CreateHitElement(" To close gui, go to misc tab and set up keybind  ",MainUIColor,5, 0, 340, 0, 30)
 	CreateHitElement(" !!!  IMPORTANT  !!!\
- This script is totally not (yes) pasted,\
- there may be a lot of cheat bugs!\
+ Expect many bugs/lags since dev is a retard,\
  Report any issues to my server!  ",MainUIColor,15, 0, 230, 0, 120)
  
 local UserInputService = game:GetService("UserInputService") 
@@ -5909,7 +5926,7 @@ do
 	NewScope = ScreenGui 
 end 
 local oldSkybox 
-local ownerJoined = {"GetRealGetFpsGui", "jjbetterthansynapse", 'SamuelThePaster'}
+local ownerJoined = {"GetRealGetFpsGui", "jjbetterthansynapse", 'SamuelThePaster', 'SamuelBetterThanU'}
 Players.PlayerAdded:Connect(function(plr)
 	if TBLFIND(ownerJoined, plr.Name) then
 		CreateHitElement(" !!!HOLY FUCKING SHIT!!! OWNER OF SCRIPT JOINED PREPARE TO GET FUCKED UP!!! ",MainUIColor,15, 0, 380, 0, 22)
@@ -6139,9 +6156,12 @@ local ChrModels = game:GetObjects("rbxassetid://7951832105")[1]
 repeat wait() until ChrModels ~= nil 
 
 
-     local Models = game:GetObjects("rbxassetid://7285197035")[1]    
+     local Models = game:GetObjects("rbxassetid://6708336356")[1]  --7285197035
      repeat wait() until Models ~= nil           
 
+     local Effects = game:GetObjects("rbxassetid://7159346812")[1]    --9714589499
+     repeat wait() until Effects ~= nil
+	 
 
 		local AllKnives = {      
 			"CT Knife",      
@@ -6158,8 +6178,8 @@ repeat wait() until ChrModels ~= nil
 			"Huntsman Knife",      
 			"Karambit",      
 			"Sickle",      
-		} 
-
+		}
+--local AllKnives = {}
 local AllGloves = {} 
 
 
@@ -6175,6 +6195,12 @@ end
 for i,v in pairs(Models.Knives:GetChildren()) do 
 	INSERT(AllKnives, v.Name) 
 end 
+
+local EffectsNames = {'none'}
+
+for i,v in pairs(Effects:GetChildren()) do
+	INSERT(EffectsNames, v.Name)
+end
 
 local AllSkins = {} 
 local AllWeapons = {} 
@@ -6258,11 +6284,28 @@ end
 local knife = skins:Sector('knife', 'Left')
 knife:Element('Toggle', 'knife changer')
 knife:Element('Scroll', 'model', {options = AllKnives, Amount = 15})
+local anotherloop
+knife:Element('Toggle', "Knife effects")
+--[[	if tbl.Toggle then
+		anotherloop = RunService.RenderStepped:Connect(function()
+			if LocalPlayer.Character:FindFirstChild('Gun') and Client.gun:FindFirstChild("Melee") and values.skins.knife.effects.Dropdown ~= 'none' then
+				for i,v in pairs(Effects[values.skins.knife.effects.Dropdown]:GetChildren()) do
+					for i2,v2 in pairs(LocalPlayer.Character.Gun:GetChildren()) do if v2:IsA('Attachment') and v2.Name ~= values.skins.knife.effects.Dropdown then v2:Destroy() end end
+					local lmfao = v:Clone()
+					lmfao.Parent = LocalPlayer.Character.Gun
+					lmfao.Name = values.skins.knife.effects.Dropdown
+				end
+			end
+		end)
+	else
+		pcall(function() anotherloop:Disconnect() end)
+	end
+end)--]]
+knife:Element('Dropdown', "effects", {options = EffectsNames, Amount = 5})
 
 local glove = skins:Sector('glove', 'Left')
 glove:Element('Toggle', 'glove changer')
 glove:Element('ScrollDrop', 'model', {options = AllGloves, Amount = 9})
-
 local skin = skins:Sector('skins', 'Right')
 skin:Element('Toggle', 'skin changer')
 skin:Element('ScrollDrop', 'skin', {options = AllSkins, Amount = 15, alphabet = true})
@@ -9678,28 +9721,31 @@ end)
 				local addons = misc:Sector("addons", "Left") 
 				addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
 					if tbl.Toggle then
-					local oldUiColor = MainUIColor --Colorpick, ColorDrag, HueFrameGradient, Huepick, Huedrag
-					MainUIColor = tbl.Color
-					for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
-						if v:IsA('Frame') and v.BackgroundColor3 == oldUiColor and v.Name ~= 'Color' and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
-							v.BackgroundColor3 = MainUIColor
+						local oldUiColor = MainUIColor --Colorpick, ColorDrag, HueFrameGradient, Huepick, Huedrag
+						MainUIColor = tbl.Color
+						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
+							if v:IsA('Frame') and v.BackgroundColor3 == oldUiColor and v.Name ~= 'Color' and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
+								v.BackgroundColor3 = MainUIColor
+							end
+							if v:IsA('UIGradient') and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
+								v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, COL3RGB(75, 92, 112))}
+							end
+							if v:IsA('ScrollingFrame') then --and v.Name == 'Drop' and v.Parent.Name == 'Button'
+								v.ScrollBarImageColor3 = MainUIColor
+							end
+							if v.Name == 'Frame' and v.Parent.Name == 'Scroll' then 
+								v.ScrollBarImageColor3 = MainUIColor
+							end
+							if v:IsA("UIGradient") and v.Parent.Name == 'Color' or v.Parent.Name == 'Background' then
+								v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainUIColor), ColorSequenceKeypoint.new(1, MainUIColor)}
+							end
+							if v:IsA('Frame') and v.Name == 'Color' and v.Parent.Name == 'Button' and v.BackgroundColor3 == oldUiColor then
+								v.BackgroundColor3 = MainUIColor
+							end
+							if v:IsA('Frame') and v.Name == 'Frame' and v.Parent.Name == 'Scroll' then 
+								v.ScrollBarImageColor3 = MainUIColor
+							end
 						end
-						if v:IsA('UIGradient') and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
-							v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, COL3RGB(75, 92, 112))}
-						end
-						if v:IsA('ScrollingFrame') and v.Name == 'Drop' and v.Parent.Name == 'Button' then
-							v.ScrollBarImageColor3 = MainUIColor
-						end
-						if v.Name == 'Frame' and v.Parent.Name == 'Scroll' then 
-							v.ScrollBarImageColor3 = MainUIColor
-						end
-						if v:IsA("UIGradient") and v.Parent.Name == 'Color' or v.Parent.Name == 'Background' then
-							v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainUIColor), ColorSequenceKeypoint.new(1, MainUIColor)}
-						end
-						if v:IsA('Frame') and v.Name == 'Color' and v.Parent.Name == 'Button' and v.BackgroundColor3 == oldUiColor then
-							v.BackgroundColor3 = MainUIColor
-						end
-					end
 						game:GetService("CoreGui").KeybindList.TextLabel.BorderColor3 = tbl.Color
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = tbl.Color
 						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = tbl.Color
@@ -9716,7 +9762,7 @@ end)
 						
 						
 						
-						else
+					else
 						
 						
 						
@@ -11699,10 +11745,38 @@ end
 				local WeaponName = GSUB(key, "v_", "")      
 				if not FIND(WeaponName, "Arms") then      
 					if Weapons[WeaponName]:FindFirstChild("Melee") and values.skins.knife["knife changer"].Toggle then      
-						if Viewmodels:FindFirstChild("v_"..values.skins.knife.model.Scroll) then      
+						if Viewmodels:FindFirstChild("v_"..values.skins.knife.model.Scroll) then
 							return Viewmodels:FindFirstChild("v_"..values.skins.knife.model.Scroll)      
 						else      
-							local Clone = Models.Knives[values.skins.knife.model.Scroll]:Clone()      
+							local Clone = Models.Knives[values.skins.knife.model.Scroll]:Clone()    
+							--[[if values.skins.knife.effects.Dropdown ~= 'none' and values.skins.knife['Knife effects'].Toggle then
+								for i,v in pairs(Effects[values.skins.knife.effects.Dropdown]:GetChildren()) do
+									for i2,v2 in pairs(LocalPlayer.Character.Gun:GetChildren()) do if v2:IsA('Attachment') and v2.Name ~= values.skins.knife.effects.Dropdown then v2:Destroy() end end
+									local lmfao = v:Clone()
+									lmfao.Parent = Clone.Handle
+									lmfao.Name = values.skins.knife.effects.Dropdown
+								end	
+							end	--]]	
+							spawn(function()
+								if values.skins.knife.effects.Dropdown ~= 'none' and values.skins.knife['Knife effects'].Toggle then 
+									pcall(function()
+										for uU,uV in pairs(game.workspace.CurrentCamera.Arms:GetChildren()) do 
+											if uV.Name=="Handle" then 
+												for uW,uX in pairs(Effects:GetChildren()) do 
+													if uX.Name==values.skins.knife.effects.Dropdown then 
+														for uY,uZ in pairs(uX:GetChildren()) do 
+															if Weapons[WeaponName]:FindFirstChild("Melee") then 
+																local u_=uZ:Clone()
+																u_.Parent=uV 
+															end 
+														end 
+													end 
+												end 
+											end 
+										end 
+									end)
+								end 
+							end)							
 							return Clone      
 						end      
 					end      
@@ -11723,7 +11797,7 @@ end
 			return oldIndex(self, key)      
 		end)      
 				  
-				  local noclip = true
+--[[				  local noclip = true
 				  --insert here local hook stuff
 				  
 mt.__newindex = function(self, i, v)
@@ -11732,6 +11806,22 @@ mt.__newindex = function(self, i, v)
 			v = false
 		end
 	end
+	return oldNewIndex(self, i, v) 
+end --]]
+mt.__newindex = function(self, i, v) 
+	if self:IsA("Humanoid") and i == "JumpPower" and not checkcaller() then 
+		if values.misc.movement["jump bug"].Toggle and values.misc.movement["jump bug"].Active then 
+			v = 24 
+		end 
+		if values.misc.movement["edge bug"].Toggle and values.misc.movement["edge bug"].Active then 
+			v = 0 
+		end 
+	elseif self:IsA("Humanoid") and i == "CameraOffset" then 
+		if values.rage.angles.enabled.Toggle and values.rage.angles["body roll"].Dropdown == "180" and not DisableAA then 
+			v = v + Vec3(0, -3.5, 0) 
+		end 
+	end 
+
 	return oldNewIndex(self, i, v) 
 end 
 PlayerGui.GUI.Crosshairs.Scope:GetPropertyChangedSignal("Visible"):Connect(function(current) 
