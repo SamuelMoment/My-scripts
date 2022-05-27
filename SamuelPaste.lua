@@ -176,10 +176,18 @@ for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do
 	local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
 	writefile('SamuelPaste/cfgs/'..cfgname, readfile(cfg))
 end
-if not isfile('SamuelPaste/customkillsay') then
+if not isfile('SamuelPaste/customkillsay.txt') then
 	writefile('SamuelPaste/customkillsay.txt', "message1\
 message2\
-message3")
+message3"
+)
+end
+
+if not isfile('SamuelPaste/customchatspam.txt') then
+	writefile('SamuelPaste/customchatspam.txt', "message1\
+message2\
+message3"
+)
 end
 
 local Players = game:GetService("Players") 
@@ -9556,6 +9564,9 @@ function emoteReplace(str)
 end
 local number = 0
 local femboy = 1
+local customchatspam = 0
+local customchatspamtxt = readfile('SamuelPaste/customkillsay.txt'):split('\n', '')
+
 local emojiesspam = {}
 for i,v in pairs(emojis) do
 INSERT(emojiesspam, i)
@@ -9592,18 +9603,21 @@ chat:Element("Toggle", "chat spam", nil, function(tbl)
 				femboy = 1
 				end
 			end
+			if values.misc.chat.type.Dropdown == 'custom' then
+				
+				customchatspam = customchatspam + 1
+				if customchatspam == (#customchatspamtxt + 1) then
+				customchatspam = 1
+				end
+			end
 			ReplicatedStorage.Events.PlayerChatted:FireServer(
 			values.misc.chat.type.Dropdown == 'femboy' and femboy == 1 and 'I am gay dm me to get my pics '..values.misc.chat['femboy discord'].Text
 			or values.misc.chat.type.Dropdown == 'femboy' and femboy == 2 and 'DM me to get femboy pics '..values.misc.chat['femboy discord'].Text
-			or number == 1 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
-			or number == 2 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
-			or number == 3 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
-			or number == 4 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
-			or number == 5 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
-			or number == 6 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
-			or number == 7 and values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+			or values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+			or values.misc.chat.type.Dropdown == 'custom' and customchatspamtxt[customchatspam]
+			
 			, false, "Innocent", false, true)
-
+			
 		end 
 	end
 end) 
@@ -9617,7 +9631,8 @@ chat:Element("Dropdown", "type", {options = {
 	"losing to samuel paste (random)", 
 	"racism (random)", 
 	"emojie",
-	'femboy'
+	'femboy',
+	'custom'
 	}}) 
 chat:Element("Slider", "speed (ms)", {min = 30, max = 400, default = 50}) 
 chat:Element('TextBox', 'chat spam message', {placeholder = 'chat spam message'})
