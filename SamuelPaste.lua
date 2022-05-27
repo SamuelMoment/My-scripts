@@ -163,12 +163,26 @@ end
 
 local txt = game:GetService("TextService") 
 function library:Tween(...) game:GetService("TweenService"):Create(...):Play() end 
-local cfglocation = "pastedstormy/pastedstormycfgs/"
+--local cfglocation = "pastedstormy/pastedstormycfgs/"
  
-makefolder("pastedstormy") 
-makefolder("pastedstormy/pastedstormycfgs/")
+--makefolder("pastedstormy") 
+--makefolder("pastedstormy/pastedstormycfgs/")
  
- local Players = game:GetService("Players") 
+local cfglocation = "SamuelPaste/cfgs/"
+makefolder('SamuelPaste')
+makefolder('SamuelPaste/cfgs')
+
+for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+	local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+	writefile('SamuelPaste/cfgs/'..cfgname, readfile(cfg))
+end
+if not isfile('SamuelPaste/customkillsay') then
+	writefile('SamuelPaste/customkillsay.txt', "message1\
+message2\
+message3")
+end
+
+local Players = game:GetService("Players") 
 local LocalPlayer = Players.LocalPlayer 
 
 
@@ -199,13 +213,13 @@ local emojis = {
 }
 local allcfgs = {} 
 
-for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-	local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+for _,cfg in pairs(listfiles('SamuelPaste/cfgs')) do 
+	local cfgname = GSUB(cfg, 'SamuelPaste/cfgs\\', "") 
 	INSERT(allcfgs, cfgname) 
 end
-if #allcfgs == 0 then
+--[[if #allcfgs == 0 then
 INSERT(allcfgs, 'shit so script wont crash')
-end
+end--]]
 
 function tbltorgb(tbl) 
 	return COL3(tbl.R, tbl.G, tbl.B) 
@@ -5797,7 +5811,7 @@ elseif type == "Button" then
 	CreateHitElement(" To close gui, go to misc tab and set up keybind  ",MainUIColor,5, 0, 340, 0, 30)
 	CreateHitElement(" !!!  IMPORTANT  !!!\
  Expect many bugs/lags since dev is a retard,\
- Report any issues to my server!  ",MainUIColor,15, 0, 230, 0, 120)
+ Report any issues to my server!  ",MainUIColor,15, 0, 300, 0, 50)
  
 local UserInputService = game:GetService("UserInputService") 
 local ReplicatedStorage = game:GetService("ReplicatedStorage") 
@@ -6247,14 +6261,21 @@ end
 
 
 
-makefolder("pastedstormy/lua") 
+makefolder("SamuelPaste/lua") 
 
 local allluas = {} 
 
-for _,lua in pairs(listfiles("pastedstormy/lua")) do 
-	local luaname = GSUB(lua, "pastedstormy/lua\\", "") 
+for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+	local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+	writefile(cfglocation..cfgname, readfile(cfg))
+end
+
+for _,lua in pairs(listfiles("SamuelPaste/lua")) do 
+	local luaname = GSUB(lua, "SamuelPaste/lua\\", "") 
 	INSERT(allluas, luaname) 
 end 
+
+
 
 
 
@@ -6286,21 +6307,10 @@ knife:Element('Toggle', 'knife changer')
 knife:Element('Scroll', 'model', {options = AllKnives, Amount = 15})
 local anotherloop
 knife:Element('Toggle', "Knife effects")
---[[	if tbl.Toggle then
-		anotherloop = RunService.RenderStepped:Connect(function()
-			if LocalPlayer.Character:FindFirstChild('Gun') and Client.gun:FindFirstChild("Melee") and values.skins.knife.effects.Dropdown ~= 'none' then
-				for i,v in pairs(Effects[values.skins.knife.effects.Dropdown]:GetChildren()) do
-					for i2,v2 in pairs(LocalPlayer.Character.Gun:GetChildren()) do if v2:IsA('Attachment') and v2.Name ~= values.skins.knife.effects.Dropdown then v2:Destroy() end end
-					local lmfao = v:Clone()
-					lmfao.Parent = LocalPlayer.Character.Gun
-					lmfao.Name = values.skins.knife.effects.Dropdown
-				end
-			end
-		end)
-	else
-		pcall(function() anotherloop:Disconnect() end)
-	end
-end)--]]
+knife:Element('Toggle', 'Change pos (very confused better dont use)')
+knife:Element('Slider', 'X', {min = 0, max = 30, default = 0})
+knife:Element('Slider', 'Y', {min = 0, max = 15, default = 0})
+knife:Element('Slider', 'Z', {min = 0, max = 30, default = 0})
 knife:Element('Dropdown', "effects", {options = EffectsNames, Amount = 5})
 
 local glove = skins:Sector('glove', 'Left')
@@ -6551,7 +6561,7 @@ end)
 local other = others:Sector("other", "Left") 
 other:Element("Scroll", "lua", {options = allluas, Amount = 5}) 
 other:Element("Button", "load", {}, function() 
-	loadstring(readfile("pastedstormy/lua\\"..values.others["other"].lua.Scroll))() 
+	loadstring(readfile("SamuelPaste/lua\\"..values.others["other"].lua.Scroll))() 
 end)
 local function predict(part, ping)
     local oldPos = part.Position
@@ -6973,7 +6983,7 @@ local step2
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
                 ReplicatedStorage.Events.HitPart:FireServer(
                     Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, -- 1
-                    predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, game:GetService("Stats").PerformanceStats.Ping:GetValue()), --2
+                    predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, Ping) --2
                     "Banana", --3
                     100, -- Range --4
                     game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
@@ -6999,7 +7009,7 @@ local step1
 	--values.other.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
 					local oh1 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart
-					local oh2 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart.CFrame.p
+					local oh2 = predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, Ping)
 					local oh3 = Client.gun.Name
 					local oh4 = 4096
 					local oh5 = LocalPlayer.Character.Gun
@@ -7802,7 +7812,7 @@ hexagonkillall = RunService.RenderStepped:Connect(function()
             if v ~= Player and v.Team ~= game.Players.LocalPlayer.Team and IsAlive(v) and IsAlive(game.Players.LocalPlayer) then
                 ReplicatedStorage.Events.HitPart:FireServer(
                     v.Character.HumanoidRootPart,
-                    predict(v.Character.HumanoidRootPart, game:GetService("Stats").PerformanceStats.Ping:GetValue()),
+                    predict(v.Character.HumanoidRootPart, Ping)
                     "Banana",
                     100, -- Range
                     game.Players.LocalPlayer.Character:WaitForChild("Gun"),
@@ -8641,8 +8651,8 @@ end)
 configs:Element("Button", "Refresh cfg list", {}, function()
 table.clear(allcfgs)
 
-for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-	local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+for _,cfg in pairs(listfiles(cfglocation)) do 
+	local cfgname = GSUB(cfg, cfglocation.."\\", "") 
 	INSERT(allcfgs, cfgname) 
 end
 	ConfigUpdateCfgList2:Fire()
@@ -9613,7 +9623,8 @@ chat:Element("Slider", "speed (ms)", {min = 30, max = 400, default = 50})
 chat:Element('TextBox', 'chat spam message', {placeholder = 'chat spam message'})
 chat:Element('TextBox', 'femboy discord', {placeholder = 'write your discord nickname'})
 chat:Element("Toggle", "kill say")
-chat:Element("Dropdown", "kill say type", {options = {"default", "random"}})
+chat:Element("Dropdown", "kill say type", {options = {"default", "random", "custom file"}})
+chat:Element('Dropdown', 'custom file type', {options = {'1,2,3 etc.', 'random'}})
 chat:Element("TextBox", "message", {placeholder = "message"})
 chat:Element("Toggle", "no filter") 
 local grenades = misc:Sector("grenades", "Right") 
@@ -10248,8 +10259,8 @@ Fov.Position = Vec2(Mouse.X, Mouse.Y + 16)
 Fov.Radius = 120 
 RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for searching)
 	LastStep = step
-	if LocalPlayer.Character and LocalPlayer.Character.Head and Client.gun then
-	local Root = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+	if LocalPlayer.Character and LocalPlayer.Character.Head and Client.gun and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+	local Root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 		local RageGuy 
 		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
 			if values.rage.aimbot.enabled.Toggle and LocalPlayer.Character and LocalPlayer.Character.HumanoidRootPart and Client.gun then
@@ -10262,7 +10273,9 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 					 
 					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer then
 						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'pitch') then
+							if Player.Character.UpperTorso:FindFirstChild('Waist') then
 							Player.Character.UpperTorso.Waist.C0 = CFrame.new(0, 0.5, 0)
+							end
                             Player.Character.Head.Neck.C0 = CFrame.new(0, 0.7, 0)
 						end
 						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'roll') then
@@ -10352,7 +10365,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 										--[2] = Hit.Position,
                 ReplicatedStorage.Events.HitPart:FireServer(
                     Hit, -- 1
-                    predict(Hit, Ping), --2
+                    Hit.CFrame.p, --2
                     "Banana", --3
                     100000000000000, -- Range --4
                     game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
@@ -11765,6 +11778,9 @@ end
 															if Weapons[WeaponName]:FindFirstChild("Melee") then 
 																local u_=uZ:Clone()
 																u_.Parent=uV 
+																if values.skins.knife['Change pos (very confused better dont use)'].Toggle then
+																u_.Position = Vector3.new(values.skins.knife.X.Slider, values.skins.knife.Y.Slider, values.skins.knife.Z.Slider)
+																end
 															end 
 														end 
 													end 
@@ -11954,7 +11970,7 @@ local randomkillsay = {
 	"Are you a train? Coz you're getting railed rn",
 	"You and ur mom are very similar, coz both of u are getting raped"
 	}
-
+local customtypemessagesnumber = 1
 LocalPlayer.Status.Kills:GetPropertyChangedSignal("Value"):Connect(function(current) 
 	if current == 0 then return end 
 	if values.misc.chat["kill say"].Toggle then 
@@ -11963,10 +11979,26 @@ LocalPlayer.Status.Kills:GetPropertyChangedSignal("Value"):Connect(function(curr
 			values.misc.chat["message"].Text ~= "" 
 			and values.misc.chat["message"].Text or "h imagine dying"
 			, false, "Innocent", false, true)
-		else
+		elseif values.misc.chat['kill say type'].Dropdown == 'random' then
 		ReplicatedStorage.Events.PlayerChatted:FireServer(
 			randomkillsay[RANDOM(#randomkillsay)]
 		, false, "Innocent", false, true)
+		else
+			
+			local messages = readfile('SamuelPaste/customkillsay.txt'):split('\n', '')
+			if values.misc.chat['custom file type'].Dropdown == 'random' then
+				ReplicatedStorage.Events.PlayerChatted:FireServer(
+				messages[RANDOM(#messages)]
+				, false, "Innocent", false, true)	
+			else
+				ReplicatedStorage.Events.PlayerChatted:FireServer(
+				messages[customtypemessagesnumber]
+				, false, "Innocent", false, true)
+				customtypemessagesnumber = customtypemessagesnumber + 1
+				if customtypemessagesnumber == (#messages + 1) then
+				customtypemessagesnumber = 1
+				end
+			end
 		end
 	end 
 end) 
