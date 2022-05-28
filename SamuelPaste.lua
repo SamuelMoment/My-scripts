@@ -190,18 +190,18 @@ message3"
 )
 end
 
-local Players = game:GetService("Players") 
-local LocalPlayer = Players.LocalPlayer 
+getgenv().Players = game:GetService("Players") 
+getgenv().LocalPlayer = Players.LocalPlayer 
 
 
-local MainUIColor = Color3.fromRGB(255,20,147)
+getgenv().MainUIColor = Color3.fromRGB(255,20,147)
 
 
-local planting = false
-local defusing = false
+getgenv().planting = false
+getgenv().defusing = false
 -- i see those pastes lying around\
 
-local loopkillplr = {}
+getgenv().loopkillplr = {}
 
 
 for _,v in pairs(game.Players:GetPlayers()) do 
@@ -213,7 +213,7 @@ end
 	end
 
 																																																																												-- Bad 9672 & WetIDreamz 0001 & zeox 9999												
-local emojis = {
+getgenv().emojis = {
 	[":clown:"] = utf8.char(129313);
 	[":cold_face:"] = utf8.char(129398);
 	[":neutral:"] = utf8.char(128528);
@@ -7175,6 +7175,9 @@ Loopkill:Element('Button', 'Add in ragebot whitelist', {}, function()
 	else
 		insertwithoutdupes(ragebotwhitelist, game.Players[values.rage["Loop kill"]['Player'].Dropdown].Character)
 	end
+end)
+Loopkill:Element('Button2', 'Remove from ragebot whitelist', {}, function()
+	removewithoutdupes(ragebotwhitelist, game.Players[values.rage["Loop kill"]['Player'].Dropdown].Character)
 end)
 Loopkill:Element('Button2', 'Clear whitelist', {}, function()
 		table.clear(ragebotwhitelist)
