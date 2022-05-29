@@ -6177,6 +6177,9 @@ end
 local ChrModels = game:GetObjects("rbxassetid://7951832105")[1]
 repeat wait() until ChrModels ~= nil 
 
+local ChinaHat = game:GetObjects('rbxassetid://9756426202')[1]
+repeat wait() until ChinaHat ~= nil
+
 
      local Models = game:GetObjects("rbxassetid://6708336356")[1]  --7285197035
      repeat wait() until Models ~= nil           
@@ -6774,7 +6777,9 @@ end)
 
 local trannyenabled = false
 local socks = false
+
 local niggers = others:Sector("trannyware", "Left") 
+
 local a = INST("MeshPart",workspace)
 a.Size = Vec3(1.35,1.4,1.35)
 a.CanCollide = false
@@ -6790,7 +6795,13 @@ niggers:Element('Toggle', 'socks', {}, function(tbl)
     socks = tbl.Toggle
 end)
 
-game:GetService("RunService").RenderStepped:connect(function()
+
+
+local chinahatsector = others:Sector('China hat', 'Left')
+chinahatsector:Element('Toggle', 'enabled')
+chinahatsector:Element('Dropdown', 'animation' {options = {"none", 'default',"scanning", "lava", "pulse"}})
+
+RunService.RenderStepped:connect(function()
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("LowerTorso") and trannyenabled then
         a.Position = game.Players.LocalPlayer.Character.LowerTorso.Position
         a.Rotation = game.Players.LocalPlayer.Character.LowerTorso.Rotation
@@ -6801,6 +6812,27 @@ game:GetService("RunService").RenderStepped:connect(function()
         end
     end
     a.Transparency = trannyenabled and 0 or 1
+	
+	if values.other['China hat'].enabled.Toggle and not LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory') then 
+		local l = ChinaHat['China hat'].PlainMenacingStrawHatAccessory:Clone()
+		l.Parent = LocalPlayer.Character
+	end
+	if LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory') and not values.other['China hat'].enabled.Toggle then
+		LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory'):Destroy()
+	elseif values.other['China hat'].enabled.Toggle and LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory') then
+		local obj = LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory')
+		if values.other['China hat'].animation.Dropdown == "none" then
+			obj.TextureID = ""
+		elseif values.other['China hat'].animation.Dropdown == "scanning" then
+			obj.TextureID = "rbxassetid://5843010904"
+		elseif values.other['China hat'].animation.Dropdown == "lava" then
+			obj.TextureID = "rbxassetid://53883408"
+		elseif values.other['China hat'].animation.Dropdown == "pulse" then
+			obj.TextureID = "rbxassetid://wtf"
+		elseif values.other['China hat'].animation.Dropdown == 'default' then
+			obj.TextureID = 'rbxassetid://8369894581'
+		end
+	end
 end)
 
 local daddy = others:Sector('Change weapon', 'Left')
