@@ -6798,8 +6798,9 @@ end)
 
 
 local chinahatsector = others:Sector('China hat', 'Left')
-chinahatsector:Element('Toggle', 'enabled')
-chinahatsector:Element('Dropdown', 'animation' {options = {"none", 'default',"scanning", "lava", "pulse"}})
+chinahatsector:Element('ToggleColor', 'enabled')
+chinahatsector:Element('Dropdown', 'animation', {options = {"none", 'default',"scanning", "lava", "pulse"}})
+chinahatsector:Element('ToggleColor', 'trails')
 
 RunService.RenderStepped:connect(function()
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("LowerTorso") and trannyenabled then
@@ -6813,24 +6814,47 @@ RunService.RenderStepped:connect(function()
     end
     a.Transparency = trannyenabled and 0 or 1
 	
-	if values.other['China hat'].enabled.Toggle and not LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory') then 
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild('UpperTorso') and values.others['China hat'].enabled.Toggle and not LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory') then 
 		local l = ChinaHat['China hat'].PlainMenacingStrawHatAccessory:Clone()
 		l.Parent = LocalPlayer.Character
+		l.Handle.Color = values.others['China hat'].enabled.Color
+		for _, v in pairs(LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory'):GetChildren()) do
+			if v.Name == 'Trail' then
+				v.Enabled = values.others['China hat'].trails.Toggle
+				v.Color = values.others['China hat'].trails.Color
+			end
+		end
+		local AccessoryWeld = Instance.new('Weld')
+		AccessoryWeld.Name = 'AccessoryWeld'
+		AccessoryWeld.Parent = l.Handle
+		AccessoryWeld.Part1 = LocalPlayer.Character.Head
+		AccessoryWeld.Part0 = l.Handle
+		AccessoryWeld.C0 = CFrame.new(0, -0.6, 0)
 	end
-	if LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory') and not values.other['China hat'].enabled.Toggle then
+	
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild('UpperTorso') and LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory') and not values.others['China hat'].enabled.Toggle then
 		LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory'):Destroy()
-	elseif values.other['China hat'].enabled.Toggle and LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory') then
+	elseif values.others['China hat'].enabled.Toggle and LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory') then
 		local obj = LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory')
-		if values.other['China hat'].animation.Dropdown == "none" then
-			obj.TextureID = ""
-		elseif values.other['China hat'].animation.Dropdown == "scanning" then
-			obj.TextureID = "rbxassetid://5843010904"
-		elseif values.other['China hat'].animation.Dropdown == "lava" then
-			obj.TextureID = "rbxassetid://53883408"
-		elseif values.other['China hat'].animation.Dropdown == "pulse" then
-			obj.TextureID = "rbxassetid://wtf"
-		elseif values.other['China hat'].animation.Dropdown == 'default' then
-			obj.TextureID = 'rbxassetid://8369894581'
+		if values.others['China hat'].animation.Dropdown == "none" then
+			obj.Handle.SpecialMesh.TextureId = ""
+		elseif values.others['China hat'].animation.Dropdown == "scanning" then
+			obj.Handle.SpecialMesh.TextureId = "rbxassetid://5843010904"
+		elseif values.others['China hat'].animation.Dropdown == "lava" then
+			obj.Handle.SpecialMesh.TextureId = "rbxassetid://53883408"
+		elseif values.others['China hat'].animation.Dropdown == "pulse" then
+			obj.Handle.SpecialMesh.TextureId = "rbxassetid://wtf"
+		elseif values.others['China hat'].animation.Dropdown == 'default' then
+			obj.Handle.SpecialMesh.TextureId = 'rbxassetid://8369894581'
+		end
+		if obj.Handle.Color ~= values.others['China hat'].enabled.Color then
+			obj.Handle.Color = values.others['China hat'].enabled.Color
+		end
+		for _, v in pairs(LocalPlayer.Character:FindFirstChild('PlainMenacingStrawHatAccessory'):GetChildren()) do
+			if v.Name == 'Trail' then
+				v.Enabled = values.others['China hat'].trails.Toggle
+				v.Color = values.others['China hat'].trails.Color
+			end
 		end
 	end
 end)
@@ -7019,7 +7043,7 @@ if tbl.Toggle then
 local step2
 	step2 = RunService.RenderStepped:Connect(function()
 	if not (tbl.Toggle) then step2:Disconnect() return end
-	--values.other.other.Player.Dropdown
+	--values.others.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
                 ReplicatedStorage.Events.HitPart:FireServer(
                     Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, -- 1
@@ -7046,7 +7070,7 @@ if tbl.Toggle then
 local step1
 	step1 = RunService.RenderStepped:Connect(function()
 	if not (tbl.Toggle) then step1:Disconnect() return end
-	--values.other.other.Player.Dropdown
+	--values.others.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
 					local oh1 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart
 					local oh2 = predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, Ping)
