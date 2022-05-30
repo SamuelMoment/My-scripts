@@ -27,6 +27,11 @@ function removewithoutdupes(tab, thethingyouneedtoremove) -- my own code :sungla
 		table.remove(tab, table.find(tab, thethingyouneedtoremove))
 	end
 end	
+
+function GetTextBounds(Text, Font, Size)
+    return game:GetService('TextService'):GetTextSize(Text, Size, Font, (game.CoreGui:FindFirstChildWhichIsA('ScreenGui').AbsoluteSize)).X;
+end;
+
 --cache real
 
 getgenv().Vec2 = Vector2.new 
@@ -60,6 +65,42 @@ getgenv().TBLFIND = table.find
 getgenv().TBLREMOVE = table.remove 
 getgenv().TBLSORT = table.sort 
 
+local makeDraggable = function(frame)
+				dragging = false 
+				do 
+					local a = frame
+					local dragInput 
+					local dragStart 
+					local startPos 
+					local function update(input) 
+						local delta = input.Position - dragStart 
+						a.Position = UDIM2(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) 
+					end 
+					a.InputBegan:Connect(function(input) 
+						if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+							dragging = true 
+							dragStart = input.Position 
+							startPos = a.Position 
+
+							input.Changed:Connect(function() 
+								if input.UserInputState == Enum.UserInputState.End then 
+									dragging = false 
+								end 
+							end) 
+						end 
+					end) 
+					a.InputChanged:Connect(function(input) 
+						if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then 
+							dragInput = input 
+						end 
+					end) 
+					game:GetService('UserInputService').InputChanged:Connect(function(input) 
+						if input == dragInput and dragging then 
+							update(input) 
+						end 
+					end) 
+				end 
+end
 
 
 getgenv().getclipboard = function()
@@ -490,7 +531,7 @@ do
 					SpectatorsList.Enabled = rit
 				end		
 
-	local KeybindList = INST("ScreenGui") 
+	--[[local KeybindList = INST("ScreenGui") 
 	do 
 		local TextLabel = INST("TextLabel") 
 		local Frame = INST("Frame") 
@@ -522,45 +563,200 @@ do
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder 
 
 		KeybindList.Parent = game.CoreGui 
-	end 
+	end--]]
 
-	function keybindadd(text) 
-		if not KeybindList.TextLabel.Frame:FindFirstChild(text) then 
+		local KeybindList = Instance.new("ScreenGui")
+		do
+		local Grad = Instance.new("Frame")
+		local Frame = Instance.new("Frame")
+		local Frame_2 = INST('Frame')
+		local UIGradient = Instance.new("UIGradient")
+		local TextLabel = Instance.new("TextLabel")
+		local Keybinds = Instance.new("TextLabel")
+		local UIListLayout = INST('UIListLayout')
+
+		--Properties:
+
+		KeybindList.Parent = game.CoreGui
+		KeybindList.Enabled = false
+		KeybindList.Name = 'KeybindList'
+
+		Frame.Parent = KeybindList
+		Frame.BackgroundColor3 = Color3.fromRGB(43, 43, 43)
+		Frame.Position = UDim2.new(0, 0, 0.366762191, 0)
+		Frame.Size = UDim2.new(0, 60, 0, 20)
+		Frame.ZIndex = 694201337
+
+		Grad.Name = "Grad"
+		Grad.Parent = Frame
+		Grad.BackgroundColor3 = MainUIColor
+		Grad.BorderSizePixel = 0
+		Grad.Position = UDim2.new(0, 1, 0, -1)
+		Grad.Size = UDim2.new(0, 60, 0, 2)
+		Grad.ZIndex = 694201337
+
+		UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(11, 11, 11)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
+		UIGradient.Rotation = 90
+		UIGradient.Parent = Frame
+
+		Keybinds.Name = "Keybinds"
+		Keybinds.Parent = Frame
+		Keybinds.Active = true
+		Keybinds.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		Keybinds.BackgroundTransparency = 1.000
+		Keybinds.LayoutOrder = 1
+		Keybinds.Position = UDim2.new(0, 0, 0.05, 0)
+		Keybinds.Size = UDim2.new(0, 60, 0, 20)
+		Keybinds.ZIndex = 694201337
+		Keybinds.Font = Enum.Font.SourceSans
+		Keybinds.LineHeight = 1.190
+		Keybinds.Text = "Keybinds"
+		Keybinds.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Keybinds.TextSize = 14.000
+		Keybinds.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+		
+		Frame_2.Parent = Frame
+		Frame_2.BackgroundColor3 = Color3.fromRGB(11, 11, 11)
+		Frame_2.Position = UDim2.new(0, 0, 1, 0)
+		Frame_2.Size = UDim2.new(0, 60, 0, 28)
+		Frame_2.Visible = true
+		
+		UIListLayout.Parent = Frame_2 
+		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
+		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder  
+		--[[TextLabel.Parent = Frame
+		TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		TextLabel.Position = UDim2.new(0, 0, 0.926934123, 0)
+		TextLabel.Size = UDim2.new(0, 183, 0, 20)
+		TextLabel.Font = Enum.Font.SourceSans
+		TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+		TextLabel.TextSize = 14.000
+		TextLabel.TextXAlignment = Enum.TextXAlignment.Left--]]
+		makeDraggable(Frame)
+		end
+		--local keybindss = {}
+		local biggestkeybind
+	function keybindadd(text,keybind) 
+		if not KeybindList.Frame.Frame:FindFirstChild(text) then 
+			--table.insert(keybindss, text)
 			local TextLabel = INST("TextLabel") 
-			TextLabel.BackgroundColor3 = COL3RGB(1, 1, 1) 
+			--local size = GetTextBounds(''..text..''..keybind..'', Enum.Font.Code, 14)
+			--[[if size >= (KeybindList.Frame.Size.X - 8) then
+			KeybindList.Frame.Size = UDIM2(0, Size + 8, 0, 20)
+			KeybindList.Frame.Grad.Size = UDIM2(0,KeybindList.Frame.Size.X, 0,4)
+			KeybindList.Frame.Frame.Size = UDIM2(0, Size + 8, 0, 20 * #keybindss)
+			end--]]
+			--[[TextLabel.BackgroundColor3 = COL3RGB(1, 1, 1) 
 			TextLabel.BorderColor3 = COL3RGB(255,20,147) 
+			TextLabel.
 			TextLabel.BorderSizePixel = 0 
-			TextLabel.Size = UDIM2(0, 155, 0, 24) 
+			TextLabel.Size = UDIM2(0, 170, 0, 20) 
 			TextLabel.ZIndex = 2 
 			TextLabel.Font = Enum.Font.SourceSansSemibold 
 			TextLabel.Text = ""..text.." : Enabled"
 			TextLabel.TextColor3 = COL3RGB(255, 255, 255) 
 			TextLabel.TextSize = 14.000 
 			TextLabel.Name = text 
-			TextLabel.Parent = KeybindList.TextLabel.Frame 
+			TextLabel.Parent = KeybindList.TextLabel.Frame --]]
+			local Size = GetTextBounds("["..keybind..'] '..text..' : Enabled', Enum.Font.SourceSans, 14)
+			local XOriginalSize = KeybindList.Frame.Frame.Size.X.Offset
+			local XScale = Size
+			
+			if XScale >= XOriginalSize then
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + UDIM2(0, Size,0,10)
+				biggestkeybind = text
+			else
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + UDIM2(0,0,0,10)
+			end
+			TextLabel.Name = text
+			TextLabel.Parent = KeybindList.Frame.Frame
+			TextLabel.Active = true
+			TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			TextLabel.BackgroundTransparency = 1.000
+			TextLabel.LayoutOrder = 1
+			TextLabel.Position = UDim2.new(0,10,0,0)
+			TextLabel.Size = UDim2.new(0, 60, 0, 20)
+			TextLabel.ZIndex = 694201337
+			TextLabel.Font = Enum.Font.SourceSans
+			TextLabel.LineHeight = 1.190
+			TextLabel.Text = "["..keybind..'] '..text..' : Enabled'
+			TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			TextLabel.TextSize = 14.000
+			TextLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
 		end 
 	end 
-	
 					function keybindhold(text)
-		if not KeybindList.TextLabel.Frame:FindFirstChild(text) then 
+if not KeybindList.Frame.Frame:FindFirstChild(text) then 
+			table.insert(keybindss, text)
 			local TextLabel = INST("TextLabel") 
-			TextLabel.BackgroundColor3 = COL3RGB(1, 1, 1) 
+			--[[local size = GetTextBounds(text..keybind, Enum.Font.Code, 14)
+			if size >= (KeybindList.Frame.Size.X - 8) then
+			KeybindList.Frame.Size = UDIM2(0, Size + 8, 0, 20)
+			KeybindList.Frame.Grad.Size = UDIM2(0,KeybindList.Frame.Size.X, 0,4)
+			KeybindList.Frame.Frame.Size = UDIM2(0, Size + 8, 0, 20 * #keybindss)
+			end--]]
+			--[[TextLabel.BackgroundColor3 = COL3RGB(1, 1, 1) 
 			TextLabel.BorderColor3 = COL3RGB(255,20,147) 
+			TextLabel.
 			TextLabel.BorderSizePixel = 0 
-			TextLabel.Size = UDIM2(0, 155, 0, 24) 
+			TextLabel.Size = UDIM2(0, 170, 0, 20) 
 			TextLabel.ZIndex = 2 
 			TextLabel.Font = Enum.Font.SourceSansSemibold 
-			TextLabel.Text = ""..text.." : Held"
+			TextLabel.Text = ""..text.." : Enabled"
 			TextLabel.TextColor3 = COL3RGB(255, 255, 255) 
 			TextLabel.TextSize = 14.000 
 			TextLabel.Name = text 
-			TextLabel.Parent = KeybindList.TextLabel.Frame 
-			end
+			TextLabel.Parent = KeybindList.TextLabel.Frame --]]
+			local Size = GetTextBounds("["..keybind..'] '..text..' : Held', Enum.Font.SourceSans, 14)
+			local XOriginalSize = KeybindList.Frame.Frame.Size.X.Offset
+			local XScale = Size
+			
+			if XScale >= XOriginalSize then
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + UDIM2(0, Size,0,10)
+				biggestkeybind = text
+			else
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + UDIM2(0,0,0,10)
+			end	
+			TextLabel.Name = text
+			TextLabel.Parent = KeybindList.Frame.Frame
+			TextLabel.Active = true
+			TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			TextLabel.BackgroundTransparency = 1.000
+			TextLabel.LayoutOrder = 1
+			TextLabel.Position = UDim2.new(0,10,0,0)
+			TextLabel.Size = UDim2.new(1, 60, 1, 20)
+			TextLabel.ZIndex = 694201337
+			TextLabel.Font = Enum.Font.SourceSans
+			TextLabel.LineHeight = 1.190
+			TextLabel.Text = "["..keybind..'] '..text..' : Held'
+			TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			TextLabel.TextSize = 14.000
+			TextLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+		end 
 					end
 
 	function keybindremove(text) 
-		if KeybindList.TextLabel.Frame:FindFirstChild(text) then 
-			KeybindList.TextLabel.Frame:FindFirstChild(text):Destroy() 
+		if KeybindList.Frame.Frame:FindFirstChild(text) then
+			local Text = KeybindList.Frame.Frame:FindFirstChild(text).Text
+			KeybindList.Frame.Frame[text]:Destroy()
+			local Size = GetTextBounds(Text, Enum.Font.SourceSans, 14)
+				
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - UDIM2(0,0,0,10)
+				local XOffset = KeybindList.Frame.Frame.Size.X.Offset
+				if XOffset <= 60 then
+					--KeybindList.Frame.Frame.Size.X.Offset = 60
+					KeybindList.Frame.Frame.Size = UDIM2(KeybindList.Frame.Frame.Size.X.Scale, 60, KeybindList.Frame.Frame.Size.Y.Scale, KeybindList.Frame.Frame.Size.Y.Offset)
+				end
+				if KeybindList.Frame.Frame.Size.Y.Offset == 28 then
+					--KeybindList.Frame.Frame.Size.X.Offset = 60
+					KeybindList.Frame.Frame.Size = UDIM2(KeybindList.Frame.Frame.Size.X.Scale, 60, KeybindList.Frame.Frame.Size.Y.Scale, KeybindList.Frame.Frame.Size.Y.Offset)
+				end
+				if KeybindList.Frame.Frame.Size == UDIM2(0,60,0,28) then
+					KeybindList.Frame.Frame.Visible = false
+				else
+					KeybindList.Frame.Frame.Visible = true
+				end
+			--KeybindList.Frame.Frame:FindFirstChild(text):Destroy() 
 		end 
 	end 
 
@@ -588,7 +784,7 @@ do
 								if input.UserInputState == Enum.UserInputState.End then 
 									library.dragging = false 
 								end 
-							end) 
+							end)
 						end 
 					end) 
 					a.InputChanged:Connect(function(input) 
@@ -1118,7 +1314,7 @@ do
 
 								elseif type == "ToggleKeybind" then 
 									tabsize = tabsize + UDIM2(0,0,0,16) 
-									Element.value = {Toggle = data.default and data.default.Toggle or false, Key = data.default and data.default.Key or nil, Type = "Toggle", Active = true} 
+									Element.value = {Toggle = data.default and data.default.Toggle or false, Key = data.default and data.default.Key or nil, Type = "Always", Active = true} 
 
 									local Toggle = INST("Frame") 
 									local Button = INST("TextButton") 
@@ -1352,7 +1548,7 @@ do
 															elseif Element.value.Type == "Toggle" then 
 																Element.value.Active = not Element.value.Active 
 																if Element.value.Active and Element.value.Toggle then 
-																	keybindadd(text) 
+																	keybindadd(text,Element.value.Key) 
 																else 
 																	keybindremove(text) 
 																end 
@@ -1370,7 +1566,7 @@ do
 															elseif Element.value.Type == "Toggle" then 
 																Element.value.Active = not Element.value.Active 
 																if Element.value.Active and Element.value.Toggle then 
-																	keybindadd(text) 
+																	keybindadd(text,Element.value.Key) 
 																else 
 																	keybindremove(text) 
 																end 
@@ -3381,7 +3577,7 @@ ConfigUpdateCfgList:Fire()
 								end) 
 							elseif type == "ToggleKeybind" then 
 								Section.Size = Section.Size + UDIM2(0,0,0,16) 
-								Element.value = {Toggle = data.default and data.default.Toggle or false, Key = data.default and data.default.Key or nil, Type = "Toggle", Active = true} 
+								Element.value = {Toggle = data.default and data.default.Toggle or false, Key = data.default and data.default.Key or nil, Type = "Always", Active = true} 
 								Element.value.Key = data.default and data.default.Key or nil
 								local Toggle = INST("Frame") 
 								local Button = INST("TextButton") 
@@ -3622,7 +3818,7 @@ ConfigUpdateCfgList:Fire()
 															Element.value.Active = not Element.value.Active 
 															callback(Element.value) 
 															if Element.value.Active and Element.value.Toggle then 
-																keybindadd(text) 
+																keybindadd(text,Element.value.Key) 
 															else 
 																keybindremove(text) 
 															end 
@@ -3642,7 +3838,7 @@ ConfigUpdateCfgList:Fire()
 															Element.value.Active = not Element.value.Active 
 															callback(Element.value) 
 															if Element.value.Active and Element.value.Toggle then 
-																keybindadd(text) 
+																keybindadd(text,Element.value.Key) 
 															else 
 																keybindremove(text) 
 															end
@@ -5594,7 +5790,7 @@ elseif type == "Button" then
 															Element.value.Active = not Element.value.Active 
 															callback(Element.value) 
 															if Element.value.Active and Element.value.Toggle then 
-																keybindadd(text) 
+																keybindadd(text,Element.value.Key) 
 															else 
 																keybindremove(text) 
 															end 
@@ -5627,7 +5823,7 @@ elseif type == "Button" then
 															Element.value.Active = not Element.value.Active 
 															callback(Element.value) 
 															if Element.value.Active and Element.value.Toggle then 
-																keybindadd(text) 
+																keybindadd(text,Element.value.Key) 
 															else 
 																keybindremove(text) 
 															end
@@ -7326,7 +7522,7 @@ somedogshitthatbreaksscript:Element("Dropdown", "leg movement", {options = {"off
 			local LagTick = 0
 			local fakelag = rage:Sector('fakelag', 'Right')
 
-			fakelag:Element('Toggle', 'DDOS', {Type = "Toggle", Key = "T"},function(tbl)
+			fakelag:Element('Toggle', 'DDOS', {Type = "Always", Key = "T"},function(tbl)
 				if tbl.Toggle then
 					spawn(function()
 						while values.rage.fakelag["DDOS"].Toggle   do
@@ -9828,7 +10024,7 @@ end)
 								v.ScrollBarImageColor3 = MainUIColor
 							end
 						end
-						game:GetService("CoreGui").KeybindList.TextLabel.BorderColor3 = tbl.Color
+						game:GetService("CoreGui").KeybindList.Grad.BackgroundColor3 = tbl.Color
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = tbl.Color
 						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = tbl.Color
 						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
