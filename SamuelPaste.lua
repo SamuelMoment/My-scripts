@@ -67,7 +67,6 @@ getgenv().TBLSORT = table.sort
 
 local makeDraggable = function(frame)
 				dragging = false 
-				do 
 					local a = frame
 					local dragInput 
 					local dragStart 
@@ -98,8 +97,7 @@ local makeDraggable = function(frame)
 						if input == dragInput and dragging then 
 							update(input) 
 						end 
-					end) 
-				end 
+					end)
 end
 
 
@@ -213,10 +211,7 @@ local cfglocation = "SamuelPaste/cfgs/"
 makefolder('SamuelPaste')
 makefolder('SamuelPaste/cfgs')
 
-for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-	local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
-	writefile('SamuelPaste/cfgs/'..cfgname, readfile(cfg))
-end
+
 if not isfile('SamuelPaste/customkillsay.txt') then
 	writefile('SamuelPaste/customkillsay.txt', "message1\
 message2\
@@ -1949,7 +1944,7 @@ do
 										values[tabname][sectorname][tabtext][text] = Element.value 
 										Element.value.Color = COL3HSV(ColorH, ColorS, ColorV) 
 										callback(Element.value) 
-									end 
+									end
 									Colorpick.MouseButton1Down:Connect(function() 
 										updateColor() 
 										moveconnection = mouse.Move:Connect(function() 
@@ -6073,7 +6068,11 @@ elseif type == "Button" then
 	CreateHitElement(" !!!  IMPORTANT  !!!\
  Expect many bugs/lags since dev is a retard,\
  Report any issues to my server!  ",MainUIColor,15, 0, 300, 0, 50)
- 
+writefile(cfglocation..'unload script cfg.txt', game:HttpGet("https://raw.githubusercontent.com/SamuelMoment/SamuelMoment/main/nothing.cfg"))
+--big ass code (not big ass)
+wait(1)
+delfile(cfglocation..'unload script cfg.txt')
+
 local UserInputService = game:GetService("UserInputService") 
 local ReplicatedStorage = game:GetService("ReplicatedStorage") 
 local RunService = game:GetService("RunService") 
@@ -6528,11 +6527,6 @@ end
 makefolder("SamuelPaste/lua") 
 
 local allluas = {} 
-
-for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-	local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
-	writefile(cfglocation..cfgname, readfile(cfg))
-end
 
 for _,lua in pairs(listfiles("SamuelPaste/lua")) do 
 	local luaname = GSUB(lua, "SamuelPaste/lua\\", "") 
@@ -7183,7 +7177,9 @@ aimbot:Element("ToggleKeybind", "triggerbot")
 
 local main = legit:MSector("main", "Left") 
 local default = main:Tab('default')
---local pistol = main:Tab("pistol") 
+--values.legit.main.default
+--values[tab][1st local][second local]
+--local pistol = main:Tab("pistol") --values[tab][MSector][Sectortab]
 --local smg = main:Tab("smg") 
 --local rifle = main:Tab("rifle") 
 --local sniper = main:Tab("sniper") 
@@ -7237,8 +7233,13 @@ settings:Element('Slider', 'fov thickness', {min = 1, max = 10, default = 1})
 settings:Element("Toggle", "forcefield check") 
 
 
-local aimbot = rage:Sector("aimbot", "Left") -- values.rage.aimbot.enabled.Toggle --local aimbot = rage:Sector("aimbot", "Left")
+local rage123123213213 = rage:MSector("rages", "Left") -- values.rage.rages['SamuelPaste rage'].enabled.Toggle --local aimbot = rage:Sector("aimbot", "Left")
+local aimbot = rage123123213213:Tab('SamuelPaste rage') 
+--values[tab][MSector][Sectortab]
+--values[tab][1st local][second local]
+--values.rage.rages['SamuelPaste rage']
 aimbot:Element("Toggle", "enabled") 
+aimbot:Element('Toggle', 'override all other rages')
 aimbot:Element("Dropdown", "origin", {options = {"character", "camera"}}) 
 aimbot:Element("Toggle", "silent aim") 
 aimbot:Element("Dropdown", "automatic fire", {options = {"off", "standard", "hitpart"}}) 
@@ -7260,6 +7261,28 @@ aimbot:Element("Toggle", "auto baim")
 			aimbot:Element("Dropdown", "knifebot type", {options = {"normal", "rapid"}}) 
 			aimbot:Element("Slider", "Knifebot Radius", {min = -1, max = 9000, default = 20})
 			aimbot:Element("Toggle", "knife wallcheck")
+			
+-------------------------------------------------------------------------------------------------------------------------------
+local aimbot2 = rage123123213213:Tab('default rage')
+aimbot2:Element('Toggle', 'override samuelpaste rage')
+aimbot2:Element('Toggle','override bloxsense rage')
+aimbot2:Element("Toggle", "enabled")
+aimbot2:Element("Dropdown", "origin", {options = {"character", "camera"}})
+aimbot2:Element("Toggle", "silent aim")
+aimbot2:Element("Dropdown", "automatic fire", {options = {"off", "standard", "hitpart"}})
+aimbot2:Element("Toggle", "automatic penetration")
+aimbot2:Element("Jumbobox", "resolver", {options = {"pitch", "roll"}})
+aimbot2:Element("Toggle", "delay shot")
+aimbot2:Element("Toggle", "force hit")
+aimbot2:Element("Dropdown", "prediction", {options = {"off", "cframe", "velocity"}})
+aimbot2:Element("Toggle", "teammates")
+aimbot2:Element("Toggle", "auto baim")
+aimbot2:Element("Toggle", "knifebot")
+-------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 local weapons = rage:MSector("weapons", "Left") 
 local default = weapons:Tab("default")
 default:Element("Jumbobox", "hitboxes", {options = {"head", "torso", "legs"}})
@@ -7299,8 +7322,8 @@ local step2
 	--values.others.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
                 ReplicatedStorage.Events.HitPart:FireServer(
-                    Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, -- 1
-                    predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, Ping) --2
+                    Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso, -- 1
+                    predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso, Ping) --2
                     "Banana", --3
                     100, -- Range --4
                     game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
@@ -7325,8 +7348,8 @@ local step1
 	if not (tbl.Toggle) then step1:Disconnect() return end
 	--values.others.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
-					local oh1 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart
-					local oh2 = predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.HumanoidRootPart, Ping)
+					local oh1 = Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso
+					local oh2 = predict(Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso, Ping)
 					local oh3 = Client.gun.Name
 					local oh4 = 4096
 					local oh5 = LocalPlayer.Character.Gun
@@ -8131,8 +8154,8 @@ hexagonkillall = RunService.RenderStepped:Connect(function()
         for i,v in ipairs(Players:GetPlayers()) do
             if v ~= Player and v.Team ~= game.Players.LocalPlayer.Team and IsAlive(v) and IsAlive(game.Players.LocalPlayer) then
                 ReplicatedStorage.Events.HitPart:FireServer(
-                    v.Character.HumanoidRootPart,
-                    predict(v.Character.HumanoidRootPart, Ping)
+                    v.Character.UpperTorso,
+                    predict(v.Character.UpperTorso, Ping)
                     "Banana",
                     100, -- Range
                     game.Players.LocalPlayer.Character:WaitForChild("Gun"),
@@ -8977,6 +9000,24 @@ for _,cfg in pairs(listfiles(cfglocation)) do
 end
 	ConfigUpdateCfgList2:Fire()
 	ConfigUpdateCfgList:Fire()
+end)
+configs:Element("Button", 'overwrite cfgs from old folder', {}, function()
+	--[[for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+		local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+		writefile(cfglocation..cfgname, readfile(cfg))
+	end--]]
+	for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+		local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+		writefile('SamuelPaste/cfgs/'..cfgname, readfile(cfg))
+	end
+	table.clear(allcfgs)
+
+	for _,cfg in pairs(listfiles(cfglocation)) do 
+		local cfgname = GSUB(cfg, cfglocation.."\\", "") 
+		INSERT(allcfgs, cfgname) 
+	end
+		ConfigUpdateCfgList2:Fire()
+		ConfigUpdateCfgList:Fire()
 end)
 
 configs:Element("Toggle", "keybind list", nil, function(tbl) 
@@ -10573,6 +10614,7 @@ savedspinpitch = 0
 Jitter = false
 jitterwait = false
 lockyaw = false
+
 local Spin = 0 
 local Hitboxes = {}
 allowedtofreeze = true
@@ -10582,6 +10624,7 @@ local LastStep
 local TriggerDebounce = false 
 local DisableAA = false 
 aroundtheworld_value = 0
+
 local Fov = Drawing.new("Circle") 
 Fov.Filled = true 
 Fov.Color = COL3RGB(15,15,15) 
@@ -10589,13 +10632,14 @@ Fov.Transparency = 0.5
 Fov.Position = Vec2(Mouse.X, Mouse.Y + 16) 
 Fov.Radius = 120 
 RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for searching)
+	local Ping = game.Stats.PerformanceStats.Ping:GetValue()
 	LastStep = step
-	if LocalPlayer.Character and LocalPlayer.Character.Head and Client.gun and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+	if LocalPlayer.Character and LocalPlayer.Character.Head and Client.gun and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and (not values.rage.rages['default rage'].enabled.Toggle or values.rage.rages['SamuelPaste rage']['override all other rages'].Toggle and  (not values.rage.rages['default rage']['override samuelpaste rage'].Toggle)) then
 	local Root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 		local RageGuy 
 		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
-			if values.rage.aimbot.enabled.Toggle and LocalPlayer.Character and LocalPlayer.Character.HumanoidRootPart and Client.gun then
-				local Origin = values.rage.aimbot.origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vec3(0, 2.5, 0) or CamCFrame.p
+			if values.rage.rages['SamuelPaste rage'].enabled.Toggle and LocalPlayer.Character and LocalPlayer.Character.HumanoidRootPart and Client.gun then
+				local Origin = values.rage.rages['SamuelPaste rage'].origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vec3(0, 2.5, 0) or CamCFrame.p
 				local Stats = values.rage.weapons.default
 				for _,Player in pairs(Players:GetPlayers()) do
 					if TBLFIND(values.misc.client["gun modifiers"].Jumbobox, "firerate") then
@@ -10603,25 +10647,25 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 					end
 					 
 					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer then
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'pitch') then
+						if TBLFIND(values.rage.rages['SamuelPaste rage'].resolver.Jumbobox, 'pitch') then
 							if Player.Character.UpperTorso:FindFirstChild('Waist') then
 							Player.Character.UpperTorso.Waist.C0 = CFrame.new(0, 0.5, 0)
 							end
                             Player.Character.Head.Neck.C0 = CFrame.new(0, 0.7, 0)
 						end
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'roll') then
+						if TBLFIND(values.rage.rages['SamuelPaste rage'].resolver.Jumbobox, 'roll') then
 							Player.Character.Humanoid.MaxSlopeAngle = 0
 						end
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'arms') then
+						if TBLFIND(values.rage.rages['SamuelPaste rage'].resolver.Jumbobox, 'arms') then
 							Player.Character.RightUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(1.5, 0.549999952, -0.2)
 							Player.Character.LeftUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(-1.5, 0.549999952, -0.2)
 						end
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'animation') then
+						if TBLFIND(values.rage.rages['SamuelPaste rage'].resolver.Jumbobox, 'animation') then
 							for a, b in next, Player.Character.Humanoid:GetPlayingAnimationTracks() do
 								b:Stop()
 							end
 						end
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, "bhop") then   
+						if TBLFIND(values.rage.rages['SamuelPaste rage'].resolver.Jumbobox, "bhop") then   
 							Player.Character.Head.CFrame = CFrame.new(Player.Character.Head.Position)
 							Player.Character.UpperTorso.CFrame = CFrame.new(Player.Character.UpperTorso.Position)
 							Player.Character.LowerTorso.CFrame = CFrame.new(Player.Character.LowerTorso.Position)
@@ -10634,13 +10678,13 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 							Player.Character.RightLowerLeg.CFrame = CFrame.new(Player.Character.RightLowerLeg.Position)
 							Player.Character.RightUpperLeg.CFrame = CFrame.new(Player.Character.RightUpperLeg.Position)
 						end
-						if values.rage.aimbot["front track"].Toggle then
-							Player.Character.Head.Neck.C0 = CFrame.new(0,values.rage.aimbot["Y distance"].Slider,values.rage.aimbot["X distance"].Slider) * CFAngles(0, 0, 0)
+						if values.rage.rages['SamuelPaste rage']["front track"].Toggle then
+							Player.Character.Head.Neck.C0 = CFrame.new(0,values.rage.rages['SamuelPaste rage']["Y distance"].Slider,values.rage.rages['SamuelPaste rage']["X distance"].Slider) * CFAngles(0, 0, 0)
 						end
 					end
 					if Player.Character and Player.Character:FindFirstChild("Humanoid") and not Client.DISABLED and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and not Player.Character:FindFirstChildOfClass("ForceField") and GetDeg(CamCFrame, Player.Character.Head.Position) <= values.rage.weapons.default["max fov"].Slider and Player ~= LocalPlayer then
-						if Player.Team ~= LocalPlayer.Team or values.rage.aimbot.teammates.Toggle and Player:FindFirstChild("Status") and Player.Status.Team.Value ~= LocalPlayer.Status.Team.Value and Player.Status.Alive.Value then
-							if Client.gun:FindFirstChild("Melee") and values.rage.aimbot["knifebot"].Toggle then -- knife bot (for fast searching)
+						if Player.Team ~= LocalPlayer.Team or values.rage.rages['SamuelPaste rage'].teammates.Toggle and Player:FindFirstChild("Status") and Player.Status.Team.Value ~= LocalPlayer.Status.Team.Value and Player.Status.Alive.Value then
+							if Client.gun:FindFirstChild("Melee") and values.rage.rages['SamuelPaste rage']["knifebot"].Toggle then -- knife bot (for fast searching)
 							local AutoPeek = {OldPeekPosition = CFrame.new()}
 							AutoPeek.OldPeekPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
 							if values.rage.exploits["otw knife"].Toggle and values.rage.exploits["otw knife"].Active then 
@@ -10662,10 +10706,10 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 										INSERT(Ignore, v)
 									end
 								end
-								if values.rage.aimbot["knifebot type"].Dropdown == "rapid" then
+								if values.rage.rages['SamuelPaste rage']["knifebot type"].Dropdown == "rapid" then
 									Client.DISABLED = false
 								end
-								if not values.rage.aimbot["knife wallcheck"].Toggle then
+								if not values.rage.rages['SamuelPaste rage']["knife wallcheck"].Toggle then
 									INSERT(Ignore, game.Workspace.Map)
 								end
 								INSERT(Ignore, game.Workspace.Map.Clips)
@@ -10679,13 +10723,13 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 									INSERT(Ignore, Player.Character.Gun)
 								end
 
-								local Ray = RAY(Origin, (Player.Character.Head.Position - Origin).unit * values.rage.aimbot["Knifebot Radius"].Slider)
+								local Ray = RAY(Origin, (Player.Character.Head.Position - Origin).unit * values.rage.rages['SamuelPaste rage']["Knifebot Radius"].Slider)
 								local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray, Ignore, false, true)
 
 								if Hit and Hit.Parent == Player.Character then
 									RageGuy = Hit
 									RageTarget = Hit
-									if not values.rage.aimbot["silent aim"].Toggle then
+									if not values.rage.rages['SamuelPaste rage']["silent aim"].Toggle then
 										Camera.CFrame = CFrame.new(CamCFrame.Position, Hit.Position)
 									end
 									Filter = true
@@ -10729,8 +10773,8 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 								end
 								table.clear(Hitboxes)
 								for _,Hitbox in ipairs(values.rage.weapons.default.hitboxes.Jumbobox) do
-									if values.rage.weapons.default["prefer body"].Toggle and (values.rage.aimbot.teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then
-										if Hitbox == "head" and (not values.rage.aimbot["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead")) then
+									if values.rage.weapons.default["prefer body"].Toggle and (values.rage.rages['SamuelPaste rage'].teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then
+										if Hitbox == "head" and (not values.rage.rages['SamuelPaste rage']["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead")) then
 											INSERT(Hitboxes, Player.Character.Head)
 											if values.misc.Backtrack.enabled.Toggle then 
 												INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].PlayerName.Value.Character.Head)
@@ -10740,7 +10784,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 										else
 											INSERT(Hitboxes, Player.Character.LowerTorso)
 										end
-									elseif (values.rage.aimbot.teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then 
+									elseif (values.rage.rages['SamuelPaste rage'].teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then 
 										if Hitbox == "torso" then
 											INSERT(Hitboxes, Player.Character.UpperTorso)
 											INSERT(Hitboxes, Player.Character.LowerTorso)
@@ -10758,7 +10802,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 											INSERT(Hitboxes, Player.Character.RightLowerLeg)
 											INSERT(Hitboxes, Player.Character.RightUpperLeg)
 											INSERT(Hitboxes, Player.Character.RightFoot)
-										elseif not values.rage.aimbot["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead") then
+										elseif not values.rage.rages['SamuelPaste rage']["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead") then
 											INSERT(Hitboxes, Player.Character.Head)
 										end
 									end
@@ -10768,10 +10812,10 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 									for _,Part in pairs(Player.Character:GetChildren()) do 
 										if Part ~= Hitbox then INSERT(Ignore2, Part) end 
 									end 
-									if values.rage.aimbot["automatic penetration"].Toggle then 
+									if values.rage.rages['SamuelPaste rage']["automatic penetration"].Toggle then 
 									    local Hits = {}
 										local EndHit, Hit, Pos
-										local Penetration = Client.gun.Penetration.Value * values.rage.aimbot["automatic penetration modifier"].Slider/100
+										local Penetration = Client.gun.Penetration.Value * values.rage.rages['SamuelPaste rage']["automatic penetration modifier"].Slider/100
 										local Ray1 = RAY(Origin, (Hitbox.Position - Origin).unit * (Hitbox.Position - Origin).magnitude)
 										repeat
 											Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray1, Ignore2, false, true)
@@ -10800,11 +10844,11 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 												if Damage >= values.rage.weapons.default["minimum damage"].Slider then
 													RageGuy = EndHit
 													RageTarget = EndHit
-													if not values.rage.aimbot["silent aim"].Toggle then
+													if not values.rage.rages['SamuelPaste rage']["silent aim"].Toggle then
 														Camera.CFrame = CFrame.new(CamCFrame.Position, EndHit.Position)
 													end
 													Filter = true
-													if values.rage.aimbot["automatic fire"].Dropdown == "standard" then
+													if values.rage.rages['SamuelPaste rage']["automatic fire"].Dropdown == "standard" then
 														Client.firebullet()
 														VisualizeSilentAngles:Fire(RageTarget.Position)
 													--[[if values.misc.client.hitlogs.Toggle then -- 
@@ -10815,7 +10859,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 															Client.firebullet()
 														end
 													end
-													elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
+													elseif values.rage.rages['SamuelPaste rage']["automatic fire"].Dropdown == "hitpart" then
 														Client.firebullet()
 														local Arguments = {
 															[1] = EndHit,
@@ -10859,7 +10903,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 													break
 												end
 											else
-												local penetration = Client.gun.Penetration.Value * values.rage.aimbot["automatic penetration modifier"].Slider/100
+												local penetration = Client.gun.Penetration.Value * values.rage.rages['SamuelPaste rage']["automatic penetration modifier"].Slider/100
 												local limit = 0
 												local dmgmodifier = 1
 												for i = 1, #Hits do
@@ -10907,11 +10951,11 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 												if Damage >= values.rage.weapons.default["minimum damage"].Slider then
 													RageGuy = EndHit
 													RageTarget = EndHit
-													if not values.rage.aimbot["silent aim"].Toggle then
+													if not values.rage.rages['SamuelPaste rage']["silent aim"].Toggle then
 														Camera.CFrame = CFrame.new(CamCFrame.Position, EndHit.Position)
 													end
 													Filter = true
-													if values.rage.aimbot["automatic fire"].Dropdown == "standard" then
+													if values.rage.rages['SamuelPaste rage']["automatic fire"].Dropdown == "standard" then
 														Client.firebullet()
 														VisualizeSilentAngles:Fire(RageTarget.Position)
 													--[[-if values.misc.client.hitlogs.Toggle then -- 
@@ -10923,7 +10967,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 														end
 													end
 												
-													elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
+													elseif values.rage.rages['SamuelPaste rage']["automatic fire"].Dropdown == "hitpart" then
 														Client.firebullet()
 														game.ReplicatedStorage.Events.HitPart:FireServer(
 															EndHit,
@@ -10986,11 +11030,11 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 											if Damage >= values.rage.weapons.default["minimum damage"].Slider then
 												RageGuy = Hit
 												RageTarget = Hit
-												if not values.rage.aimbot["silent aim"].Toggle then
+												if not values.rage.rages['SamuelPaste rage']["silent aim"].Toggle then
 													Camera.CFrame = CFrame.new(CamCFrame.Position, Hit.Position)
 												end
 												Filter = true
-												if values.rage.aimbot["automatic fire"].Dropdown == "standard" then
+												if values.rage.rages['SamuelPaste rage']["automatic fire"].Dropdown == "standard" then
 													Client.firebullet()
 													VisualizeSilentAngles:Fire(RageTarget.Position)
 													--[[if values.misc.client.hitlogs.Toggle then -- 
@@ -11001,7 +11045,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
                                                             Client.firebullet()
                                                         end
                                                     end
-												elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
+												elseif values.rage.rages['SamuelPaste rage']["automatic fire"].Dropdown == "hitpart" then
 													Client.firebullet()
 													game.ReplicatedStorage.Events.HitPart:FireServer(
 														EndHit,
@@ -11110,7 +11154,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 					mousemoverel(Magnitude.x/Stats.smoothing.Slider, Magnitude.y/Stats.smoothing.Slider) 
 				end 
 			end 
-			if not values.rage.aimbot.enabled.Toggle and values.legit.aimbot["triggerbot"].Toggle and values.legit.aimbot["triggerbot"].Active and not TriggerDebounce then 
+			if not values.rage.rages['SamuelPaste rage'].enabled.Toggle and values.legit.aimbot["triggerbot"].Toggle and values.legit.aimbot["triggerbot"].Active and not TriggerDebounce then 
 				local Stats = values.legit.main.default 
 				if Stats.triggerbot.Toggle then 
 					if not TBLFIND(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
@@ -11755,6 +11799,582 @@ end)
 end)
 
 
+RunService.RenderStepped:Connect(function(step)
+if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['SamuelPaste rage']['override all other rages'].Toggle or values.rage.rages['default rage']['override samuelpaste rage'].Toggle)  then
+	Fov.Visible = false
+	LastStep = step
+	Ping = game.Stats.PerformanceStats.Ping:GetValue()
+	RageTarget = nil
+	local CamCFrame = Camera.CFrame
+	local CamLook = CamCFrame.LookVector
+	local PlayerIsAlive = false
+	local Character = LocalPlayer.Character
+	RageTarget = nil
+	Spin = math.clamp(Spin + values.rage.angles["spin speed"].Slider, 0, 360)
+	if Spin == 360 then Spin = 0 end
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 and LocalPlayer.Character:FindFirstChild("UpperTorso") then
+		PlayerIsAlive = true
+	end
+	for i,v in pairs(ChamItems) do
+		if v.Parent == nil then
+			table.remove(ChamItems, i)
+		end
+	end
+	Fov.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+	if PlayerIsAlive then
+		local SelfVelocity = LocalPlayer.Character.HumanoidRootPart.Velocity
+		--[[if values.rage.fakelag["ping spike"].Toggle and values.rage.fakelag["ping spike"].Active then
+			for count = 1, 20  do
+				game:GetService("ReplicatedStorage").Events.RemoteEvent:FireServer({[1] = "createparticle", [2] = "bullethole", [3] = LocalPlayer.Character.Head, [4] = Vector3.new(0,0,0)}) 
+			end
+		end--]]
+		local Root = LocalPlayer.Character.HumanoidRootPart
+		if values.misc.client["infinite crouch"].Toggle then
+			Client.crouchcooldown = 0
+		end
+		if table.find(values.misc.client["gun modifiers"].Jumbobox, "firerate") then
+			Client.DISABLED = false
+		end
+		--[[if values.rage.exploits["kill all"].Toggle and values.rage.exploits["kill all"].Active and LocalPlayer.Character:FindFirstChild("UpperTorso") and LocalPlayer.Character:FindFirstChild("Gun") then
+			for _,Player in pairs(Players:GetPlayers()) do
+				if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild("UpperTorso") then
+					local oh1 = Player.Character.Head
+					local oh2 = Player.Character.Head.CFrame.p
+					local oh3 = Client.gun.Name
+					local oh4 = 4096
+					local oh5 = LocalPlayer.Character.Gun
+					local oh8 = 15
+					local oh9 = false
+					local oh10 = false
+					local oh11 = Vector3.new(0,0,0)
+					local oh12 = 16868
+					local oh13 = Vector3.new(0, 0, 0)
+					game:GetService("ReplicatedStorage").Events.HitPart:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
+				end
+			end
+		end--]]
+		if table.find(values.visuals.effects.removals.Jumbobox, "scope lines") then 
+			NewScope.Enabled = LocalPlayer.Character:FindFirstChild("AIMING") and true or false
+			Crosshairs.Scope.Visible = false
+		else
+			NewScope.Enabled = false
+		end
+		local RageGuy
+		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
+			if values.rage.rages['default rage'].enabled.Toggle then
+				local Origin = values.rage.rages['default rage'].origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vector3.new(0, 2.5, 0) or CamCFrame.p
+				local Stats = values.rage.weapons.default
+				for _,Player in pairs(Players:GetPlayers()) do
+					if table.find(values.misc.client["gun modifiers"].Jumbobox, "firerate") then
+						Client.DISABLED = false
+					end
+					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer then
+						if table.find(values.rage.rages['default rage'].resolver.Jumbobox, "pitch") then
+							Player.Character.UpperTorso.Waist.C0 = CFrame.new(Vector3.new(0,0.6,0))
+							Player.Character.Head.CFrame = CFrame.new(Player.Character.Head.Position)
+						end
+						if table.find(values.rage.rages['default rage'].resolver.Jumbobox, "roll") then
+							Player.Character.Humanoid.MaxSlopeAngle = 0
+						end
+					end
+					if Player.Character and Player.Character:FindFirstChild("Humanoid") and not Client.DISABLED and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and not Player.Character:FindFirstChildOfClass("ForceField") and GetDeg(CamCFrame, Player.Character.Head.Position) <= Stats["max fov"].Slider and Player ~= LocalPlayer then
+						if Player.Team ~= LocalPlayer.Team or values.rage.rages['default rage'].teammates.Toggle and Player:FindFirstChild("Status") and Player.Status.Team.Value ~= LocalPlayer.Status.Team.Value and Player.Status.Alive.Value then
+							if Client.gun:FindFirstChild("Melee") and values.rage.rages['default rage']["knifebot"].Toggle then
+								local Ignore = {unpack(Collision)}
+								table.insert(Ignore, workspace.Map.Clips)
+								table.insert(Ignore, workspace.Map.SpawnPoints)
+								table.insert(Ignore, LocalPlayer.Character)
+								table.insert(Ignore, Player.Character.HumanoidRootPart)
+								if Player.Character:FindFirstChild("BackC4") then
+									table.insert(Ignore, Player.Character.BackC4)
+								end
+								if Player.Character:FindFirstChild("Gun") then
+									table.insert(Ignore, Player.Character.Gun)
+								end
+
+								local Ray = Ray.new(Origin, (Player.Character.Head.Position - Origin).unit * 20)
+								local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray, Ignore, false, true)
+
+								if Hit and Hit.Parent == Player.Character then
+									RageGuy = Hit
+									RageTarget = Hit
+									if not values.rage.rages['default rage']["silent aim"].Toggle then
+										Camera.CFrame = CFrame.new(CamCFrame.Position, Hit.Position)
+									end
+									Filter = true
+									Client.firebullet()
+									Filter = false
+
+									local Arguments = {
+										[1] = Hit,
+										[2] = Hit.Position,
+										[3] = Client.gun.Name,
+										[4] = 4096,
+										[5] = LocalPlayer.Character.Gun,
+										[8] = 1,
+										[9] = false,
+										[10] = false,
+										[11] = Vector3.new(),
+										[12] = 16868,
+										[13] = Vector3.new()
+									}
+									game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+								end
+							else
+								local Ignore = {unpack(Collision)}
+								table.insert(Ignore, workspace.Map.Clips)
+								table.insert(Ignore, workspace.Map.SpawnPoints)
+								table.insert(Ignore, LocalPlayer.Character)
+								table.insert(Ignore, Player.Character.HumanoidRootPart)
+								if Player.Character:FindFirstChild("BackC4") then
+									table.insert(Ignore, Player.Character.BackC4)
+								end
+								if Player.Character:FindFirstChild("Gun") then
+									table.insert(Ignore, Player.Character.Gun)
+								end
+
+								local Hitboxes = {}
+								for _,Hitbox in ipairs(Stats.hitboxes.Jumbobox) do
+									if Stats["prefer body"].Toggle then
+										if Hitbox == "head" and (not values.rage.rages['default rage']["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead")) then
+											table.insert(Hitboxes, Player.Character.Head)
+										elseif Hitbox == "torso" then
+											table.insert(Hitboxes, Player.Character.UpperTorso)
+										else
+											table.insert(Hitboxes, Player.Character.LowerTorso)
+										end
+									else
+										if Hitbox == "torso" then
+											table.insert(Hitboxes, Player.Character.UpperTorso)
+										elseif Hitbox == "pelvis" then
+											table.insert(Hitboxes, Player.Character.LowerTorso)
+										elseif not values.rage.rages['default rage']["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead") then
+											table.insert(Hitboxes, Player.Character.Head)
+										end
+									end
+								end
+
+								for _,Hitbox in ipairs(Hitboxes) do
+									local Ignore2 = {unpack(Ignore)}
+									for _,Part in pairs(Player.Character:GetChildren()) do
+										if Part ~= Hitbox then table.insert(Ignore2, Part) end
+									end
+									if values.rage.rages['default rage']["automatic penetration"].Toggle then
+										local Hits = {}
+										local EndHit, Hit, Pos
+										local Penetration = Client.gun.Penetration.Value * 0.01
+										local Ray1 = Ray.new(Origin, (Hitbox.Position - Origin).unit * (Hitbox.Position - Origin).magnitude)
+										repeat
+											Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray1, Ignore2, false, true)
+											if Hit ~= nil and Hit.Parent ~= nil then
+												if Hit and Multipliers[Hit.Name] ~= nil then
+													EndHit = Hit
+												else
+													table.insert(Ignore2, Hit)
+													table.insert(Hits, {["Position"] = Pos,["Hit"] = Hit})
+												end
+											end
+										until EndHit ~= nil or #Hits >= 4 or Hit == nil
+										if EndHit ~= nil and Multipliers[EndHit.Name] ~= nil and #Hits <= 4 then
+											if #Hits == 0 then
+												local Damage = Client.gun.DMG.Value * Multipliers[EndHit.Name]
+												if Player:FindFirstChild("Kevlar") then
+													if string.find(EndHit.Name, "Head") then
+														if Player:FindFirstChild("Helmet") then
+															Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+														end
+													else
+														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+													end
+												end
+												Damage = Damage * (Client.gun.RangeModifier.Value/100 ^ ((Origin - EndHit.Position).Magnitude/500))/100
+												if Damage >= Stats["minimum damage"].Slider then
+													RageGuy = EndHit
+													RageTarget = EndHit
+													if not values.rage.rages['default rage']["silent aim"].Toggle then
+														Camera.CFrame = CFrame.new(CamCFrame.Position, EndHit.Position)
+													end
+													Filter = true
+													if values.rage.rages['default rage']["automatic fire"].Dropdown == "standard" then
+														Client.firebullet()
+														--[[ 
+															Client.firebullet()
+														end--]]
+													elseif values.rage.rages['default rage']["automatic fire"].Dropdown == "hitpart" then
+														Client.firebullet()
+														local Arguments = {
+															[1] = EndHit,
+															[2] = EndHit.Position,
+															[3] = LocalPlayer.Character.EquippedTool.Value,
+															[4] = 100,
+															[5] = LocalPlayer.Character.Gun,
+															[8] = 1,
+															[9] = false,
+															[10] = false,
+															[11] = Vector3.new(),
+															[12] = 100,
+															[13] = Vector3.new()
+														}
+														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+													end
+													Filter = false
+													break
+												end
+											else
+												local penetration = Client.gun.Penetration.Value * 0.01
+												local limit = 0
+												local dmgmodifier = 1
+												for i = 1, #Hits do
+													local data = Hits[i]
+													local part = data["Hit"]
+													local pos = data["Position"]
+													local modifier = 1
+													if part.Material == Enum.Material.DiamondPlate then
+														modifier = 3
+													end
+													if part.Material == Enum.Material.CorrodedMetal or part.Material == Enum.Material.Metal or part.Material == Enum.Material.Concrete or part.Material == Enum.Material.Brick then
+														modifier = 2
+													end
+													if part.Name == "Grate" or part.Material == Enum.Material.Wood or part.Material == Enum.Material.WoodPlanks then
+														modifier = 0.1
+													end
+													if part.Name == "nowallbang" then
+														modifier = 100
+													end
+													if part:FindFirstChild("PartModifier") then
+														modifier = part.PartModifier.Value
+													end
+													if part.Transparency == 1 or part.CanCollide == false or part.Name == "Glass" or part.Name == "Cardboard" then
+														modifier = 0
+													end
+													local direction = (Hitbox.Position - pos).unit * math.clamp(Client.gun.Range.Value, 1, 100)
+													local ray = Ray.new(pos + direction * 1, direction * -2)
+													local _,endpos = workspace:FindPartOnRayWithWhitelist(ray, {part}, true)
+													local thickness = (endpos - pos).Magnitude
+													thickness = thickness * modifier
+													limit = math.min(penetration, limit + thickness)
+													dmgmodifier = 1 - limit / penetration
+												end
+												local Damage = Client.gun.DMG.Value * Multipliers[EndHit.Name] * dmgmodifier
+												if Player:FindFirstChild("Kevlar") then
+													if string.find(EndHit.Name, "Head") then
+														if Player:FindFirstChild("Helmet") then
+															Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+														end
+													else
+														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+													end
+												end
+												Damage = Damage * (Client.gun.RangeModifier.Value/100 ^ ((Origin - EndHit.Position).Magnitude/500))/100
+												if Damage >= Stats["minimum damage"].Slider then
+													RageGuy = EndHit
+													RageTarget = EndHit
+													if not values.rage.rages['default rage']["silent aim"].Toggle then
+														Camera.CFrame = CFrame.new(CamCFrame.Position, EndHit.Position)
+													end
+													Filter = true
+													if values.rage.rages['default rage']["automatic fire"].Dropdown == "standard" then
+														Client.firebullet()
+													elseif values.rage.rages['default rage']["automatic fire"].Dropdown == "hitpart" then
+														Client.firebullet()
+														local Arguments = {
+															[1] = EndHit,
+															[2] = EndHit.Position,
+															[3] = LocalPlayer.Character.EquippedTool.Value,
+															[4] = 100,
+															[5] = LocalPlayer.Character.Gun,
+															[8] = 1,
+															[9] = false,
+															[10] = false,
+															[11] = Vector3.new(),
+															[12] = 100,
+															[13] = Vector3.new()
+														}
+														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+													end
+													Filter = false
+													break
+												end
+											end
+										end
+									else
+										local Ray = Ray.new(Origin, (Hitbox.Position - Origin).unit * (Hitbox.Position - Origin).magnitude)
+										local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray, Ignore2, false, true)
+										if Hit and Multipliers[Hit.Name] ~= nil then
+											local Damage = Client.gun.DMG.Value * Multipliers[Hit.Name]
+											if Player:FindFirstChild("Kevlar") then
+												if string.find(Hit.Name, "Head") then
+													if Player:FindFirstChild("Helmet") then
+														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+													end
+												else
+													Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+												end
+											end
+											Damage = Damage * (Client.gun.RangeModifier.Value/100 ^ ((Origin - Hit.Position).Magnitude/500))
+											if Damage >= Stats["minimum damage"].Slider then
+												RageGuy = Hit
+												RageTarget = Hit
+												if not values.rage.rages['default rage']["silent aim"].Toggle then
+													Camera.CFrame = CFrame.new(CamCFrame.Position, Hit.Position)
+												end
+												Filter = true
+												if values.rage.rages['default rage']["automatic fire"].Dropdown == "standard" then
+													Client.firebullet()
+													if values.rage.exploits["double tap"].Toggle and values.rage.exploits["double tap"].Active then
+														Client.firebullet()
+													end
+												elseif values.rage.rages['default rage']["automatic fire"].Dropdown == "hitpart" then
+													Client.firebullet()
+													local Arguments = {
+														[1] = EndHit,
+														[2] = EndHit.Position,
+														[3] = LocalPlayer.Character.EquippedTool.Value,
+														[4] = 100,
+														[5] = LocalPlayer.Character.Gun,
+														[8] = 1,
+														[9] = false,
+														[10] = false,
+														[11] = Vector3.new(),
+														[12] = 100,
+														[13] = Vector3.new()
+													}
+													game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+													if values.rage.exploits["double tap"].Toggle and values.rage.exploits["double tap"].Active then
+														Client.firebullet()
+														local Arguments = {
+															[1] = EndHit,
+															[2] = EndHit.Position,
+															[3] = LocalPlayer.Character.EquippedTool.Value,
+															[4] = 100,
+															[5] = LocalPlayer.Character.Gun,
+															[8] = 1,
+															[9] = false,
+															[10] = false,
+															[11] = Vector3.new(),
+															[12] = 100,
+															[13] = Vector3.new()
+														}
+														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+													end
+												end
+												Filter = false
+												break
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			--[[elseif values.legit.aimbot["aim assist"].Toggle and values.legit.aimbot["aim assist"].Active and not library.uiopen then
+				local Stats = GetStatsLegit(GetWeaponLegit(Client.gun.Name))
+				local Ignore = {LocalPlayer.Character, Camera, workspace.Map.Clips, workspace.Map.SpawnPoints, workspace.Debris}
+				local Closest = 9999
+				local Target
+
+				Fov.Radius = Stats["field of view"].Slider
+				Fov.Visible =  values.legit.settings["draw fov"].Toggle
+				Fov.Color =  values.legit.settings["draw fov"].Color
+
+				if not table.find(Stats.conditions.Jumbobox, "smoke") then
+					table.insert(Ignore, workspace.Ray_Ignore)
+				end
+
+				if not table.find(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then
+					if not table.find(Stats.conditions.Jumbobox, "standing") or SelfVelocity.Magnitude < 3 then
+						for _,Player in pairs(Players:GetPlayers()) do
+							if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 then
+								if not values.legit.settings["forcefield check"].Toggle or not Player.Character:FindFirstChildOfClass("ForceField") then
+									if Player.Team ~= LocalPlayer.Team or values.legit.settings["free for all"].Toggle then
+										local Pos, onScreen = Camera:WorldToViewportPoint(Player.Character.HumanoidRootPart.Position)
+										if onScreen then
+											local Magnitude = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+											if Magnitude < Stats["field of view"].Slider then
+												local Hitbox = Stats.hitbox.Dropdown == "head" and Player.Character.Head or Stats.hitbox.Dropdown == "chest" and Player.Character.UpperTorso
+												if Stats.hitbox.Dropdown == "closest" then
+													local HeadPos = Camera:WorldToViewportPoint(Player.Character.Head.Position)
+													local TorsoPos = Camera:WorldToViewportPoint(Player.Character.UpperTorso.Position)
+													local HeadDistance = (Vector2.new(HeadPos.X, HeadPos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+													local TorsoDistance = (Vector2.new(TorsoPos.X, TorsoPos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+													if HeadDistance < TorsoDistance then
+														Hitbox = Player.Character.Head
+													else
+														Hitbox = Player.Character.UpperTorso
+													end
+												end
+												if Hitbox ~= nil then
+													if not table.find(Stats.conditions.Jumbobox, "visible") then
+														Target = Hitbox
+													else
+														local Ray1 = Ray.new(Camera.CFrame.Position, (Hitbox.Position - Camera.CFrame.Position).unit * (Hitbox.Position - Camera.CFrame.Position).magnitude)
+														local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray1, Ignore, false, true)
+														if Hit and Hit:FindFirstAncestor(Player.Name) then
+															Target = Hitbox
+														end
+													end
+												end
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+
+				if Target ~= nil then
+					local Pos = Camera:WorldToScreenPoint(Target.Position)
+					local Magnitude = Vector2.new(Pos.X - Mouse.X, Pos.Y - Mouse.Y)
+					mousemoverel(Magnitude.x/Stats.smoothing.Slider, Magnitude.y/Stats.smoothing.Slider)
+				end--]]
+			end
+			--[[if not values.rage.rages['default rage'].enabled.Toggle and values.legit.aimbot["triggerbot"].Toggle and values.legit.aimbot["triggerbot"].Active and not TriggerDebounce then
+				local Stats = GetStatsLegit(GetWeaponLegit(Client.gun.Name))
+				if Stats.triggerbot.Toggle then
+					if not table.find(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then
+						if not table.find(Stats.conditions.Jumbobox, "standing") or SelfVelocity.Magnitude < 3 then
+							if Mouse.Target and Mouse.Target.Parent and Players:GetPlayerFromCharacter(Mouse.Target.Parent) and Multipliers[Mouse.Target.Name] ~= nil and Client.gun.DMG.Value * Multipliers[Mouse.Target.Name] >= Stats["minimum dmg"].Slider then
+								local OldTarget = Mouse.Target
+								local Player = Players:GetPlayerFromCharacter(Mouse.Target.Parent)
+								if Player.Team ~= LocalPlayer.Team or values.legit.settings["free for all"].Toggle then
+									coroutine.wrap(function()
+										TriggerDebounce = true
+										wait(Stats["delay (ms)"].Slider/1000)
+										repeat RunService.RenderStepped:Wait()
+											if not Client.DISABLED then
+												Client.firebullet()
+											end
+										until Mouse.Target == nil or Player ~= Players:GetPlayerFromCharacter(Mouse.Target.Parent)
+										TriggerDebounce = false
+									end)()
+								end
+							end
+						end
+					end
+				end
+			end --]]
+		end
+		BodyVelocity:Destroy()
+		BodyVelocity = Instance.new("BodyVelocity")
+		BodyVelocity.MaxForce = Vector3.new(math.huge,0,math.huge)
+		if UserInputService:IsKeyDown("Space") and values.misc.movement["bunny hop"].Toggle then
+			local add = 0
+			if values.misc.movement.direction.Dropdown == "directional" or values.misc.movement.direction.Dropdown == "directional 2" then
+				if UserInputService:IsKeyDown("A") then add = 90 end
+				if UserInputService:IsKeyDown("S") then add = 180 end
+				if UserInputService:IsKeyDown("D") then add = 270 end
+				if UserInputService:IsKeyDown("A") and UserInputService:IsKeyDown("W") then add = 45 end
+				if UserInputService:IsKeyDown("D") and UserInputService:IsKeyDown("W") then add = 315 end
+				if UserInputService:IsKeyDown("D") and UserInputService:IsKeyDown("S") then add = 225 end
+				if UserInputService:IsKeyDown("A") and UserInputService:IsKeyDown("S") then add = 145 end
+			end
+			local rot = YROTATION(CamCFrame) * CFrame.Angles(0,math.rad(add),0)
+			BodyVelocity.Parent = LocalPlayer.Character.UpperTorso
+			LocalPlayer.Character.Humanoid.Jump = true
+			BodyVelocity.Velocity = Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * (values.misc.movement["speed"].Slider * 2)
+			if add == 0 and values.misc.movement.direction.Dropdown == "directional" and not UserInputService:IsKeyDown("W") then
+				BodyVelocity:Destroy()
+			else
+				if values.misc.movement.type.Dropdown == "cframe" then
+					BodyVelocity:Destroy()
+					Root.CFrame = Root.CFrame + Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * values.misc.movement["speed"].Slider/50
+				end
+			end
+		end
+		if values.misc.movement["edge jump"].Toggle and values.misc.movement["edge jump"].Active then
+			if LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
+				coroutine.wrap(function()
+					RunService.RenderStepped:Wait()
+					if LocalPlayer.Character ~= nil and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
+						LocalPlayer.Character.Humanoid:ChangeState("Jumping")
+					end
+				end)()
+			end
+		end
+		Jitter = not Jitter
+		LocalPlayer.Character.Humanoid.AutoRotate = false
+		if values.rage.angles.enabled.Toggle and not DisableAA then
+			local Angle = -math.atan2(CamLook.Z, CamLook.X) + math.rad(-90)
+			if values.rage.angles["yaw base"].Dropdown == "spin" then
+				Angle = Angle + math.rad(Spin)
+			end
+			if values.rage.angles["yaw base"].Dropdown == "random" then
+				Angle = Angle + math.rad(math.random(0, 360))
+			end
+			local Offset = math.rad(-values.rage.angles["yaw offset"].Slider - (values.rage.angles.jitter.Toggle and Jitter and values.rage.angles["jitter offset"].Slider or 0))
+			local CFramePos = CFrame.new(Root.Position) * CFrame.Angles(0, Angle + Offset, 0)
+			if values.rage.angles["yaw base"].Dropdown == "targets" then
+				local part
+				local closest = 9999
+				for _,plr in pairs(Players:GetPlayers()) do
+					if plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character:FindFirstChild("Humanoid").Health > 0 and plr.Team ~= LocalPlayer.Team then
+						local pos, onScreen = Camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+						local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+						if closest > magnitude then
+							part = plr.Character.HumanoidRootPart
+							closest = magnitude
+						end
+					end
+				end
+				if part ~= nil then
+					CFramePos = CFrame.new(Root.Position, part.Position) * CFrame.Angles(0, Offset, 0)
+				end
+			end
+
+			Root.CFrame = YROTATION(CFramePos)
+			if values.rage.angles["body roll"].Dropdown == "180" then
+				Root.CFrame = Root.CFrame * CFrame.Angles(values.rage.angles["body roll"].Dropdown == "180" and math.rad(180) or 0, 1, 0)
+				LocalPlayer.Character.Humanoid.HipHeight = 4
+			else
+				LocalPlayer.Character.Humanoid.HipHeight = 2
+			end
+
+			local Pitch = values.rage.angles["pitch"].Dropdown == "none" and CamLook.Y or values.rage.angles["pitch"].Dropdown == "up" and 1 or values.rage.angles["pitch"].Dropdown == "down" and -1 or values.rage.angles["pitch"].Dropdown == "zero" and 0 or values.rage.angles["pitch"].Dropdown == "random" and math.random(-10, 10)/10 or 2.5
+			if values.rage.angles["extend pitch"].Toggle and (values.rage.angles["pitch"].Dropdown == "up" or values.rage.angles["pitch"].Dropdown == "down") then
+				Pitch = (Pitch*2)/1.6
+			end
+			game.ReplicatedStorage.Events.ControlTurn:FireServer(Pitch, LocalPlayer.Character:FindFirstChild("Climbing") and true or false)
+		else
+			LocalPlayer.Character.Humanoid.HipHeight = 2
+			Root.CFrame = CFrame.new(Root.Position) * CFrame.Angles(0, -math.atan2(CamLook.Z, CamLook.X) + math.rad(270), 0)
+			game.ReplicatedStorage.Events.ControlTurn:FireServer(CamLook.Y, LocalPlayer.Character:FindFirstChild("Climbing") and true or false)
+		end
+		if values.rage.others["remove head"].Toggle then
+			if LocalPlayer.Character:FindFirstChild("FakeHead") then
+				LocalPlayer.Character.FakeHead:Destroy()
+			end
+			if LocalPlayer.Character:FindFirstChild("HeadHB") then
+				LocalPlayer.Character.HeadHB:Destroy()
+			end
+		end
+		if table.find(values.misc.client["gun modifiers"].Jumbobox, "recoil") then
+			Client.resetaccuracy()
+			Client.RecoilX = 0
+			Client.RecoilY = 0
+		end
+	end
+	for _,Player in pairs(Players:GetPlayers()) do
+		if Player.Character and Player ~= LocalPlayer and Player.Character:FindFirstChild("HumanoidRootPart") and Player.Character.HumanoidRootPart:FindFirstChild("OldPosition") then
+			coroutine.wrap(function()
+				local Position = Player.Character.HumanoidRootPart.Position
+				RunService.RenderStepped:Wait()
+				if Player.Character and Player ~= LocalPlayer and Player.Character:FindFirstChild("HumanoidRootPart") then
+					if Player.Character.HumanoidRootPart:FindFirstChild("OldPosition") then
+						Player.Character.HumanoidRootPart.OldPosition.Value = Position
+					else
+						local Value = Instance.new("Vector3Value")
+						Value.Name = "OldPosition"
+						Value.Value = Position
+						Value.Parent = Player.Character.HumanoidRootPart
+					end
+				end
+			end)()
+		end
+	end
+	end
+end)
 
 
 
@@ -11912,15 +12532,15 @@ if not getgenv().PasteDisabled then
 				end)() 
 			end 
 			if RageTarget ~= nil then 
-				local Origin = values.rage.aimbot.origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vec3(0, 2.5, 0) or Camera.CFrame.p 
-				if values.rage.aimbot["delay shot"].Toggle then 
+				local Origin = values.rage.rages['SamuelPaste rage'].origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vec3(0, 2.5, 0) or Camera.CFrame.p 
+				if values.rage.rages['SamuelPaste rage']["delay shot"].Toggle then 
 					spawn(function() 
 						args[1] = RAY(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude) 
 					end) 
 				else 
 					args[1] = RAY(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude) 
 				end 
-				--[[if values.rage.aimbot["front track"].Toggle and RageTarget:IsDescendantOf(fowardtrackFolder) then
+				--[[if values.rage.rages['SamuelPaste rage']["front track"].Toggle and RageTarget:IsDescendantOf(fowardtrackFolder) then
 				RageTarget = game.Players[RageTarget.Parent.Name].Character[RageTarget.Name]
 				end--]]
 			end 
@@ -11954,15 +12574,15 @@ if not getgenv().PasteDisabled then
 		end 
 	end 
 	if method == "FireServer" and self.Name == "HitPart" then 
-		if values.rage.aimbot["force hit"].Toggle then 
+		if values.rage.rages['SamuelPaste rage']["force hit"].Toggle then 
 			args[1] = RageTarget 
 			args[2] = RageTarget.Position 
 		end
-		if values.rage.aimbot["prediction"].Dropdown ~= "off" and RageTarget ~= nil then
+		if values.rage.rages['SamuelPaste rage']["prediction"].Dropdown ~= "off" and RageTarget ~= nil then
 			coroutine.wrap(function()
 				if Players:GetPlayerFromCharacter(args[1].Parent) or args[1] == RageTarget then
 					local Ping = game.Stats.PerformanceStats.Ping:GetValue()
-					if values.rage.aimbot["prediction"].Dropdown == "automatic" then
+					if values.rage.rages['SamuelPaste rage']["prediction"].Dropdown == "automatic" then
 						local hrp = RageTarget.Parent.HumanoidRootPart.Position
 						local oldHrp = RageTarget.Parent.HumanoidRootPart.OldPosition.Value
 		
@@ -11970,10 +12590,10 @@ if not getgenv().PasteDisabled then
 						local dir = Vec3(vel.X / vel.magnitude, 0, vel.Z / vel.magnitude)
 		
 							
-						args[2] = args[2] + dir * (Ping / (POW(Ping, (1.5 * (values.rage.aimbot["automatic multiplier"].Slider / 5)))) * (dir / (dir / 2)))
+						args[2] = args[2] + dir * (Ping / (POW(Ping, (1.5 * (values.rage.rages['SamuelPaste rage']["automatic multiplier"].Slider / 5)))) * (dir / (dir / 2)))
 						args[4] = 0
-						args[12] = args[12] - (500 * (values.rage.aimbot["automatic multiplier2"].Slider / 5))
-					elseif values.rage.aimbot["prediction"].Dropdown == "cframe" then
+						args[12] = args[12] - (500 * (values.rage.rages['SamuelPaste rage']["automatic multiplier2"].Slider / 5))
+					elseif values.rage.rages['SamuelPaste rage']["prediction"].Dropdown == "cframe" then
 						local Velocity = (RageTarget.Parent.HumanoidRootPart.Position - RageTarget.Parent.HumanoidRootPart.OldPosition.Value)/LastStep
 						local Direction = Vec3(Velocity.X/Velocity.magnitude, 0, Velocity.Z/Velocity.magnitude)
 						args[2] = args[2] + Direction * ((Velocity.magnitude*(Ping/1000)))
@@ -12059,7 +12679,7 @@ if not getgenv().PasteDisabled then
 				end
 			end
 		end
-		--[[if values.rage.aimbot["front track"].Toggle and args[1]:IsDescendantOf(fowardtrackFolder) then
+		--[[if values.rage.rages['SamuelPaste rage']["front track"].Toggle and args[1]:IsDescendantOf(fowardtrackFolder) then
 				args[1] = game.Players[args[1].Parent.Name].Character[args[1].Name]
 				args[2] = args[1].Position
 		end--]]
@@ -13243,1180 +13863,9 @@ for _,Player in pairs(Players:GetPlayers()) do
 		end
 	end
 end
-local Ping = game.Stats.PerformanceStats.Ping:GetValue()
-ragefunction = function(step) 
-	LastStep = step
-	if LocalPlayer.Character and LocalPlayer.Character.Head and Client.gun then
-	local Root = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-		local RageGuy 
-		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
-			if values.rage.aimbot.enabled.Toggle and LocalPlayer.Character and LocalPlayer.Character.HumanoidRootPart and Client.gun then
-				local Origin = values.rage.aimbot.origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vec3(0, 2.5, 0) or CamCFrame.p
-				local Stats = values.rage.weapons.default
-				for _,Player in pairs(Players:GetPlayers()) do
-					if TBLFIND(values.misc.client["gun modifiers"].Jumbobox, "firerate") then
-						Client.DISABLED = false
-					end
-					 
-					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer then
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'pitch') then
-							Player.Character.UpperTorso.Waist.C0 = CFrame.new(0, 0.5, 0)
-                            Player.Character.Head.Neck.C0 = CFrame.new(0, 0.7, 0)
-						end
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'roll') then
-							Player.Character.Humanoid.MaxSlopeAngle = 0
-						end
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'arms') then
-							Player.Character.RightUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(1.5, 0.549999952, -0.2)
-							Player.Character.LeftUpperArm:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(-1.5, 0.549999952, -0.2)
-						end
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, 'animation') then
-							for a, b in next, Player.Character.Humanoid:GetPlayingAnimationTracks() do
-								b:Stop()
-							end
-						end
-						if TBLFIND(values.rage.aimbot.resolver.Jumbobox, "bhop") then   
-							Player.Character.Head.CFrame = CFrame.new(Player.Character.Head.Position)
-							Player.Character.UpperTorso.CFrame = CFrame.new(Player.Character.UpperTorso.Position)
-							Player.Character.LowerTorso.CFrame = CFrame.new(Player.Character.LowerTorso.Position)
-							Player.Character.LeftLowerArm.CFrame = CFrame.new(Player.Character.LeftLowerArm.Position)
-							Player.Character.LeftUpperArm.CFrame = CFrame.new(Player.Character.LeftUpperArm.Position)
-							Player.Character.RightLowerArm.CFrame = CFrame.new(Player.Character.RightLowerArm.Position)
-							Player.Character.RightUpperArm.CFrame = CFrame.new(Player.Character.RightUpperArm.Position)
-							Player.Character.LeftLowerLeg.CFrame = CFrame.new(Player.Character.LeftLowerLeg.Position)
-							Player.Character.LeftUpperLeg.CFrame = CFrame.new(Player.Character.LeftUpperLeg.Position)
-							Player.Character.RightLowerLeg.CFrame = CFrame.new(Player.Character.RightLowerLeg.Position)
-							Player.Character.RightUpperLeg.CFrame = CFrame.new(Player.Character.RightUpperLeg.Position)
-						end
-						if values.rage.aimbot["front track"].Toggle then
-							Player.Character.Head.Neck.C0 = CFrame.new(0,values.rage.aimbot["Y distance"].Slider,values.rage.aimbot["X distance"].Slider) * CFAngles(0, 0, 0)
-						end
-					end
-					if Player.Character and Player.Character:FindFirstChild("Humanoid") and not Client.DISABLED and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and not Player.Character:FindFirstChildOfClass("ForceField") and GetDeg(CamCFrame, Player.Character.Head.Position) <= values.rage.weapons.default["max fov"].Slider and Player ~= LocalPlayer then
-						if Player.Team ~= LocalPlayer.Team or values.rage.aimbot.teammates.Toggle and Player:FindFirstChild("Status") and Player.Status.Team.Value ~= LocalPlayer.Status.Team.Value and Player.Status.Alive.Value then
-							if Client.gun:FindFirstChild("Melee") and values.rage.aimbot["knifebot"].Toggle then -- knife bot (for fast searching)
-							local AutoPeek = {OldPeekPosition = CFrame.new()}
-							AutoPeek.OldPeekPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
-							if values.rage.exploits["otw knife"].Toggle and values.rage.exploits["otw knife"].Active then 
-								for i,v in next, Players:GetChildren() do
-									if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team then
-												if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-												aroundtheworld_value=aroundtheworld_value + (0.01 * 2)
-												LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame*CFAngles(0, aroundtheworld_value, 0)*CFrame.new(0, 0, 500)
-												break
-											end
-										end
-									end
-							else
-								LocalPlayer.Character.HumanoidRootPart.CFrame = AutoPeek.OldPeekPosition
-							end
-								local Ignore = {unpack(Collision)}
-								if #ragebotwhitelist ~= 0 then
-									for i,v in pairs(ragebotwhitelist) do
-										INSERT(Ignore, v)
-									end
-								end
-								if values.rage.aimbot["knifebot type"].Dropdown == "rapid" then
-									Client.DISABLED = false
-								end
-								if not values.rage.aimbot["knife wallcheck"].Toggle then
-									INSERT(Ignore, game.Workspace.Map)
-								end
-								INSERT(Ignore, game.Workspace.Map.Clips)
-								INSERT(Ignore, game.Workspace.Map.SpawnPoints)
-								INSERT(Ignore, LocalPlayer.Character)
-								INSERT(Ignore, Player.Character.HumanoidRootPart)
-								if Player.Character:FindFirstChild("BackC4") then
-									INSERT(Ignore, Player.Character.BackC4)
-								end
-								if Player.Character:FindFirstChild("Gun") then
-									INSERT(Ignore, Player.Character.Gun)
-								end
 
-								local Ray = RAY(Origin, (Player.Character.Head.Position - Origin).unit * values.rage.aimbot["Knifebot Radius"].Slider)
-								local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray, Ignore, false, true)
 
-								if Hit and Hit.Parent == Player.Character then
-									RageGuy = Hit
-									RageTarget = Hit
-									if not values.rage.aimbot["silent aim"].Toggle then
-										Camera.CFrame = CFrame.new(CamCFrame.Position, Hit.Position)
-									end
-									Filter = true
-									Client.DISABLED = false
-									Filter = false
---arguments
-										--[1] = Hit,
-										--[2] = Hit.Position,
-                ReplicatedStorage.Events.HitPart:FireServer(
-                    Hit, -- 1
-                    predict(Hit, Ping), --2
-                    "Banana", --3
-                    100000000000000, -- Range --4
-                    game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
-                    Vec3(), -- Start Position --6
-                    Vec3(),
-                    100000, -- Damage Modifier
-                    false,
-                    true,
-                    Vec3(),
-                    100,
-                    Vec3()
-                )
-								end
-							else
-								local Ignore = {unpack(Collision)}
-								if #ragebotwhitelist ~= 0 then
-									for i,v in pairs(ragebotwhitelist) do
-										INSERT(v, Ignore)
-									end
-								end
-								INSERT(Ignore, workspace.Map.Clips)
-								INSERT(Ignore, workspace.Map.SpawnPoints)
-								INSERT(Ignore, LocalPlayer.Character)
-								INSERT(Ignore, Player.Character.HumanoidRootPart)
-								if Player.Character:FindFirstChild("BackC4") then
-									INSERT(Ignore, Player.Character.BackC4)
-								end
-								if Player.Character:FindFirstChild("Gun") then
-									INSERT(Ignore, Player.Character.Gun)
-								end
-								table.clear(Hitboxes)
-								for _,Hitbox in ipairs(values.rage.weapons.default.hitboxes.Jumbobox) do
-									if values.rage.weapons.default["prefer body"].Toggle and (values.rage.aimbot.teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then
-										if Hitbox == "head" and (not values.rage.aimbot["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead")) then
-											INSERT(Hitboxes, Player.Character.Head)
-											if values.misc.Backtrack.enabled.Toggle then 
-												INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].PlayerName.Value.Character.Head)
-											end
-										elseif Hitbox == "torso" then
-											INSERT(Hitboxes, Player.Character.UpperTorso)
-										else
-											INSERT(Hitboxes, Player.Character.LowerTorso)
-										end
-									elseif (values.rage.aimbot.teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then 
-										if Hitbox == "torso" then
-											INSERT(Hitboxes, Player.Character.UpperTorso)
-											INSERT(Hitboxes, Player.Character.LowerTorso)
-										elseif Hitbox == "arms" then
-											INSERT(Hitboxes, Player.Character.LeftLowerArm)
-											INSERT(Hitboxes, Player.Character.LeftUpperArm)
-											INSERT(Hitboxes, Player.Character.LeftArm)
-											INSERT(Hitboxes, Player.Character.RightLowerArm)
-											INSERT(Hitboxes, Player.Character.RightUpperArm)
-											INSERT(Hitboxes, Player.Character.RightHand)
-										elseif Hitbox == "legs" then
-											INSERT(Hitboxes, Player.Character.LeftLowerLeg)
-											INSERT(Hitboxes, Player.Character.LeftUpperLeg)
-											INSERT(Hitboxes, Player.Character.LeftFoot)
-											INSERT(Hitboxes, Player.Character.RightLowerLeg)
-											INSERT(Hitboxes, Player.Character.RightUpperLeg)
-											INSERT(Hitboxes, Player.Character.RightFoot)
-										elseif not values.rage.aimbot["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead") then
-											INSERT(Hitboxes, Player.Character.Head)
-										end
-									end
-								end
-								for _,Hitbox in ipairs(Hitboxes) do 
-									local Ignore2 = {unpack(Ignore)} 
-									for _,Part in pairs(Player.Character:GetChildren()) do 
-										if Part ~= Hitbox then INSERT(Ignore2, Part) end 
-									end 
-									if values.rage.aimbot["automatic penetration"].Toggle then 
-									    local Hits = {}
-										local EndHit, Hit, Pos
-										local Penetration = Client.gun.Penetration.Value * values.rage.aimbot["automatic penetration modifier"].Slider/100
-										local Ray1 = RAY(Origin, (Hitbox.Position - Origin).unit * (Hitbox.Position - Origin).magnitude)
-										repeat
-											Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray1, Ignore2, false, true)
-											if Hit ~= nil and Hit.Parent ~= nil then
-												if Hit and Multipliers[Hit.Name] ~= nil then
-													EndHit = Hit
-												else
-													INSERT(Ignore2, Hit)
-													INSERT(Hits, {["Position"] = Pos,["Hit"] = Hit})
-												end
-											end
-										until EndHit ~= nil or #Hits >= 4 or Hit == nil
-										if EndHit ~= nil and Multipliers[EndHit.Name] ~= nil and #Hits <= 4 then
-											if #Hits == 0 then
-												local Damage = Client.gun.DMG.Value * Multipliers[EndHit.Name]
-												if Player:FindFirstChild("Kevlar") then
-													if FIND(EndHit.Name, "Head") then
-														if Player:FindFirstChild("Helmet") then
-															Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
-														end
-													else
-														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
-													end
-												end
-												Damage = Damage * (Client.gun.RangeModifier.Value/100 ^ ((Origin - EndHit.Position).Magnitude/500))/100
-												if Damage >= values.rage.weapons.default["minimum damage"].Slider then
-													RageGuy = EndHit
-													RageTarget = EndHit
-													if not values.rage.aimbot["silent aim"].Toggle then
-														Camera.CFrame = CFrame.new(CamCFrame.Position, EndHit.Position)
-													end
-													Filter = true
-													if values.rage.aimbot["automatic fire"].Dropdown == "standard" then
-														Client.firebullet()
-														VisualizeSilentAngles:Fire(RageTarget.Position)
-													--[[if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
-													end--]]
-													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
-														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
-															Client.firebullet()
-														end
-													end
-													elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
-														Client.firebullet()
-														local Arguments = {
-															[1] = EndHit,
-															[2] = EndHit.Position,
-															[3] = LocalPlayer.Character.EquippedTool.Value,
-															[4] = 100,
-															[5] = LocalPlayer.Character.Gun, 
-															[8] = values.rage.exploits["damage modifier"].Slider,
-															[9] = false,
-															[10] = false,
-															[11] = Vec3(),
-															[12] = 100,
-															[13] = Vec3()
-														}
-														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
-														VisualizeSilentAngles:Fire(RageTarget.Position)
-														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
-														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
-															Client.firebullet()
-															local Arguments = {
-																[1] = EndHit,
-																[2] = EndHit.Position,
-																[3] = LocalPlayer.Character.EquippedTool.Value,
-																[4] = 100,
-																[5] = LocalPlayer.Character.Gun,
-																[8] = values.rage.exploits["damage modifier"].Slider,
-																[9] = false,
-																[10] = false,
-																[11] = Vec3(),
-																[12] = 100,
-																[13] = Vec3()
-															}
-															game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
-														end
-													end
-													--[[if values.misc.client.hitlogs.Toggle then
-														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name,values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
-													end--]]
-													end
-													Filter = false
-													break
-												end
-											else
-												local penetration = Client.gun.Penetration.Value * values.rage.aimbot["automatic penetration modifier"].Slider/100
-												local limit = 0
-												local dmgmodifier = 1
-												for i = 1, #Hits do
-													local data = Hits[i]
-													local part = data["Hit"]
-													local pos = data["Position"]
-													local modifier = 1
-													if part.Material == Enum.Material.DiamondPlate then
-														modifier = 3
-													end
-													if part.Material == Enum.Material.CorrodedMetal or part.Material == Enum.Material.Metal or part.Material == Enum.Material.Concrete or part.Material == Enum.Material.Brick then
-														modifier = 2
-													end
-													if part.Name == "Grate" or part.Material == Enum.Material.Wood or part.Material == Enum.Material.WoodPlanks then
-														modifier = 0.1
-													end
-													if part.Name == "nowallbang" then
-														modifier = 100
-													end
-													if part:FindFirstChild("PartModifier") then
-														modifier = part.PartModifier.Value
-													end
-													if part.Transparency == 1 or part.CanCollide == false or part.Name == "Glass" or part.Name == "Cardboard" then
-														modifier = 0
-													end
-													local direction = (Hitbox.Position - pos).unit * CLAMP(Client.gun.Range.Value, 1, 100)
-													local ray = RAY(pos + direction * 1, direction * -2)
-													local _,endpos = workspace:FindPartOnRayWithWhitelist(ray, {part}, true)
-													local thickness = (endpos - pos).Magnitude
-													thickness = thickness * modifier
-													limit = MIN(penetration, limit + thickness)
-													dmgmodifier = 1 - limit / penetration
-												end
-												local Damage = Client.gun.DMG.Value * Multipliers[EndHit.Name] * dmgmodifier
-												if Player:FindFirstChild("Kevlar") then
-													if FIND(EndHit.Name, "Head") then
-														if Player:FindFirstChild("Helmet") then
-															Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
-														end
-													else
-														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
-													end
-												end
-												Damage = Damage * (Client.gun.RangeModifier.Value/100 ^ ((Origin - EndHit.Position).Magnitude/500))/100
-												if Damage >= values.rage.weapons.default["minimum damage"].Slider then
-													RageGuy = EndHit
-													RageTarget = EndHit
-													if not values.rage.aimbot["silent aim"].Toggle then
-														Camera.CFrame = CFrame.new(CamCFrame.Position, EndHit.Position)
-													end
-													Filter = true
-													if values.rage.aimbot["automatic fire"].Dropdown == "standard" then
-														Client.firebullet()
-														VisualizeSilentAngles:Fire(RageTarget.Position)
-													--[[-if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
-													end--]]
-													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
-														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
-															Client.firebullet()
-														end
-													end
-												
-													elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
-														Client.firebullet()
-														game.ReplicatedStorage.Events.HitPart:FireServer(
-															EndHit,
-															EndHit.Position,
-															LocalPlayer.Character.EquippedTool.Value,
-															100,
-															LocalPlayer.Character.Gun,
-															values.rage.exploits["damage modifier"].Slider,
-															false,
-															false,
-															Vec3(),
-															100,
-															Vec3()
-														)
-														VisualizeSilentAngles:Fire(RageTarget.Position)
-														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
-														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
-															Client.firebullet()
-															game.ReplicatedStorage.Events.HitPart:FireServer(
-																EndHit,
-																EndHit.Position,
-																LocalPlayer.Character.EquippedTool.Value,
-																100,
-																LocalPlayer.Character.Gun,
-																values.rage.exploits["damage modifier"].Slider,
-																false,
-																false,
-																Vec3(),
-																100,
-																Vec3()
-															)
-															
-														end
-													end
-													--[[if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
-													end--]]
-													end
-													Filter = false
-													break
-												end
-											end
-										end
-									else
-										local Ray = RAY(Origin, (Hitbox.Position - Origin).unit * (Hitbox.Position - Origin).magnitude)
-										local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray, Ignore2, false, true)
-										if Hit and Multipliers[Hit.Name] ~= nil then
-										EndHit = Hit
-											local Damage = Client.gun.DMG.Value * Multipliers[Hit.Name]
-											if Player:FindFirstChild("Kevlar") then
-												if FIND(Hit.Name, "Head") then											
-													if Player:FindFirstChild("Helmet") then
-														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
-													end
-												else
-													Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
-												end
-											end
-											Damage = Damage * (Client.gun.RangeModifier.Value/100 ^ ((Origin - Hit.Position).Magnitude/500))
-											if Damage >= values.rage.weapons.default["minimum damage"].Slider then
-												RageGuy = Hit
-												RageTarget = Hit
-												if not values.rage.aimbot["silent aim"].Toggle then
-													Camera.CFrame = CFrame.new(CamCFrame.Position, Hit.Position)
-												end
-												Filter = true
-												if values.rage.aimbot["automatic fire"].Dropdown == "standard" then
-													Client.firebullet()
-													VisualizeSilentAngles:Fire(RageTarget.Position)
-													--[[if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..Hit.Parent.Name.." in the "..Hit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
-													end--]]
-                                                    if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
-                                                        for chingchong = 2, values.rage.exploits['tap amount'].Slider do
-                                                            Client.firebullet()
-                                                        end
-                                                    end
-												elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
-													Client.firebullet()
-													game.ReplicatedStorage.Events.HitPart:FireServer(
-														EndHit,
-														EndHit.Position,
-														LocalPlayer.Character.EquippedTool.Value,
-														100,
-														LocalPlayer.Character.Gun,
-														values.rage.exploits["damage modifier"].Slider,
-														false,
-														false,
-														Vec3(),
-														100,
-														Vec3()
-													)
-													VisualizeSilentAngles:Fire(RageTarget.Position)
-													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
-														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
-															Client.firebullet()
-															game.ReplicatedStorage.Events.HitPart:FireServer(
-																EndHit,
-																EndHit.Position,
-																LocalPlayer.Character.EquippedTool.Value,
-																100,
-																LocalPlayer.Character.Gun,
-																values.rage.exploits["damage modifier"].Slider,
-																false,
-																false,
-																Vec3(),
-																100,
-																Vec3()
-															)
-														end
-													end
-													--[[if values.misc.client.hitlogs.Toggle then -- 
-														CreateHitElement(" Hit "..Hit.Parent.Name.." in the "..Hit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
-													end--]]
-												end
-												Filter = false
-												break
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end 
-			elseif values.legit.aimbot["aim assist"].Toggle and values.legit.aimbot["aim assist"].Active and not library.uiopen then 
-				local Stats = values.legit.main.default 
-				local Ignore = {LocalPlayer.Character, Camera, workspace.Map.Clips, workspace.Map.SpawnPoints, workspace.Debris} 
-				local Closest = 9999 
-				local Target 
-				Fov.Radius = Stats["FOV"].Slider 
-				Fov.Visible =  values.legit.settings["draw fov"].Toggle 
-				Fov.Color =  values.legit.settings["draw fov"].Color 
 
-				if not TBLFIND(Stats.conditions.Jumbobox, "smoke") then 
-					INSERT(Ignore, workspace.Ray_Ignore) 
-				end 
-
-				if not TBLFIND(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
-					if not TBLFIND(Stats.conditions.Jumbobox, "standing") or SelfVelocity.Magnitude < 3 then 
-						for _,Player in pairs(Players:GetPlayers()) do 
-							if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 then 
-								if not values.legit.settings["forcefield check"].Toggle or not Player.Character:FindFirstChildOfClass("ForceField") then 
-									if Player.Team ~= LocalPlayer.Team or values.legit.settings["free for all"].Toggle then 
-										local Pos, onScreen = Camera:WorldToViewportPoint(Player.Character.HumanoidRootPart.Position) 
-										if onScreen then 
-											local Magnitude = (Vec2(Pos.X, Pos.Y) - Vec2(Mouse.X, Mouse.Y)).Magnitude 
-											if Magnitude < Stats["FOV"].Slider then 
-												local Hitbox = Stats.hitbox.Dropdown == "head" and Player.Character.Head or Stats.hitbox.Dropdown == "chest" and Player.Character.UpperTorso 
-												if Stats.hitbox.Dropdown == "closest" then 
-													local HeadPos = Camera:WorldToViewportPoint(Player.Character.Head.Position) 
-													local TorsoPos = Camera:WorldToViewportPoint(Player.Character.UpperTorso.Position) 
-													local HeadDistance = (Vec2(HeadPos.X, HeadPos.Y) - Vec2(Mouse.X, Mouse.Y)).Magnitude 
-													local TorsoDistance = (Vec2(TorsoPos.X, TorsoPos.Y) - Vec2(Mouse.X, Mouse.Y)).Magnitude 
-													if HeadDistance < TorsoDistance then 
-														Hitbox = Player.Character.Head 
-													else 
-														Hitbox = Player.Character.UpperTorso 
-													end 
-												end 
-												if Hitbox ~= nil then 
-													if not TBLFIND(Stats.conditions.Jumbobox, "visible") then 
-														Target = Hitbox 
-													else 
-														local Ray1 = RAY(Camera.CFrame.Position, (Hitbox.Position - Camera.CFrame.Position).unit * (Hitbox.Position - Camera.CFrame.Position).magnitude) 
-														local Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray1, Ignore, false, true) 
-														if Hit and Hit:FindFirstAncestor(Player.Name) then 
-															Target = Hitbox 
-														end 
-													end 
-												end 
-											end 
-										end 
-									end 
-								end 
-							end 
-						end 
-					end 
-				end 
-
-				if Target ~= nil then 
-					local Pos = Camera:WorldToScreenPoint(Target.Position) 
-					local Magnitude = Vec2(Pos.X - Mouse.X, Pos.Y - Mouse.Y) 
-					mousemoverel(Magnitude.x/Stats.smoothing.Slider, Magnitude.y/Stats.smoothing.Slider) 
-				end 
-			end 
-			if not values.rage.aimbot.enabled.Toggle and values.legit.aimbot["triggerbot"].Toggle and values.legit.aimbot["triggerbot"].Active and not TriggerDebounce then 
-				local Stats = values.legit.main.default 
-				if Stats.triggerbot.Toggle then 
-					if not TBLFIND(Stats.conditions.Jumbobox, "blind") or LocalPlayer.PlayerGui.Blnd.Blind.BackgroundTransparency > 0.9 then 
-						if not TBLFIND(Stats.conditions.Jumbobox, "standing") or SelfVelocity.Magnitude < 3 then 
-							if Mouse.Target and Mouse.Target.Parent and Players:GetPlayerFromCharacter(Mouse.Target.Parent) and Multipliers[Mouse.Target.Name] ~= nil and Client.gun.DMG.Value * Multipliers[Mouse.Target.Name] >= Stats["minimum dmg"].Slider then 
-								local OldTarget = Mouse.Target 
-								local Player = Players:GetPlayerFromCharacter(Mouse.Target.Parent) 
-								if Player.Team ~= LocalPlayer.Team or values.legit.settings["free for all"].Toggle then 
-									coroutine.wrap(function() 
-										TriggerDebounce = true 
-										wait(Stats["delay (ms)"].Slider/1000) 
-										repeat RunService.RenderStepped:Wait() 
-											if not Client.DISABLED then 
-												Client.firebullet() 
-											end 
-										until Mouse.Target == nil or Player ~= Players:GetPlayerFromCharacter(Mouse.Target.Parent) 
-										TriggerDebounce = false 
-									end)() 
-								end 
-							end 
-						end 
-					end 
-				end 
-			end 
-		end 
-	end
-	CamCFrame = Camera.CFrame
-	CamLook = CamCFrame.LookVector
-
-	RageTarget = nil
-	
-	pcall(function()
-		Fov.Visible = values.legit.settings['draw fov'].Toggle
-
-		Fov.Transparency = values.legit.settings['draw fov'].Transparency
-	
-		Fov.Color =  values.legit.settings['draw fov'].Color
-		Fov.Position = Vec2(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-		Fov.Radius = values.legit.main.default['field of view'].Slider
-		Fov.Thickness = values.legit.settings['fov thickness'].Slider
-		Fov.Filled = values.legit.settings['filled fov'].Toggle
-	end)
-
-
-
-
-	for i,v in pairs(ChamItems) do 
-		if v.Parent == nil then 
-			TBLREMOVE(ChamItems, i) 
-		end 
-	end 
-pcall(function()
-	for i,v in pairs(ChamItems) do
-		local cham = v[1]
-		local fromobject = v[2]
-			if cham.Name == 'WallCham' then 
-				if cham:IsA('BoxHandleAdornment') then 
-					cham.Size = fromobject.Size + Vec3( (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10))
-				elseif cham:IsA('CylinderHandleAdornment') then 
-					cham.Height = 1.2 + (values.visuals.players['cham thickness'].Slider/10)
-					cham.Radius = 0.61 + (values.visuals.players['cham thickness'].Slider/10)
-				end
-			elseif cham.Name == 'VisibleCham' then
-				if cham:IsA('BoxHandleAdornment') then 
-					cham.Size = fromobject.Size + Vec3( (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10))
-				elseif cham:IsA('CylinderHandleAdornment') then 
-					cham.Height = 1.2 + (values.visuals.players['vcham thickness'].Slider/10)
-					cham.Radius = 0.61 + (values.visuals.players['vcham thickness'].Slider/10)
-				end
-			end
-		end
-end)
-
-	if IsAlive(LocalPlayer) then
-		if values.rage.exploits['around the world'].Toggle and values.rage.exploits['around the world'].Active then 
-			for i,v in next, Players:GetChildren() do
-				if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team then
-					if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-						aroundtheworld_value=aroundtheworld_value + (0.01 * values.rage.exploits['speed'].Slider)
-						LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame*CFAngles(0, aroundtheworld_value, 0)*CFrame.new(0, values.rage.exploits['height'].Slider, values.rage.exploits['distance'].Slider)
-						break
-					end
-				end
-			end
-		end
-		if values.visuals.trail['enable'].Toggle then
-			pcall(function()
-			if not LocalPlayer.Character.HumanoidRootPart:FindFirstChild('Trail') then 
-				Part = LocalPlayer.Character.HumanoidRootPart
-				offset = -2
-				local Attachment = INST('Attachment')
-				Attachment.Name = 'A1'
-				Attachment.Position = Vec3(-0.55602997541428, offset, 0)
-				Attachment.Parent = Part
-				
-				local Trail = INST('Trail')
-				Trail.LightInfluence = 0
-				Trail.TextureMode = Enum.TextureMode.Static
-				Trail.LightEmission = 1
-				Trail.MaxLength = 10
-				Trail.Texture = 'rbxassetid://7485088415'
-				Trail.Parent = Part
-				Trail.Transparency = NumberSequence.new(0)
-				Trail.FaceCamera = false
-
-				local Attachment1 = INST('Attachment')
-				Attachment1.Name = 'A2'
-				Attachment1.Position = Vec3(0.55602943897247, offset, 0)
-				Attachment1.Parent = Part
-
-
-				Trail.Attachment0 = Attachment
-				Trail.Attachment1 = Attachment1
-			else 
-				local trail = LocalPlayer.Character.HumanoidRootPart.Trail
-				local a1 = LocalPlayer.Character.HumanoidRootPart.A1
-				local a2 = LocalPlayer.Character.HumanoidRootPart.A2
-
-				trail.MaxLength = values.visuals.trail['max length'].Slider
-				
-				trail.Texture = values.visuals.trail['image type'].Dropdown == "normal" and "rbxassetid://5854341017" or values.visuals.trail['image type'].Dropdown == "lightning 2" and "rbxasssetid://7062832223" or values.visuals.trail['image type'].Dropdown == "lightning 3" and "rbxassetid:/446111271" or values.visuals.trail['image type'].Dropdown == 'custom' and 'rbxassetid://'..values.visuals.trail['image'].Text
-
-				if values.visuals.trail['custom color'].Toggle then 
-					trail.Color = ColorSequence.new(values.visuals.trail['custom color'].Color)
-				else 
-					trail.Color = ColorSequence.new(COL3RGB(255, 255, 255))
-				end
-
-				a1.Position = Vec3(values.visuals.trail['size (x,z)'].Slider/10, 5-(values.visuals.trail['offset (y)'].Slider)/5, 0)
-				a2.Position = Vec3(-values.visuals.trail['size (x,z)'].Slider/10, 5-(values.visuals.trail['offset (y)'].Slider/5), 0)
-				trail.FaceCamera = values.visuals.trail['face camera'].Toggle
-
-			end
-		    end)
-		elseif LocalPlayer.Character.HumanoidRootPart:FindFirstChild('Trail') then 
-			LocalPlayer.Character.HumanoidRootPart.Trail:Remove()
-		end
-		
-		local SelfVelocity = LocalPlayer.Character.HumanoidRootPart.Velocity
-
-		if values.misc.animations.enabled.Toggle then
-			if LoadedAnim then 
-				if savedanimationdance ~= Dance then 
-					savedanimationdance = Dance
-					LoadedAnim:Stop()
-				end
-				if not LoadedAnim.IsPlaying then 
-					savedanimationdance = Dance
-					LoadedAnim = LocalPlayer.Character.Humanoid:LoadAnimation(Dance)
-					LoadedAnim.Priority = Enum.AnimationPriority.Action
-					LoadedAnim:Play()
-					LoadedAnim:AdjustSpeed(values.misc.animations['animation speed'].Slider)
-				end
-			else 
-				savedanimationdance = Dance
-				LoadedAnim = LocalPlayer.Character.Humanoid:LoadAnimation(Dance)
-				LoadedAnim.Priority = Enum.AnimationPriority.Action
-				LoadedAnim:Play()
-				LoadedAnim:AdjustSpeed(values.misc.animations['animation speed'].Slider)
-			end
-		else 
-			if LoadedAnim then 
-				LoadedAnim:Stop()
-			end
-		end
-
-
-		Root = LocalPlayer.Character.HumanoidRootPart
-		frchr = workspace:FindFirstChild('FreezeCharacter2') or workspace:FindFirstChild('FreezeCharacter')
-		if frchr and frchr.Size.x >= 5 then 
-			Root = frchr
-		end
-		if values.misc.client['infinite crouch'].Toggle then
-			Client.crouchcooldown = 0
-		end
-		if values.misc.client['auto join team'].Toggle then
-			game:GetService('ReplicatedStorage').Events.JoinTeam:FireServer(values.misc.client['team'].Dropdown)
-		end
-		if TBLFIND(values.misc.client['gun modifiers'].Jumbobox, 'firerate') then
-			Client.DISABLED = false
-		end
-		peektimewait=peektimewait+1
-		if values.rage['Quick peeks']['quick peek'].Toggle and allowedtofreeze  then
-			if values.rage['Quick peeks']['quick peek'].Active then 
-				if not workspace:FindFirstChild('FreezeCharacter') then 
-					local part = INST('Part', workspace)
-
-					if values.rage['Quick peeks']['peek method'].Dropdown == 'freeze' then
-						part.Size = Vec3(15,1,15) 
-					else 
-						part.Size = Vec3(0, 0, 0)
-					end
-
-					part.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-					part.Velocity = game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity
-					part.CanCollide = false
-					part.Transparency = 1
-					part.Name = 'FreezeCharacter'
-		
-
-					local weld = INST('Weld',part)
-					weld.Part0 = part
-					weld.Part1 = game.Players.LocalPlayer.Character.HumanoidRootPart
-
-					local visualize = INST('MeshPart', part)
-					visualize.Size = Vec3(0.5, 0.2, 0.5) 
-					visualize.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position+Vec3(0, -3 , 0)
-					visualize.CanCollide = false
-					visualize.Anchored = true
-					visualize.MeshId = 'rbxassetid://5536195161'
-					visualize.Material = 'Neon'
-					visualize.Color = values.rage['Quick peeks']['visualize circle'].Color
-
-					visualize.Name = 'no'
-					if values.rage['Quick peeks']['visualize circle'].Toggle then
-						visualize.Transparency = values.rage['Quick peeks']['visualize circle'].Transparency
-					else 
-						visualize.Transparency = 1
-					end
-
-				else 
-					if not freezebusy2 and values.rage['Quick peeks']['time limit'].Toggle then 
-						if peektimewait >= values.rage['Quick peeks']['time duration'].Slider then 
-							peektimewait = 0
-							freezebusy2 = true
-
-							wait(0.2)
-
-							pcall(function()
-								workspace.FreezeCharacter.Size = Vec3(0,0,0)
-
-								wait(values.rage['Quick peeks']['wbr'].Slider/100)
-	
-								workspace.FreezeCharacter:Remove()
-							end)
-
-
-							freezebusy2 = false
-						end
-					end
-					if not freezebusy1 and values.rage['Quick peeks']['limit peek'].Toggle then
-						if workspace:FindFirstChild('FreezeCharacter') and (workspace.FreezeCharacter.no.Position - workspace.Camera.Focus.p).Magnitude > values.rage['Quick peeks']['limit distance'].Slider then
-							freezebusy1 = true
-
-							wait(0.2)
-
-							pcall(function()
-								workspace.FreezeCharacter.Size = Vec3(0,0,0)
-								
-								wait(values.rage['Quick peeks']['wbr'].Slider/100)
-
-								workspace.FreezeCharacter:Remove()
-							end)
-
-							freezebusy1 = false
-						end
-					end
-				end
-			else 
-				peektimewait=0
-
-				if workspace:FindFirstChild('FreezeCharacter') then 
-					workspace:FindFirstChild('FreezeCharacter'):Remove()
-				end
-			end 
-		else 
-			peektimewait=0
-
-			if workspace:FindFirstChild('FreezeCharacter') then 
-				workspace:FindFirstChild('FreezeCharacter'):Remove()
-			end
-		end
-		
-		if TBLFIND(values.visuals.effects.removals.Jumbobox, 'scope lines') then 
-			NewScope.Enabled = LocalPlayer.Character:FindFirstChild('AIMING') and true or false
-			Crosshairs.Scope.Visible = false
-		else
-			NewScope.Enabled = false
-		end
-		
-		BodyVelocity:Destroy()
-		BodyVelocity = INST('BodyVelocity')
-		BodyVelocity.MaxForce = Vec3(HUGE,0,HUGE)
-		if UserInputService:IsKeyDown('Space') and values.misc.movement['bunny hop'].Toggle and values.misc.movement.type.Dropdown ~= "Crim" then
-			local add = 0
-			if values.misc.movement.direction.Dropdown == 'directional' and values.misc.movement.type.Dropdown ~= "Crim"  or values.misc.movement.direction.Dropdown == 'directional 2' and values.misc.movement.type.Dropdown ~= "Crim"  then
-				if UserInputService:IsKeyDown("A") then add = 90 end 
-				if UserInputService:IsKeyDown("S") then add = 180 end 
-				if UserInputService:IsKeyDown("D") then add = 270 end 
-				if UserInputService:IsKeyDown("A") and UserInputService:IsKeyDown("W") then add = 45 end 
-				if UserInputService:IsKeyDown("D") and UserInputService:IsKeyDown("W") then add = 315 end 
-				if UserInputService:IsKeyDown("D") and UserInputService:IsKeyDown("S") then add = 225 end 
-				if UserInputService:IsKeyDown("A") and UserInputService:IsKeyDown("S") then add = 145 end 
-			end
-			local rot = YROTATION(CamCFrame) * CFAngles(0,RAD(add),0)
-			local bhopspeed = values.misc.movement['overwrite'].Toggle and values.misc.movement['overwrite'].Active and values.misc.movement['overwrite speed'].Slider or values.misc.movement['speed'].Slider
-			BodyVelocity.Parent = LocalPlayer.Character.UpperTorso
-			LocalPlayer.Character.Humanoid.Jump = true
-			BodyVelocity.Velocity = Vec3(rot.LookVector.X,0,rot.LookVector.Z) * (bhopspeed * 2)
-			if add == 0 and values.misc.movement.direction.Dropdown == 'directional' and not UserInputService:IsKeyDown('W') then
-				BodyVelocity:Destroy()
-			else
-
-
-				if values.misc.movement.type.Dropdown == 'cframe' and values.misc.movement.type.Dropdown ~= "Crim"  then
-					BodyVelocity:Destroy()
-					Root.CFrame = Root.CFrame + Vec3(rot.LookVector.X,0,rot.LookVector.Z) * bhopspeed/50
-				elseif values.misc.movement.type.Dropdown == 'velocity' and values.misc.movement.type.Dropdown ~= "Crim"  then
-					BodyVelocity:Destroy()
-					Root.Velocity = Vec3(rot.LookVector.X * (bhopspeed * 2), Root.Velocity.y, rot.LookVector.Z * (bhopspeed * 2))
-				elseif values.misc.movement.type.Dropdown == 'idk' and values.misc.movement.type.Dropdown ~= "Crim"  then
-					BodyVelocity:Destroy()
-					spawn(function()
-						if not switchtrigger[1]  then 
-							switchtrigger[1] = true
-							wait(0.5)
-							switchtrigger[3] = Root.CFrame
-							Root.CFrame = switchtrigger[2]
-	
-							wait(0.1)
-							Root.CFrame = switchtrigger[3]
-							switchtrigger[1] = false
-						end
-					end)
-					
-					Root.CFrame = Root.CFrame + Vec3(rot.LookVector.X, 0, rot.LookVector.Z) * bhopspeed/50
-				end
-			end
-		end
-		if values.misc.movement['gravity change'].Toggle and values.misc.movement['gravity change'].Active  then 
-		    workspace.Gravity = values.misc.movement['gravity amount'].Slider
-		else 
-		    workspace.Gravity = 80
-		end
-
-
-		if values.misc.movement['no launch'].Toggle and values.misc.movement['no launch'].Active then 
-			if Root.Velocity.Y > values.misc.movement['launch block (y velocity)'].Slider then 
-				Root.Velocity = Vec3(Root.Velocity.x, 0, Root.Velocity.z)
-			end
-		end
-		if values.misc.movement['edge jump'].Toggle and values.misc.movement['edge jump'].Active then
-			if LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
-				coroutine.wrap(function()
-					RunService.RenderStepped:Wait()
-					if LocalPlayer.Character ~= nil and LocalPlayer.Character:FindFirstChild('Humanoid') and LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
-						LocalPlayer.Character.Humanoid:ChangeState('Jumping')
-					end
-				end)()
-			end
-		end
-
-		spawn(function()
-			if not jitterwait then
-				jitterwait = true
-				Jitter = not Jitter
-				wait(values.rage.angles['jitter wait (ms)'].Slider/100) 
-				jitterwait = false
-			end
-		end)
-			Spin = CLAMP(Spin + values.rage.angles['spin speed'].Slider, 0, 360)
-	if Spin == 360 then Spin = 0 end
-		LocalPlayer.Character.Humanoid.AutoRotate = false
-		if values.rage.angles.enabled.Toggle and not DisableAA then
-			local Angle = -ATAN2(CamLook.Z, CamLook.X) + RAD(-90)
-			if values.rage.angles['yaw base'].Dropdown == 'spin' then
-				Angle = Angle + RAD(Spin)
-			end
-			if values.rage.angles['yaw base'].Dropdown == 'random' then
-				Angle = Angle + RAD(RANDOM(0, 360))
-			end
-			if values.rage.angles["yaw base"].Dropdown == "wasd yaw base" then 
-				if game:GetService("UserInputService"):IsKeyDown("W") then
-					Angle = Angle + 0
-				end
-				if game:GetService("UserInputService"):IsKeyDown("A") then
-					Angle = Angle + 90
-				end
-				if game:GetService("UserInputService"):IsKeyDown("S") then
-					Angle = Angle + -180
-				end
-				if game:GetService("UserInputService"):IsKeyDown("D") then
-					Angle = Angle + -90
-				end
-			end 
-			local Offset = RAD(-values.rage.angles['yaw offset'].Slider - (values.rage.angles.jitter.Toggle and Jitter and values.rage.angles['jitter offset'].Slider or values.rage.angles['shoot pitch'].Toggle and shotthingy and values.rage.angles['offset'].Slider or 0))
-			local CFramePos = CFrame.new(Root.Position) * CFAngles(0, Angle + Offset, 0)
-
-			if values.rage.angles['yaw base'].Dropdown == 'targets' then
-				local part
-				local closest = 9999999
-				for _,plr in pairs(Players:GetPlayers()) do
-					if plr.Character and plr.Character:FindFirstChild('Humanoid') and plr.Character:FindFirstChild('Humanoid').Health > 0 and plr.Team ~= LocalPlayer.Team then
-						local pos, onScreen = Camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
-						local magnitude = (Vec2(pos.X, pos.Y) - Vec2(Mouse.X, Mouse.Y)).Magnitude
-						if closest > magnitude then
-							part = plr.Character.HumanoidRootPart
-							closest = magnitude
-						end
-					end
-				end
-				
-				if part ~= nil then
-					CFramePos = CFrame.new(Root.Position, part.Position) * CFAngles(0, Offset, 0)
-				end
-			end
-			if values.rage.angles['lock yaw'].Toggle and values.rage.angles['lock yaw'].Active then 
-				if lockyaw == nil then 
-					lockyaw = Angle
-				end
-				CFramePos = CFrame.new(Root.Position) * CFAngles(0, lockyaw + Offset, 0)
-			else 
-				lockyaw = Angle
-			end
-			Root.CFrame = YROTATION(CFramePos)
-			switch180roll = not switch180roll
-			if values.rage.angles['body roll'].Dropdown == 'switch' then
-				if switch180roll then 
-					Root.CFrame = Root.CFrame * CFAngles(RAD(180), 0, 0)
-					LocalPlayer.Character.Humanoid.HipHeight = 1.5
-					LocalPlayer.Character.Humanoid.CameraOffset = Vec3(0, -2.7, 0)
-				else
-					LocalPlayer.Character.Humanoid.HipHeight = 1.5
-				end
-			end
-
-			if values.rage.angles['body roll'].Dropdown == '180' then
-				Root.CFrame = Root.CFrame * CFAngles(values.rage.angles['body roll'].Dropdown == '180' and RAD(180 + values.rage.angles['roll offset'].Slider) or 0, 0, 0)
-				LocalPlayer.Character.Humanoid.HipHeight = 2
-			else
-				LocalPlayer.Character.Humanoid.HipHeight = 2
-			end
-
-			savedspinpitch=savedspinpitch+0.25
-			local Pitch = values.rage.angles['pitch'].Dropdown == 'none' and CamLook.Y or values.rage.angles['pitch'].Dropdown == 'up' and 1 or values.rage.angles['pitch'].Dropdown == 'down' and -1 or values.rage.angles['pitch'].Dropdown == 'zero' and 0 or values.rage.angles['pitch'].Dropdown == 'among' and HUGE or values.rage.angles['pitch'].Dropdown == 'random' and Random.new():NextNumber(-50,50) or values.rage.angles['pitch'].Dropdown == 'spin' and savedspinpitch 
-
-			if values.rage.angles['extend pitch'].Toggle and (values.rage.angles['pitch'].Dropdown == 'up' or values.rage.angles['pitch'].Dropdown == 'down') then
-				Pitch = (Pitch*2)/1.6
-			end
-			if values.rage.angles['custom pitch'].Toggle then
-			    Pitch = values.rage.angles['pitch value'].Slider/7
-			end
-			if values.rage.angles.jitter.Toggle and Jitter then 
-				Pitch = values.rage.angles['jitter pitch'].Slider/7
-			end
-
-			if values.rage.angles['shoot pitch'].Toggle and shotthingy then 
-				Pitch = values.rage.angles['pitch'].Slider/7
-			end
-
-			if values.rage.angles['overwrite keybind'].Toggle and values.rage.angles['overwrite keybind'].Active then
-				Pitch = values.rage.angles['overwrite pitch'].Dropdown == 'none' and CamLook.Y or values.rage.angles['overwrite pitch'].Dropdown == 'up' and 1 or values.rage.angles['overwrite pitch'].Dropdown == 'down' and -1 or values.rage.angles['overwrite pitch'].Dropdown == 'zero' and 0 or values.rage.angles['overwrite pitch'].Dropdown == 'among' and HUGE or values.rage.angles['overwrite pitch'].Dropdown == 'random' and Random.new():NextNumber(0.01,10) or values.rage.angles['overwrite pitch'].Dropdown == 'spin' and savedspinpitch
-		    end
-
-			game.ReplicatedStorage.Events.ControlTurn:FireServer(Pitch, LocalPlayer.Character:FindFirstChild('Climbing') and true or false)
-		else
-			LocalPlayer.Character.Humanoid.HipHeight = 2
-			Root.CFrame = CFrame.new(Root.Position) * CFAngles(0, -ATAN2(CamLook.Z, CamLook.X) + RAD(270), 0)
-			game.ReplicatedStorage.Events.ControlTurn:FireServer(CamLook.Y, LocalPlayer.Character:FindFirstChild('Climbing') and true or false)
-		end
-		if values.rage.others['remove head'].Toggle then
-			if LocalPlayer.Character:FindFirstChild('FakeHead') then
-				LocalPlayer.Character.FakeHead:Destroy()
-			end
-			if LocalPlayer.Character:FindFirstChild('HeadHB') then
-				LocalPlayer.Character.HeadHB:Destroy()
-			end
-		end
-		if TBLFIND(values.misc.client['gun modifiers'].Jumbobox, 'recoil') then
-			Client.resetaccuracy()
-			Client.RecoilX = 0
-			Client.RecoilY = 0
-		end
-	else 
-		pcall(function()
-			workspace:FindFirstChild('FreezeCharacter'):Remove()
-		end)
-	end
-	for _,Player in pairs(Players:GetPlayers()) do
-		if Player.Character and Player ~= LocalPlayer and Player.Character:FindFirstChild('HumanoidRootPart') and Player.Character.HumanoidRootPart:FindFirstChild('OldPosition') then
-			coroutine.wrap(function()
-				local Position = Player.Character.HumanoidRootPart.Position
-				RunService.RenderStepped:Wait()
-				if Player.Character and Player ~= LocalPlayer and Player.Character:FindFirstChild('HumanoidRootPart') then
-					if Player.Character.HumanoidRootPart:FindFirstChild('OldPosition') then
-						Player.Character.HumanoidRootPart.OldPosition.Value = Position
-					else
-						local Value = INST('Vector3Value')
-						Value.Name = 'OldPosition'
-						Value.Value = Position
-						Value.Parent = Player.Character.HumanoidRootPart
-					end
-				end
-			end)()
-		end
-	end
-
-	for _,Player in pairs(Players:GetPlayers()) do
-		local tbl = objects[Player]
-		if tbl == nil then return end
-		if Player.Character and Player.Character:FindFirstChild('HumanoidRootPart') and Player.Team ~= 'TTT' and (Player.Team ~= LocalPlayer.Team or values.visuals.players.teammates.Toggle) and Player.Character:FindFirstChild('Gun') and Player.Character:FindFirstChild('Humanoid') and Player ~= LocalPlayer then
-			local HumanoidRootPart = Player.Character.HumanoidRootPart
-			local RootPosition = HumanoidRootPart.Position
-			local Pos, OnScreen = Camera:WorldToViewportPoint(RootPosition)
-			local Size = (Camera:WorldToViewportPoint(RootPosition - Vec3(0, 3, 0)).Y - Camera:WorldToViewportPoint(RootPosition + Vec3(0, 2.6, 0)).Y) / 2
-
-			local Drawings, Text = TBLFIND(values.visuals.players.outlines.Jumbobox, 'drawings') ~= nil, TBLFIND(values.visuals.players.outlines.Jumbobox, 'text') ~= nil
-
-			tbl.Box.Color = (values.rage['Loop kill']['Target box'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown and values.rage['Loop kill']['Target box'].Color or values.visuals.players.box.Color)
-			tbl.Box.Size = Vec2(Size * 1.5, Size * 1.9)
-			tbl.Box.Position = Vec2(Pos.X - Size*1.5 / 2, (Pos.Y - Size*1.6 / 2))
-
-			-- edited
-			
-			if values.visuals.players.box.Toggle or (values.rage['Loop kill']['Target box'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown) then
-				tbl.Box.Visible = OnScreen
-				tbl.Box.Thickness = 0.001
-				if Drawings then
-					tbl.BoxOutline.Size = tbl.Box.Size
-					tbl.BoxOutline.Position = tbl.Box.Position
-					tbl.BoxOutline.Visible = OnScreen
-				else
-					tbl.BoxOutline.Visible = false
-				end
-			else
-				tbl.Box.Visible = false
-				tbl.BoxOutline.Visible = false
-			end
-
-			if values.visuals.players.health.Toggle or (values.rage['Loop kill']['Target health'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown) then
-				tbl.Health.Color = (values.rage['Loop kill']['Target health'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown and values.rage['Loop kill']['Target health'].Color or values.visuals.players.health.Color)
-				tbl.Health.From = Vec2((tbl.Box.Position.X - 5), tbl.Box.Position.Y + tbl.Box.Size.Y)
-				tbl.Health.To = Vec2(tbl.Health.From.X, tbl.Health.From.Y - CLAMP(Player.Character.Humanoid.Health / Player.Character.Humanoid.MaxHealth, 0, 1) * tbl.Box.Size.Y)
-				tbl.Health.Visible = OnScreen
-				if Drawings then
-					tbl.HealthOutline.From = Vec2(tbl.Health.From.X, tbl.Box.Position.Y + tbl.Box.Size.Y + 1)
-					tbl.HealthOutline.To = Vec2(tbl.Health.From.X, (tbl.Health.From.Y - 1 * tbl.Box.Size.Y) -1)
-					tbl.HealthOutline.Visible = OnScreen
-				else
-					tbl.HealthOutline.Visible = false
-				end
-			else
-				tbl.Health.Visible = false
-				tbl.HealthOutline.Visible = false
-			end
-
-			if values.visuals.players.weapon.Toggle or (values.rage['Loop kill']['Target weapon'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown) then
-				tbl.Weapon.Color = (values.rage['Loop kill']['Target weapon'].Toggle and Player.Name == values.rage['Loop kill'].Player.Dropdown and values.rage['Loop kill']['Target weapon'].Color or values.visuals.players.weapon.Color)
-				tbl.Weapon.Text = Player.Character.EquippedTool.Value
-				tbl.Weapon.Position = Vec2(tbl.Box.Size.X/2 + tbl.Box.Position.X, tbl.Box.Size.Y + tbl.Box.Position.Y + 1)
-				tbl.Weapon.Font = Drawing.Fonts[values.visuals.players.font.Dropdown]
-				tbl.Weapon.Outline = Text
-				tbl.Weapon.Size = values.visuals.players.size.Slider
-				tbl.Weapon.Visible = OnScreen
-			else
-				tbl.Weapon.Visible = false
-			end
-
-			if values.visuals.players['weapon icon'].Toggle or (values.rage['Loop kill']['Target weapon icon'].Toggle and Player.Name == values.rage['Loop kill']['Player'].Dropdown) then
-				Items[Player.Name].ImageColor3 = (values.rage['Loop kill']['Target weapon icon'].Toggle and Player.Name == values.rage['Loop kill']['Player'].Dropdown and values.rage['Loop kill']['Target weapon icon'].Color or values.visuals.players['weapon icon'].Color)
-				Items[Player.Name].Image = GetIcon.getWeaponOfKiller(Player.Character.EquippedTool.Value)
-				Items[Player.Name].Position = UDIM2(0, tbl.Box.Size.X/2 + tbl.Box.Position.X, 0, tbl.Box.Size.Y + tbl.Box.Position.Y + (values.visuals.players.weapon.Toggle and -10 or -22))
-				Items[Player.Name].Visible = OnScreen
-			else
-				Items[Player.Name].Visible = false
-			end
-
-			if values.visuals.players.name.Toggle or (values.rage['Loop kill']['Target name'].Toggle and Player.Name == values.rage['Loop kill']['Player'].Dropdown)  then
-				tbl.Name.Color = (values.rage['Loop kill']['Target name'].Toggle and Player.Name == values.rage['Loop kill']['Player'].Dropdown and values.rage['Loop kill']['Target name'].Color or values.visuals.players.name.Color)
-				tbl.Name.Text = Player.Name
-				tbl.Name.Position = Vec2(tbl.Box.Size.X/2 + tbl.Box.Position.X,  tbl.Box.Position.Y - 16)
-				tbl.Name.Font = Drawing.Fonts[values.visuals.players.font.Dropdown]
-				tbl.Name.Outline = Text
-				tbl.Name.Size = values.visuals.players.size.Slider
-				tbl.Name.Visible = OnScreen
-			else
-				tbl.Name.Visible = false
-			end
-			local LastInfoPos = tbl.Box.Position.Y - 1
-			if TBLFIND(values.visuals.players.indicators.Jumbobox, 'armor') and Player:FindFirstChild('Kevlar') then
-				tbl.Armor.Color = COL3RGB(0, 150, 255)
-				tbl.Armor.Text = Player:FindFirstChild('Helmet') and 'HK' or 'K'
-				tbl.Armor.Position = Vec2(tbl.Box.Size.X + tbl.Box.Position.X + 12, LastInfoPos)
-				tbl.Armor.Font = Drawing.Fonts[values.visuals.players.font.Dropdown]
-				tbl.Armor.Outline = Text
-				tbl.Armor.Size = values.visuals.players.size.Slider
-				tbl.Armor.Visible = OnScreen
-
-				LastInfoPos = LastInfoPos + values.visuals.players.size.Slider
-			else
-				tbl.Armor.Visible = false
-			end
-	--[[		if TBLFIND(values.visuals.players.indicators.Jumbobox, 'Crouching') then
-			local crouch
-			for i,v in pairs(debug.getupvalues(Client.setcharacter)) do
-				if type(v) == "userdata" and v.ClassName == "AnimationTrack" and v.Name == "Idle" then
-					crouch = v																																																																																																																																																																																																																																																																																																																																																						-- this_was_pasted_from_mexicanhook
-				end
-			end
-				for i,v in pairs (Player.Character.Humanoid:GetPlayingAnimationTracks()) do
-					if v == crouch then
-						tbl.Crouching.Color = COL3RGB(255,0,0)
-						tbl.Crouching.Text = 'Crouching'
-						tbl.Crouching.Position = Vec2(tbl.Box.Size.X + tbl.Box.Position.X + 13, LastInfoPos + 2)
-						tbl.Crouching.Font = Drawing.Fonts[values.visuals.players.font.Dropdown]
-						tbl.Crouching.Outline = Text
-						tbl.Crouching.Size = values.visuals.players.size.Slider
-						tbl.Crouching.Visible = OnScreen
-					end
-				end
-			end--]]
-		else
-			if Player.Name ~= LocalPlayer.Name then
-				Items[Player.Name].Visible = false
-				for i,v in pairs(tbl) do
-					v.Visible = false
-				end
-			end
-		end
-	end
-
-	if workspace:FindFirstChild('Map') and Client.gun ~= 'none' and Client.gun.Name ~= 'C4' then
-	if values.misc.movement['height change'].Toggle then 
-		pcall(function() LocalPlayer.Character.Humanoid.HipHeight = 2 * (values.misc.movement['height amount'].Slider/5) end)
-	else 
-	    pcall(function() LocalPlayer.Character.Humanoid.HipHeight = 2 end)
-	end
-
-	if values.misc.movement['no velocity'].Toggle then 
-	   pcall(function() LocalPlayer.Character.HumanoidRootPart.Velocity = Vec3(0, LocalPlayer.Character.HumanoidRootPart.Velocity.y, 0) end)
-	end
-
-	if values.misc.movement['no gun'].Toggle then 
-	   pcall(function() LocalPlayer.Character.Gun:Remove()end)
-	end
-
-	if values.misc.movement['client offset'].Toggle then 
-       pcall(function() LocalPlayer.Character.LowerTorso:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(0, (values.misc.movement['offset (y)'].Slider/5), 0) end)
-    end
-
-	end
-end
-
-
-
-local advanced = others:Sector('For advanced users', 'Right')
-advanced:Element('Button', 'Change cooldown of rage bindtorenderstep',{}, function()
-RunService:UnbindFromRenderStep('Rage')
-RunService:BindToRenderStep('Rage', values.others['For advanced users'].Cooldown.Slider, ragefunction)
-
-end)
-advanced:Element('Slider', 'Cooldown', {min = 0, max = 1500000, default = 400})
 wait()
 
 local senv = getsenv(game.Players.LocalPlayer.PlayerGui.Client)
@@ -14425,6 +13874,8 @@ senv.splatterBlood = function() end
 		ChatScript.moveOldMessages()
 		ChatScript.createNewMessage("SamuelPaste","Thanks cideware, tinp0g and mad for sending me pastes",MainUIColor,COL3(1,1,1),0.01,nil)
 		print("Hello bucks script user :D")
+		
+
 while true do task.wait()
 	for i,b in next, watermarklocation.watermark:GetChildren() do 
 		if b:IsA('UIGradient') then 
