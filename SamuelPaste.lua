@@ -8,13 +8,13 @@ getgenv().values = {} --blahwrlqwrqwr
 local library = {tabs = {}}
 local Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/backup_signal.lua"))()
 --local Api = loadstring(game:HttpGet("https://pastebin.com/raw/5L3wV43u"))() 
-local ConfigSave = Signal.new("ConfigSave") 
+--local ConfigSave = Signal.new("ConfigSave") 
 local ConfigLoad = Signal.new("ConfigLoad")
 local ConfigLoad1 = Signal.new("ConfigLoad1")
-ConfigSave1 = Signal.new("ConfigSave") 
+--ConfigSave1 = Signal.new("ConfigSave") 
 ConfigUpdateCfgList = Signal.new('ConfigUpdateCfgList')
 ConfigUpdateCfgList2 = Signal.new('ConfigUpdateCfgList2')
-VisualizeSilentAngles = Signal.new('VisualizeSilentAngles')
+--VisualizeSilentAngles = Signal.new('VisualizeSilentAngles')
 hitlogs = Signal.new('hitlogs')
 --MenuAccent = Signal.new('MenuAccent')
 function insertwithoutdupes(tab, thethingyouneedtoinsert) -- my own code :sunglasses:
@@ -2693,8 +2693,8 @@ do
 									if fix[tabname][sectorname][tabtext][text] ~= nil then 
 										Element:SetValue(fix[tabname][sectorname][tabtext][text]) 
 									end 
-								end) 
-								ConfigLoad1:Connect(function(cfg) 
+								end)
+								ConfigLoad1:Connect(function(cfg)
 									local fix = library:ConfigFix1(cfg) 
 									if fix[tabname][sectorname][tabtext][text] ~= nil then 
 										Element:SetValue(fix[tabname][sectorname][tabtext][text]) 
@@ -3290,7 +3290,7 @@ end
 								UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
 								UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder 
 								local first = true 
-ConfigUpdateCfgList:Connect(function() 
+ConfigUpdateCfgList:Connect(function()
 								for i,v in ipairs(data.options) do 
 									local Button = INST("TextButton") 
 									local TextLabel = INST("TextLabel") 
@@ -3321,11 +3321,11 @@ ConfigUpdateCfgList:Connect(function()
 									TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
 									if first then first = false 
 										TextLabel.TextColor3 = MainUIColor 
-function MenuAccent(color)
+--[[function MenuAccent(color)
 TextLabel.TextColor3 = color
-end
+end--]]
 									end 
-ConfigUpdateCfgList2:Connect(function()
+ ConfigUpdateCfgList2:Connect(function()
 Button:Destroy()
 TextLabel:Destroy()
 end)
@@ -4534,7 +4534,7 @@ end
 								Frame.BackgroundColor3 = COL3RGB(46, 46, 46) 
 								Frame.BorderColor3 = COL3RGB(18, 18, 16) 
 								Frame.Position = UDIM2(-0.666666687, -170, 1.375, 0) 
-								Frame.Size = UDIM2(0, 200, 0, 210) 
+								Frame.Size = UDIM2(0, 200, 0, 230) 
 								Frame.Visible = false 
 								Frame.ZIndex = 3 
 
@@ -4546,7 +4546,7 @@ end
 								Button5.Parent = Frame 
 								Button5.BackgroundColor3 = COL3RGB(255, 255, 255) 
 								Button5.BackgroundTransparency = 1.000 
-								Button5.Position = UDIM2(0, -18, 0.9, 0) 
+								Button5.Position = UDIM2(0, -18, 0.81, 0) 
 								Button5.Size = UDIM2(1, 0, 0, 15) 
 								Button5.ZIndex = 3
 
@@ -4609,7 +4609,104 @@ end
 									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(200, 200, 200)}) 
 								end) 
 
+								local Button35 = INST("Frame") 
+								local Button_325 = INST("TextButton") 
+								local TextLabel35 = INST("TextLabel") 
 
+								Button35.Name = "Button" 
+								Button35.Parent = Frame 
+								Button35.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								Button35.BackgroundTransparency = 1.000 
+								Button35.Position = UDIM2(0, -20, 0.9, 0) 
+								Button35.Size = UDIM2(1, 0, 0, 15) 
+								Button35.ZIndex = 4
+
+								Button_325.Name = "Button" 
+								Button_325.Parent = Button35
+								Button_325.BackgroundColor3 = COL3RGB(46, 46, 46) 
+								Button_325.BorderColor3 = COL3RGB(18, 18, 16) 
+								Button_325.Position = UDIM2(0, 30, 0.5, -9) 
+								Button_325.Size = UDIM2(0, 175, 0, 18) 
+								Button_325.AutoButtonColor = false 
+								Button_325.Font = Enum.Font.SourceSans 
+								Button_325.Text = "" 
+								Button_325.TextColor3 = COL3RGB(0, 0, 0) 
+								Button_325.TextSize = 11.000
+								Button_325.ZIndex = 4
+
+								TextLabel35.Parent = Button_325
+								TextLabel35.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								TextLabel35.BackgroundTransparency = 1.000 
+								TextLabel35.BorderColor3 = COL3RGB(27, 42, 53) 
+								TextLabel35.Size = UDIM2(1, 0, 1, 0) 
+								TextLabel35.Font = Enum.Font.Gotham 
+								TextLabel35.Text = 'Paste colors (RGB only)' 
+								TextLabel35.TextColor3 = COL3RGB(200, 200, 200) 
+								TextLabel35.TextSize = 11.000
+								TextLabel35.ZIndex = 4
+
+									
+
+									
+								Button_325.MouseButton1Down:Connect(function() 
+									TextLabel35.TextColor3 = MainUIColor 
+									library:Tween(TextLabel35, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(200, 200, 200)}) 
+									local clipboard = getclipboard()
+									local colors = string.split(clipboard, ',')
+									local IsAColorTable = {'false','false','false'}
+									local IsAColor = false
+									if #colors == 3 then
+										for i = 1, #colors do
+											if tonumber(colors[i]) then
+												IsAColorTable[i] = 'true'
+											end
+										end
+										if IsAColorTable[1] == 'true' and IsAColorTable[2] == 'true' and IsAColorTable[3] == 'true' then
+											IsAColor = true
+										end
+									else
+										IsAColor = false
+									end
+									
+									if IsAColor then
+										local retarded, lmao = pcall(function()
+												Element.value.Color = COL3RGB(colors[1],colors[2],colors[3])
+												ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
+
+												ColorH = CLAMP(ColorH,0,1) 
+												ColorS = CLAMP(ColorS,0,1) 
+												ColorV = CLAMP(ColorV,0,1) 
+												ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0) 
+												Colorpick.ImageColor3 = COL3HSV(ColorH, 1, 1) 
+
+												ColorP.BackgroundColor3 = COL3HSV(ColorH, ColorS, ColorV) 
+												Huedrag.Position = UDIM2(0, 0, 1-ColorH, -1) 
+												values[tabname][sectorname][text] = Element.value 
+												Element.value.Color = COL3HSV(ColorH, ColorS, ColorV) 
+												callback(Element.value) 
+										end)
+											if retarded then
+												TextLabel35.Text = 'Success!'
+												wait(1.5)
+												TextLabel35.Text = 'Paste colors'
+											else
+												TextLabel35.Text = 'Error!'
+												wait(1.5)
+												TextLabel35.Text = 'Paste colors'
+												print(lmao)
+											end
+									else
+										TextLabel35.Text = 'Not a color'
+										wait(1.5)
+										TextLabel35.Text = "Paste colors"
+									end
+								end)
+								Button_325.MouseEnter:Connect(function() 
+									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(255, 255, 255)}) 
+								end) 
+								Button_325.MouseLeave:Connect(function() 
+									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(200, 200, 200)}) 
+								end)
 
 								Colorpick.Name = "Colorpick" 
 								Colorpick.Parent = Frame 
@@ -5942,7 +6039,7 @@ elseif type == "Button" then
 										Element:SetValue(fix[tabname][sectorname][text]) 
 									end 
 								end) 
-							end) 
+							end)
 							ConfigLoad1:Connect(function(cfg) 
 							pcall(function() 
 									local fix = library:ConfigFix1(cfg) 
@@ -6068,54 +6165,50 @@ elseif type == "Button" then
 	CreateHitElement(" !!!  IMPORTANT  !!!\
  Expect many bugs/lags since dev is a retard,\
  Report any issues to my server!  ",MainUIColor,15, 0, 300, 0, 50)
-writefile(cfglocation..'unload script cfg.txt', game:HttpGet("https://raw.githubusercontent.com/SamuelMoment/SamuelMoment/main/nothing.cfg"))
---big ass code (not big ass)
-wait(1)
-delfile(cfglocation..'unload script cfg.txt')
 
-local UserInputService = game:GetService("UserInputService") 
-local ReplicatedStorage = game:GetService("ReplicatedStorage") 
-local RunService = game:GetService("RunService") 
-local Lighting = game:GetService("Lighting") 
-local PlayerGui = LocalPlayer.PlayerGui
-local Crosshairs = PlayerGui.GUI.Crosshairs
-local Crosshair = PlayerGui.GUI.Crosshairs.Crosshair
-local Mouse = LocalPlayer:GetMouse() 
-local Camera = workspace.CurrentCamera 
-local ClientScript = LocalPlayer.PlayerGui.Client 
-local Client = getsenv(ClientScript) 
-local ChatScript = getsenv(LocalPlayer.PlayerGui.GUI.Main.Chats.DisplayChat)
+getgenv().UserInputService = game:GetService("UserInputService") 
+getgenv().ReplicatedStorage = game:GetService("ReplicatedStorage") 
+getgenv().RunService = game:GetService("RunService") 
+getgenv().Lighting = game:GetService("Lighting") 
+getgenv().PlayerGui = LocalPlayer.PlayerGui
+getgenv().Crosshairs = PlayerGui.GUI.Crosshairs
+getgenv().Crosshair = PlayerGui.GUI.Crosshairs.Crosshair
+getgenv().Mouse = LocalPlayer:GetMouse() 
+getgenv().Camera = workspace.CurrentCamera 
+getgenv().ClientScript = LocalPlayer.PlayerGui.Client 
+getgenv().Client = getsenv(ClientScript) 
+getgenv().ChatScript = getsenv(LocalPlayer.PlayerGui.GUI.Main.Chats.DisplayChat)
 
 repeat RunService.RenderStepped:Wait() until game:IsLoaded() 
 
-local oldcreatebullethole = Client.createbullethole 
+getgenv().oldcreatebullethole = Client.createbullethole 
 local LGlove, RGlove, LSleeve, RSleeve, RArm, LArm 
-local WeaponObj = {} 
-local SelfObj = {} 
-local Viewmodels =  ReplicatedStorage.Viewmodels 
-local Weapons =  ReplicatedStorage.Weapons 
-local ViewmodelOffset = CF(0,0,0) 
-local Smokes = {} 
-local Mollies = {}
+getgenv().WeaponObj = {} 
+getgenv().SelfObj = {} 
+getgenv().Viewmodels =  ReplicatedStorage.Viewmodels 
+getgenv().Weapons =  ReplicatedStorage.Weapons 
+getgenv().ViewmodelOffset = CF(0,0,0) 
+getgenv().Smokes = {} 
+getgenv().Mollies = {}
 local RageTarget 
-local GetIcon = require(game.ReplicatedStorage.GetIcon) 
-local BodyVelocity = INST("BodyVelocity") 
+getgenv().GetIcon = require(game.ReplicatedStorage.GetIcon) 
+getgenv().BodyVelocity = INST("BodyVelocity") 
 BodyVelocity.MaxForce = Vec3(HUGE, 0, HUGE) 
-local Collision = {Camera, workspace.Ray_Ignore, workspace.Debris} 
-local FakelagFolder = INST("Folder", workspace) 
+getgenv().Collision = {Camera, workspace.Ray_Ignore, workspace.Debris} 
+getgenv().FakelagFolder = INST("Folder", workspace) 
 FakelagFolder.Name = "Fakelag" 
-local backtrackfolder = INST("Folder", workspace)
+getgenv().backtrackfolder = INST("Folder", workspace)
 backtrackfolder.Name = "backtrackfolder"
-local fowardtrackFolder = INST("Folder", workspace)
+getgenv().fowardtrackFolder = INST("Folder", workspace)
 fowardtrackFolder.Name = "FowardtrackFolder"
-local FakeAnim = INST("Animation", workspace) 
+getgenv().FakeAnim = INST("Animation", workspace) 
 FakeAnim.AnimationId = "rbxassetid://0" 
-local Gloves = ReplicatedStorage.Gloves 
+getgenv().Gloves = ReplicatedStorage.Gloves 
 if Gloves:FindFirstChild("ImageLabel") then 
 	Gloves.ImageLabel:Destroy() 
 end 
-local GloveModels = Gloves.Models 
-local Multipliers = { 
+getgenv().GloveModels = Gloves.Models 
+getgenv().Multipliers = { 
 	["Head"] = 4, 
 	["FakeHead"] = 4, 
 	["HeadHB"] = 4, 
@@ -6134,8 +6227,8 @@ local Multipliers = {
 	["RightLowerLeg"] = 0.75, 
 	["RightFoot"] = 0.75, 
 } 
-local ChamItems = {} 
-local Skyboxes = { 
+getgenv().ChamItems = {} 
+getgenv().Skyboxes = { 
 	["nebula"] = { 
 		SkyboxLf = "rbxassetid://159454286", 
 		SkyboxBk = "rbxassetid://159454299", 
@@ -7239,7 +7332,7 @@ local aimbot = rage123123213213:Tab('SamuelPaste rage')
 --values[tab][1st local][second local]
 --values.rage.rages['SamuelPaste rage']
 aimbot:Element("Toggle", "enabled") 
-aimbot:Element('Toggle', 'override all other rages')
+--aimbot:Element('Toggle', 'override all other rages')
 aimbot:Element("Dropdown", "origin", {options = {"character", "camera"}}) 
 aimbot:Element("Toggle", "silent aim") 
 aimbot:Element("Dropdown", "automatic fire", {options = {"off", "standard", "hitpart"}}) 
@@ -7264,8 +7357,8 @@ aimbot:Element("Toggle", "auto baim")
 			
 -------------------------------------------------------------------------------------------------------------------------------
 local aimbot2 = rage123123213213:Tab('default rage')
-aimbot2:Element('Toggle', 'override samuelpaste rage')
-aimbot2:Element('Toggle','override bloxsense rage')
+--aimbot2:Element('Toggle', 'override samuelpaste rage')
+--aimbot2:Element('Toggle','override bloxsense rage')
 aimbot2:Element("Toggle", "enabled")
 aimbot2:Element("Dropdown", "origin", {options = {"character", "camera"}})
 aimbot2:Element("Toggle", "silent aim")
@@ -8118,59 +8211,63 @@ exploits:Element('ButtonKeybind', 'stormy breaker', {}, function()
 	game.Players.localPlayer.Character.UpperTorso.Waist:Destroy()
 end)
 exploits:Element('ToggleKeybind', 'custom tap')
-exploits:Element('Slider', 'tap amount', {min = 2, max = 20, default = 0})     
+exploits:Element('Slider', 'tap amount', {min = 2, max = 20, default = 0})    
+local stormykillall 
 exploits:Element("ToggleKeybind", "kill all", {}, function(tbl)
-local stormykillall
-stormykillall = RunService.RenderStepped:Connect(function()
-         if not (tbl.Active and tbl.Toggle) then stormykillall:Disconnect() return end
-		for _,Player in pairs(Players:GetPlayers()) do
-			if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild('UpperTorso') then
-				game:GetService('ReplicatedStorage').Events.HitPart:FireServer(
-						Player.Character.HumanoidRootPart,
-						Player.Character.HumanoidRootPart.CFrame.p,
-						Client.gun.Name,
-						4096,
-						game.Players.LocalPlayer.Character:WaitForChild("Gun"),
-						15,
-						false,
-						false,
-						Vec3(0,0,0),
-						16868,
-						Vec3(0, 0, 0)
-					)
+	if tbl.Toggle then
+		stormykillall = RunService.RenderStepped:Connect(function()
+			if not tbl.Toggle and not tbl.Active then return stormykillall:Disconnect() end
+				for _,Player in pairs(Players:GetPlayers()) do
+					if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild('UpperTorso') then
+						game:GetService('ReplicatedStorage').Events.HitPart:FireServer(
+							Player.Character.UpperTorso,
+							Player.Character.UpperTorso.CFrame.p,
+							Client.gun.Name, --3
+							100000000000000, -- Range --4
+							game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
+							Vec3(), -- Start Position --6
+							Vec3(),
+							1000, -- Damage Modifier
+							false,
+							true,
+							Vec3(),
+							100,
+							Vec3()
+						)
+				end
 			end
-		end
-	end)
-end)			
+		end)
+	end
+end)
+local hexagonkillall			
 exploits:Element("Slider", "damage modifier", {min = 1, max = 5, default = 1}) 
 exploits:Element("ToggleKeybind", "hexagon kill all", {}, function(tbl) 
 
-if tbl.Toggle then
-
-
-local hexagonkillall
-hexagonkillall = RunService.RenderStepped:Connect(function()
-         if not (tbl.Active and tbl.Toggle) then hexagonkillall:Disconnect() return end
-        for i,v in ipairs(Players:GetPlayers()) do
-            if v ~= Player and v.Team ~= game.Players.LocalPlayer.Team and IsAlive(v) and IsAlive(game.Players.LocalPlayer) then
-                ReplicatedStorage.Events.HitPart:FireServer(
-                    v.Character.UpperTorso,
-                    predict(v.Character.UpperTorso, Ping)
-                    "Banana",
-                    100, -- Range
-                    game.Players.LocalPlayer.Character:WaitForChild("Gun"),
-                    Vec3(), -- Start Position
-                    Vec3(),
-                    100, -- Damage Modifier
-                    false,
-                    false,
-                    Vec3(),
-                    100,
-                    Vec3()
-                )
-            end
-        end
-end)
+	if tbl.Toggle then
+		hexagonkillall = RunService.RenderStepped:Connect(function()
+			if not tbl.Toggle and not tbl.Active then return hexagonkillall:Disconnect() end
+				for i,v in ipairs(Players:GetPlayers()) do
+					if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team and IsAlive(v) and IsAlive(game.Players.LocalPlayer) then
+						ReplicatedStorage.Events.HitPart:FireServer(
+							v.Character.UpperTorso,
+							predict(v.Character.UpperTorso, Ping)
+							"Banana",
+							100000000000, -- Range
+							game.Players.LocalPlayer.Character:WaitForChild("Gun"),
+							Vec3(), -- Start Position
+							Vec3(),
+							100, -- Damage Modifier
+							false,
+							false,
+							Vec3(),
+							100,
+							Vec3()
+						)
+					end
+				end
+		end)
+	else
+		 hexagonkillall:Disconnect() 
 	end
 end)
 
@@ -8239,7 +8336,8 @@ players:Element("Jumbobox", "indicators", {options = {"armor"}})
 players:Element("Jumbobox", "outlines", {options = {"drawings", "text"}, default = {Jumbobox = {"drawings", "text"}}}) 
 players:Element("Dropdown", "font", {options = {"Plex", "Monospace", "System", "UI"}}) 
 players:Element("Slider", "size", {min = 12, max = 16, default = 13}) 
-players:Element('Slider', 'cham thickness', {min = 0, max = 10, default = 0})
+
+--players:Element('Slider', 'cham thickness', {min = 0, max = 10, default = 0})
 
 players:Element('ToggleTrans', 'chams', {default = {Color = COL3RGB(255,255,255), Transparency = 0}}, function(tbl)
 	for _,Player in pairs(Players:GetPlayers()) do
@@ -8265,7 +8363,7 @@ players:Element('ToggleTrans', 'chams', {default = {Color = COL3RGB(255,255,255)
 	end
 end)
 
-players:Element('Slider', 'vcham thickness', {min = 0, max = 10, default = 0})
+--players:Element('Slider', 'vcham thickness', {min = 0, max = 10, default = 0})
 
 players:Element('ToggleTrans', 'visible chams',  {default = {Color = COL3RGB(255,255,255), Transparency = 0}}, function(tbl)
 	for _,Player in pairs(Players:GetPlayers()) do
@@ -8995,7 +9093,7 @@ configs:Element("Button", "Refresh cfg list", {}, function()
 table.clear(allcfgs)
 
 for _,cfg in pairs(listfiles(cfglocation)) do 
-	local cfgname = GSUB(cfg, cfglocation.."\\", "") 
+	local cfgname = GSUB(cfg, 'SamuelPaste/cfgs\\', "") 
 	INSERT(allcfgs, cfgname) 
 end
 	ConfigUpdateCfgList2:Fire()
@@ -9669,29 +9767,61 @@ end)
 
 local Backtrack = misc:Sector("Backtrack", "Right")
 
-Backtrack:Element("ToggleColor", "enabled", {}, function(tbl)
+Backtrack:Element("ToggleTrans", "enabled", {default = {Color = Color3.fromRGB(255,0,0)}}, function(tbl)
 	if tbl.Toggle then
 		Backtracking = RunService.RenderStepped:Connect(function()
 			if IsAlive(LocalPlayer) then
 				for i,v in pairs(game.Players:GetPlayers()) do
-					if IsAlive(v) and GetTeam(v) ~= GetTeam(LocalPlayer) then
-						local NewBacktrackPart = INST("Part")
+					if v.Character and v.Character:FindFirstChild('UpperTorso') and GetTeam(v) ~= GetTeam(LocalPlayer) and not backtrackfolder:FindFirstChild(v.Name) then
+						
+						--[[local NewBacktrackPart = INST("Part")
 						NewBacktrackPart.Name = v.Name
 						NewBacktrackPart.Anchored = true
 						NewBacktrackPart.CanCollide = false
-						NewBacktrackPart.Transparency = values.misc.Backtrack["Transparency (0.01 = 1)"].Slider/100
+						
 						NewBacktrackPart.Color = tbl.Color
 						NewBacktrackPart.Size = v.Character.Head.Size
 						NewBacktrackPart.CFrame = v.Character.Head.CFrame
-						NewBacktrackPart.Parent = backtrackfolder
+						NewBacktrackPart.Parent = backtrackfolder--]]
 						
+						--[[local Clone123123 = v.Character:Clone()
+						for i,v in pairs(Clone123123:GetChildren()) do 
+							if not v:IsA('Part') then 
+								v:Destroy() 
+							end 
+							for i2,v2 in pairs(v:GetChildren()) do
+								v:Destroy()
+							end
+							v.Color = tbl.Color
+							v.Anchored = true
+							v.CanCollide = false
+							v.Transparency = values.misc.Backtrack["Transparency (0.01 = 1)"].Slider/100
+						end--]]
+						--local table = Clone:GetChildren()
+						local model = INST('Model', backtrackfolder)
+						model.Name = v.Name
+						for i,v in pairs(v.Character:GetChildren()) do
+							if v:IsA('Part') then
+								local part = INST('Part', model)
+								part.Size = v.Size
+								part.Position = v.Position
+								part.Orientation = v.Orientation
+								part.CanCollide = false
+								part.Anchored = true
+								part.Name = v.Name
+								part.Color = tbl.Color
+								part.Transparency = tbl.Trans
+							end
+						end
+						
+						--NewBacktrackPart.Transparency = values.misc.Backtrack["Transparency (0.01 = 1)"].Slider/100
 						local BacktrackTag = INST("ObjectValue")
-						BacktrackTag.Parent = NewBacktrackPart
-						BacktrackTag.Name = "PlayerName"
+						BacktrackTag.Parent = model
+						BacktrackTag.Name = 'PlayerName'
 						BacktrackTag.Value = v
 						spawn(function() -- values.misc.movement["noclip"].Toggle
 							wait(values.misc.Backtrack["Time (ms)"].Slider/1000)
-							NewBacktrackPart:Destroy()
+							model:Destroy()
 						end)
 					end
 				end
@@ -9703,7 +9833,6 @@ Backtrack:Element("ToggleColor", "enabled", {}, function(tbl)
 end)
 
 Backtrack:Element("Slider", "Time (ms)", {min = 0, max = 1000, default = 200})
-Backtrack:Element("Slider", "Transparency (0.01 = 1)", {min = 1, max = 100, default = 0})
 local movement = misc:Sector('movement', 'Left')
 movement:Element('Toggle', 'bunny hop', {})
 --[[ crim code
@@ -10631,10 +10760,25 @@ Fov.Color = COL3RGB(15,15,15)
 Fov.Transparency = 0.5 
 Fov.Position = Vec2(Mouse.X, Mouse.Y + 16) 
 Fov.Radius = 120 
-RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for searching)
+RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for searching)
 	local Ping = game.Stats.PerformanceStats.Ping:GetValue()
 	LastStep = step
-	if LocalPlayer.Character and LocalPlayer.Character.Head and Client.gun and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and (not values.rage.rages['default rage'].enabled.Toggle or values.rage.rages['SamuelPaste rage']['override all other rages'].Toggle and  (not values.rage.rages['default rage']['override samuelpaste rage'].Toggle)) then
+	local CamCFrame = Camera.CFrame
+	local CamLook = CamCFrame.LookVector
+	local PlayerIsAlive = false
+	local Character = LocalPlayer.Character
+	RageTarget = nil
+	Spin = math.clamp(Spin + values.rage.angles["spin speed"].Slider, 0, 360)
+	if Spin == 360 then Spin = 0 end
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 and LocalPlayer.Character:FindFirstChild("UpperTorso") then
+		PlayerIsAlive = true
+	end
+	for i,v in pairs(ChamItems) do
+		if v.Parent == nil then
+			table.remove(ChamItems, i)
+		end
+	end
+	if PlayerIsAlive then
 	local Root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 		local RageGuy 
 		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
@@ -10773,7 +10917,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 								end
 								table.clear(Hitboxes)
 								for _,Hitbox in ipairs(values.rage.weapons.default.hitboxes.Jumbobox) do
-									if values.rage.weapons.default["prefer body"].Toggle and (values.rage.rages['SamuelPaste rage'].teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then
+									--[[if values.rage.weapons.default["prefer body"].Toggle and (values.rage.rages['SamuelPaste rage'].teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then
 										if Hitbox == "head" and (not values.rage.rages['SamuelPaste rage']["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead")) then
 											INSERT(Hitboxes, Player.Character.Head)
 											if values.misc.Backtrack.enabled.Toggle then 
@@ -10804,6 +10948,68 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 											INSERT(Hitboxes, Player.Character.RightFoot)
 										elseif not values.rage.rages['SamuelPaste rage']["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead") then
 											INSERT(Hitboxes, Player.Character.Head)
+										end
+									end--]]
+									if (values.rage.rages['SamuelPaste rage'].teammates.Toggle or Player.TeamColor ~= LocalPlayer.TeamColor) and Player.Character then
+--values.rage.rages['SamuelPaste rage']["auto baim"].Toggle
+										if values.rage.rages['SamuelPaste rage']["auto baim"].Toggle then
+											if Player.Character:FindFirstChild('FakeHead') or Player.Character:FindFirstChild('HeadHB') and Hitbox == 'Head' then
+												INSERT(Hitboxes, Player.Character.Head)
+												if values.misc.Backtrack.enabled.Toggle then 
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].Head)
+												end
+											else
+												INSERT(Hitboxes, Player.Character.UpperTorso)
+												INSERT(Hitboxes, Player.Character.LowerTorso)
+												if values.misc.Backtrack.enabled.Toggle then 
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].UpperTorso)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].LowerTorso)
+												end
+											end
+										else
+											if Hitbox == 'Head' then
+												INSERT(Hitboxes, Player.Character.Head)
+												if values.misc.Backtrack.enabled.Toggle then 
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].Head)
+												end												
+											elseif Hitbox == "torso" then
+												INSERT(Hitboxes, Player.Character.UpperTorso)
+												INSERT(Hitboxes, Player.Character.LowerTorso)
+												if values.misc.Backtrack.enabled.Toggle then 
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].UpperTorso)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].LowerTorso)
+												end												
+											elseif Hitbox == "arms" then
+												INSERT(Hitboxes, Player.Character.LeftLowerArm)
+												INSERT(Hitboxes, Player.Character.LeftUpperArm)
+												INSERT(Hitboxes, Player.Character.LeftArm)
+												INSERT(Hitboxes, Player.Character.RightLowerArm)
+												INSERT(Hitboxes, Player.Character.RightUpperArm)
+												INSERT(Hitboxes, Player.Character.RightHand)
+												if values.misc.Backtrack.enabled.Toggle then 
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].LeftLowerArm)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].LeftUpperArm)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].LeftArm)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].RightLowerArm)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].RightUpperArm)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].RightHand)
+												end													
+											elseif Hitbox == "legs" then
+												INSERT(Hitboxes, Player.Character.LeftLowerLeg)
+												INSERT(Hitboxes, Player.Character.LeftUpperLeg)
+												INSERT(Hitboxes, Player.Character.LeftFoot)
+												INSERT(Hitboxes, Player.Character.RightLowerLeg)
+												INSERT(Hitboxes, Player.Character.RightUpperLeg)
+												INSERT(Hitboxes, Player.Character.RightFoot)
+												if values.misc.Backtrack.enabled.Toggle then 
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].LeftLowerLeg)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].LeftUpperLeg)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].LeftFoot)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].RightLowerLeg)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].RightUpperLeg)
+													INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].RightFoot)
+												end	
+											end
 										end
 									end
 								end
@@ -10850,7 +11056,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 													Filter = true
 													if values.rage.rages['SamuelPaste rage']["automatic fire"].Dropdown == "standard" then
 														Client.firebullet()
-														VisualizeSilentAngles:Fire(RageTarget.Position)
+														VisualizeSilentAngles(RageTarget.Position)
 													--[[if values.misc.client.hitlogs.Toggle then -- 
 														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 													end--]]
@@ -10875,7 +11081,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 															[13] = Vec3()
 														}
 														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
-														VisualizeSilentAngles:Fire(RageTarget.Position)
+														VisualizeSilentAngles(RageTarget.Position)
 														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
@@ -10957,7 +11163,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 													Filter = true
 													if values.rage.rages['SamuelPaste rage']["automatic fire"].Dropdown == "standard" then
 														Client.firebullet()
-														VisualizeSilentAngles:Fire(RageTarget.Position)
+														VisualizeSilentAngles(RageTarget.Position)
 													--[[-if values.misc.client.hitlogs.Toggle then -- 
 														CreateHitElement(" Hit "..EndHit.Parent.Name.." in the "..EndHit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 													end--]]
@@ -10982,7 +11188,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 															100,
 															Vec3()
 														)
-														VisualizeSilentAngles:Fire(RageTarget.Position)
+														VisualizeSilentAngles(RageTarget.Position)
 														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
@@ -11036,7 +11242,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 												Filter = true
 												if values.rage.rages['SamuelPaste rage']["automatic fire"].Dropdown == "standard" then
 													Client.firebullet()
-													VisualizeSilentAngles:Fire(RageTarget.Position)
+													VisualizeSilentAngles(RageTarget.Position)
 													--[[if values.misc.client.hitlogs.Toggle then -- 
 														CreateHitElement(" Hit "..Hit.Parent.Name.." in the "..Hit.Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 													end--]]
@@ -11060,7 +11266,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 														100,
 														Vec3()
 													)
-													VisualizeSilentAngles:Fire(RageTarget.Position)
+													VisualizeSilentAngles(RageTarget.Position)
 													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
@@ -11181,10 +11387,10 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 			end 
 		end 
 	end
-	CamCFrame = Camera.CFrame
-	CamLook = CamCFrame.LookVector
+	--CamCFrame = Camera.CFrame
+	--CamLook = CamCFrame.LookVector
 
-	RageTarget = nil
+	--RageTarget = nil
 	
 	pcall(function()
 		Fov.Visible = values.legit.settings['draw fov'].Toggle
@@ -11201,12 +11407,7 @@ RunService:BindToRenderStep('Rage', 500, function(step) --ragebot, rage bot (for
 
 
 
-	for i,v in pairs(ChamItems) do 
-		if v.Parent == nil then 
-			TBLREMOVE(ChamItems, i) 
-		end 
-	end 
-pcall(function()
+--[[pcall(function()
 	for i,v in pairs(ChamItems) do
 		local cham = v[1]
 		local fromobject = v[2]
@@ -11226,9 +11427,9 @@ pcall(function()
 				end
 			end
 		end
-end)
+end)--]]
 
-	if IsAlive(LocalPlayer) then
+	if PlayerIsAlive then
 		if values.rage.exploits['around the world'].Toggle and values.rage.exploits['around the world'].Active then 
 			for i,v in next, Players:GetChildren() do
 				if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team then
@@ -11800,7 +12001,7 @@ end)
 
 
 RunService.RenderStepped:Connect(function(step)
-if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['SamuelPaste rage']['override all other rages'].Toggle or values.rage.rages['default rage']['override samuelpaste rage'].Toggle)  then
+if values.rage.rages['default rage'].enabled.Toggle then
 	Fov.Visible = false
 	LastStep = step
 	Ping = game.Stats.PerformanceStats.Ping:GetValue()
@@ -11853,12 +12054,12 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 				end
 			end
 		end--]]
-		if table.find(values.visuals.effects.removals.Jumbobox, "scope lines") then 
+		--[[if table.find(values.visuals.effects.removals.Jumbobox, "scope lines") then 
 			NewScope.Enabled = LocalPlayer.Character:FindFirstChild("AIMING") and true or false
 			Crosshairs.Scope.Visible = false
 		else
 			NewScope.Enabled = false
-		end
+		end--]]
 		local RageGuy
 		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
 			if values.rage.rages['default rage'].enabled.Toggle then
@@ -12000,6 +12201,7 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 														--[[ 
 															Client.firebullet()
 														end--]]
+														VisualizeSilentAngles(RageTarget.Position)
 													elseif values.rage.rages['default rage']["automatic fire"].Dropdown == "hitpart" then
 														Client.firebullet()
 														local Arguments = {
@@ -12016,6 +12218,7 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 															[13] = Vector3.new()
 														}
 														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+														VisualizeSilentAngles(RageTarget.Position)
 													end
 													Filter = false
 													break
@@ -12075,6 +12278,7 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 													Filter = true
 													if values.rage.rages['default rage']["automatic fire"].Dropdown == "standard" then
 														Client.firebullet()
+														VisualizeSilentAngles(RageTarget.Position)
 													elseif values.rage.rages['default rage']["automatic fire"].Dropdown == "hitpart" then
 														Client.firebullet()
 														local Arguments = {
@@ -12091,6 +12295,7 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 															[13] = Vector3.new()
 														}
 														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+														VisualizeSilentAngles(RageTarget.Position)
 													end
 													Filter = false
 													break
@@ -12123,9 +12328,11 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 													Client.firebullet()
 													if values.rage.exploits["double tap"].Toggle and values.rage.exploits["double tap"].Active then
 														Client.firebullet()
+														VisualizeSilentAngles(RageTarget.Position)
 													end
 												elseif values.rage.rages['default rage']["automatic fire"].Dropdown == "hitpart" then
 													Client.firebullet()
+													
 													local Arguments = {
 														[1] = EndHit,
 														[2] = EndHit.Position,
@@ -12139,8 +12346,9 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 														[12] = 100,
 														[13] = Vector3.new()
 													}
+													VisualizeSilentAngles(RageTarget.Position)
 													game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
-													if values.rage.exploits["double tap"].Toggle and values.rage.exploits["double tap"].Active then
+													--[[if values.rage.exploits["double tap"].Toggle and values.rage.exploits["double tap"].Active then
 														Client.firebullet()
 														local Arguments = {
 															[1] = EndHit,
@@ -12156,7 +12364,7 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 															[13] = Vector3.new()
 														}
 														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
-													end
+													end--]]
 												end
 												Filter = false
 												break
@@ -12256,7 +12464,7 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 				end
 			end --]]
 		end
-		BodyVelocity:Destroy()
+		--[[BodyVelocity:Destroy()
 		BodyVelocity = Instance.new("BodyVelocity")
 		BodyVelocity.MaxForce = Vector3.new(math.huge,0,math.huge)
 		if UserInputService:IsKeyDown("Space") and values.misc.movement["bunny hop"].Toggle then
@@ -12371,7 +12579,7 @@ if values.rage.rages['default rage'].enabled.Toggle and (not values.rage.rages['
 					end
 				end
 			end)()
-		end
+		end--]]
 	end
 	end
 end)
@@ -12381,11 +12589,11 @@ end)
 
 
 			local visualsilentangle = nil
-			VisualizeSilentAngles:Connect(function(pos)
+			VisualizeSilentAngles = function(pos)
 					visualsilentangle = RageTarget.Position
 					wait(values.visuals.self["silent angle speed"].Slider/50)
 					visualsilentangle = nil
-			end)
+			end
 
 local mt = getrawmetatable(game) 
 local oldNamecall = mt.__namecall 
@@ -12672,13 +12880,18 @@ if not getgenv().PasteDisabled then
 				end)() 
 			end 
 		end 
-		if args[1].Parent == workspace.backtrackfolder then 
-			if args[1].PlayerName.Value.Character then
-				if args[1].PlayerName.Value.Character.Head ~= nil then
-				args[1] = args[1].PlayerName.Value.Character.Head
+		if args[1].Parent.Parent == workspace.backtrackfolder then 
+			if args[1].Parent.PlayerName.Value.Character then
+				if args[1].Parent.PlayerName.Value.Character[args[1]] ~= nil then
+					args[1] = args[1].Parent.PlayerName.Value.Character[args[1]]
 				end
 			end
 		end
+		--[[
+		1. args[1] is a part
+		2. args[1] contains in a model
+		3. args[1].Parent is a model that contains playerName value
+		--]]
 		--[[if values.rage.rages['SamuelPaste rage']["front track"].Toggle and args[1]:IsDescendantOf(fowardtrackFolder) then
 				args[1] = game.Players[args[1].Parent.Name].Character[args[1].Name]
 				args[2] = args[1].Position
@@ -12691,7 +12904,7 @@ if not getgenv().PasteDisabled then
 					local Beam = createbullettracer(LocalPlayer.Character.UpperTorso.Position, args[2])	
 				end
 				if (Players:GetPlayerFromCharacter(args[1].Parent) and values.misc.client.hitlogs.Toggle) or (args[1] == RageTarget and values.misc.client.hitlogs.Toggle) then --(values.rage.exploits['kill all'].Toggle ~= true) and (values.rage.exploits['hexagon kill all'].Toggle ~= true)
-					hitlogs:Fire(" Hit "..args[1].Parent.Name.." in the "..args[1].Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
+					hitlogs(" Hit "..args[1].Parent.Name.." in the "..args[1].Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 				end
 			end)
 		end
@@ -13460,15 +13673,17 @@ Players.PlayerAdded:Connect(function(Player)
 			for _,obj in pairs(Character:GetChildren()) do
 				if obj:IsA('BasePart') and Player ~= LocalPlayer and obj.Name ~= 'HumanoidRootPart' and obj.Name ~= 'Head' and obj.Name ~= 'BackC4' and obj.Name ~= 'HeadHB' then
 					local VisibleCham
-					if obj.Name == 'FakeHead' then 
+					--[[if obj.Name == 'FakeHead' then 
 						VisibleCham = INST('CylinderHandleAdornment')
 						VisibleCham.Height = 1.2 + (values.visuals.players['vcham thickness'].Slider/30)
 						VisibleCham.Radius = 0.61 + (values.visuals.players['vcham thickness'].Slider/20)
 						VisibleCham.CFrame = CFrame.new(0,0,0) * CFAngles(1.6,0,0)
-					else 
+					else --]]
 						VisibleCham = INST('BoxHandleAdornment')
-						VisibleCham.Size = obj.Size + Vec3( (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10))
-					end
+						--VisibleCham.Size = obj.Size + Vec3( (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10))
+						VisibleCham.Size = obj.Size + Vec3(0.1,0.1,0.1)
+
+					--end
 					VisibleCham.Name = 'VisibleCham'
 					VisibleCham.AlwaysOnTop = false
 					VisibleCham.ZIndex = 8
@@ -13476,15 +13691,16 @@ Players.PlayerAdded:Connect(function(Player)
 					VisibleCham.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
 
 					local WallCham
-					if obj.Name == 'FakeHead' then 
+					--[[if obj.Name == 'FakeHead' then 
 						WallCham = INST('CylinderHandleAdornment')
 						WallCham.Height = 1.2 + (values.visuals.players['cham thickness'].Slider/20)
 						WallCham.Radius = 0.61 + (values.visuals.players['cham thickness'].Slider/20)
 						WallCham.CFrame = CFrame.new(0,0,0) * CFAngles(1.6,0,0) 
-					else 
+					else --]]
 						WallCham = INST('BoxHandleAdornment')
-						WallCham.Size = obj.Size + Vec3( (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10))
-					end
+						WallCham.Size = obj.Size + Vector3.new(0.1,0.1,0.1)
+						--WallCham.Size = obj.Size + Vec3( (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10))
+					--end
 					WallCham.Name = 'WallCham'
 					WallCham.AlwaysOnTop = true
 					WallCham.ZIndex = 5
