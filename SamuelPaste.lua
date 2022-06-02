@@ -8546,7 +8546,7 @@ local function DrawESP(plr)
                     end
                     connection:Disconnect()
                 end
-				if GetTeam(plr) == GetTeam(LocalPlayer) and not (values.visuals.players.teammates.Toggle) then
+				if plr.TeamColor == LocalPlayer.TeamColor and not (values.visuals.players.teammates.Toggle) then
 					Visibility(false)
 				   for i, v in pairs(limbs) do
 						v.Transparency = 0
@@ -8572,7 +8572,7 @@ end
 players:Element('ToggleColor', 'skeleton esp', {default = {Color = COL3RGB(255,255,255)}}, function(tbl)
 	if tbl.Toggle then
 		for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-			if v.Name ~= LocalPlayer.Name and (values.visuals.players.teammates.Toggle and true or v.Team ~= LocalPlayer) then
+			if v.Name ~= LocalPlayer.Name and (values.visuals.players.teammates.Toggle and true or v.Team ~= LocalPlayer.Team) then
 				DrawESP(v)
 			end
 		end
@@ -9819,7 +9819,7 @@ Backtrack:Element("ToggleTrans", "enabled", {default = {Color = Color3.fromRGB(2
 						BacktrackTag.Parent = model
 						BacktrackTag.Name = 'PlayerName'
 						BacktrackTag.Value = v
-						spawn(function() -- values.misc.movement["noclip"].Toggle
+						spawn(function() -- values.misc.movement.default["noclip"].Toggle
 							wait(values.misc.Backtrack["Time (ms)"].Slider/1000)
 							model:Destroy()
 						end)
@@ -9833,112 +9833,185 @@ Backtrack:Element("ToggleTrans", "enabled", {default = {Color = Color3.fromRGB(2
 end)
 
 Backtrack:Element("Slider", "Time (ms)", {min = 0, max = 1000, default = 200})
-local movement = misc:Sector('movement', 'Left')
-movement:Element('Toggle', 'bunny hop', {})
---[[ crim code
-local down = false
-	function onButton1Down(cF)
-			if IsAlive(LocalPlayer) and game.Workspace[game.Players.LocalPlayer.Name].Humanoid and values.misc.movement['bunny hop'] and (values.misc.movement.type == "Normal" or values.misc.movement.type == "Crim") then
-				down=true
-				velocity=INST("BodyVelocity")
-				velocity.maxForce=Vec3(100000,0,100000)
-				gyro=INST("BodyGyro")
-				gyro.maxTorque=Vec3(100000,0,100000)
-			end
-		end
-		
-		hopping = false
-			game:GetService("RunService").Stepped:Connect(function()
-				if game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart and game.Workspace[game.Players.LocalPlayer.Name].Humanoid and values.misc.movement['bunny hop'].Toggle and velocity then				
-					if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-				velocity=INST("BodyVelocity")
-				velocity.maxForce=Vec3(100000,0,100000)
-				gyro=INST("BodyGyro")
-				gyro.maxTorque=Vec3(100000,0,100000)
-					velocity.Parent=game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart
-					local movedirection=game.Players.LocalPlayer.Character.Humanoid.MoveDirection;BREH=1
-					if values.misc.movement.type == "Crim" then 
-						movedirection=game.Players.LocalPlayer.Character.Humanoid.MoveDirection*-1;BREH=14 
-					elseif values.misc.movement.debug.Toggle then print('not crim') end
-					velocity.velocity=movedirection*0*BREH;gyro.Parent=game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart
-					local percent = values.misc.movement['crim percent'].Slider; --script.Parent.Parent.BHOP.Percent.Value
-					velocity.velocity=movedirection*percent*BREH;
-					--VelocityOfVelocity=velocity.velocity
-					local gyroshit = gyro.Parent.Position+(gyro.Parent.Position-workspace.CurrentCamera.CoordinateFrame.p).unit*5;
-					gyro.CFrame=CFrame.new(gyro.Parent.Position,Vec3(gyroshit.x,gyro.Parent.Position.y,gyroshit.z))
-					hopping=true --script.Parent.Hopping.Value
-					else
-					velocity:Destroy()
-					gyro:Destroy()
-					end
-				end
-			end)
-function onButton1Up(cJ)pcall(function()
-				velocity:Destroy()
-				gyro:Destroy()
-				hopping=false 
-			end)
-			down=false 
-		end
-		function onSelected(key)
-			key.KeyDown:connect(function(input)
-				if input:lower()==" "then
-					onButton1Down(key)
-				end 
-			end)
-			key.KeyUp:connect(function(input)
-				if input:lower()==" "then onButton1Up(key) end
-			end)
-		end
-		onSelected(Mouse)
-		game:GetService("RunService").RenderStepped:Connect(function(step) --step
-			if game:GetService('UserInputService'):IsKeyDown(Enum.KeyCode.Space) and values.misc.movement['bunny hop'].Toggle and workspace:FindFirstChild(game.Players.LocalPlayer.Name) and velocity then
-				if values.misc.movement.type =="CFrame" or values.misc.movement.type.Dropdown =="Crim" then --values.misc.movement.type
-					repeat wait() until velocity
-					if values.misc.movement.type.Dropdown =="Crim"then
-						game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame=game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame+game.Workspace[game.Players.LocalPlayer.Name].Humanoid.MoveDirection*(velocity.velocity.Magnitude+8)*step 
-					--else 
-						--game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame=game.Workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame+game.Workspace[game.Players.LocalPlayer.Name].Humanoid.MoveDirection*why*step 
-					end
-					hopping=true 
-				end 
-					
-			else
-			pcall(function()
-				hopping=false
-			end)
-			end 
-		end)
-end)--]]
+local moddedbhop = misc:MSector('movement', 'Left')
+local defaultbhop = moddedbhop:Tab('default')
+local bloxsense = moddedbhop:Tab('bloxsense.gay')
+bloxsense:Element('Toggle', 'bunny hop', {}, function(tbl)
+			local Hopping = false
+            local cs = 0
+            local ct = 0
+            local function cv(cw)
+                local cx = tick()
+                cw = cw or 0
+                repeat
+                    game:GetService("RunService").Heartbeat:Wait()
+                until tick() - cx >= cw
+                return tick() - cx
+            end
+            local cy =
+                coroutine.create(
+                function()
+                    while true do
+                        cv()
+                        ct = ct + 0.01
+                    end
+                end
+            )
+            coroutine.resume(cy)
+            down = false
+            spawn(
+                function()
+                    local cz = game.Players.LocalPlayer
+                    local cA = game:service("RunService")
+                    local cB = game:service("UserInputService")
+                    local cC = game:GetService("Players")
+                    local cD = cz.Name
+                    local cE = 1
+                    function onButton1Down(cF)
+                        if
+                            workspace:FindFirstChild(cD) and game.Workspace[cD].HumanoidRootPart and
+                                game.Workspace[cD].Humanoid and
+                                tbl.Toggle == true and
+                                (values.misc.movement['bloxsense.gay'].type.Dropdown == "Normal" or
+                                    values.misc.movement['bloxsense.gay'].type.Dropdown == "Crim")
+                         then
+                            down = true
+								velocity1 = INST('BodyVelocity')
+								velocity1.MaxForce = Vec3(HUGE,0,HUGE)
+								gyro = INST("BodyGyro", game.Workspace[cD].HumanoidRootPart)
+								gyro.maxTorque = Vector3.new(100000, 0, 100000)
+                        end
+                    end
+                    cA.Stepped:Connect(
+                        function()
+                            if down and game.Workspace[cD].HumanoidRootPart and game.Workspace[cD].Humanoid and tbl.Toggle then
+								local HP = game.Workspace[cD].HumanoidRootPart
+								repeat
+								velocity1.Parent = HP
+								gyro.Parent = HP
+								until velocity1.Parent == HP and gyro.Parent == HP
+								
+                                local cG = game.Players.LocalPlayer.Character.Humanoid.MoveDirection
+                                BREH = 1
+                                if values.misc.movement['bloxsense.gay'].type.Dropdown == "Crim" then
+                                    cG = game.Players.LocalPlayer.Character.Humanoid.MoveDirection * -1
+                                    BREH = 14
+                                end
+                                velocity1.Velocity = cG * cs * BREH
+                                local cH = values.misc.movement['bloxsense.gay'].percent.Slider
+                                velocity1.Velocity = cG * cH * BREH
+                                cE = velocity1.Velocity
+                                local cI =
+                                    gyro.Parent.Position +
+                                    (gyro.Parent.Position - workspace.CurrentCamera.CoordinateFrame.p).unit * 5
+                                gyro.cframe =
+                                    CFrame.new(gyro.Parent.Position, Vector3.new(cI.x, gyro.Parent.Position.y, cI.z))
+                                if values.misc.movement['bloxsense.gay'].type.Dropdown.Dropdown == "Normal" then
+                                    game.Players.LocalPlayer.Character.Humanoid.Jump = true
+                                end
+                                Hopping = true
+                            end
+                        end
+                    )
+                    function onButton1Up(cJ)
+                        pcall(
+                            function()
+                                velocity1:Destroy()
+                                gyro:Destroy()
+                                Hopping = false
+                            end
+                        )
+                        down = false
+                    end
+                    function onSelected(cK)
+                        cK.KeyDown:connect(
+                            function(cL)
+                                if cL:lower() == " " then
+                                    onButton1Down(cK)
+                                end
+                            end
+                        )
+                        cK.KeyUp:connect(
+                            function(cM)
+                                if cM:lower() == " " then
+                                    onButton1Up(cK)
+                                end
+                            end
+                        )
+                    end
+                    onSelected(game.Players.LocalPlayer:GetMouse())
+                    cA.RenderStepped:Connect(
+                        function(cN)
+                            if
+                                cB:IsKeyDown(Enum.KeyCode.Space) and tbl.Toggle == true and
+                                    workspace:FindFirstChild(cD)
+                             then
+                                if
+                                    values.misc.movement['bloxsense.gay'].type.Dropdown == "CFrame" or
+                                        values.misc.movement['bloxsense.gay'].type.Dropdown == "Crim"
+                                 then
+                                    if values.misc.movement['bloxsense.gay'].type.Dropdown == "Crim" then
+									repeat wait() until cE.magnitude
+                                        game.Workspace[cD].HumanoidRootPart.CFrame =
+                                            game.Workspace[cD].HumanoidRootPart.CFrame +
+                                            game.Workspace[cD].Humanoid.MoveDirection * (cE.magnitude + 8) * cN
+                                    else
+                                        game.Workspace[cD].HumanoidRootPart.CFrame =
+                                            game.Workspace[cD].HumanoidRootPart.CFrame +
+                                            game.Workspace[cD].Humanoid.MoveDirection *
+                                                values.misc.movement['bloxsense.gay'].percent.Slider *
+                                                cN
+                                    end
+                                    if values.misc.movement['bloxsense.gay'].type.Dropdown == "CFrame" then
+                                        game.Players.LocalPlayer.Character.Humanoid.Jump = true
+                                    end
+                                    Hopping = true
+                                end
+                            else
+                                Hopping = false
+                            end
+                        end
+                    )
+                end
+            )
+end)
 
-movement:Element('Dropdown', 'direction', {options = {'forward', 'directional', 'directional 2'}})
-movement:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity', 'idk'}})
-movement:Element('Slider', 'speed', {min = 0, max = 200, default = 40})
-movement:Element('ToggleKeybind', 'overwrite')
-movement:Element('Slider', 'overwrite speed', {min = 0, max = 200, default = 40})
-movement:Element('Toggle', 'no gun')
+--bloxsense:Element('Dropdown', 'direction', {options = {'forward', 'directional', 'directional 2'}})
+bloxsense:Element('Dropdown', 'type', {options = {'Normal', 'CFrame', 'Crim'}})
+bloxsense:Element('Slider', 'speed', {min = 0, max = 200, default = 40})
+bloxsense:Element('Slider', 'percent', {min = 0, max = 100, default = 1})
 
-movement:Element('Toggle', 'no velocity')
+defaultbhop:Element('Toggle', 'bunny hop')
 
-movement:Element('ToggleKeybind', 'no launch')
+defaultbhop:Element('Dropdown', 'direction', {options = {'forward', 'directional', 'directional 2'}})
+defaultbhop:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity', 'idk'}})
+defaultbhop:Element('Slider', 'speed', {min = 0, max = 200, default = 40})
 
-movement:Element('Slider', 'launch block (y velocity)', {min = 0, max = 100, default = 40})
+defaultbhop:Element('ToggleKeybind', 'overwrite')
+defaultbhop:Element('Slider', 'overwrite speed', {min = 0, max = 200, default = 40})
+defaultbhop:Element('Toggle', 'no gun')
 
-movement:Element('ToggleKeybind', 'jump bug')
-movement:Element('ToggleKeybind', 'edge jump')
-movement:Element('ToggleKeybind', 'edge bug')
+defaultbhop:Element('Toggle', 'no velocity')
 
-movement:Element('ToggleKeybind', 'gravity change')
-movement:Element('Slider', 'gravity amount', {min = 0, max = 300, default = 80})
+defaultbhop:Element('ToggleKeybind', 'no launch')
 
-movement:Element('Toggle', 'height change')
-movement:Element('Slider', 'height amount', {min = -35, max = 35, default = 0})
+defaultbhop:Element('Slider', 'launch block (y velocity)', {min = 0, max = 100, default = 40})
 
-movement:Element('Toggle', 'client offset')
-movement:Element('Slider', 'offset (y)', {min = -45, max = 45, default = 0})
-		movement:Element("ToggleKeybind", "noclip",{},function(tbl)
+defaultbhop:Element('ToggleKeybind', 'jump bug')
+defaultbhop:Element('ToggleKeybind', 'edge jump')
+defaultbhop:Element('ToggleKeybind', 'edge bug')
+
+defaultbhop:Element('ToggleKeybind', 'gravity change')
+defaultbhop:Element('Slider', 'gravity amount', {min = 0, max = 300, default = 80})
+
+defaultbhop:Element('Toggle', 'height change')
+defaultbhop:Element('Slider', 'height amount', {min = -35, max = 35, default = 0})
+
+defaultbhop:Element('Toggle', 'client offset')
+defaultbhop:Element('Slider', 'offset (y)', {min = -45, max = 45, default = 0})
+		defaultbhop:Element("ToggleKeybind", "noclip",{},function(tbl)
 			spawn(function()
-				while values.misc.movement["noclip"].Toggle and values.misc.movement["noclip"].Active do
+				while values.misc.movement.default["noclip"].Toggle and values.misc.movement.default["noclip"].Active do
 					RunService.Stepped:Wait()
 					if LocalPlayer.Character then
 						for i,v in pairs(LocalPlayer.Character:GetDescendants()) do
@@ -9952,7 +10025,7 @@ movement:Element('Slider', 'offset (y)', {min = -45, max = 45, default = 0})
 		end)
 		--movement:Element('ToggleKeybind', 'noclip v2')
 	
-movement:Element("Toggle", "fly mode", {}, function(tbl)
+defaultbhop:Element("Toggle", "fly mode", {}, function(tbl)
 if tbl.Toggle then
 		FlyLoop = RunService.Stepped:Connect(function()
 		if not (tbl.Toggle) then FlyLoop:Disconnect() return end
@@ -9961,16 +10034,16 @@ if tbl.Toggle then
 						local velocity = Vec3(0, 1, 0)
 						
 						if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-							velocity = velocity + (workspace.CurrentCamera.CoordinateFrame.lookVector * values.misc.movement["fly speed"].Slider)
+							velocity = velocity + (workspace.CurrentCamera.CoordinateFrame.lookVector * values.misc.movement.default["fly speed"].Slider)
 						end
 						if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-							velocity = velocity + (workspace.CurrentCamera.CoordinateFrame.rightVector * -values.misc.movement["fly speed"].Slider)
+							velocity = velocity + (workspace.CurrentCamera.CoordinateFrame.rightVector * -values.misc.movement.default["fly speed"].Slider)
 						end
 						if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-							velocity = velocity + (workspace.CurrentCamera.CoordinateFrame.lookVector * -values.misc.movement["fly speed"].Slider)
+							velocity = velocity + (workspace.CurrentCamera.CoordinateFrame.lookVector * -values.misc.movement.default["fly speed"].Slider)
 						end
 						if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-							velocity = velocity + (workspace.CurrentCamera.CoordinateFrame.rightVector * values.misc.movement["fly speed"].Slider)
+							velocity = velocity + (workspace.CurrentCamera.CoordinateFrame.rightVector * values.misc.movement.default["fly speed"].Slider)
 						end
 						
 						LocalPlayer.Character.HumanoidRootPart.Velocity = velocity
@@ -9992,7 +10065,7 @@ if tbl.Toggle then
 	end
 end)
 
-movement:Element("Slider", "fly speed", {min = 1, max = 300, default = 16})
+defaultbhop:Element("Slider", "fly speed", {min = 1, max = 300, default = 16})
 
 local chatmessages_pasteed = {
 	"Lost to SamuelPaste? Who woulda thought",
@@ -10790,7 +10863,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 						Client.DISABLED = false
 					end
 					 
-					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer then
+					if Player.Character and Player.Character:FindFirstChild("Humanoid") and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and Player ~= LocalPlayer  and (Player.TeamColor ~= LocalPlayer.TeamColor or values.rage.rages['SamuelPaste rage'].teammates.Toggle) then
 						if TBLFIND(values.rage.rages['SamuelPaste rage'].resolver.Jumbobox, 'pitch') then
 							if Player.Character.UpperTorso:FindFirstChild('Waist') then
 							Player.Character.UpperTorso.Waist.C0 = CFrame.new(0, 0.5, 0)
@@ -10826,7 +10899,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 							Player.Character.Head.Neck.C0 = CFrame.new(0,values.rage.rages['SamuelPaste rage']["Y distance"].Slider,values.rage.rages['SamuelPaste rage']["X distance"].Slider) * CFAngles(0, 0, 0)
 						end
 					end
-					if Player.Character and Player.Character:FindFirstChild("Humanoid") and not Client.DISABLED and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and not Player.Character:FindFirstChildOfClass("ForceField") and GetDeg(CamCFrame, Player.Character.Head.Position) <= values.rage.weapons.default["max fov"].Slider and Player ~= LocalPlayer then
+					if Player.Character and (Player.TeamColor ~= LocalPlayer.TeamColor or values.rage.rages['SamuelPaste rage'].teammates.Toggle) and Player.Character:FindFirstChild("Humanoid") and not Client.DISABLED and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and not Player.Character:FindFirstChildOfClass("ForceField") and GetDeg(CamCFrame, Player.Character.Head.Position) <= values.rage.weapons.default["max fov"].Slider and Player ~= LocalPlayer then
 						if Player.Team ~= LocalPlayer.Team or values.rage.rages['SamuelPaste rage'].teammates.Toggle and Player:FindFirstChild("Status") and Player.Status.Team.Value ~= LocalPlayer.Status.Team.Value and Player.Status.Alive.Value then
 							if Client.gun:FindFirstChild("Melee") and values.rage.rages['SamuelPaste rage']["knifebot"].Toggle then -- knife bot (for fast searching)
 							local AutoPeek = {OldPeekPosition = CFrame.new()}
@@ -10844,6 +10917,9 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 							else
 								LocalPlayer.Character.HumanoidRootPart.CFrame = AutoPeek.OldPeekPosition
 							end
+					for i,v in pairs(workspace.Ray_Ignore:GetDescendants()) do
+						v:Destroy()
+					end
 								local Ignore = {unpack(Collision)}
 								if #ragebotwhitelist ~= 0 then
 									for i,v in pairs(ragebotwhitelist) do
@@ -10917,40 +10993,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 								end
 								table.clear(Hitboxes)
 								for _,Hitbox in ipairs(values.rage.weapons.default.hitboxes.Jumbobox) do
-									--[[if values.rage.weapons.default["prefer body"].Toggle and (values.rage.rages['SamuelPaste rage'].teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then
-										if Hitbox == "head" and (not values.rage.rages['SamuelPaste rage']["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead")) then
-											INSERT(Hitboxes, Player.Character.Head)
-											if values.misc.Backtrack.enabled.Toggle then 
-												INSERT(Hitboxes, workspace.backtrackfolder[Player.Name].PlayerName.Value.Character.Head)
-											end
-										elseif Hitbox == "torso" then
-											INSERT(Hitboxes, Player.Character.UpperTorso)
-										else
-											INSERT(Hitboxes, Player.Character.LowerTorso)
-										end
-									elseif (values.rage.rages['SamuelPaste rage'].teammates.Toggle and true or Player.Team ~= LocalPlayer.Team) then 
-										if Hitbox == "torso" then
-											INSERT(Hitboxes, Player.Character.UpperTorso)
-											INSERT(Hitboxes, Player.Character.LowerTorso)
-										elseif Hitbox == "arms" then
-											INSERT(Hitboxes, Player.Character.LeftLowerArm)
-											INSERT(Hitboxes, Player.Character.LeftUpperArm)
-											INSERT(Hitboxes, Player.Character.LeftArm)
-											INSERT(Hitboxes, Player.Character.RightLowerArm)
-											INSERT(Hitboxes, Player.Character.RightUpperArm)
-											INSERT(Hitboxes, Player.Character.RightHand)
-										elseif Hitbox == "legs" then
-											INSERT(Hitboxes, Player.Character.LeftLowerLeg)
-											INSERT(Hitboxes, Player.Character.LeftUpperLeg)
-											INSERT(Hitboxes, Player.Character.LeftFoot)
-											INSERT(Hitboxes, Player.Character.RightLowerLeg)
-											INSERT(Hitboxes, Player.Character.RightUpperLeg)
-											INSERT(Hitboxes, Player.Character.RightFoot)
-										elseif not values.rage.rages['SamuelPaste rage']["auto baim"].Toggle or Player.Character:FindFirstChild("FakeHead") then
-											INSERT(Hitboxes, Player.Character.Head)
-										end
-									end--]]
-									if (values.rage.rages['SamuelPaste rage'].teammates.Toggle or Player.TeamColor ~= LocalPlayer.TeamColor) and Player.Character then
+									if (Player.TeamColor ~= LocalPlayer.TeamColor or values.rage.rages['SamuelPaste rage'].teammates.Toggle) and Player.Character then
 --values.rage.rages['SamuelPaste rage']["auto baim"].Toggle
 										if values.rage.rages['SamuelPaste rage']["auto baim"].Toggle then
 											if Player.Character:FindFirstChild('FakeHead') or Player.Character:FindFirstChild('HeadHB') and Hitbox == 'Head' then
@@ -11639,9 +11682,9 @@ end)--]]
 		BodyVelocity:Destroy()
 		BodyVelocity = INST('BodyVelocity')
 		BodyVelocity.MaxForce = Vec3(HUGE,0,HUGE)
-		if UserInputService:IsKeyDown('Space') and values.misc.movement['bunny hop'].Toggle and values.misc.movement.type.Dropdown ~= "Crim" then
+		if UserInputService:IsKeyDown('Space') and values.misc.movement.default['bunny hop'].Toggle and values.misc.movement.default.type.Dropdown ~= "Crim" then
 			local add = 0
-			if values.misc.movement.direction.Dropdown == 'directional' and values.misc.movement.type.Dropdown ~= "Crim"  or values.misc.movement.direction.Dropdown == 'directional 2' and values.misc.movement.type.Dropdown ~= "Crim"  then
+			if values.misc.movement.default.direction.Dropdown == 'directional' or values.misc.movement.default.direction.Dropdown == 'directional 2' then
 				if UserInputService:IsKeyDown("A") then add = 90 end 
 				if UserInputService:IsKeyDown("S") then add = 180 end 
 				if UserInputService:IsKeyDown("D") then add = 270 end 
@@ -11651,22 +11694,22 @@ end)--]]
 				if UserInputService:IsKeyDown("A") and UserInputService:IsKeyDown("S") then add = 145 end 
 			end
 			local rot = YROTATION(CamCFrame) * CFAngles(0,RAD(add),0)
-			local bhopspeed = values.misc.movement['overwrite'].Toggle and values.misc.movement['overwrite'].Active and values.misc.movement['overwrite speed'].Slider or values.misc.movement['speed'].Slider
+			local bhopspeed = values.misc.movement.default['overwrite'].Toggle and values.misc.movement.default['overwrite'].Active and values.misc.movement.default['overwrite speed'].Slider or values.misc.movement.default['speed'].Slider
 			BodyVelocity.Parent = LocalPlayer.Character.UpperTorso
 			LocalPlayer.Character.Humanoid.Jump = true
 			BodyVelocity.Velocity = Vec3(rot.LookVector.X,0,rot.LookVector.Z) * (bhopspeed * 2)
-			if add == 0 and values.misc.movement.direction.Dropdown == 'directional' and not UserInputService:IsKeyDown('W') then
+			if add == 0 and values.misc.movement.default.direction.Dropdown == 'directional' and not UserInputService:IsKeyDown('W') then
 				BodyVelocity:Destroy()
 			else
 
 
-				if values.misc.movement.type.Dropdown == 'cframe' and values.misc.movement.type.Dropdown ~= "Crim"  then
+				if values.misc.movement.default.type.Dropdown == 'cframe' and values.misc.movement.default.type.Dropdown ~= "Crim"  then
 					BodyVelocity:Destroy()
 					Root.CFrame = Root.CFrame + Vec3(rot.LookVector.X,0,rot.LookVector.Z) * bhopspeed/50
-				elseif values.misc.movement.type.Dropdown == 'velocity' and values.misc.movement.type.Dropdown ~= "Crim"  then
+				elseif values.misc.movement.default.type.Dropdown == 'velocity' and values.misc.movement.default.type.Dropdown ~= "Crim"  then
 					BodyVelocity:Destroy()
 					Root.Velocity = Vec3(rot.LookVector.X * (bhopspeed * 2), Root.Velocity.y, rot.LookVector.Z * (bhopspeed * 2))
-				elseif values.misc.movement.type.Dropdown == 'idk' and values.misc.movement.type.Dropdown ~= "Crim"  then
+				elseif values.misc.movement.default.type.Dropdown == 'idk' and values.misc.movement.default.type.Dropdown ~= "Crim"  then
 					BodyVelocity:Destroy()
 					spawn(function()
 						if not switchtrigger[1]  then 
@@ -11685,19 +11728,19 @@ end)--]]
 				end
 			end
 		end
-		if values.misc.movement['gravity change'].Toggle and values.misc.movement['gravity change'].Active  then 
-		    workspace.Gravity = values.misc.movement['gravity amount'].Slider
+		if values.misc.movement.default['gravity change'].Toggle and values.misc.movement.default['gravity change'].Active  then 
+		    workspace.Gravity = values.misc.movement.default['gravity amount'].Slider
 		else 
 		    workspace.Gravity = 80
 		end
 
 
-		if values.misc.movement['no launch'].Toggle and values.misc.movement['no launch'].Active then 
-			if Root.Velocity.Y > values.misc.movement['launch block (y velocity)'].Slider then 
+		if values.misc.movement.default['no launch'].Toggle and values.misc.movement.default['no launch'].Active then 
+			if Root.Velocity.Y > values.misc.movement.default['launch block (y velocity)'].Slider then 
 				Root.Velocity = Vec3(Root.Velocity.x, 0, Root.Velocity.z)
 			end
 		end
-		if values.misc.movement['edge jump'].Toggle and values.misc.movement['edge jump'].Active then
+		if values.misc.movement.default['edge jump'].Toggle and values.misc.movement.default['edge jump'].Active then
 			if LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
 				coroutine.wrap(function()
 					RunService.RenderStepped:Wait()
@@ -11978,22 +12021,22 @@ end)--]]
 	end
 
 	if workspace:FindFirstChild('Map') and Client.gun ~= 'none' and Client.gun.Name ~= 'C4' then
-	if values.misc.movement['height change'].Toggle then 
-		pcall(function() LocalPlayer.Character.Humanoid.HipHeight = 2 * (values.misc.movement['height amount'].Slider/5) end)
+	if values.misc.movement.default['height change'].Toggle then 
+		pcall(function() LocalPlayer.Character.Humanoid.HipHeight = 2 * (values.misc.movement.default['height amount'].Slider/5) end)
 	else 
 	    pcall(function() LocalPlayer.Character.Humanoid.HipHeight = 2 end)
 	end
 
-	if values.misc.movement['no velocity'].Toggle then 
+	if values.misc.movement.default['no velocity'].Toggle then 
 	   pcall(function() LocalPlayer.Character.HumanoidRootPart.Velocity = Vec3(0, LocalPlayer.Character.HumanoidRootPart.Velocity.y, 0) end)
 	end
 
-	if values.misc.movement['no gun'].Toggle then 
+	if values.misc.movement.default['no gun'].Toggle then 
 	   pcall(function() LocalPlayer.Character.Gun:Remove()end)
 	end
 
-	if values.misc.movement['client offset'].Toggle then 
-       pcall(function() LocalPlayer.Character.LowerTorso:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(0, (values.misc.movement['offset (y)'].Slider/5), 0) end)
+	if values.misc.movement.default['client offset'].Toggle then 
+       pcall(function() LocalPlayer.Character.LowerTorso:FindFirstChildWhichIsA('Motor6D').C0 = CFrame.new(0, (values.misc.movement.default['offset (y)'].Slider/5), 0) end)
     end
 
 	end
@@ -12467,9 +12510,9 @@ if values.rage.rages['default rage'].enabled.Toggle then
 		--[[BodyVelocity:Destroy()
 		BodyVelocity = Instance.new("BodyVelocity")
 		BodyVelocity.MaxForce = Vector3.new(math.huge,0,math.huge)
-		if UserInputService:IsKeyDown("Space") and values.misc.movement["bunny hop"].Toggle then
+		if UserInputService:IsKeyDown("Space") and values.misc.movement.default["bunny hop"].Toggle then
 			local add = 0
-			if values.misc.movement.direction.Dropdown == "directional" or values.misc.movement.direction.Dropdown == "directional 2" then
+			if values.misc.movement.default.direction.Dropdown == "directional" or values.misc.movement.default.direction.Dropdown == "directional 2" then
 				if UserInputService:IsKeyDown("A") then add = 90 end
 				if UserInputService:IsKeyDown("S") then add = 180 end
 				if UserInputService:IsKeyDown("D") then add = 270 end
@@ -12481,17 +12524,17 @@ if values.rage.rages['default rage'].enabled.Toggle then
 			local rot = YROTATION(CamCFrame) * CFrame.Angles(0,math.rad(add),0)
 			BodyVelocity.Parent = LocalPlayer.Character.UpperTorso
 			LocalPlayer.Character.Humanoid.Jump = true
-			BodyVelocity.Velocity = Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * (values.misc.movement["speed"].Slider * 2)
-			if add == 0 and values.misc.movement.direction.Dropdown == "directional" and not UserInputService:IsKeyDown("W") then
+			BodyVelocity.Velocity = Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * (values.misc.movement.default["speed"].Slider * 2)
+			if add == 0 and values.misc.movement.default.direction.Dropdown == "directional" and not UserInputService:IsKeyDown("W") then
 				BodyVelocity:Destroy()
 			else
-				if values.misc.movement.type.Dropdown == "cframe" then
+				if values.misc.movement.default.type.Dropdown == "cframe" then
 					BodyVelocity:Destroy()
-					Root.CFrame = Root.CFrame + Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * values.misc.movement["speed"].Slider/50
+					Root.CFrame = Root.CFrame + Vector3.new(rot.LookVector.X,0,rot.LookVector.Z) * values.misc.movement.default["speed"].Slider/50
 				end
 			end
 		end
-		if values.misc.movement["edge jump"].Toggle and values.misc.movement["edge jump"].Active then
+		if values.misc.movement.default["edge jump"].Toggle and values.misc.movement.default["edge jump"].Active then
 			if LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Freefall and LocalPlayer.Character.Humanoid:GetState() ~= Enum.HumanoidStateType.Jumping then
 				coroutine.wrap(function()
 					RunService.RenderStepped:Wait()
@@ -12631,7 +12674,7 @@ if not getgenv().PasteDisabled then
 	if method == "FireServer" then 
 		if LEN(self.Name) == 38 then 
 			return 
-		elseif self.Name == "FallDamage" and TBLFIND(values.misc.client["damage bypass"].Jumbobox, "fall") or values.misc.movement["jump bug"].Toggle and values.misc.movement["jump bug"].Active then 
+		elseif self.Name == "FallDamage" and TBLFIND(values.misc.client["damage bypass"].Jumbobox, "fall") or values.misc.movement.default["jump bug"].Toggle and values.misc.movement.default["jump bug"].Active then 
 			return 
 		elseif self.Name == "BURNME" and TBLFIND(values.misc.client["damage bypass"].Jumbobox, "fire") then 
 			return 
@@ -12904,7 +12947,7 @@ if not getgenv().PasteDisabled then
 					local Beam = createbullettracer(LocalPlayer.Character.UpperTorso.Position, args[2])	
 				end
 				if (Players:GetPlayerFromCharacter(args[1].Parent) and values.misc.client.hitlogs.Toggle) or (args[1] == RageTarget and values.misc.client.hitlogs.Toggle) then --(values.rage.exploits['kill all'].Toggle ~= true) and (values.rage.exploits['hexagon kill all'].Toggle ~= true)
-					hitlogs(" Hit "..args[1].Parent.Name.." in the "..args[1].Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
+					hitlogs:Fire(" Hit "..args[1].Parent.Name.." in the "..args[1].Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 0, 280, 0, 22)
 				end
 			end)
 		end
@@ -12987,10 +13030,10 @@ mt.__newindex = function(self, i, v)
 end --]]
 mt.__newindex = function(self, i, v) 
 	if self:IsA("Humanoid") and i == "JumpPower" and not checkcaller() then 
-		if values.misc.movement["jump bug"].Toggle and values.misc.movement["jump bug"].Active then 
+		if values.misc.movement.default["jump bug"].Toggle and values.misc.movement.default["jump bug"].Active then 
 			v = 24 
 		end 
-		if values.misc.movement["edge bug"].Toggle and values.misc.movement["edge bug"].Active then 
+		if values.misc.movement.default["edge bug"].Toggle and values.misc.movement.default["edge bug"].Active then 
 			v = 0 
 		end 
 	elseif self:IsA("Humanoid") and i == "CameraOffset" then 
