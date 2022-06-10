@@ -12675,10 +12675,9 @@ end)
                     return 1
                 end
             end
-local function RageFunction(RagePlayer123132, RageHitPart1212312, v6, v7)
-                if RagePlayer123132.Character:FindFirstChildOfClass("ForceField") then
-                else
-                            TargettedPlayer = RagePlayer123132
+local function RageFunction(Player, RageHitPart1212312, v6, v7)
+                if not Player.Character:FindFirstChildOfClass("ForceField") then
+                            TargettedPlayer = Player
                             if v7 then
                                 tx = true
                             else
@@ -12695,7 +12694,7 @@ local function RageFunction(RagePlayer123132, RageHitPart1212312, v6, v7)
                                 
                                 tv = Vector3.new(0, 0, 0)
                                 for PredictedPlayer, predictPos in pairs(sV) do
-                                    if RagePlayer123132.Name == predictPos[1] then
+                                    if Player.Name == predictPos[1] then
                                         local vb = predictPos[2]
                                         local vc = Vector3.new(vb.X, 0, vb.Z)
                                         if vc.magnitude > 22 then
@@ -12718,7 +12717,7 @@ local function RageFunction(RagePlayer123132, RageHitPart1212312, v6, v7)
                                     end
                                 end
                             end
-                            if not shootCooldown then
+							repeat wait() until shootCooldown ~= false
                                 game:GetService("NetworkClient"):SetOutgoingKBPSLimit(9e9)
                                 --script.Firing.Value = true
                                 tT =
@@ -12727,16 +12726,19 @@ local function RageFunction(RagePlayer123132, RageHitPart1212312, v6, v7)
                                     RageHitPart1212312.CFrame.p
                                 )
                                 RageTarget = RageHitPart1212312
-                                Client.firebullet()
+                                Filter = true
+								Client.firebullet()
+								Filter = false
                                -- if noRecoil then
                                     Client.resetaccuracy()
                                     Client.RecoilX = 0
                                     Client.RecoilY = 0
                                 --end
                                 if Client.gun:FindFirstChild("Melee") then
+								Filter = true
                                     local vj = {
-                                        [1] = game.Workspace[RagePlayer123132.Name][RageHitPart1212312.Name],
-                                        [2] = game.Workspace[RagePlayer123132.Name][RageHitPart1212312.Name].Position,
+                                        [1] = game.Workspace[Player.Name][RageHitPart1212312.Name],
+                                        [2] = game.Workspace[Player.Name][RageHitPart1212312.Name].Position,
                                         [3] = LocalPlayer.Character.EquippedTool.Value,
                                         [4] = 8192,
                                         [5] = LocalPlayer.Character.EquippedTool.Value,
@@ -12748,14 +12750,13 @@ local function RageFunction(RagePlayer123132, RageHitPart1212312, v6, v7)
                                         [13] = Vector3.new()
                                     }
                                     game:GetService("ReplicatedStorage").Events.HitPart:FireServer(unpack(vj))
+								Filter = false
                                 end
                                 if not values.rage.rages['bloxsense.gay rage']['silent aim'].Toggle then
                                     Camera.CFrame = CFrame.new(Camera.CFrame.p, RageTarget.CFrame.p)
                                 end
-                                RageTarget = nil
                                 --script.Firing.Value = false
-                                coolDown()
-                            end
+								coolDown()
                 end
             end
 local function WallBangCheck(fromLocalPlayer, toTarget)
@@ -12865,6 +12866,7 @@ local function WallBangCheck(fromLocalPlayer, toTarget)
 
 RunService.Stepped:Connect(
                         function()
+						RageTarget = nil
                             local MinDamage, gunDamage
                             local Hitboxes = {}
                             MinDamage = values.rage.weapons.default["minimum damage"].Slider
@@ -12920,16 +12922,16 @@ RunService.Stepped:Connect(
                                                     end
                                                     if v.Character:FindFirstChild(vB) then
                                                         local RageTargetPart = v.Character[vB]
-                                                        local HitPart12312312, vE, vF, vG =
+                                                        local Hitpart, vE, vF, vG =
                                                             WallBangCheck(CFrame.new(LocalHRPCFrame, RageTargetPart.CFrame.p), RageTargetPart.Parent)
                                                         
-                                                        if HitPart12312312 then
+                                                        if Hitpart then
                                                             local MODIFICATION = 1
-                                                            if HitPart12312312.Name == "HeadHB" then
+                                                            if Hitpart.Name == "HeadHB" then
                                                                 MODIFICATION = 4
-                                                            elseif HitPart12312312.Name == "LowerTorso" then
+                                                            elseif Hitpart.Name == "LowerTorso" then
                                                                 MODIFICATION = 1.25
-                                                            elseif HitPart12312312.Name:match("Leg") or HitPart12312312.Name:match("Foot") then
+                                                            elseif Hitpart.Name:match("Leg") or Hitpart.Name:match("Foot") then
                                                                 MODIFICATION = 0.75
                                                             else
                                                                 MODIFICATION = 1
@@ -12940,17 +12942,11 @@ RunService.Stepped:Connect(
                                                                         v.Character.Humanoid.Health +
                                                                             math.clamp(MinDamage - 100, 0, 20)
                                                              then
-                                                                RageFunction(v, HitPart12312312, vF, vG)
-                                                            else
-                                                                RageTarget = nil
+                                                                RageFunction(v, Hitpart, vF, vG)
                                                             end
-                                                        else
-                                                            RageTarget = nil
                                                         end
                                                     end
                                                 end
-                                            else
-                                                RageTarget = nil
                                             end
                                 end
                             end
@@ -13139,20 +13135,44 @@ if not getgenv().PasteDisabled then
 					end 
 				end)() 
 			end 
-			if RageTarget ~= nil and values.rage.rages['SamuelPaste rage'].enabled.Toggle then 
-				local Origin = values.rage.rages['SamuelPaste rage'].origin.Dropdown == "character" and LocalPlayer.Character.LowerTorso.Position + Vec3(0, 2.5, 0) or Camera.CFrame.p 
-				if values.rage.rages['SamuelPaste rage']["delay shot"].Toggle then 
+			if RageTarget ~= nil and RageTarget.Position ~= nil then 
+			if values.rage.rages['SamuelPaste rage'].enabled.Toggle then
+				local Origin = (
+				values.rage.rages['SamuelPaste rage'].origin.Dropdown == "character" 
+				and LocalPlayer.Character.LowerTorso.Position + Vec3(0, 2.5, 0) 
+				or Camera.CFrame.p)
+			elseif values.rage.rages['default rage'].enabled.Toggle then
+				local Origin = (
+				values.rage.rages['default rage'].origin.Dropdown == "character" 
+				and LocalPlayer.Character.LowerTorso.Position + Vec3(0, 2.5, 0) 
+				or Camera.CFrame.p)			
+			else
+				local Origin = LocalPlayer.Character.HumanoidRootPart.CFrame.p + Vector3.new(0, 1.4, 0)
+			end
+				--[[if values.rage.rages['SamuelPaste rage']["delay shot"].Toggle or values.rage.rages['default rage']["delay shot"].Toggle then 
 					spawn(function() 
 						args[1] = RAY(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude) 
 					end) 
-				else 
+				elseif values.rage.rages['SamuelPaste rage'].enabled.Toggle or values.rage.rages['default rage'].enabled.Toggle then
 					args[1] = RAY(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude) 
+				else
+					args[1] = RAY(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude)
+					--setclipboard(args[1])
+				end--]]
+				if (values.rage.rages['SamuelPaste rage'].enabled and values.rage.rages['SamuelPaste rage']["delay shot"].Toggle) or (values.rage.rages['default rage'].enabled and values.rage.rages['default rage']["delay shot"].Toggle) then
+					spawn(function() 
+						args[1] = RAY(Origin, (RageTarget.Position - Origin).unit * (RageTarget.Position - Origin).magnitude) 
+					end)
+				else
+					args[1] = RAY(Origin, 
+					(RageTarget.Position - Origin).unit * 
+					(RageTarget.Position - Origin).magnitude)
 				end
 				--[[if values.rage.rages['SamuelPaste rage']["front track"].Toggle and RageTarget:IsDescendantOf(fowardtrackFolder) then
 				RageTarget = game.Players[RageTarget.Parent.Name].Character[RageTarget.Name]
 				end--]]
 			end
-                        if values.rage.rages['bloxsense.gay rage'].enabled.Toggle and RageTarget ~= nil then
+                       --[[ if values.rage.rages['bloxsense.gay rage'].enabled.Toggle and RageTarget ~= nil then
                                 args[1] =
                                     RAY(
                                     LocalPlayer.Character.HumanoidRootPart.CFrame.p + Vector3.new(0, 1.4, 0),
@@ -13162,7 +13182,7 @@ if not getgenv().PasteDisabled then
                                     ).LookVector.Unit *
                                         (LocalPlayer.Character.HumanoidRootPart.CFrame.p + Vector3.new(0, 1.4, 0) - RageTarget.CFrame.p).Magnitude
                                 )
-                        end	
+                        end	--]]
 			end
 		end 
 	end 
@@ -13195,13 +13215,9 @@ if not getgenv().PasteDisabled then
 	end 
 	if method == "FireServer" and self.Name == "HitPart" then 
 	RageTarget2 = RageTarget
-		if values.rage.rages['SamuelPaste rage']["force hit"].Toggle and values.rage.rages['SamuelPaste rage']["enabled"].Toggle and RageTarget then 
+		if (values.rage.rages['SamuelPaste rage']["force hit"].Toggle and values.rage.rages['SamuelPaste rage']["enabled"].Toggle and RageTarget) or (values.rage.rages['default rage']['force hit'].Toggle and values.rage.rages['default rage'].enabled.Toggle and RageTarget ~= nil) then 
 			args[1] = RageTarget 
 			args[2] = RageTarget.Position 
-		end
-		if values.rage.rages['default rage']["enabled"].Toggle and values.rage.rages['default rage']["force hit"].Toggle and RageTarget then
-			args[1] = RageTarget 
-			args[2] = RageTarget.Position 		
 		end
 
 		if values.rage.rages['SamuelPaste rage']["prediction"].Dropdown ~= "off" and RageTarget ~= nil then
@@ -13326,7 +13342,7 @@ if not getgenv().PasteDisabled then
 				end
 			end
 		end
-		if values.rage.rages['bloxsense.gay rage']['enabled'].Toggle and TargettedPlayer then
+		if values.rage.rages['bloxsense.gay rage']['enabled'].Toggle and TargettedPlayer ~= nil then
             args[2] = RageTarget2.Position + tv
 			tv = Vector3.new(0, 0, 0)
             args[4] = 0
