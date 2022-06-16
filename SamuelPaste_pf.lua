@@ -386,7 +386,7 @@ local ovascreengui = nil
 				Menu.BorderColor3 = COL3RGB(0, 0, 0)
 				Menu.Position = UDIM2(0.5, -300, 0.5, -300)
 				Menu.Size = UDIM2(0, 600, 0, 610)
-				Menu.Image = 'rbxassetid://8893436115'
+				Menu.Image = ""
 				Menu.ImageColor3 = COL3RGB(180, 180, 180)
 				
 				--[[ImageLabel.Parent = Lunar
@@ -401,7 +401,8 @@ local ovascreengui = nil
 		['ova'] = Lunar,
 		['menu'] = Menu,
 		['cursor'] = cursor,
-	} 			
+	} 
+			
 			local SpectatorsList = INST("ScreenGui")
 do
 			local Spectators = INST("Frame")
@@ -4012,7 +4013,7 @@ end
 								end 
 							elseif type == "ToggleColor" then 
 								Section.Size = Section.Size + UDIM2(0,0,0,16) 
-								Element.value = {Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or COL3RGB(255,255,255)} 
+								Element.value = {Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or COL3RGB(255,255,255), SetColor} 
 
 								local Toggle = INST("Frame") 
 								local Button = INST("TextButton") 
@@ -4096,7 +4097,7 @@ end
 								Frame.BackgroundColor3 = COL3RGB(46, 46, 46) 
 								Frame.BorderColor3 = COL3RGB(18, 18, 16) 
 								Frame.Position = UDIM2(-0.666666687, -170, 1.375, 0) 
-								Frame.Size = UDIM2(0, 200, 0, 210) 
+								Frame.Size = UDIM2(0, 200, 0, 250) --edit second value (10 or 20 or 30 i forgor)
 								Frame.Visible = false 
 								Frame.ZIndex = 4
 
@@ -4107,8 +4108,8 @@ end
 								Button5.Name = "Button" 
 								Button5.Parent = Frame 
 								Button5.BackgroundColor3 = COL3RGB(255, 255, 255) 
-								Button5.BackgroundTransparency = 1.000 
-								Button5.Position = UDIM2(0, -20, 0.8, 0) 
+								Button5.BackgroundTransparency = 1.000
+								Button5.Position = UDIM2(0, -20, 0.68, 0) --edit here
 								Button5.Size = UDIM2(1, 0, 0, 15) 
 								Button5.ZIndex = 4
 
@@ -4180,7 +4181,7 @@ end
 								Button35.Parent = Frame 
 								Button35.BackgroundColor3 = COL3RGB(255, 255, 255) 
 								Button35.BackgroundTransparency = 1.000 
-								Button35.Position = UDIM2(0, -20, 0.9, 0) 
+								Button35.Position = UDIM2(0, -20, 0.76, 0) --edit here
 								Button35.Size = UDIM2(1, 0, 0, 15) 
 								Button35.ZIndex = 4
 
@@ -4251,17 +4252,17 @@ end
 											if retarded then
 												TextLabel35.Text = 'Success!'
 												wait(1.5)
-												TextLabel35.Text = 'Paste colors'
+												TextLabel35.Text = 'Paste colors (RGB only)'
 											else
 												TextLabel35.Text = 'Error!'
 												wait(1.5)
-												TextLabel35.Text = 'Paste colors'
+												TextLabel35.Text = 'Paste colors (RGB only)'
 												print(lmao)
 											end
 									else
 										TextLabel35.Text = 'Not a color'
 										wait(1.5)
-										TextLabel35.Text = "Paste colors"
+										TextLabel35.Text = "Paste colors (RGB only)"
 									end
 								end)
 								Button_325.MouseEnter:Connect(function() 
@@ -4269,7 +4270,215 @@ end
 								end) 
 								Button_325.MouseLeave:Connect(function() 
 									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(200, 200, 200)}) 
-								end)									
+								end)
+								-------------------------------------------------------------------
+								do
+									local Toggle123 = INST("Frame") 
+									local Button123 = INST("TextButton") 
+									local Color123 = INST("Frame") 
+									local TextLabel123 = INST("TextLabel") 
+									local ToggleValue = false
+									local RainbowSpeed = 1								
+									Toggle123.Name = "Toggle123" 
+									Toggle123.Parent = Frame 
+									Toggle123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+									Toggle123.BackgroundTransparency = 1.000 
+									Toggle123.Size = UDIM2(1, 0, 0, 15) 
+									Toggle123.Position = UDIM2(0, -10, 0.835, 0) --edit here
+									Toggle123.ZIndex = 4
+									
+									--print('it actually spawned')
+									
+									Button123.Name = "Button123" 
+									Button123.Parent = Toggle123 
+									Button123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+									Button123.BackgroundTransparency = 1.000 
+									Button123.Size = UDIM2(1, 0, 1, 0) 
+									Button123.Font = Enum.Font.SourceSans 
+									Button123.Text = "" 
+									Button123.TextColor3 = COL3RGB(0, 0, 0) 
+									Button123.TextSize = 11.000
+									Button123.ZIndex = 4
+
+									Color123.Name = "Color123" 
+									Color123.Parent = Button123
+									
+									Color123.BackgroundColor3 = MainUIColor 
+									
+									Color123.BackgroundColor3 = COL3RGB(46, 46, 46)
+									Color123.BorderColor3 = COL3RGB(18, 18, 16) 
+									Color123.Position = UDIM2(0, 15, 0.5, -5) 
+									Color123.Size = UDIM2(0, 8, 0, 8) 
+									Color123.ZIndex = 4
+
+									TextLabel123.Parent = Button123 
+									TextLabel123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+									TextLabel123.BackgroundTransparency = 1.000 
+									TextLabel123.Position = UDIM2(0, 32, 0, -1) 
+									TextLabel123.Size = UDIM2(0.111913361, 208, 1, 0) 
+									TextLabel123.Font = Enum.Font.Gotham 
+									TextLabel123.Text = "Rainbow" 
+									TextLabel123.TextColor3 = COL3RGB(200, 200, 200) 
+									TextLabel123.TextSize = 11.000
+									TextLabel123.TextXAlignment = Enum.TextXAlignment.Left 
+									TextLabel123.ZIndex = 4
+
+									local function update123() 
+										if ToggleValue then 
+											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(255, 255, 255)}) 
+										else 
+											--keybindremove(text, Element.value.Key) 
+											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = COL3RGB(46, 46, 46)}) 
+											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(200, 200, 200)}) 
+										end 
+										--values[tabname][sectorname][tabtext][text] = Element.value 
+									end
+									
+									Button123.MouseButton1Down:Connect(function() 
+										ToggleValue = not ToggleValue
+										update123() 
+										if ToggleValue then
+											while true do wait()
+												if ToggleValue then
+													for i = 0,1,0.001*RainbowSpeed do
+														ColorH, ColorS, ColorV = i,1,1
+
+														ColorH = CLAMP(ColorH,0,1) 
+														ColorS = CLAMP(ColorS,0,1) 
+														ColorV = CLAMP(ColorV,0,1)
+																							
+														ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0) 
+														Colorpick.ImageColor3 = COL3HSV(ColorH, 1, 1) 
+
+														ColorP.BackgroundColor3 = COL3HSV(ColorH, ColorS, ColorV) 
+														Huedrag.Position = UDIM2(0, 0, 1-ColorH, -1) 
+														values[tabname][sectorname][text] = Element.value 
+														Element.value.Color = COL3HSV(ColorH, ColorS, ColorV) 
+														callback(Element.value)
+																							
+																							--library.options['armColor']:SetColor(Color3.fromHSV(i,1,1))
+														wait()
+																				--        library.options['Accent Color']:SetColor(Color3.fromHSV(i,1,1)) -- also u can change any flag that has color by prinitng flags (table.foreach(library.flags,print)
+														if not ToggleValue then break end
+													end
+												else print('no work') break end
+											end										
+										end
+										--values[tabname][sectorname][tabtext][text] = Element.value 
+										--callback(Element.value) 
+									end)
+								
+								
+								local Slider2113132 = INST("Frame") 
+								local TextLabel2113132 = INST("TextLabel") 
+								local Button2113132 = INST("TextButton") 
+								local Frame123123 = INST("Frame") 
+								local UIGradient123123 = INST("UIGradient") 
+								local Value123123123 = INST("TextLabel") 
+
+								Slider2113132.Name = "Slider2113132" 
+								Slider2113132.Parent = Frame 
+								Slider2113132.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								Slider2113132.BackgroundTransparency = 1.000 
+								Slider2113132.Position = UDIM2(0, -10, 0.9, 0) --edit here
+								Slider2113132.Size = UDIM2(1, 0, 0, 25) 
+								Slider2113132.ZIndex = 4
+
+								TextLabel2113132.Parent = Slider2113132 
+								TextLabel2113132.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								TextLabel2113132.BackgroundTransparency = 1.000 
+								TextLabel2113132.Position = UDIM2(0, 32, 0, -2) 
+								TextLabel2113132.Size = UDIM2(0, 100, 0, 15) 
+								TextLabel2113132.Font = Enum.Font.Gotham 
+								TextLabel2113132.Text = "Rainbow speed" 
+								TextLabel2113132.TextColor3 = COL3RGB(200, 200, 200) 
+								TextLabel2113132.TextSize = 11.000
+								TextLabel2113132.TextXAlignment = Enum.TextXAlignment.Left 
+								TextLabel2113132.ZIndex = 4
+
+								Button2113132.Name = "Button2113132" 
+								Button2113132.Parent = Slider2113132 
+								Button2113132.BackgroundColor3 = COL3RGB(46, 46, 46) 
+								Button2113132.BorderColor3 = COL3RGB(18, 18, 16) 
+								Button2113132.Position = UDIM2(0, 30, 0, 15) 
+								Button2113132.Size = UDIM2(0, 175, 0, 5) 
+								Button2113132.AutoButtonColor = false 
+								Button2113132.Font = Enum.Font.SourceSans 
+								Button2113132.Text = "" 
+								Button2113132.TextColor3 = COL3RGB(0, 0, 0) 
+								Button2113132.TextSize = 11.000
+								Button2113132.ZIndex = 4
+
+								Frame123123.Parent = Button2113132 
+								Frame123123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								Frame123123.BorderSizePixel = 0 
+								Frame123123.Size = UDIM2(0.5, 0, 1, 0) 
+								Frame123123.ZIndex = 4
+								
+								UIGradient123123.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, COL3RGB(75, 92, 112))}
+								
+								
+								UIGradient123123.Rotation = 90
+								UIGradient123123.Parent = Frame123123
+
+
+								Value123123123.Name = "Value123123123" 
+								Value123123123.Parent = Slider2113132 
+								Value123123123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								Value123123123.BackgroundTransparency = 1.000 
+								Value123123123.Position = UDIM2(0, 30, 0, 15) 
+								Value123123123.Size = UDIM2(0, 175, 0, 5)  
+								Value123123123.Font = Enum.Font.Gotham 
+								Value123123123.Text = "50" 
+								Value123123123.TextStrokeTransparency = 0.000
+								Value123123123.TextColor3 = COL3RGB(200, 200, 200) 
+								Value123123123.TextSize = 11.000 
+								Value123123123.ZIndex = 4
+								local min, max, default = 0, 50, 1
+								--Element.Value123123123 = {Slider2113132 = default}
+								local a
+								if min > 0 then 
+									a = ((RainbowSpeed - min)) / (max-min) 
+								else 
+									a = (RainbowSpeed-min)/(max-min) 
+								end 
+								Value123123123.Text = default
+								Frame123123.Size = UDIM2(a,0,1,0) 
+								--values[tabname][sectorname][text] = Element.Value123123123 
+								local uis = game:GetService('UserInputService')
+								local mouse = game.Players.LocalPlayer:GetMouse() 
+								local val 
+								Button2113132.MouseButton1Down:Connect(function() 
+									Frame123123.Size = UDIM2(0, CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
+									val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) or 0 
+									Value123123123.Text = val 
+									RainbowSpeed = val 
+									--values[tabname][sectorname][text] = Element.Value123123123 
+									--callback(Element.Value123123123) 
+									moveconnection = mouse.Move:Connect(function() 
+										Frame123123.Size = UDIM2(0, CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
+										val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) 
+										Value123123123.Text = val 
+										--RainbowSpeed = val 
+										--values[tabname][sectorname][text] = Element.Value123123123 
+										--callback(Element.Value123123123) 
+									end) 
+									releaseconnection = uis.InputEnded:Connect(function(Mouse) 
+										if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then 
+											Frame123123.Size = UDIM2(0, CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
+											val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) 
+											--values[tabname][sectorname][text] = Element.Value123123123 
+											--callback(Element.Value123123123) 
+											moveconnection:Disconnect() 
+											releaseconnection:Disconnect() 
+										end 
+									end) 
+								end) 	
+end								
+								---------------------------------------------------------------------------------------------------------------------
+								
+								
 								Colorpick.Name = "Colorpick" 
 								Colorpick.Parent = Frame 
 								Colorpick.BackgroundColor3 = COL3RGB(255, 255, 255) 
@@ -4316,7 +4525,7 @@ end
 									ColorSequenceKeypoint.new(0.67, COL3RGB(0, 255, 0)), 
 									ColorSequenceKeypoint.new(0.83, COL3RGB(255, 255, 0)), 
 									ColorSequenceKeypoint.new(1.00, COL3RGB(255, 0, 0)) 
-								}	 
+								}
 
 								Huedrag.Name = "Huedrag" 
 								Huedrag.Parent = Huepick 
@@ -4530,7 +4739,7 @@ end
 								Frame.BackgroundColor3 = COL3RGB(46, 46, 46) 
 								Frame.BorderColor3 = COL3RGB(18, 18, 16) 
 								Frame.Position = UDIM2(-0.666666687, -170, 1.375, 0) 
-								Frame.Size = UDIM2(0, 200, 0, 230) 
+								Frame.Size = UDIM2(0, 200, 0, 270) --edit here
 								Frame.Visible = false 
 								Frame.ZIndex = 3 
 
@@ -4542,7 +4751,7 @@ end
 								Button5.Parent = Frame 
 								Button5.BackgroundColor3 = COL3RGB(255, 255, 255) 
 								Button5.BackgroundTransparency = 1.000 
-								Button5.Position = UDIM2(0, -18, 0.81, 0) 
+								Button5.Position = UDIM2(0, -20, 0.7, 0) --edit here
 								Button5.Size = UDIM2(1, 0, 0, 15) 
 								Button5.ZIndex = 3
 
@@ -4550,7 +4759,7 @@ end
 								Button_25.Parent = Button5
 								Button_25.BackgroundColor3 = COL3RGB(46, 46, 46) 
 								Button_25.BorderColor3 = COL3RGB(18, 18, 16) 
-								Button_25.Position = UDIM2(0, 30, 0.5, -9) 
+								Button_25.Position = UDIM2(0, 30, 0.5, -9)
 								Button_25.Size = UDIM2(0, 175, 0, 18) 
 								Button_25.AutoButtonColor = false 
 								Button_25.Font = Enum.Font.SourceSans 
@@ -4613,7 +4822,7 @@ end
 								Button35.Parent = Frame 
 								Button35.BackgroundColor3 = COL3RGB(255, 255, 255) 
 								Button35.BackgroundTransparency = 1.000 
-								Button35.Position = UDIM2(0, -20, 0.9, 0) 
+								Button35.Position = UDIM2(0, -20, 0.78, 0) --edit here
 								Button35.Size = UDIM2(1, 0, 0, 15) 
 								Button35.ZIndex = 4
 
@@ -4703,6 +4912,212 @@ end
 								Button_325.MouseLeave:Connect(function() 
 									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(200, 200, 200)}) 
 								end)
+								-------------------------------------------------------------------
+								do
+									local Toggle123 = INST("Frame") 
+									local Button123 = INST("TextButton") 
+									local Color123 = INST("Frame") 
+									local TextLabel123 = INST("TextLabel") 
+									local ToggleValue = false
+									local RainbowSpeed = 1								
+									Toggle123.Name = "Toggle123" 
+									Toggle123.Parent = Frame 
+									Toggle123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+									Toggle123.BackgroundTransparency = 1.000 
+									Toggle123.Size = UDIM2(1, 0, 0, 15) 
+									Toggle123.Position = UDIM2(0, -10, 0.85, 0) --edit here
+									Toggle123.ZIndex = 4
+									
+									--print('it actually spawned')
+									
+									Button123.Name = "Button123" 
+									Button123.Parent = Toggle123 
+									Button123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+									Button123.BackgroundTransparency = 1.000 
+									Button123.Size = UDIM2(1, 0, 1, 0) 
+									Button123.Font = Enum.Font.SourceSans 
+									Button123.Text = "" 
+									Button123.TextColor3 = COL3RGB(0, 0, 0) 
+									Button123.TextSize = 11.000
+									Button123.ZIndex = 4
+
+									Color123.Name = "Color123" 
+									Color123.Parent = Button123
+									
+									Color123.BackgroundColor3 = MainUIColor 
+									
+									Color123.BackgroundColor3 = COL3RGB(46, 46, 46)
+									Color123.BorderColor3 = COL3RGB(18, 18, 16) 
+									Color123.Position = UDIM2(0, 15, 0.5, -5) 
+									Color123.Size = UDIM2(0, 8, 0, 8) 
+									Color123.ZIndex = 4
+
+									TextLabel123.Parent = Button123 
+									TextLabel123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+									TextLabel123.BackgroundTransparency = 1.000 
+									TextLabel123.Position = UDIM2(0, 32, 0, -1) 
+									TextLabel123.Size = UDIM2(0.111913361, 208, 1, 0) 
+									TextLabel123.Font = Enum.Font.Gotham 
+									TextLabel123.Text = "Rainbow" 
+									TextLabel123.TextColor3 = COL3RGB(200, 200, 200) 
+									TextLabel123.TextSize = 11.000
+									TextLabel123.TextXAlignment = Enum.TextXAlignment.Left 
+									TextLabel123.ZIndex = 4
+
+									local function update123() 
+										if ToggleValue then 
+											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(255, 255, 255)}) 
+										else 
+											--keybindremove(text, Element.value.Key) 
+											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = COL3RGB(46, 46, 46)}) 
+											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = COL3RGB(200, 200, 200)}) 
+										end 
+										--values[tabname][sectorname][tabtext][text] = Element.value 
+									end
+									
+									Button123.MouseButton1Down:Connect(function() 
+										ToggleValue = not ToggleValue
+										update123() 
+										if ToggleValue then
+											while true do wait()
+												if ToggleValue then
+													for i = 0,1,0.001*RainbowSpeed do
+														ColorH, ColorS, ColorV = i,1,1
+
+														ColorH = CLAMP(ColorH,0,1) 
+														ColorS = CLAMP(ColorS,0,1) 
+														ColorV = CLAMP(ColorV,0,1)
+																							
+														ColorDrag.Position = UDIM2(1-ColorS,0,1-ColorV,0) 
+														Colorpick.ImageColor3 = COL3HSV(ColorH, 1, 1) 
+
+														ColorP.BackgroundColor3 = COL3HSV(ColorH, ColorS, ColorV) 
+														Huedrag.Position = UDIM2(0, 0, 1-ColorH, -1) 
+														values[tabname][sectorname][text] = Element.value 
+														Element.value.Color = COL3HSV(ColorH, ColorS, ColorV) 
+														callback(Element.value)
+																							
+																							--library.options['armColor']:SetColor(Color3.fromHSV(i,1,1))
+														wait()
+																				--        library.options['Accent Color']:SetColor(Color3.fromHSV(i,1,1)) -- also u can change any flag that has color by prinitng flags (table.foreach(library.flags,print)
+														if not ToggleValue then break end
+													end
+												else print('no work') break end
+											end										
+										end
+										--values[tabname][sectorname][tabtext][text] = Element.value 
+										--callback(Element.value) 
+									end)
+								
+								
+								local Slider2113132 = INST("Frame") 
+								local TextLabel2113132 = INST("TextLabel") 
+								local Button2113132 = INST("TextButton") 
+								local Frame123123 = INST("Frame") 
+								local UIGradient123123 = INST("UIGradient") 
+								local Value123123123 = INST("TextLabel") 
+
+								Slider2113132.Name = "Slider2113132" 
+								Slider2113132.Parent = Frame 
+								Slider2113132.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								Slider2113132.BackgroundTransparency = 1.000 
+								Slider2113132.Position = UDIM2(0, -10, 0.9, 0) --edit here
+								Slider2113132.Size = UDIM2(1, 0, 0, 25) 
+								Slider2113132.ZIndex = 4
+
+								TextLabel2113132.Parent = Slider2113132 
+								TextLabel2113132.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								TextLabel2113132.BackgroundTransparency = 1.000 
+								TextLabel2113132.Position = UDIM2(0, 32, 0, -2) 
+								TextLabel2113132.Size = UDIM2(0, 100, 0, 15) 
+								TextLabel2113132.Font = Enum.Font.Gotham 
+								TextLabel2113132.Text = "Rainbow speed" 
+								TextLabel2113132.TextColor3 = COL3RGB(200, 200, 200) 
+								TextLabel2113132.TextSize = 11.000
+								TextLabel2113132.TextXAlignment = Enum.TextXAlignment.Left 
+								TextLabel2113132.ZIndex = 4
+
+								Button2113132.Name = "Button2113132" 
+								Button2113132.Parent = Slider2113132 
+								Button2113132.BackgroundColor3 = COL3RGB(46, 46, 46) 
+								Button2113132.BorderColor3 = COL3RGB(18, 18, 16) 
+								Button2113132.Position = UDIM2(0, 30, 0, 15) 
+								Button2113132.Size = UDIM2(0, 175, 0, 5) 
+								Button2113132.AutoButtonColor = false 
+								Button2113132.Font = Enum.Font.SourceSans 
+								Button2113132.Text = "" 
+								Button2113132.TextColor3 = COL3RGB(0, 0, 0) 
+								Button2113132.TextSize = 11.000
+								Button2113132.ZIndex = 4
+
+								Frame123123.Parent = Button2113132 
+								Frame123123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								Frame123123.BorderSizePixel = 0 
+								Frame123123.Size = UDIM2(0.5, 0, 1, 0) 
+								Frame123123.ZIndex = 4
+								
+								UIGradient123123.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, COL3RGB(75, 92, 112))}
+								
+								
+								UIGradient123123.Rotation = 90
+								UIGradient123123.Parent = Frame123123
+
+
+								Value123123123.Name = "Value123123123" 
+								Value123123123.Parent = Slider2113132 
+								Value123123123.BackgroundColor3 = COL3RGB(255, 255, 255) 
+								Value123123123.BackgroundTransparency = 1.000 
+								Value123123123.Position = UDIM2(0, 30, 0, 15) 
+								Value123123123.Size = UDIM2(0, 175, 0, 5)  
+								Value123123123.Font = Enum.Font.Gotham 
+								Value123123123.Text = "50" 
+								Value123123123.TextStrokeTransparency = 0.000
+								Value123123123.TextColor3 = COL3RGB(200, 200, 200) 
+								Value123123123.TextSize = 11.000 
+								Value123123123.ZIndex = 4
+								local min, max, default = 0, 50, 1
+								--Element.Value123123123 = {Slider2113132 = default}
+								local a
+								if min > 0 then 
+									a = ((RainbowSpeed - min)) / (max-min) 
+								else 
+									a = (RainbowSpeed-min)/(max-min) 
+								end 
+								Value123123123.Text = default
+								Frame123123.Size = UDIM2(a,0,1,0) 
+								--values[tabname][sectorname][text] = Element.Value123123123 
+								local uis = game:GetService('UserInputService')
+								local mouse = game.Players.LocalPlayer:GetMouse() 
+								local val 
+								Button2113132.MouseButton1Down:Connect(function() 
+									Frame123123.Size = UDIM2(0, CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
+									val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) or 0 
+									Value123123123.Text = val 
+									RainbowSpeed = val 
+									--values[tabname][sectorname][text] = Element.Value123123123 
+									--callback(Element.Value123123123) 
+									moveconnection = mouse.Move:Connect(function() 
+										Frame123123.Size = UDIM2(0, CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
+										val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) 
+										Value123123123.Text = val 
+										--RainbowSpeed = val 
+										--values[tabname][sectorname][text] = Element.Value123123123 
+										--callback(Element.Value123123123) 
+									end) 
+									releaseconnection = uis.InputEnded:Connect(function(Mouse) 
+										if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then 
+											Frame123123.Size = UDIM2(0, CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
+											val = FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) 
+											--values[tabname][sectorname][text] = Element.Value123123123 
+											--callback(Element.Value123123123) 
+											moveconnection:Disconnect() 
+											releaseconnection:Disconnect() 
+										end 
+									end) 
+								end) 	
+end								
+								---------------------------------------------------------------------------------------------------------------------
 
 								Colorpick.Name = "Colorpick" 
 								Colorpick.Parent = Frame 
@@ -6320,76 +6735,330 @@ effects:Element("ToggleColor", "outdoor ambient", {default = {Color = COL3RGB(25
 		game.Lighting.OutdoorAmbient = COL3RGB(255,255,255) 
 	end 
 end)
-local self = visuals:Sector("self", "Right") 
-self:Element("ToggleKeybind", "third person", {}, function(tbl) 
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then 
-		if tbl.Toggle then 
-			if tbl.Active then 
-				LocalPlayer.CameraMaxZoomDistance = values.visuals.self.distance.Slider 
-				LocalPlayer.CameraMinZoomDistance = values.visuals.self.distance.Slider 
-				LocalPlayer.CameraMaxZoomDistance = values.visuals.self.distance.Slider 
-				LocalPlayer.CameraMinZoomDistance = values.visuals.self.distance.Slider 
-			else 
-				LocalPlayer.CameraMaxZoomDistance = 0 
-				LocalPlayer.CameraMinZoomDistance = 0 
-				LocalPlayer.CameraMaxZoomDistance = 0 
-				LocalPlayer.CameraMinZoomDistance = 0 
-			end 
-		else 
-			LocalPlayer.CameraMaxZoomDistance = 0 
-			LocalPlayer.CameraMinZoomDistance = 0 
-		end 
-	end 
-end) 
-self:Element("Slider", "distance", {min = 6, max = 18, default = 12}, function(tbl) 
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then 
-		if values.visuals.self["third person"].Toggle then 
-			if values.visuals.self["third person"].Active then 
-				LocalPlayer.CameraMaxZoomDistance = tbl.Slider 
-				LocalPlayer.CameraMinZoomDistance = tbl.Slider 
-				LocalPlayer.CameraMaxZoomDistance = tbl.Slider 
-				LocalPlayer.CameraMinZoomDistance = tbl.Slider 
-			else 
-				LocalPlayer.CameraMaxZoomDistance = 0 
-				LocalPlayer.CameraMinZoomDistance = 0 
-			end 
-		else 
-			LocalPlayer.CameraMaxZoomDistance = 0 
-			LocalPlayer.CameraMinZoomDistance = 0 
-		end 
-	end 
-end) 
-LocalPlayer:GetPropertyChangedSignal("CameraMinZoomDistance"):Connect(function(current) 
-	if values.visuals.self["third person"].Toggle then 
-		if values.visuals.self["third person"].Active then 
-			if current ~= values.visuals.self.distance.Slider then 
-				LocalPlayer.CameraMinZoomDistance = values.visuals.self.distance.Slider 
-			end 
-		end 
-	end 
-end) 
-self:Element("Slider", "fov changer", {min = 0, max = 120, default = 80}, function(value) 
-	RunService.RenderStepped:Wait() 
-	if LocalPlayer.Character == nil then return end 
-	if fov == value.Slider then return end 
-	if values.visuals.self["on scope"].Toggle or not LocalPlayer.Character:FindFirstChild("AIMING") then 
-		Camera.FieldOfView = value.Slider 
-	end 
-end) 
-self:Element("Toggle", "on scope") 
-self:Element("Toggle", "viewmodel changer") 
-self:Element("Slider", "viewmodel x", {min = -20, max = 20}, function(val) 
-	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFAngles(0, 0, values.visuals.self.roll.Slider/50) 
-end) 
-self:Element("Slider", "viewmodel y", {min = -20, max = 20}, function(val) 
-	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFAngles(0, 0, values.visuals.self.roll.Slider/50) 
-end) 
-self:Element("Slider", "viewmodel z", {min = -20, max = 20}, function(val) 
-	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFAngles(0, 0, values.visuals.self.roll.Slider/50) 
-end) 
-self:Element("Slider", "roll", {min = -100, max = 100}, function(val) 
-	ViewmodelOffset = CFrame.new(values.visuals.self["viewmodel x"].Slider/7, values.visuals.self["viewmodel y"].Slider/7, values.visuals.self["viewmodel z"].Slider/7) * CFAngles(0, 0, values.visuals.self.roll.Slider/50) 
-end)
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+animations = {}
+getgenv().client = {}; do
+    local gc = getgc(true)  
+    for i = #gc, 1, -1 do
+        local v = gc[i]
+        local type = type(v)
+        if type == 'function' then
+            if debug.getinfo(v).name == "loadmodules" then
+                client.loadmodules = v
+            end
+        end 
+        if type == "table" then
+            if (rawget(v, 'send')) then
+                client.network = v
+            elseif (rawget(v, 'basecframe')) then
+                client.camera = v
+            elseif (rawget(v, "gammo")) then
+                client.gamelogic = v
+            elseif (rawget(v, "getbodyparts")) then
+                client.replication = v
+                client.replication.bodyparts = debug.getupvalue(client.replication.getbodyparts, 1)
+            elseif (rawget(v, "updateammo")) then
+                client.hud = v
+            elseif (rawget(v, "setbasewalkspeed")) then
+                client.char = v
+            elseif (rawget(v, "getscale")) then
+                client.uiscaler = v
+            end
+            if rawget(v, 'player') then
+                print("Got animation")
+                table.insert(animations, v)
+            end
+        end
+    end
+end
+
+local Fov = Drawing.new("Circle") 
+Fov.Filled = true 
+Fov.Color = COL3RGB(15,15,15) 
+Fov.Transparency = 0.5 
+Fov.Position = Vec2(Mouse.X, Mouse.Y + 16) 
+Fov.Radius = 120 
+
+local aimbot = legit:Sector("aimbot", "Left") 
+aimbot:Element("ToggleKeybind", "aim assist") 
+aimbot:Element("ToggleKeybind", "silent aim")
+aimbot:Element("ToggleKeybind", "triggerbot")
+local main = legit:MSector("main", "Left") 
+local default = main:Tab('default')
+	--default:Element("Dropdown", "target", {options = {"crosshair", "health", "distance"}}) 
+	default:Element("Dropdown", "hitbox", {options = {"Head", 'Torso', 'Left Arm', 'Right Arm', 'Left Leg', 'Right Leg', 'Random'}}) 
+	default:Element("Dropdown", "silent aim mode", {options = {'Silent','Mouse'}})
+	default:Element('Slider', 'smoothness', {min = 3, max = 100, default = 3})
+	local FOVLegit = 120
+	default:Element("Slider", "FOV", {min = 5, max = 600, default = 120}, function(tbl)
+		local FOVLegit = tbl.Slider
+	end)
+	--default:Element("Slider", "smoothing", {min = 1, max = 50, default = 1}) 
+	default:Element("Toggle", "silent aim")
+	default:Element("Toggle", "follow barrel", {}, function(tbl)
+		followbarrel = tbl.Toggle
+	end)	
+	default:Element("Toggle", "visible check")	
+	default:Element("Slider", "hitchance", {min = 1, max = 100, default = 100}) 
+	--default:Element("Dropdown", "priority", {options = {"closest", "head", "chest"}}) 
+	--default:Element("Toggle", "triggerbot") 
+	--default:Element("Slider", "delay (ms)", {min = 0, max = 300, default = 200}) 
+	--default:Element("Slider", "minimum dmg", {min = 0, max = 100, default = 15})
+local settings = legit:Sector("settings", "Right") 
+settings:Element("Toggle", "free for all") 
+settings:Element('ToggleTrans', 'draw fov', {default = {Color = COL3RGB(255,255,255), Transparency = 0}})
+settings:Element('Toggle', 'filled fov')
+settings:Element('Slider', 'fov thickness', {min = 1, max = 10, default = 1})
+--settings:Element("Toggle", "forcefield check") 
+
+
+    local MouseDown = false
+    UserInputService.InputBegan:Connect(function(key)
+        if key.UserInputType == Enum.UserInputType.MouseButton1 then
+            MouseDown = true
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(key)
+        if key.UserInputType == Enum.UserInputType.MouseButton1 then
+            MouseDown = false
+        end
+    end)
+	
+function IsAlive(player)
+    if client.replication.bodyparts[player] and client.replication.bodyparts[player].head then
+        return true 
+    end
+    return false
+end
+
+function PlayerOnScreen(player)
+    if IsAlive(player) then
+        local Pos, OnScreen = Camera:WorldToViewportPoint(client.replication.bodyparts[player].head.Position)
+        local RealMouseLocation = game:GetService('UserInputService'):GetMouseLocation()
+        local Distance = library.flags.FOVLegit
+        local IsInFOV = false 
+        local Dist = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
+        if Dist < Distance then 
+            Distance = Dist
+            IsInFOV = true
+        end
+        return {OnScreen = OnScreen, IsInFOV = IsInFOV}
+    end
+end
+function IsVisible(player)
+    if IsAlive(player) and client.replication.bodyparts[player] then
+        local HeadPos = client.replication.bodyparts[player].head.Position
+        local Hit = workspace:FindPartOnRayWithIgnoreList(Ray.new(Camera.CFrame.p, HeadPos - Camera.CFrame.p), {
+            workspace.Ignore,
+            workspace.Players,
+            workspace.Terrain,
+            Camera
+        })
+        return Hit == nil 
+    end
+    return false
+end
+
+    local Closest
+    local ClosestPosition
+    local OnScreen, ScreenPos = nil,nil
+    RunService:BindToRenderStep("Aimbot", 1, function()
+        --CharAlive = client.char.alive
+        if client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then
+            Barrel = client.gamelogic.currentgun.barrel
+        else
+            Barrel = nil
+        end
+        --[[Circle.NumSides = library.flags.FOVRadius
+        Circle.Thickness = library.flags.FOVThickness
+        Circle.Color = library.flags.FOVColor
+        Circle.Radius = library.flags.FOVLegit
+        Circle.Transparency = library.flags.FOVTransparency
+        Circle.Color = library.flags.FOVColor
+        Circle.Visible = library.flags.ShowFOV--]]
+		Fov.Visible = values.legit.settings['draw fov'].Toggle
+
+		Fov.Transparency = values.legit.settings['draw fov'].Transparency
+	
+		Fov.Color =  values.legit.settings['draw fov'].Color
+		Fov.Position = Vec2(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+		Fov.Radius = FOVLegit
+		Fov.Thickness = values.legit.settings['fov thickness'].Slider
+		Fov.Filled = values.legit.settings['filled fov'].Toggle
+
+        if client.char.alive and client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then 
+            if followbarrel then
+                local Pos, OnScreen = Camera:WorldToViewportPoint(client.gamelogic.currentgun.barrel.CFrame * Vector3.new(0, 0, -10))
+                Fov.Position = Vector2.new(Pos.X, Pos.Y)
+            else
+                Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
+            end
+        else
+            Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
+        end
+        if values.legit.aimbot['silent aim'].Toggle and values.legit.main.default['silent aim'].Toggle and client.char.alive then
+            local Distance = FOVLegit
+			--print("got slider")
+            local Bodyparts
+            local RealMouseLocation
+            if followbarrel then
+                local Pos = Camera:WorldToViewportPoint(client.gamelogic.currentgun.barrel.CFrame * Vector3.new(0, 0, -10))
+                RealMouseLocation = Vector2.new(Pos.X, Pos.Y) --cba changing variable name + ratio
+            else
+                RealMouseLocation = game:GetService('UserInputService'):GetMouseLocation()
+            end
+            if RealMouseLocation ~= nil then
+                for i,v in pairs(Players:GetPlayers()) do
+                    if (v ~= LocalPlayer) and (v.Team ~= LocalPlayer.Team) and IsAlive(v) then
+                        Bodyparts = client.replication.bodyparts[v]
+                        local Pos, OnScreen = Camera:WorldToViewportPoint(Bodyparts.head.Position)
+                        local Dist = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
+                        if Dist < Distance then
+                            Distance = Dist
+                            Closest = v
+                            aimtarget = v 
+                        end
+                    end
+                end
+				--print("closest found")
+                local ScreenPos, OnScreen = nil, nil
+                if Closest and client.replication.bodyparts[Closest] then 
+					--print('got closest')
+                    local ClosestParts = client.replication.bodyparts[Closest]
+                    if values.legit.main.default.hitbox.Dropdown == "Head" then
+                        ClosestPosition = ClosestParts.head.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.head.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Torso" then
+                        ClosestPosition = ClosestParts.torso.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.torso.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Left Arm" then
+                        ClosestPosition = ClosestParts.larm.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.larm.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Right Arm" then
+                        ClosestPosition = ClosestParts.rarm.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.rarm.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Left Leg" then
+                        ClosestPosition = ClosestParts.lleg.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.lleg.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Right Leg" then
+                        ClosestPosition = ClosestParts.rleg.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.rleg.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Random" then
+                        local Parts = { -- garbage code
+                            ClosestParts.head,
+                            ClosestParts.torso,
+                            ClosestParts.larm,
+                            ClosestParts.rarm,
+                            ClosestParts.lleg,
+                            ClosestParts.rleg
+                        }
+                        local Part = Parts[math.random(1, #Parts)]
+                        ClosestPosition = Part.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(Part.Position)
+                    end
+					print("picked hitboxes")
+                    if values.legit.main.default['silent aim mode'].Dropdown == "Silent" then
+                        if math.random(1,100) < values.legit.main.default['hitchance'].Slider then
+                            ClosestPosition = ClosestParts.head.Position
+                        else
+                            ClosestPosition = ClosestParts.torso.Position
+                        end
+						print('is silent aim')
+                    end
+                    if OnScreen and values.legit.main.default['silent aim mode'].Dropdown == "Mouse" and MouseDown then
+                        local Smoothing = math.clamp(values.legit.main.default.smoothness.Slider, 3, 100) 
+                        local X = ((ScreenPos.X) - (Mouse.X)) / Smoothing
+                        local Y = ((ScreenPos.Y) - (Mouse.Y)) / Smoothing 
+                        if values.legit.main.default['visible check'].Toggle and not IsVisible(Closest) then
+                            return print('not visible, mouse')
+                        end
+                        mousemoverel(X, Y)
+						print('visible, mouse')
+                    end
+                else print("no hitboxes") end
+            end
+        else print('not enabled') end
+    end)
+	    local Old
+    Old = hookmetamethod(game, "__index", function(Self, Key)
+        if values.legit.main.default['silent aim mode'].Dropdown == "Silent" and client.char.alive then
+            if Key == "CFrame" and not checkcaller() then
+			print('is silent aim, hook')
+                if client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then
+                    if Self == client.gamelogic.currentgun.barrel or Self == client.gamelogic.currentgun.aimsightdata[1].sightpart then
+					
+                        if Closest and ClosestPosition then
+                            if getcallingscript().Name == "RenderSteppedRunner" then
+                                local PlayerOnScreen = PlayerOnScreen(Closest)
+                                if PlayerOnScreen and PlayerOnScreen.OnScreen then
+                                    local OnScreen = PlayerOnScreen.OnScreen
+                                    local IsInFOV = PlayerOnScreen.IsInFOV
+                                    local Position = Self.Position
+                                    if IsInFOV and OnScreen then
+                                        if values.legit.main.default['visible check'].Toggle and not IsVisible(Closest) then
+                                            return Old(Self, Key)
+                                        end
+                                        local CFramePosition = CFrame.new(Position, ClosestPosition)
+                                        return CFramePosition
+                                    end 
+                                end
+                            end
+                        end
+						
+                    end
+                end
+            end
+        end
+        return Old(Self, Key)
+    end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 				local addons = misc:Sector("addons", "Left") 
 				addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
@@ -6421,7 +7090,7 @@ end)
 						end
 						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = tbl.Color
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = tbl.Color
-						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = tbl.Color
+						--game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = tbl.Color
 						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
 							if v:IsA("TextButton") then
 								v.Gard.BackgroundColor3 = tbl.Color
@@ -6443,7 +7112,7 @@ end)
 						MainUIColor = COL3RGB(255,20,147)
 						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
-						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
+						--game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
 					for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
 						if v:IsA('Frame') and v.BackgroundColor3 == oldUiColor and v.Name ~= 'Color' and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
 								v.BackgroundColor3 = MainUIColor
