@@ -268,7 +268,7 @@ getgenv().emojis = {
 local allcfgs = {} 
 
 for _,cfg in pairs(listfiles('SamuelPaste_pf/cfgs')) do 
-	local cfgname = GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
+	local cfgname = C.GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
 	C.INSERT(allcfgs, cfgname) 
 end
 --[[if #allcfgs == 0 then
@@ -8023,7 +8023,7 @@ end)
 local allcfgs = {} 
 
 for _,cfg in pairs(listfiles('SamuelPaste_pf/cfgs')) do 
-	local cfgname = GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
+	local cfgname = C.GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
 	C.INSERT(allcfgs, cfgname) 
 end
 
@@ -8051,7 +8051,7 @@ configs:Element("Button", "Refresh cfg list", {}, function()
 table.clear(allcfgs)
 
 for _,cfg in pairs(listfiles(cfglocation)) do 
-	local cfgname = GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
+	local cfgname = C.GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
 	C.INSERT(allcfgs, cfgname) 
 end
 	ConfigUpdateCfgList2:Fire()
@@ -8063,13 +8063,13 @@ configs:Element("Button", 'overwrite cfgs from old folder', {}, function()
 		writefile(cfglocation..cfgname, readfile(cfg))
 	end--]]
 	for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-		local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+		local cfgname = C.GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
 		writefile('SamuelPaste/cfgs/'..cfgname, readfile(cfg))
 	end
 	table.clear(allcfgs)
 
 	for _,cfg in pairs(listfiles(cfglocation)) do 
-		local cfgname = GSUB(cfg, cfglocation.."\\", "") 
+		local cfgname = C.GSUB(cfg, cfglocation.."\\", "") 
 		C.INSERT(allcfgs, cfgname) 
 	end
 		ConfigUpdateCfgList2:Fire()
