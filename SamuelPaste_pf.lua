@@ -4,6 +4,10 @@ local wait = task.wait -- small test
 getgenv().values = {} --blahwrlqwrqwr
 local library = {tabs = {}}
 local Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/backup_signal.lua"))()
+--------------------------------------------------------------
+local EspLibrary = loadstring(game:HttpGet('https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/esp_library.lua'))()
+EspLibrary.settings.enabled = false
+--------------------------------------------------------------
 --local Api = loadstring(game:HttpGet("https://pastebin.com/raw/5L3wV43u"))() 
 --local ConfigSave = Signal.new("ConfigSave") 
 local ConfigLoad = Signal.new("ConfigLoad")
@@ -3699,7 +3703,7 @@ ConfigUpdateCfgList:Fire()
 									Keybind.BackgroundColor3 = COL3RGB(31, 31, 31) 
 									Keybind.BorderColor3 = COL3RGB(18, 18, 16) 
 									Keybind.Position = UDIM2(0, 270, 0.5, -6) 
-									Keybind.Text = data.default and data.default.Key or 'none'
+									Keybind.Text = data.default and data.default.Key or 'NONE'
 									Keybind.Size = UDIM2(0, 43, 0, 12) 
 									Keybind.Size = UDIM2(0,txt:GetTextSize("NONE", 14, Enum.Font.SourceSansSemibold, Vec2(700, 12)).X + 5,0, 12)
 									Keybind.AutoButtonColor = false 
@@ -3770,8 +3774,8 @@ ConfigUpdateCfgList:Fire()
 												Frame.Visible = false 
 												if Element.value.Active ~= (Element.value.Type == "Always" and true or false) then 
 													Element.value.Active = Element.value.Type == "Always" and true or false 
-													callback(Element.value) 
-												end 
+													callback(Element.value)
+												end
 												if button.Text == "Always" then 
 													keybindremove(text, Element.value.Key) 
 												end 
@@ -6592,6 +6596,7 @@ local Camera = workspace.CurrentCamera
 local Left = "Left"
 local Right = "Right"
 local Weapon = nil
+local Mouse = LocalPlayer:GetMouse()
 local function VectorRGB(RGB) 
 	return Vec3(RGB.R, RGB.G, RGB.B) 
 end 
@@ -6600,6 +6605,582 @@ local legit = gui:Tab('legit')
 local rage = gui:Tab('rage')
 local visuals = gui:Tab('visuals')
 local misc = gui:Tab('misc')
+
+
+
+
+----------------------------------------------LEGIT TAB----------------------------------------------------------------------------------------------------------------------------------------------------------------
+animations = {}
+getgenv().client = {}; do
+    local gc = getgc(true)  
+    for i = #gc, 1, -1 do
+        local v = gc[i]
+        local type = type(v)
+        if type == 'function' then
+            if debug.getinfo(v).name == "loadmodules" then
+                client.loadmodules = v
+            end
+        end 
+        if type == "table" then
+            if (rawget(v, 'send')) then
+                client.network = v
+            elseif (rawget(v, 'basecframe')) then
+                client.camera = v
+            elseif (rawget(v, "gammo")) then
+                client.gamelogic = v
+            elseif (rawget(v, "getbodyparts")) then
+                client.replication = v
+                client.replication.bodyparts = debug.getupvalue(client.replication.getbodyparts, 1)
+            elseif (rawget(v, "updateammo")) then
+                client.hud = v
+            elseif (rawget(v, "setbasewalkspeed")) then
+                client.char = v
+            elseif (rawget(v, "getscale")) then
+                client.uiscaler = v
+            end
+            if rawget(v, 'player') then
+                print("Got animation")
+                table.insert(animations, v)
+            end
+        end
+    end
+end
+    EspLibrary:Init()
+    EspLibrary.settings.limitdistance = false
+
+    function EspLibrary:GetHealth(Player)
+        return client.hud:getplayerhealth(Player)
+    end
+
+    function EspLibrary:GetCharacter(Player)
+        local Character = client.replication.getbodyparts(Player)
+
+        return Character and Character.torso.Parent, Character and Character.torso
+    end
+
+local Fov = Drawing.new("Circle") 
+Fov.Filled = true 
+Fov.Color = COL3RGB(15,15,15) 
+Fov.Transparency = 0.5 
+Fov.Position = Vec2(Mouse.X, Mouse.Y + 16) 
+Fov.Radius = 120 
+
+local aimbot = legit:Sector("aimbot", "Left") 
+aimbot:Element("ToggleKeybind", "aim assist") 
+aimbot:Element("ToggleKeybind", "silent aim")
+aimbot:Element("ToggleKeybind", "triggerbot")
+local main = legit:MSector("main", "Left") 
+local default = main:Tab('default')
+--default:Element("Dropdown", "target", {options = {"crosshair", "health", "distance"}}) 
+default:Element("Dropdown", "hitbox", {options = {"Head", 'Torso', 'Left Arm', 'Right Arm', 'Left Leg', 'Right Leg', 'Random'}}) 
+default:Element("Dropdown", "silent aim mode", {options = {'Silent','Mouse'}})
+default:Element('Slider', 'smoothness', {min = 3, max = 100, default = 3})
+local FOVLegit = 120
+default:Element("Slider", "FOV", {min = 5, max = 600, default = 120}, function(tbl)
+	FOVLegit = tbl.Slider
+end)
+--default:Element("Slider", "smoothing", {min = 1, max = 50, default = 1}) 
+default:Element("Toggle", "silent aim")
+default:Element("Toggle", "follow barrel", {}, function(tbl)
+	followbarrel = tbl.Toggle
+end)
+default:Element("Toggle", "visible check")
+default:Element("Slider", "hitchance", {min = 1, max = 100, default = 100}) 
+--default:Element("Dropdown", "priority", {options = {"closest", "head", "chest"}}) 
+--default:Element("Toggle", "triggerbot") 
+--default:Element("Slider", "delay (ms)", {min = 0, max = 300, default = 200}) 
+--default:Element("Slider", "minimum dmg", {min = 0, max = 100, default = 15})
+local settings = legit:Sector("settings", "Right") 
+settings:Element("Toggle", "free for all") 
+settings:Element('ToggleTrans', 'draw fov', {default = {Color = COL3RGB(255,255,255), Transparency = 0}})
+settings:Element('Toggle', 'filled fov')
+settings:Element('Slider', 'fov thickness', {min = 1, max = 10, default = 1})
+--settings:Element("Toggle", "forcefield check") 
+
+
+    local MouseDown = false
+    UserInputService.InputBegan:Connect(function(key)
+        if key.UserInputType == Enum.UserInputType.MouseButton1 then
+            MouseDown = true
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(key)
+        if key.UserInputType == Enum.UserInputType.MouseButton1 then
+            MouseDown = false
+        end
+    end)
+	
+function IsAlive(player)
+    if client.replication.bodyparts[player] and client.replication.bodyparts[player].head then
+        return true 
+    end
+    return false
+end
+
+function PlayerOnScreen(player)
+    if IsAlive(player) then
+        local Pos, OnScreen = Camera:WorldToViewportPoint(client.replication.bodyparts[player].head.Position)
+        local RealMouseLocation = game:GetService('UserInputService'):GetMouseLocation()
+        local Distance = FOVLegit
+        local IsInFOV = false 
+        local Dist = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
+        if Dist < Distance then 
+            Distance = Dist
+            IsInFOV = true
+        end
+        return {OnScreen = OnScreen, IsInFOV = IsInFOV}
+    end
+end
+function IsVisible(player)
+    if IsAlive(player) and client.replication.bodyparts[player] then
+        local HeadPos = client.replication.bodyparts[player].head.Position
+        local Hit = workspace:FindPartOnRayWithIgnoreList(Ray.new(Camera.CFrame.p, HeadPos - Camera.CFrame.p), {
+            workspace.Ignore,
+            workspace.Players,
+            workspace.Terrain,
+            Camera
+        })
+        return Hit == nil 
+    end
+    return false
+end
+
+    local Closest
+    local ClosestPosition
+    local OnScreen, ScreenPos = nil,nil
+    RunService:BindToRenderStep("Aimbot", 1, function()
+        --CharAlive = client.char.alive
+        if client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then
+            Barrel = client.gamelogic.currentgun.barrel
+        else
+            Barrel = nil
+        end
+        --[[Circle.NumSides = library.flags.FOVRadius
+        Circle.Thickness = library.flags.FOVThickness
+        Circle.Color = library.flags.FOVColor
+        Circle.Radius = library.flags.FOVLegit
+        Circle.Transparency = library.flags.FOVTransparency
+        Circle.Color = library.flags.FOVColor
+        Circle.Visible = library.flags.ShowFOV--]]
+		Fov.Visible = values.legit.settings['draw fov'].Toggle
+
+		Fov.Transparency = values.legit.settings['draw fov'].Transparency
+	
+		Fov.Color =  values.legit.settings['draw fov'].Color
+		Fov.Position = Vec2(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+		Fov.Radius = FOVLegit
+		Fov.Thickness = values.legit.settings['fov thickness'].Slider
+		Fov.Filled = values.legit.settings['filled fov'].Toggle
+
+        if client.char.alive and client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then 
+            if followbarrel then
+                local Pos, OnScreen = Camera:WorldToViewportPoint(client.gamelogic.currentgun.barrel.CFrame * Vector3.new(0, 0, -10))
+                Fov.Position = Vector2.new(Pos.X, Pos.Y)
+            else
+                Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
+            end
+        else
+            Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
+        end
+        if values.legit.aimbot['silent aim'].Toggle and values.legit.main.default['silent aim'].Toggle and client.char.alive then
+            local Distance = FOVLegit
+			--print("got slider")
+            local Bodyparts
+            local RealMouseLocation
+            if followbarrel then
+                local Pos = Camera:WorldToViewportPoint(client.gamelogic.currentgun.barrel.CFrame * Vector3.new(0, 0, -10))
+                RealMouseLocation = Vector2.new(Pos.X, Pos.Y) --cba changing variable name + ratio
+            else
+                RealMouseLocation = game:GetService('UserInputService'):GetMouseLocation()
+            end
+            if RealMouseLocation ~= nil then
+                for i,v in pairs(Players:GetPlayers()) do
+                    if (v ~= LocalPlayer) and (v.Team ~= LocalPlayer.Team) and IsAlive(v) then
+                        Bodyparts = client.replication.bodyparts[v]
+                        local Pos, OnScreen = Camera:WorldToViewportPoint(Bodyparts.head.Position)
+                        local Dist = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
+                        if Dist < Distance then
+                            Distance = Dist
+                            Closest = v
+                            aimtarget = v 
+                        end
+                    end
+                end
+				--print("closest found")
+                local ScreenPos, OnScreen = nil, nil
+                if Closest and client.replication.bodyparts[Closest] then 
+					--print('got closest')
+                    local ClosestParts = client.replication.bodyparts[Closest]
+                    if values.legit.main.default.hitbox.Dropdown == "Head" then
+                        ClosestPosition = ClosestParts.head.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.head.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Torso" then
+                        ClosestPosition = ClosestParts.torso.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.torso.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Left Arm" then
+                        ClosestPosition = ClosestParts.larm.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.larm.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Right Arm" then
+                        ClosestPosition = ClosestParts.rarm.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.rarm.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Left Leg" then
+                        ClosestPosition = ClosestParts.lleg.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.lleg.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Right Leg" then
+                        ClosestPosition = ClosestParts.rleg.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.rleg.Position)
+                    elseif values.legit.main.default.hitbox.Dropdown == "Random" then
+                        local Parts = { -- garbage code
+                            ClosestParts.head,
+                            ClosestParts.torso,
+                            ClosestParts.larm,
+                            ClosestParts.rarm,
+                            ClosestParts.lleg,
+                            ClosestParts.rleg
+                        }
+                        local Part = Parts[math.random(1, #Parts)]
+                        ClosestPosition = Part.Position
+                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(Part.Position)
+                    end
+					--print("picked hitboxes")
+                    if values.legit.main.default['silent aim mode'].Dropdown == "Silent" then
+                        if math.random(1,100) < values.legit.main.default['hitchance'].Slider then
+                            ClosestPosition = ClosestParts.head.Position
+                        else
+                            ClosestPosition = ClosestParts.torso.Position
+                        end
+						--print('is silent aim')
+                    end
+                    if OnScreen and values.legit.main.default['silent aim mode'].Dropdown == "Mouse" and MouseDown then
+                        local Smoothing = math.clamp(values.legit.main.default.smoothness.Slider, 3, 100) 
+                        local X = ((ScreenPos.X) - (Mouse.X)) / Smoothing
+                        local Y = ((ScreenPos.Y) - (Mouse.Y)) / Smoothing 
+                        if values.legit.main.default['visible check'].Toggle and not IsVisible(Closest) then
+                            return print('not visible, mouse')
+                        end
+                        mousemoverel(X, Y)
+						--print('visible, mouse')
+                    end
+                else --print("no hitboxes") 
+				end
+            end
+        else --print('not enabled') 
+		end
+    end)
+	
+	    local Old
+    Old = hookmetamethod(game, "__index", function(Self, Key)
+        if values.legit.main.default['silent aim mode'].Dropdown == "Silent" and client.char.alive then
+            if Key == "CFrame" and not checkcaller() then
+                if client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then
+                    if Self == client.gamelogic.currentgun.barrel or Self == client.gamelogic.currentgun.aimsightdata[1].sightpart then
+					--print('is silent aim, hook')
+                        if Closest and ClosestPosition then
+                            if getcallingscript().Name == "RenderSteppedRunner" then
+                                local PlayerOnScreen1 = PlayerOnScreen(Closest)
+                                if PlayerOnScreen1 and PlayerOnScreen1.OnScreen then
+                                    local OnScreen = PlayerOnScreen1.OnScreen
+                                    local IsInFOV = PlayerOnScreen1.IsInFOV
+                                    local Position = Self.Position
+                                    if IsInFOV and OnScreen then
+                                        if values.legit.main.default['visible check'].Toggle and not IsVisible(Closest) then
+                                            return Old(Self, Key)
+                                        end
+                                        --local CFramePosition = CFrame.new(Position, ClosestPosition)
+                                        return CFrame.new(Position, ClosestPosition)
+                                    end 
+                                end
+                            end
+                        end
+						
+                    end
+                end
+            end
+        end
+        return Old(Self, Key)
+    end)
+-------------------------------------------RAGE TAB------------------------------------------------
+local loopkillloop
+
+local Loopkill = rage:Sector("Loop kill", "Right") 
+Loopkill:Element("lmao", "Player", {options = loopkillplr, Amount = 20}, function(tbl)
+	pcall(function()
+		loopkillloop:Disconnect()
+	end)
+ 	if game.Players:FindFirstChild(tbl.Dropdown) then
+		loopkillloop = RunService.RenderStepped:Connect(function()
+			wait(0.1)
+			values.rage["Loop kill"]['Alive: '].stringchange('Alive: '..(IsAlive(game.Players:FindFirstChild(tbl.Dropdown)) and 'yes' or 'no'))
+			values.rage['Loop kill']['Team: '].stringchange('Team: '..game.Players:FindFirstChild(tbl.Dropdown).Team.Name)
+			values.rage['Loop kill']['Account age: '].stringchange('Account age: '..game.Players:FindFirstChild(tbl.Dropdown).AccountAge..' days')
+		end)
+		
+		values.rage["Loop kill"]['Alive: '].stringchange('Alive: ')
+		values.rage['Loop kill']['Team: '].stringchange('Team: ')
+		values.rage['Loop kill']['Account age: '].stringchange('Account age: ')
+	end
+end)
+
+
+
+Loopkill:Element("ToggleColor", "Target box", {default = {Color = COL3RGB(255,255,255)}}) 
+Loopkill:Element("ToggleColor", "Target name", {default = {Color = COL3RGB(255,255,255)}}) 
+Loopkill:Element("ToggleColor", "Target health", {default = {Color = COL3RGB(0,1,0)}}) 
+
+Loopkill:Element('Label', 'Alive: ')
+Loopkill:Element('Label', 'Team: ')
+Loopkill:Element('Label', 'Account age: ')
+
+
+--------------------------------------------VISUALS TAB AKA ESP-----------------------------------------
+local players = visuals:Sector("ESP", "Left") 
+players:Element('Toggle', "enabled", {}, function(tbl)
+	EspLibrary.settings.enabled = tbl.Toggle
+end)
+players:Element('Slider', "Refresh Rate (ms)", {min = 0, max = 1000, default = 5}, function(tbl)
+	EspLibrary.settings.refreshrate = tbl.Slider
+end)
+players:Element('Toggle', "Team check", {}, function(tbl)
+	EspLibrary.settings.teamcheck = tbl.Toggle
+end)
+players:Element('Toggle', "Team color", {default = {Toggle = true}}, function(tbl)
+	EspLibrary.settings.teamcolor = tbl.Toggle
+end)
+players:Element('ToggleColor', "Names enabled", {default = {Color = COL3RGB(1,1,1),Toggle = true}}, function(tbl)
+	EspLibrary.settings.names = tbl.Toggle
+	EspLibrary.settings.namescolor = tbl.Color
+end)
+players:Element('Toggle', "Names Outline", {}, function(tbl)
+	EspLibrary.settings.namesoutline = tbl.Toggle
+end)
+players:Element('ToggleColor', "Distance", {default = {Color = COL3RGB(1,1,1),Toggle = true}}, function(tbl)
+	EspLibrary.settings.distance = tbl.Toggle
+	EspLibrary.settings.distancecolor = tbl.Color
+end)
+players:Element('Toggle', "Distance Outline", {}, function(tbl)
+	EspLibrary.settings.distanceoutline = tbl.Toggle
+end)
+players:Element('ToggleColor', "Boxes", {default = {Color = COL3RGB(1,1,1), Toggle = true}}, function(tbl)
+	EspLibrary.settings.boxes = tbl.Toggle
+	EspLibrary.settings.boxescolor = tbl.Color
+end)
+players:Element('Toggle', "Boxes Outline", {}, function(tbl)
+	EspLibrary.settings.boxesoutline = tbl.Toggle
+end)
+players:Element('ToggleTrans', "Boxes Fill", {default = {Color = COL3RGB(1,1,1)}}, function(tbl)
+	EspLibrary.settings.boxesfill = tbl.Toggle
+	EspLibrary.settings.boxesfillcolor = tbl.Color
+	EspLibrary.settings.boxesfilltrans = tbl.Transparency
+end)
+players:Element('ToggleColor', "Healtbars", {default = {Color = COL3RGB(1,1,1)}}, function(tbl)
+	EspLibrary.settings.healthbars = tbl.Toggle
+	EspLibrary.settings.healthbarscolor = tbl.Color
+end)
+players:Element('Slider', "Healthbar X Offset", {min = 0, max = 10, default = 2}, function(tbl)
+	EspLibrary.settings.healthbarsoffset = tbl.Slider
+end)
+players:Element('ToggleColor', "Tracers", {default = {Color = COL3RGB(1,1,1)}}, function(tbl)
+	EspLibrary.settings.tracers = tbl.Toggle
+	EspLibrary.settings.tracerscolor = tbl.Color
+end)
+players:Element('Dropdown', "Tracers side of screen", {options = {"Mouse","Top", "Left", "Right", "Bottom", "Center"}}, function(tbl)
+	EspLibrary.settings.tracersorigin = tbl.Dropdown
+end)
+players:Element('Dropdown', "Text Font", {options = {"UI", "System", "Plex", "Monospace"}}, function(tbl)
+	EspLibrary.settings.textfont = Drawing.Fonts[tbl.Dropdown]
+end)
+players:Element('Slider', "Text Font Size", {min = 13, max = 18, default = 18}, function(tbl)
+	EspLibrary.settings.textsize = tbl.Slider
+end)
+
+--big ass code incoming
+local function DrawLine()
+    local l = Drawing.new("Line")
+    l.Visible = false
+    l.From = Vec2(0, 0)
+    l.To = Vec2(1, 1)
+    l.Color = values.visuals.players['skeleton esp'].Color
+    l.Thickness = 1
+    l.Transparency = 1
+    return l
+end
+
+local function DrawESP(plr)
+    repeat wait() until plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil
+    local limbs = {}
+    local R15 = (plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R15) and true or false
+    if R15 then 
+        limbs = {
+            -- Spine
+            Head_UpperTorso = DrawLine(),
+            UpperTorso_LowerTorso = DrawLine(),
+            -- Left Arm
+            UpperTorso_LeftUpperArm = DrawLine(),
+            LeftUpperArm_LeftLowerArm = DrawLine(),
+            LeftLowerArm_LeftHand = DrawLine(),
+            -- Right Arm
+            UpperTorso_RightUpperArm = DrawLine(),
+            RightUpperArm_RightLowerArm = DrawLine(),
+            RightLowerArm_RightHand = DrawLine(),
+            -- Left Leg
+            LowerTorso_LeftUpperLeg = DrawLine(),
+            LeftUpperLeg_LeftLowerLeg = DrawLine(),
+            LeftLowerLeg_LeftFoot = DrawLine(),
+            -- Right Leg
+            LowerTorso_RightUpperLeg = DrawLine(),
+            RightUpperLeg_RightLowerLeg = DrawLine(),
+            RightLowerLeg_RightFoot = DrawLine(),
+        }
+    else 
+        limbs = {
+            Head_Spine = DrawLine(),
+            Spine = DrawLine(),
+            LeftArm = DrawLine(),
+            LeftArm_UpperTorso = DrawLine(),
+            RightArm = DrawLine(),
+            RightArm_UpperTorso = DrawLine(),
+            LeftLeg = DrawLine(),
+            LeftLeg_LowerTorso = DrawLine(),
+            RightLeg = DrawLine(),
+            RightLeg_LowerTorso = DrawLine()
+        }
+    end
+    local function Visibility(state)
+        for i, v in pairs(limbs) do
+            v.Visible = state
+        end
+    end
+
+    local function Colorize(color)
+        for i, v in pairs(limbs) do
+            v.Color = color
+        end
+    end
+
+        local connection
+        connection = RunService.RenderStepped:Connect(function()
+            if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 then
+                local HUM, vis = Camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+                if vis then
+                    local H = Camera:WorldToViewportPoint(plr.Character.Head.Position)
+                    if limbs.Head_Spine.From ~= Vector2.new(H.X, H.Y) then
+                        local T_Height = plr.Character.Torso.Size.Y/2 - 0.2
+                        local UT = Camera:WorldToViewportPoint((plr.Character.Torso.CFrame * CFrame.new(0, T_Height, 0)).p)
+                        local LT = Camera:WorldToViewportPoint((plr.Character.Torso.CFrame * CFrame.new(0, -T_Height, 0)).p)
+
+                        local LA_Height = plr.Character["Left Arm"].Size.Y/2 - 0.2
+                        local LUA = Camera:WorldToViewportPoint((plr.Character["Left Arm"].CFrame * CFrame.new(0, LA_Height, 0)).p)
+                        local LLA = Camera:WorldToViewportPoint((plr.Character["Left Arm"].CFrame * CFrame.new(0, -LA_Height, 0)).p)
+
+                        local RA_Height = plr.Character["Right Arm"].Size.Y/2 - 0.2
+                        local RUA = Camera:WorldToViewportPoint((plr.Character["Right Arm"].CFrame * CFrame.new(0, RA_Height, 0)).p)
+                        local RLA = Camera:WorldToViewportPoint((plr.Character["Right Arm"].CFrame * CFrame.new(0, -RA_Height, 0)).p)
+
+                        local LL_Height = plr.Character["Left Leg"].Size.Y/2 - 0.2
+                        local LUL = Camera:WorldToViewportPoint((plr.Character["Left Leg"].CFrame * CFrame.new(0, LL_Height, 0)).p)
+                        local LLL = Camera:WorldToViewportPoint((plr.Character["Left Leg"].CFrame * CFrame.new(0, -LL_Height, 0)).p)
+
+                        local RL_Height = plr.Character["Right Leg"].Size.Y/2 - 0.2
+                        local RUL = Camera:WorldToViewportPoint((plr.Character["Right Leg"].CFrame * CFrame.new(0, RL_Height, 0)).p)
+                        local RLL = Camera:WorldToViewportPoint((plr.Character["Right Leg"].CFrame * CFrame.new(0, -RL_Height, 0)).p)
+
+                        -- Head
+                        limbs.Head_Spine.From = Vector2.new(H.X, H.Y)
+                        limbs.Head_Spine.To = Vector2.new(UT.X, UT.Y)
+
+                        --Spine
+                        limbs.Spine.From = Vector2.new(UT.X, UT.Y)
+                        limbs.Spine.To = Vector2.new(LT.X, LT.Y)
+
+                        --Left Arm
+                        limbs.LeftArm.From = Vector2.new(LUA.X, LUA.Y)
+                        limbs.LeftArm.To = Vector2.new(LLA.X, LLA.Y)
+
+                        limbs.LeftArm_UpperTorso.From = Vector2.new(UT.X, UT.Y)
+                        limbs.LeftArm_UpperTorso.To = Vector2.new(LUA.X, LUA.Y)
+
+                        --Right Arm
+                        limbs.RightArm.From = Vector2.new(RUA.X, RUA.Y)
+                        limbs.RightArm.To = Vector2.new(RLA.X, RLA.Y)
+
+                        limbs.RightArm_UpperTorso.From = Vector2.new(UT.X, UT.Y)
+                        limbs.RightArm_UpperTorso.To = Vector2.new(RUA.X, RUA.Y)
+
+                        --Left Leg
+                        limbs.LeftLeg.From = Vector2.new(LUL.X, LUL.Y)
+                        limbs.LeftLeg.To = Vector2.new(LLL.X, LLL.Y)
+
+                        limbs.LeftLeg_LowerTorso.From = Vector2.new(LT.X, LT.Y)
+                        limbs.LeftLeg_LowerTorso.To = Vector2.new(LUL.X, LUL.Y)
+
+                        --Right Leg
+                        limbs.RightLeg.From = Vector2.new(RUL.X, RUL.Y)
+                        limbs.RightLeg.To = Vector2.new(RLL.X, RLL.Y)
+
+                        limbs.RightLeg_LowerTorso.From = Vector2.new(LT.X, LT.Y)
+                        limbs.RightLeg_LowerTorso.To = Vector2.new(RUL.X, RUL.Y)
+                    end
+
+                    if limbs.Head_Spine.Visible ~= true then
+                        Visibility(true)
+                    end
+                else 
+                    if limbs.Head_Spine.Visible ~= false then
+                        Visibility(false)
+                    end
+                end
+            else 
+                if limbs.Head_UpperTorso.Visible ~= false then
+                    Visibility(false)
+                end
+                if game.Players:FindFirstChild(plr.Name) == nil then 
+                    for i, v in pairs(limbs) do
+						v.Transparency = 0
+                        v:Remove()
+                    end
+                    connection:Disconnect()
+                end
+				if plr.TeamColor == LocalPlayer.TeamColor and not (values.visuals.players['Team Check'].Toggle) then
+					Visibility(false)
+				   for i, v in pairs(limbs) do
+						v.Transparency = 0
+                        v:Remove()
+                    end
+                    connection:Disconnect()
+				end
+            end
+				if not values.visuals.players['skeleton esp'].Toggle then 
+				Visibility(false)
+				   for i, v in pairs(limbs) do
+						v.Transparency = 0
+                        v:Remove()
+                    end
+                    connection:Disconnect()
+				end			
+			
+        end)
+
+
+end
+
+players:Element('ToggleColor', 'skeleton esp', {default = {Color = COL3RGB(255,255,255)}}, function(tbl)
+	if tbl.Toggle then
+		for i, v in pairs(game:GetService("Players"):GetPlayers()) do
+			if v.Name ~= LocalPlayer.Name and (values.visuals.players['Team Check'].Toggle and true or v.Team ~= LocalPlayer.Team) then
+				DrawESP(v)
+			end
+		end
+		game.Players.PlayerAdded:Connect(function(newplr)
+			if newplr.Name ~= LocalPlayer.Name and tbl.Toggle then
+				DrawESP(newplr)
+			end
+		end)
+	end
+end)
+
+
+
 
 local effects = visuals:Sector('effects', "Right")
 
@@ -6736,329 +7317,334 @@ effects:Element("ToggleColor", "outdoor ambient", {default = {Color = COL3RGB(25
 	end 
 end)
 
-
-
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-animations = {}
-getgenv().client = {}; do
-    local gc = getgc(true)  
-    for i = #gc, 1, -1 do
-        local v = gc[i]
-        local type = type(v)
-        if type == 'function' then
-            if debug.getinfo(v).name == "loadmodules" then
-                client.loadmodules = v
-            end
-        end 
-        if type == "table" then
-            if (rawget(v, 'send')) then
-                client.network = v
-            elseif (rawget(v, 'basecframe')) then
-                client.camera = v
-            elseif (rawget(v, "gammo")) then
-                client.gamelogic = v
-            elseif (rawget(v, "getbodyparts")) then
+local client = {}; do
+   for i,v in pairs(getgc(true)) do
+       if (type(v) == "table") then
+            if (rawget(v, "getbodyparts")) then
                 client.replication = v
                 client.replication.bodyparts = debug.getupvalue(client.replication.getbodyparts, 1)
-            elseif (rawget(v, "updateammo")) then
-                client.hud = v
-            elseif (rawget(v, "setbasewalkspeed")) then
-                client.char = v
-            elseif (rawget(v, "getscale")) then
-                client.uiscaler = v
-            end
-            if rawget(v, 'player') then
-                print("Got animation")
-                table.insert(animations, v)
-            end
-        end
-    end
+           end
+       end
+   end
 end
 
-local Fov = Drawing.new("Circle") 
-Fov.Filled = true 
-Fov.Color = COL3RGB(15,15,15) 
-Fov.Transparency = 0.5 
-Fov.Position = Vec2(Mouse.X, Mouse.Y + 16) 
-Fov.Radius = 120 
-
-local aimbot = legit:Sector("aimbot", "Left") 
-aimbot:Element("ToggleKeybind", "aim assist") 
-aimbot:Element("ToggleKeybind", "silent aim")
-aimbot:Element("ToggleKeybind", "triggerbot")
-local main = legit:MSector("main", "Left") 
-local default = main:Tab('default')
-	--default:Element("Dropdown", "target", {options = {"crosshair", "health", "distance"}}) 
-	default:Element("Dropdown", "hitbox", {options = {"Head", 'Torso', 'Left Arm', 'Right Arm', 'Left Leg', 'Right Leg', 'Random'}}) 
-	default:Element("Dropdown", "silent aim mode", {options = {'Silent','Mouse'}})
-	default:Element('Slider', 'smoothness', {min = 3, max = 100, default = 3})
-	local FOVLegit = 120
-	default:Element("Slider", "FOV", {min = 5, max = 600, default = 120}, function(tbl)
-		local FOVLegit = tbl.Slider
-	end)
-	--default:Element("Slider", "smoothing", {min = 1, max = 50, default = 1}) 
-	default:Element("Toggle", "silent aim")
-	default:Element("Toggle", "follow barrel", {}, function(tbl)
-		followbarrel = tbl.Toggle
-	end)	
-	default:Element("Toggle", "visible check")	
-	default:Element("Slider", "hitchance", {min = 1, max = 100, default = 100}) 
-	--default:Element("Dropdown", "priority", {options = {"closest", "head", "chest"}}) 
-	--default:Element("Toggle", "triggerbot") 
-	--default:Element("Slider", "delay (ms)", {min = 0, max = 300, default = 200}) 
-	--default:Element("Slider", "minimum dmg", {min = 0, max = 100, default = 15})
-local settings = legit:Sector("settings", "Right") 
-settings:Element("Toggle", "free for all") 
-settings:Element('ToggleTrans', 'draw fov', {default = {Color = COL3RGB(255,255,255), Transparency = 0}})
-settings:Element('Toggle', 'filled fov')
-settings:Element('Slider', 'fov thickness', {min = 1, max = 10, default = 1})
---settings:Element("Toggle", "forcefield check") 
+game:GetService("RunService").RenderStepped:Connect(function()
+   for i,v in pairs(game.Players:GetPlayers()) do
+       if (v and client.replication.bodyparts[v]) then
+           local char = client.replication.bodyparts[v]
+           char.head.Parent.Name = v.Name
+           v.Character = char.head.Parent
+       end
+   end
+end)
 
 
-    local MouseDown = false
-    UserInputService.InputBegan:Connect(function(key)
-        if key.UserInputType == Enum.UserInputType.MouseButton1 then
-            MouseDown = true
-        end
-    end)
 
-    UserInputService.InputEnded:Connect(function(key)
-        if key.UserInputType == Enum.UserInputType.MouseButton1 then
-            MouseDown = false
-        end
-    end)
-	
-function IsAlive(player)
-    if client.replication.bodyparts[player] and client.replication.bodyparts[player].head then
-        return true 
-    end
-    return false
+
+
+
+
+
+
+
+-----------------------------------------------MISC TAB-------------------------------------------
+
+local allcfgs = {} 
+
+for _,cfg in pairs(listfiles('SamuelPaste/cfgs')) do 
+	local cfgname = GSUB(cfg, 'SamuelPaste/cfgs\\', "") 
+	INSERT(allcfgs, cfgname) 
 end
 
-function PlayerOnScreen(player)
-    if IsAlive(player) then
-        local Pos, OnScreen = Camera:WorldToViewportPoint(client.replication.bodyparts[player].head.Position)
-        local RealMouseLocation = game:GetService('UserInputService'):GetMouseLocation()
-        local Distance = library.flags.FOVLegit
-        local IsInFOV = false 
-        local Dist = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
-        if Dist < Distance then 
-            Distance = Dist
-            IsInFOV = true
-        end
-        return {OnScreen = OnScreen, IsInFOV = IsInFOV}
-    end
+local configs = misc:Sector("configs", "Left") 
+configs:Element("TextBox", "config", {placeholder = "config name"}) -- values.misc.configs.config.Text
+configs:Element("Button", "save new cfg", {}, function() 
+	if values.misc.configs.config.Text ~= "" then 
+		library:SaveConfig(values.misc.configs.config.Text) 
+		insertwithoutdupes(allcfgs, ""..values.misc.configs.config.Text..".txt")
+	end
+	ConfigUpdateCfgList2:Fire()
+	ConfigUpdateCfgList:Fire()
+end) 
+configs:Element("Button", "load", {}, function() 
+	ConfigLoad:Fire(values.misc["configs"].config.Text)
+end)
+configs:Element("cfgtype", "cfgs", {options = allcfgs, Amount = 5})
+configs:Element("Button", "load from list", {}, function() 
+	ConfigLoad1:Fire(values.misc.configs.cfgs.Scroll)
+end)
+configs:Element("Button", "Update cfg in list", {}, function()
+	library:SaveConfig1(values.misc["configs"].cfgs.Scroll)
+end)
+configs:Element("Button", "Refresh cfg list", {}, function()
+table.clear(allcfgs)
+
+for _,cfg in pairs(listfiles(cfglocation)) do 
+	local cfgname = GSUB(cfg, 'SamuelPaste/cfgs\\', "") 
+	INSERT(allcfgs, cfgname) 
 end
-function IsVisible(player)
-    if IsAlive(player) and client.replication.bodyparts[player] then
-        local HeadPos = client.replication.bodyparts[player].head.Position
-        local Hit = workspace:FindPartOnRayWithIgnoreList(Ray.new(Camera.CFrame.p, HeadPos - Camera.CFrame.p), {
-            workspace.Ignore,
-            workspace.Players,
-            workspace.Terrain,
-            Camera
-        })
-        return Hit == nil 
-    end
-    return false
-end
+	ConfigUpdateCfgList2:Fire()
+	ConfigUpdateCfgList:Fire()
+end)
+configs:Element("Button", 'overwrite cfgs from old folder', {}, function()
+	--[[for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+		local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+		writefile(cfglocation..cfgname, readfile(cfg))
+	end--]]
+	for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+		local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+		writefile('SamuelPaste/cfgs/'..cfgname, readfile(cfg))
+	end
+	table.clear(allcfgs)
 
-    local Closest
-    local ClosestPosition
-    local OnScreen, ScreenPos = nil,nil
-    RunService:BindToRenderStep("Aimbot", 1, function()
-        --CharAlive = client.char.alive
-        if client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then
-            Barrel = client.gamelogic.currentgun.barrel
-        else
-            Barrel = nil
-        end
-        --[[Circle.NumSides = library.flags.FOVRadius
-        Circle.Thickness = library.flags.FOVThickness
-        Circle.Color = library.flags.FOVColor
-        Circle.Radius = library.flags.FOVLegit
-        Circle.Transparency = library.flags.FOVTransparency
-        Circle.Color = library.flags.FOVColor
-        Circle.Visible = library.flags.ShowFOV--]]
-		Fov.Visible = values.legit.settings['draw fov'].Toggle
+	for _,cfg in pairs(listfiles(cfglocation)) do 
+		local cfgname = GSUB(cfg, cfglocation.."\\", "") 
+		INSERT(allcfgs, cfgname) 
+	end
+		ConfigUpdateCfgList2:Fire()
+		ConfigUpdateCfgList:Fire()
+end)
 
-		Fov.Transparency = values.legit.settings['draw fov'].Transparency
-	
-		Fov.Color =  values.legit.settings['draw fov'].Color
-		Fov.Position = Vec2(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-		Fov.Radius = FOVLegit
-		Fov.Thickness = values.legit.settings['fov thickness'].Slider
-		Fov.Filled = values.legit.settings['filled fov'].Toggle
-
-        if client.char.alive and client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then 
-            if followbarrel then
-                local Pos, OnScreen = Camera:WorldToViewportPoint(client.gamelogic.currentgun.barrel.CFrame * Vector3.new(0, 0, -10))
-                Fov.Position = Vector2.new(Pos.X, Pos.Y)
-            else
-                Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
-            end
-        else
-            Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
-        end
-        if values.legit.aimbot['silent aim'].Toggle and values.legit.main.default['silent aim'].Toggle and client.char.alive then
-            local Distance = FOVLegit
-			--print("got slider")
-            local Bodyparts
-            local RealMouseLocation
-            if followbarrel then
-                local Pos = Camera:WorldToViewportPoint(client.gamelogic.currentgun.barrel.CFrame * Vector3.new(0, 0, -10))
-                RealMouseLocation = Vector2.new(Pos.X, Pos.Y) --cba changing variable name + ratio
-            else
-                RealMouseLocation = game:GetService('UserInputService'):GetMouseLocation()
-            end
-            if RealMouseLocation ~= nil then
-                for i,v in pairs(Players:GetPlayers()) do
-                    if (v ~= LocalPlayer) and (v.Team ~= LocalPlayer.Team) and IsAlive(v) then
-                        Bodyparts = client.replication.bodyparts[v]
-                        local Pos, OnScreen = Camera:WorldToViewportPoint(Bodyparts.head.Position)
-                        local Dist = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
-                        if Dist < Distance then
-                            Distance = Dist
-                            Closest = v
-                            aimtarget = v 
-                        end
-                    end
-                end
-				--print("closest found")
-                local ScreenPos, OnScreen = nil, nil
-                if Closest and client.replication.bodyparts[Closest] then 
-					--print('got closest')
-                    local ClosestParts = client.replication.bodyparts[Closest]
-                    if values.legit.main.default.hitbox.Dropdown == "Head" then
-                        ClosestPosition = ClosestParts.head.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.head.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Torso" then
-                        ClosestPosition = ClosestParts.torso.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.torso.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Left Arm" then
-                        ClosestPosition = ClosestParts.larm.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.larm.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Right Arm" then
-                        ClosestPosition = ClosestParts.rarm.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.rarm.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Left Leg" then
-                        ClosestPosition = ClosestParts.lleg.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.lleg.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Right Leg" then
-                        ClosestPosition = ClosestParts.rleg.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.rleg.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Random" then
-                        local Parts = { -- garbage code
-                            ClosestParts.head,
-                            ClosestParts.torso,
-                            ClosestParts.larm,
-                            ClosestParts.rarm,
-                            ClosestParts.lleg,
-                            ClosestParts.rleg
-                        }
-                        local Part = Parts[math.random(1, #Parts)]
-                        ClosestPosition = Part.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(Part.Position)
-                    end
-					print("picked hitboxes")
-                    if values.legit.main.default['silent aim mode'].Dropdown == "Silent" then
-                        if math.random(1,100) < values.legit.main.default['hitchance'].Slider then
-                            ClosestPosition = ClosestParts.head.Position
-                        else
-                            ClosestPosition = ClosestParts.torso.Position
-                        end
-						print('is silent aim')
-                    end
-                    if OnScreen and values.legit.main.default['silent aim mode'].Dropdown == "Mouse" and MouseDown then
-                        local Smoothing = math.clamp(values.legit.main.default.smoothness.Slider, 3, 100) 
-                        local X = ((ScreenPos.X) - (Mouse.X)) / Smoothing
-                        local Y = ((ScreenPos.Y) - (Mouse.Y)) / Smoothing 
-                        if values.legit.main.default['visible check'].Toggle and not IsVisible(Closest) then
-                            return print('not visible, mouse')
-                        end
-                        mousemoverel(X, Y)
-						print('visible, mouse')
-                    end
-                else print("no hitboxes") end
-            end
-        else print('not enabled') end
-    end)
-	    local Old
-    Old = hookmetamethod(game, "__index", function(Self, Key)
-        if values.legit.main.default['silent aim mode'].Dropdown == "Silent" and client.char.alive then
-            if Key == "CFrame" and not checkcaller() then
-			print('is silent aim, hook')
-                if client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then
-                    if Self == client.gamelogic.currentgun.barrel or Self == client.gamelogic.currentgun.aimsightdata[1].sightpart then
-					
-                        if Closest and ClosestPosition then
-                            if getcallingscript().Name == "RenderSteppedRunner" then
-                                local PlayerOnScreen = PlayerOnScreen(Closest)
-                                if PlayerOnScreen and PlayerOnScreen.OnScreen then
-                                    local OnScreen = PlayerOnScreen.OnScreen
-                                    local IsInFOV = PlayerOnScreen.IsInFOV
-                                    local Position = Self.Position
-                                    if IsInFOV and OnScreen then
-                                        if values.legit.main.default['visible check'].Toggle and not IsVisible(Closest) then
-                                            return Old(Self, Key)
-                                        end
-                                        local CFramePosition = CFrame.new(Position, ClosestPosition)
-                                        return CFramePosition
-                                    end 
-                                end
-                            end
-                        end
-						
-                    end
-                end
-            end
-        end
-        return Old(Self, Key)
-    end)
+configs:Element("Toggle", "keybind list", nil, function(tbl) 
+	library:SetKeybindVisible(tbl.Toggle) 
+end) 
+		configs:Element("Toggle", "specators list", {}, function(tbl)
+			library:SetSpectatorVisible(tbl.Toggle) 
+		end)
+			configs:Element("Toggle", "keystrokes", {}, function(tbl)
+				if tbl.Toggle then
+						 local ScreenGuiKey = INST("ScreenGui")
+			local W = INST("TextLabel")
+			local A = INST("TextLabel")
+			local S = INST("TextLabel")
+			local D = INST("TextLabel")
+			local E = INST("TextLabel")
+			local R = INST("TextLabel")
+			local _ = INST("TextLabel")
+			local _2 = INST("TextLabel")
+			local _3 = INST("TextLabel")
+			local _4 = INST("TextLabel")
+			local _5 = INST("TextLabel")
+			local _6 = INST("TextLabel")
 
 
+			ScreenGuiKey.Parent = game.CoreGui
+			ScreenGuiKey.Name = "keystrokess"
 
+			W.Name = "W"
+			W.Parent = ScreenGuiKey
+			W.BackgroundColor3 = COL3RGB(255, 255, 255)
+			W.BackgroundTransparency = 1.000
+			W.Position = UDIM2(0.488053292, 0, 0.728395104, 0)
+			W.Size = UDIM2(0, 29, 0, 28)
+			W.Visible = false
+			W.Font = Enum.Font.Code
+			W.Text = "W"
+			W.TextColor3 = COL3RGB(255, 255, 255)
+			W.TextSize = 14.000
+			W.TextStrokeTransparency = 0.000
+			
+			_.Name = "_"
+			_.Parent = ScreenGuiKey
+			_.BackgroundColor3 = COL3RGB(255, 255, 255)
+			_.BackgroundTransparency = 1.000
+			_.Position = UDIM2(0.488053292, 0, 0.728395104, 0)
+			_.Size = UDIM2(0, 29, 0, 28)
+			_.Visible = true
+			_.Font = Enum.Font.Code
+			_.Text = "_"
+			_.TextColor3 = COL3RGB(255, 255, 255)
+			_.TextSize = 14.000
+			_.TextStrokeTransparency = 0.000
 
+			A.Name = "A"
+			A.Parent = ScreenGuiKey
+			A.BackgroundColor3 = COL3RGB(255, 255, 255)
+			A.BackgroundTransparency = 1.000
+			A.Position = UDIM2(0.453584045, 0, 0.777777791, 0)
+			A.Size = UDIM2(0, 29, 0, 28)
+			A.Visible = false
+			A.Font = Enum.Font.Code
+			A.Text = "A"
+			A.TextColor3 = COL3RGB(255, 255, 255)
+			A.TextSize = 14.000
+			A.TextStrokeTransparency = 0.000
+			
+			_2.Name = "_2"
+			_2.Parent = ScreenGuiKey
+			_2.BackgroundColor3 = COL3RGB(255, 255, 255)
+			_2.BackgroundTransparency = 1.000
+			_2.Position = UDIM2(0.453584045, 0, 0.777777791, 0)
+			_2.Size = UDIM2(0, 29, 0, 28)
+			_2.Visible = true
+			_2.Font = Enum.Font.Code
+			_2.Text = "_"
+			_2.TextColor3 = COL3RGB(255, 255, 255)
+			_2.TextSize = 14.000
+			_2.TextStrokeTransparency = 0.000
 
+			S.Name = "S"
+			S.Parent = ScreenGuiKey
+			S.BackgroundColor3 = COL3RGB(255, 255, 255)
+			S.BackgroundTransparency = 1.000
+			S.Position = UDIM2(0.488053292, 0, 0.777777791, 0)
+			S.Size = UDIM2(0, 29, 0, 28)
+			S.Visible = false
+			S.Font = Enum.Font.Code
+			S.Text = "S"
+			S.TextColor3 = COL3RGB(255, 255, 255)
+			S.TextSize = 14.000
+			S.TextStrokeTransparency = 0.000
+			
+			_3.Name = "_3"
+			_3.Parent = ScreenGuiKey
+			_3.BackgroundColor3 = COL3RGB(255, 255, 255)
+			_3.BackgroundTransparency = 1.000
+			_3.Position = UDIM2(0.488053292, 0, 0.777777791, 0)
+			_3.Size = UDIM2(0, 29, 0, 28)
+			_3.Visible = true
+			_3.Font = Enum.Font.Code
+			_3.Text = "_"
+			_3.TextColor3 = COL3RGB(255, 255, 255)
+			_3.TextSize = 14.000
+			_3.TextStrokeTransparency = 0.000
 
+			D.Name = "D"
+			D.Parent = ScreenGuiKey
+			D.BackgroundColor3 = COL3RGB(255, 255, 255)
+			D.BackgroundTransparency = 1.000
+			D.Position = UDIM2(0.522522688, 0, 0.777777791, 0)
+			D.Size = UDIM2(0, 29, 0, 28)
+			D.Visible = false
+			D.Font = Enum.Font.Code
+			D.Text = "D"
+			D.TextColor3 = COL3RGB(255, 255, 255)
+			D.TextSize = 14.000
+			D.TextStrokeTransparency = 0.000
+			
+			_4.Name = "_4"
+			_4.Parent = ScreenGuiKey
+			_4.BackgroundColor3 = COL3RGB(255, 255, 255)
+			_4.BackgroundTransparency = 1.000
+			_4.Position = UDIM2(0.522522688, 0, 0.777777791, 0)
+			_4.Size = UDIM2(0, 29, 0, 28)
+			_4.Visible = true
+			_4.Font = Enum.Font.Code
+			_4.Text = "_"
+			_4.TextColor3 = COL3RGB(255, 255, 255)
+			_4.TextSize = 14.000
+			_4.TextStrokeTransparency = 0.000
 
+			E.Name = "E"
+			E.Parent = ScreenGuiKey
+			E.BackgroundColor3 = COL3RGB(255, 255, 255)
+			E.BackgroundTransparency = 1.000
+			E.Position = UDIM2(0.453584045, 0, 0.728395045, 0)
+			E.Size = UDIM2(0, 29, 0, 28)
+			E.Visible = false
+			E.Font = Enum.Font.Code
+			E.Text = "C"
+			E.TextColor3 = COL3RGB(255, 255, 255)
+			E.TextSize = 14.000
+			E.TextStrokeTransparency = 0.000
+			
+			_5.Name = "_5"
+			_5.Parent = ScreenGuiKey
+			_5.BackgroundColor3 = COL3RGB(255, 255, 255)
+			_5.BackgroundTransparency = 1.000
+			_5.Position = UDIM2(0.453584045, 0, 0.728395045, 0)
+			_5.Size = UDIM2(0, 29, 0, 28)
+			_5.Visible = true
+			_5.Font = Enum.Font.Code
+			_5.Text = "_"
+			_5.TextColor3 = COL3RGB(255, 255, 255)
+			_5.TextSize = 14.000
+			_5.TextStrokeTransparency = 0.000
 
+			R.Name = "R"
+			R.Parent = ScreenGuiKey
+			R.BackgroundColor3 = COL3RGB(255, 255, 255)
+			R.BackgroundTransparency = 1.000
+			R.Position = UDIM2(0.522522688, 0, 0.728395045, 0)
+			R.Size = UDIM2(0, 29, 0, 28)
+			R.Visible = false
+			R.Font = Enum.Font.Code
+			R.Text = "J"
+			R.TextColor3 = COL3RGB(255, 255, 255)
+			R.TextSize = 14.000
+			R.TextStrokeTransparency = 0.000
+			
+			_6.Name = "_6"
+			_6.Parent = ScreenGuiKey
+			_6.BackgroundColor3 = COL3RGB(255, 255, 255)
+			_6.BackgroundTransparency = 1.000
+			_6.Position = UDIM2(0.522522688, 0, 0.728395045, 0)
+			_6.Size = UDIM2(0, 29, 0, 28)
+			_6.Visible = true
+			_6.Font = Enum.Font.Code
+			_6.Text = "_"
+			_6.TextColor3 = COL3RGB(255, 255, 255)
+			_6.TextSize = 14.000
+			_6.TextStrokeTransparency = 0.000
+	 
 
+			local UserInputService = game:GetService("UserInputService")
 
+			local W1Key = Enum.KeyCode.W
+			local A1Key = Enum.KeyCode.A
+			local S1Key = Enum.KeyCode.S
+			local D1Key = Enum.KeyCode.D
+			local E1Key = Enum.KeyCode.LeftControl
+			local R1Key = Enum.KeyCode.R
+			local SpaceKey = Enum.KeyCode.Space
 
+			UserInputService.InputBegan:Connect(function(input)
+				if (input.KeyCode == W1Key) then
+					W.Visible = true
+					_.Visible = false
+				elseif (input.KeyCode == A1Key) then
+					A.Visible = true
+					_2.Visible = false
+				elseif (input.KeyCode == S1Key) then
+					S.Visible = true
+					_3.Visible = false
+				elseif (input.KeyCode == D1Key) then
+					D.Visible = true
+					_4.Visible = false
+				elseif (input.KeyCode == E1Key) then
+					E.Visible = true
+					_5.Visible = false
+				elseif (input.KeyCode == SpaceKey) then
+					R.Visible = true
+					_6.Visible = false
+				end
+			end)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+			UserInputService.InputEnded:Connect(function(input)
+				if (input.KeyCode == W1Key) then
+					W.Visible = false
+					_.Visible = true
+				elseif (input.KeyCode == A1Key) then
+					A.Visible = false
+					_2.Visible = true
+				elseif (input.KeyCode == S1Key) then
+					S.Visible = false
+					_3.Visible = true
+				elseif (input.KeyCode == D1Key) then
+					D.Visible = false
+					_4.Visible = true
+				elseif (input.KeyCode == E1Key) then
+					E.Visible = false
+					_5.Visible = true	
+				elseif (input.KeyCode == SpaceKey) then
+					R.Visible = false
+					_6.Visible = true
+				end
+			end)		
+			else
+			game.CoreGui.keystrokess:Destroy()
+			end
+			end)
 
 				local addons = misc:Sector("addons", "Left") 
 				addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
@@ -7396,3 +7982,32 @@ end)
 watermark:Element('ToggleColor', 'text color', {default = {Color = COL3RGB(255,255,255)}}, function(tbl)
 	watermarklocation.watermark.title.TextColor3 = tbl.Color
 end)
+
+while true do task.wait()
+	for i,b in next, watermarklocation.watermark:GetChildren() do 
+		if b:IsA('UIGradient') then 
+			if b.Name == values.misc.watermark.themes.Dropdown then 
+				b.Enabled = true
+			else
+				b.Enabled = false
+			end
+		end
+	end;
+
+	if ovascreengui['menu'].Image ~= 'rbxassetid://'..themebackground[values.misc.addons['background'].Dropdown] then 
+		ovascreengui['menu'].Image = 'rbxassetid://'..themebackground[values.misc.addons['background'].Dropdown]
+	end;
+
+	ovascreengui['menu'].ImageColor3 = values.misc.addons['background color'].Color
+	ovascreengui['menu'].BackgroundColor3 = COL3RGB(1, 1, 1)
+
+	ovascreengui['menu'].ImageTransparency = values.misc.addons['background color'].Transparency
+
+
+	if values.misc.addons['ui border'].Toggle then 
+		ovascreengui['menu'].BorderSizePixel = 1
+		ovascreengui['menu'].BorderColor3 = values.misc.addons['ui border'].Color
+	else 
+		ovascreengui['menu'].BorderSizePixel = 0
+	end;
+end;
