@@ -4108,7 +4108,7 @@ end
 								Frame.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
 								Frame.BorderColor3 = C.COL3RGB(18, 18, 16) 
 								Frame.Position = C.UDIM2(-0.666666687, -170, 1.375, 0) 
-								Frame.Size = C.UDIM2(0, 200, 0, 250) --edit second value (10 or 20 or 30 i forgor)
+								Frame.Size = C.UDIM2(0, 200, 0, 300) --edit second value (10 or 20 or 30 i forgor)
 								Frame.Visible = false 
 								Frame.ZIndex = 4
 
@@ -4120,7 +4120,7 @@ end
 								Button5.Parent = Frame 
 								Button5.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								Button5.BackgroundTransparency = 1.000
-								Button5.Position = C.UDIM2(0, -20, 0.68, 0) --edit here
+								Button5.Position = C.UDIM2(0, -20, 0.6, 0) --edit here
 								Button5.Size = C.UDIM2(1, 0, 0, 15) 
 								Button5.ZIndex = 4
 
@@ -4147,6 +4147,7 @@ end
 								TextLabel5.TextColor3 = C.COL3RGB(200, 200, 200) 
 								TextLabel5.TextSize = 11.000
 								TextLabel5.ZIndex = 4
+								CopyColorsType = "RGB"
 								Button_25.MouseButton1Down:Connect(function() 
 										TextLabel5.TextColor3 = MainUIColor 
 										library:Tween(TextLabel5, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
@@ -4154,11 +4155,11 @@ end
 									
 											local l,m,a = C.FLOOR((Element.value.Color.R*255)+0.5),C.FLOOR((Element.value.Color.G*255)+0.5),C.FLOOR((Element.value.Color.B*255)+0.5)
 
-											if values.others.other['Copy colors type'].Dropdown == 'RGB' then
+											if CopyColorsType == 'RGB' then
 												setclipboard(''..l..','..m..','..a) -- o
-											elseif values.others.other['Copy colors type'].Dropdown == 'HEX' then
+											elseif CopyColorsType == 'HEX' then
 												setclipboard(toHex(C.COL3RGB(l,m,a)))
-											elseif values.others.other['Copy colors type'].Dropdown == 'HSV' then 
+											elseif CopyColorsType == 'HSV' then 
 												local H,S,V = C.COL3(l,m,a):ToHSV() --hsl, cmyk
 												setclipboard(''..H..','..S..','..V)
 											end
@@ -4184,6 +4185,192 @@ end
 								end) 								
 								
 								
+								
+								
+								
+								
+								
+								
+								do
+									--Element.value = {Dropdown = data.options[1]} 
+
+									local Dropdown = C.INST("Frame") 
+									local Button = C.INST("TextButton") 
+									local TextLabel = C.INST("TextLabel") 
+									local Drop = C.INST("ScrollingFrame") 
+									local Button_2 = C.INST("TextButton") 
+									local TextLabel_2 = C.INST("TextLabel") 
+									local UIListLayout = C.INST("UIListLayout") 
+									local ImageLabel = C.INST("ImageLabel") 
+									local TextLabel_3 = C.INST("TextLabel") 
+									--Frame.Size = C.UDIM2(0,200,270)
+									Dropdown.Name = "Dropdown" 
+									Dropdown.Parent = Frame 
+									Dropdown.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+									Dropdown.BackgroundTransparency = 1.000 
+									Dropdown.Position = C.UDIM2(0, -20, 0.6, 20) 
+									Dropdown.Size = C.UDIM2(1, 0, 0, 39) 
+									Dropdown.ZIndex = 4
+
+									Button.Name = "Button" 
+									Button.Parent = Dropdown 
+									Button.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
+									Button.BorderColor3 = C.COL3RGB(18, 18, 16) 
+									Button.Position = C.UDIM2(0, 30, 0, 16) 
+									Button.Size = C.UDIM2(0, 175, 0, 17) 
+									Button.AutoButtonColor = false 
+									Button.Font = Enum.Font.SourceSans 
+									Button.Text = "" 
+									Button.TextColor3 = C.COL3RGB(0, 0, 0) 
+									Button.TextSize = 11.000
+									Button.ZIndex = 4
+
+									TextLabel.Parent = Button 
+									TextLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+									TextLabel.BackgroundTransparency = 1.000 
+									TextLabel.BorderColor3 = C.COL3RGB(27, 42, 53) 
+									TextLabel.Position = C.UDIM2(0, 5, 0, 0) 
+									TextLabel.Size = C.UDIM2(-0.21714285, 208, 1, 0) 
+									TextLabel.Font = Enum.Font.Gotham 
+									TextLabel.Text = 'RGB'
+									TextLabel.TextColor3 = C.COL3RGB(200, 200, 200) 
+									TextLabel.TextSize = 11.000
+									TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
+									TextLabel.ZIndex = 4
+
+									local abcd = TextLabel 
+
+									Drop.Name = "Drop" 
+									Drop.Parent = Button 
+									Drop.Active = true 
+									Drop.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
+									Drop.BorderColor3 = C.COL3RGB(18, 18, 16) 
+									Drop.Position = C.UDIM2(0, 0, 1, 1) 
+									Drop.Size = C.UDIM2(1, 0, 0, 20) 
+									Drop.Visible = false 
+									Drop.BottomImage = "http://www.roblox.com/asset/?id=6724808282" 
+									Drop.CanvasSize = C.UDIM2(0, 0, 0, 0) 
+									Drop.ScrollBarThickness = 4 
+									Drop.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
+									Drop.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
+									Drop.AutomaticCanvasSize = "Y" 
+									Drop.ZIndex = 5 
+									Drop.ScrollBarImageColor3 = MainUIColor 
+
+									UIListLayout.Parent = Drop 
+									UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
+									UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder --DROPDOWN COPY COLORS
+									local table = {'RGB', 'HSV', 'HEX'}
+									local num = #table 
+									if num > 5 then 
+										Drop.Size = C.UDIM2(1, 0, 0, 85) 
+									else 
+										Drop.Size = C.UDIM2(1, 0, 0, 17*num) 
+									end 
+									local first = true 
+									for i,v in ipairs(table) do 
+										do 
+											local Button = C.INST("TextButton") 
+											local TextLabel = C.INST("TextLabel") 
+
+											Button.Name = v 
+											Button.Parent = Drop 
+											Button.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
+											Button.BorderColor3 = C.COL3RGB(18, 18, 16) 
+											Button.Position = C.UDIM2(0, 30, 0, 16) 
+											Button.Size = C.UDIM2(0, 175, 0, 17) 
+											Button.AutoButtonColor = false 
+											Button.Font = Enum.Font.SourceSans 
+											Button.Text = "" 
+											Button.TextColor3 = C.COL3RGB(0, 0, 0) 
+											Button.TextSize = 11.000
+											Button.BorderSizePixel = 0 
+											Button.ZIndex = 6 
+
+											TextLabel.Parent = Button 
+											TextLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+											TextLabel.BackgroundTransparency = 1.000 
+											TextLabel.BorderColor3 = C.COL3RGB(27, 42, 53) 
+											TextLabel.Position = C.UDIM2(0, 5, 0, -1) 
+											TextLabel.Size = C.UDIM2(-0.21714285, 208, 1, 0) 
+											TextLabel.Font = Enum.Font.Gotham 
+											TextLabel.Text = v 
+											TextLabel.TextColor3 = C.COL3RGB(200, 200, 200) 
+											TextLabel.TextSize = 11.000
+											TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
+											TextLabel.ZIndex = 6 
+
+											Button.MouseButton1Down:Connect(function() 
+												Drop.Visible = false 
+												--Element.value.Dropdown = v 
+												CopyColorsType = v
+												abcd.Text = v 
+												--values[tabname][sectorname][text] = Element.value 
+												--callback(Element.value) 
+												Drop.CanvasPosition = C.Vec2(0,0) 
+											end) 
+											Button.MouseEnter:Connect(function() 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  MainUIColor}) 
+											end) 
+											Button.MouseLeave:Connect(function() 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(200, 200, 200)}) 
+											end) 
+
+											first = false 
+										end 
+									end
+
+									ImageLabel.Parent = Button 
+									ImageLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+									ImageLabel.BackgroundTransparency = 1.000 
+									ImageLabel.Position = C.UDIM2(0, 165, 0, 6) 
+									ImageLabel.Size = C.UDIM2(0, 6, 0, 4) 
+									ImageLabel.Image = "http://www.roblox.com/asset/?id=6724771531" 
+									ImageLabel.ZIndex = 4
+
+									TextLabel_3.Parent = Dropdown 
+									TextLabel_3.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+									TextLabel_3.BackgroundTransparency = 1.000 
+									TextLabel_3.Position = C.UDIM2(0, 32, 0, -1) 
+									TextLabel_3.Size = C.UDIM2(0.111913361, 208, 0.382215232, 0) 
+									TextLabel_3.Font = Enum.Font.Gotham 
+									TextLabel_3.Text = 'Copy colors type' 
+									TextLabel_3.TextColor3 = C.COL3RGB(200, 200, 200) 
+									TextLabel_3.TextSize = 11.000
+									TextLabel_3.TextXAlignment = Enum.TextXAlignment.Left 
+									TextLabel_3.ZIndex = 4
+
+									Button.MouseButton1Down:Connect(function() 
+										Drop.Visible = not Drop.Visible 
+										if not Drop.Visible then 
+											Drop.CanvasPosition = C.Vec2(0,0) 
+										end 
+									end) 
+									local indrop = false 
+									local ind = false 
+									Drop.MouseEnter:Connect(function() 
+										indrop = true 
+									end) 
+									Drop.MouseLeave:Connect(function() 
+										indrop = false 
+									end) 
+									Button.MouseEnter:Connect(function() 
+										ind = true 
+									end) 
+									Button.MouseLeave:Connect(function() 
+										ind = false 
+									end) 
+									game:GetService("UserInputService").InputBegan:Connect(function(input) 
+										if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2 then 
+											if Drop.Visible == true and not indrop and not ind then 
+												Drop.Visible = false 
+												Drop.CanvasPosition = C.Vec2(0,0) 
+											end 
+										end 
+									end) 								
+								end
+								
+								
 								local Button35 = C.INST("Frame") 
 								local Button_325 = C.INST("TextButton") 
 								local TextLabel35 = C.INST("TextLabel") 
@@ -4192,7 +4379,7 @@ end
 								Button35.Parent = Frame 
 								Button35.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								Button35.BackgroundTransparency = 1.000 
-								Button35.Position = C.UDIM2(0, -20, 0.76, 0) --edit here
+								Button35.Position = C.UDIM2(0, -20, 0.6, 60) --edit here
 								Button35.Size = C.UDIM2(1, 0, 0, 15) 
 								Button35.ZIndex = 4
 
@@ -4282,6 +4469,10 @@ end
 								Button_325.MouseLeave:Connect(function() 
 									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 								end)
+								
+								
+								
+								
 								-------------------------------------------------------------------
 								do
 									local Toggle123 = C.INST("Frame") 
@@ -4295,7 +4486,7 @@ end
 									Toggle123.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 									Toggle123.BackgroundTransparency = 1.000 
 									Toggle123.Size = C.UDIM2(1, 0, 0, 15) 
-									Toggle123.Position = C.UDIM2(0, -10, 0.835, 0) --edit here
+									Toggle123.Position = C.UDIM2(0, -5, 0.6, 80) --edit here
 									Toggle123.ZIndex = 4
 									
 									--print('it actually spawned')
@@ -4392,7 +4583,7 @@ end
 								Slider2113132.Parent = Frame 
 								Slider2113132.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								Slider2113132.BackgroundTransparency = 1.000 
-								Slider2113132.Position = C.UDIM2(0, -10, 0.9, 0) --edit here
+								Slider2113132.Position = C.UDIM2(0, -15, 0.6, 93) --edit here
 								Slider2113132.Size = C.UDIM2(1, 0, 0, 25) 
 								Slider2113132.ZIndex = 4
 
@@ -4750,7 +4941,7 @@ end
 								Frame.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
 								Frame.BorderColor3 = C.COL3RGB(18, 18, 16) 
 								Frame.Position = C.UDIM2(-0.666666687, -170, 1.375, 0) 
-								Frame.Size = C.UDIM2(0, 200, 0, 270) --edit here
+								Frame.Size = C.UDIM2(0, 200, 0, 300) --edit here
 								Frame.Visible = false 
 								Frame.ZIndex = 3 
 
@@ -4762,7 +4953,7 @@ end
 								Button5.Parent = Frame 
 								Button5.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								Button5.BackgroundTransparency = 1.000 
-								Button5.Position = C.UDIM2(0, -20, 0.7, 0) --edit here
+								Button5.Position = C.UDIM2(0, -20, 0, 190) --edit here
 								Button5.Size = C.UDIM2(1, 0, 0, 15) 
 								Button5.ZIndex = 3
 
@@ -4790,17 +4981,17 @@ end
 								TextLabel5.TextSize = 11.000
 								TextLabel5.ZIndex = 3
 
-
+CopyColorsType = 'RGB'
 								Button_25.MouseButton1Down:Connect(function() 
 									TextLabel5.TextColor3 = MainUIColor 
 									library:Tween(TextLabel5, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 								local retarded, lmao = pcall(function()
 								local l,m,a = C.FLOOR((Element.value.Color.R*255)+0.5),C.FLOOR((Element.value.Color.G*255)+0.5),C.FLOOR((Element.value.Color.B*255)+0.5)
-									if values.others.other['Copy colors type'].Dropdown == 'RGB' then
+									if CopyColorsType == 'RGB' then
 									setclipboard(''..l..','..m..','..a) -- o
-									elseif values.others.other['Copy colors type'].Dropdown == 'HEX' then
+									elseif CopyColorsType == 'HEX' then
 									setclipboard(toHex(C.COL3RGB(l,m,a)))
-									elseif values.others.other['Copy colors type'].Dropdown == 'HSV' then 
+									elseif CopyColorsType == 'HSV' then 
 									local H,S,V = C.COL3(l,m,a):ToHSV() --hsl, cmyk
 									setclipboard(''..H..','..S..','..V)
 									end
@@ -4825,6 +5016,189 @@ end
 									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 								end) 
 
+									do
+									--Element.value = {Dropdown = data.options[1]} 
+
+									local Dropdown = C.INST("Frame") 
+									local Button = C.INST("TextButton") 
+									local TextLabel = C.INST("TextLabel") 
+									local Drop = C.INST("ScrollingFrame") 
+									local Button_2 = C.INST("TextButton") 
+									local TextLabel_2 = C.INST("TextLabel") 
+									local UIListLayout = C.INST("UIListLayout") 
+									local ImageLabel = C.INST("ImageLabel") 
+									local TextLabel_3 = C.INST("TextLabel") 
+									--Frame.Size = C.UDIM2(0,200,270)
+									Dropdown.Name = "Dropdown" 
+									Dropdown.Parent = Frame 
+									Dropdown.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+									Dropdown.BackgroundTransparency = 1.000 
+									Dropdown.Position = C.UDIM2(0, -20, 0, 208) 
+									Dropdown.Size = C.UDIM2(1, 0, 0, 39) 
+									Dropdown.ZIndex = 4
+
+									Button.Name = "Button" 
+									Button.Parent = Dropdown 
+									Button.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
+									Button.BorderColor3 = C.COL3RGB(18, 18, 16) 
+									Button.Position = C.UDIM2(0, 30, 0, 16) 
+									Button.Size = C.UDIM2(0, 175, 0, 17) 
+									Button.AutoButtonColor = false 
+									Button.Font = Enum.Font.SourceSans 
+									Button.Text = "" 
+									Button.TextColor3 = C.COL3RGB(0, 0, 0) 
+									Button.TextSize = 11.000
+									Button.ZIndex = 4
+
+									TextLabel.Parent = Button 
+									TextLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+									TextLabel.BackgroundTransparency = 1.000 
+									TextLabel.BorderColor3 = C.COL3RGB(27, 42, 53) 
+									TextLabel.Position = C.UDIM2(0, 5, 0, 0) 
+									TextLabel.Size = C.UDIM2(-0.21714285, 208, 1, 0) 
+									TextLabel.Font = Enum.Font.Gotham 
+									TextLabel.Text = 'RGB'
+									TextLabel.TextColor3 = C.COL3RGB(200, 200, 200) 
+									TextLabel.TextSize = 11.000
+									TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
+									TextLabel.ZIndex = 4
+
+									local abcd = TextLabel 
+
+									Drop.Name = "Drop" 
+									Drop.Parent = Button 
+									Drop.Active = true 
+									Drop.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
+									Drop.BorderColor3 = C.COL3RGB(18, 18, 16) 
+									Drop.Position = C.UDIM2(0, 0, 1, 1) 
+									Drop.Size = C.UDIM2(1, 0, 0, 20) 
+									Drop.Visible = false 
+									Drop.BottomImage = "http://www.roblox.com/asset/?id=6724808282" 
+									Drop.CanvasSize = C.UDIM2(0, 0, 0, 0) 
+									Drop.ScrollBarThickness = 4 
+									Drop.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
+									Drop.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
+									Drop.AutomaticCanvasSize = "Y" 
+									Drop.ZIndex = 5 
+									Drop.ScrollBarImageColor3 = MainUIColor 
+
+									UIListLayout.Parent = Drop 
+									UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
+									UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder --DROPDOWN COPY COLORS
+									local table = {'RGB', 'HSV', 'HEX'}
+									local num = #table 
+									if num > 5 then 
+										Drop.Size = C.UDIM2(1, 0, 0, 85) 
+									else 
+										Drop.Size = C.UDIM2(1, 0, 0, 17*num) 
+									end 
+									local first = true 
+									for i,v in ipairs(table) do 
+										do 
+											local Button = C.INST("TextButton") 
+											local TextLabel = C.INST("TextLabel") 
+
+											Button.Name = v 
+											Button.Parent = Drop 
+											Button.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
+											Button.BorderColor3 = C.COL3RGB(18, 18, 16) 
+											Button.Position = C.UDIM2(0, 30, 0, 16) 
+											Button.Size = C.UDIM2(0, 175, 0, 17) 
+											Button.AutoButtonColor = false 
+											Button.Font = Enum.Font.SourceSans 
+											Button.Text = "" 
+											Button.TextColor3 = C.COL3RGB(0, 0, 0) 
+											Button.TextSize = 11.000
+											Button.BorderSizePixel = 0 
+											Button.ZIndex = 6 
+
+											TextLabel.Parent = Button 
+											TextLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+											TextLabel.BackgroundTransparency = 1.000 
+											TextLabel.BorderColor3 = C.COL3RGB(27, 42, 53) 
+											TextLabel.Position = C.UDIM2(0, 5, 0, -1) 
+											TextLabel.Size = C.UDIM2(-0.21714285, 208, 1, 0) 
+											TextLabel.Font = Enum.Font.Gotham 
+											TextLabel.Text = v 
+											TextLabel.TextColor3 = C.COL3RGB(200, 200, 200) 
+											TextLabel.TextSize = 11.000
+											TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
+											TextLabel.ZIndex = 6 
+
+											Button.MouseButton1Down:Connect(function() 
+												Drop.Visible = false 
+												--Element.value.Dropdown = v 
+												CopyColorsType = v
+												abcd.Text = v 
+												--values[tabname][sectorname][text] = Element.value 
+												--callback(Element.value) 
+												Drop.CanvasPosition = C.Vec2(0,0) 
+											end) 
+											Button.MouseEnter:Connect(function() 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  MainUIColor}) 
+											end) 
+											Button.MouseLeave:Connect(function() 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(200, 200, 200)}) 
+											end) 
+
+											first = false 
+										end 
+									end
+
+									ImageLabel.Parent = Button 
+									ImageLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+									ImageLabel.BackgroundTransparency = 1.000 
+									ImageLabel.Position = C.UDIM2(0, 165, 0, 6) 
+									ImageLabel.Size = C.UDIM2(0, 6, 0, 4) 
+									ImageLabel.Image = "http://www.roblox.com/asset/?id=6724771531" 
+									ImageLabel.ZIndex = 4
+
+									TextLabel_3.Parent = Dropdown 
+									TextLabel_3.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+									TextLabel_3.BackgroundTransparency = 1.000 
+									TextLabel_3.Position = C.UDIM2(0, 32, 0, -1) 
+									TextLabel_3.Size = C.UDIM2(0.111913361, 208, 0.382215232, 0) 
+									TextLabel_3.Font = Enum.Font.Gotham 
+									TextLabel_3.Text = 'Copy colors type' 
+									TextLabel_3.TextColor3 = C.COL3RGB(200, 200, 200) 
+									TextLabel_3.TextSize = 11.000
+									TextLabel_3.TextXAlignment = Enum.TextXAlignment.Left 
+									TextLabel_3.ZIndex = 4
+
+									Button.MouseButton1Down:Connect(function() 
+										Drop.Visible = not Drop.Visible 
+										if not Drop.Visible then 
+											Drop.CanvasPosition = C.Vec2(0,0) 
+										end 
+									end) 
+									local indrop = false 
+									local ind = false 
+									Drop.MouseEnter:Connect(function() 
+										indrop = true 
+									end) 
+									Drop.MouseLeave:Connect(function() 
+										indrop = false 
+									end) 
+									Button.MouseEnter:Connect(function() 
+										ind = true 
+									end) 
+									Button.MouseLeave:Connect(function() 
+										ind = false 
+									end) 
+									game:GetService("UserInputService").InputBegan:Connect(function(input) 
+										if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2 then 
+											if Drop.Visible == true and not indrop and not ind then 
+												Drop.Visible = false 
+												Drop.CanvasPosition = C.Vec2(0,0) 
+											end 
+										end 
+									end) 								
+								end
+
+
+
+
+
 								local Button35 = C.INST("Frame") 
 								local Button_325 = C.INST("TextButton") 
 								local TextLabel35 = C.INST("TextLabel") 
@@ -4833,7 +5207,7 @@ end
 								Button35.Parent = Frame 
 								Button35.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								Button35.BackgroundTransparency = 1.000 
-								Button35.Position = C.UDIM2(0, -20, 0.78, 0) --edit here
+								Button35.Position = C.UDIM2(0, -20, 0, 247) --edit here
 								Button35.Size = C.UDIM2(1, 0, 0, 15) 
 								Button35.ZIndex = 4
 
@@ -4923,6 +5297,11 @@ end
 								Button_325.MouseLeave:Connect(function() 
 									library:Tween(TextLabel5, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 								end)
+							
+								
+								
+								
+								
 								-------------------------------------------------------------------
 								do
 									local Toggle123 = C.INST("Frame") 
@@ -4936,7 +5315,7 @@ end
 									Toggle123.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 									Toggle123.BackgroundTransparency = 1.000 
 									Toggle123.Size = C.UDIM2(1, 0, 0, 15) 
-									Toggle123.Position = C.UDIM2(0, -10, 0.85, 0) --edit here
+									Toggle123.Position = C.UDIM2(0, -5, 0, 265) --edit here
 									Toggle123.ZIndex = 4
 									
 									--print('it actually spawned')
@@ -5033,7 +5412,7 @@ end
 								Slider2113132.Parent = Frame 
 								Slider2113132.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								Slider2113132.BackgroundTransparency = 1.000 
-								Slider2113132.Position = C.UDIM2(0, -10, 0.9, 0) --edit here
+								Slider2113132.Position = C.UDIM2(0, -15, 0, 277) --edit here
 								Slider2113132.Size = C.UDIM2(1, 0, 0, 25) 
 								Slider2113132.ZIndex = 4
 
@@ -7423,7 +7802,7 @@ CreateHitElement(" You're "..procent.. '% skill issue ',values.misc.client.hitlo
 	end
 end)
 
-other:Element('Dropdown', 'Copy colors type', {options = {'RGB', 'HSV', 'HEX',}}) --hsl, cmyk
+--other:Element('Dropdown', 'Copy colors type', {options = {'RGB', 'HSV', 'HEX',}}) --hsl, cmyk
 other:Element('Button2', 'clean gui', nil, function()
 game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.PlayerBox.GreyPart.PHealth.Position = C.UDIM2(0, 5, 0, 0)
 
