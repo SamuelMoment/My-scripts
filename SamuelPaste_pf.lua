@@ -7965,13 +7965,13 @@ end)
 			end
 		end
 		
-effects:Element("ToggleColor", "world color", {default = {Color = C.COL3RGB(255,255,255)}}, function(val) 
+--[[effects:Element("ToggleColor", "world color", {default = {Color = C.COL3RGB(255,255,255)}}, function(val) 
 	if val.Toggle then 
 		Camera.ColorCorrection.TintColor = val.Color 
 	else 
 		Camera.ColorCorrection.TintColor = C.COL3RGB(255,255,255) 
 	end 
-end) 
+end)--]] 
 effects:Element("Toggle", "shadowmap technology", nil, function(val) sethiddenproperty(Lighting, "Technology", val.Toggle and "ShadowMap" or "Legacy") end) 
 effects:Element("ToggleColor", "indoor ambient", {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl) 
 	if tbl.Toggle then 
@@ -8050,7 +8050,7 @@ end)
 configs:Element("Button", "Refresh cfg list", {}, function()
 table.clear(allcfgs)
 
-for _,cfg in pairs(listfiles(cfglocation)) do 
+for _,cfg in pairs(listfiles('SamuelPaste_pf/cfgs')) do 
 	local cfgname = C.GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
 	C.INSERT(allcfgs, cfgname) 
 end

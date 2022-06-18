@@ -9893,7 +9893,7 @@ end)
 configs:Element("Button", "Refresh cfg list", {}, function()
 table.clear(allcfgs)
 
-for _,cfg in pairs(listfiles(cfglocation)) do 
+for _,cfg in pairs(listfiles('SamuelPaste/cfgs')) do 
 	local cfgname = C.GSUB(cfg, 'SamuelPaste/cfgs\\', "") 
 	C.INSERT(allcfgs, cfgname) 
 end
