@@ -8046,8 +8046,8 @@ game.ReplicatedStorage.Events.IDBody:FireServer("id", {
     Role = {Value = values.others['funny exploits']['msg part 2'].Text}
 })
 end)
-ssExploits:Element('Text', 'msg part 1')
-ssExploits:Element('Text', 'msg part 2')
+ssExploits:Element('TextBox', 'msg part 1',{placeholder = "funny msg part 1"})
+ssExploits:Element('TextBox', 'msg part 2', {placeholder = "funny msg part 2"})
 ssExploits:Element('Button', 'win T', {}, function()
 	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.Exploded})
 end)
@@ -8108,11 +8108,7 @@ ssExploits:Element('Button', 'no recoil', {}, function()
 	end
 end)
 ssExploits:Element('Button', 'freeze game', {}, function()
-	for i,v in pairs(game.ReplicatedStorage.Weapons:GetChildren()) do
-		if v:FindFirstChild("ReloadTime") then
-			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.Preparation}) -- breaks reload lol
-		end
-	end
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.Preparation}) -- breaks reload lol
 end)
 local copy = others:Sector("Disord links", "Right") 
 copy:Element("Button", "My discord", {}, function() 
