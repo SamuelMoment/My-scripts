@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 if game.CoreGui:FindFirstChild("electric boogalo") then return error('script is already executed or you executed another script')end
-PasteDisabled = false
+getgenv().PasteDisabled = false
 local wait = task.wait -- small test
 values = {} --blahwrlqwrqwr
 local library = {tabs = {}}
@@ -636,54 +636,33 @@ do
 		TextLabel.TextSize = 14.000
 		TextLabel.TextXAlignment = Enum.TextXAlignment.Left--]]
 		makeDraggable(Frame)
-		end
 		
-		local keybindss = {}
-		local biggestkeybind
-		
-	function keybindadd(text,keybind) 
-	if KeybindList.Frame.Frame:FindFirstChild(text) then 
-		KeybindList.Frame.Frame:FindFirstChild(text):Destroy(); 
-		KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10); 
+		--local keybindss = {}
+		--local biggestkeybind
 	end
+	local keybindss = {}
+	function keybindadd(text,keybind) 
+		if KeybindList.Frame.Frame:FindFirstChild(text) then 
+			KeybindList.Frame.Frame:FindFirstChild(text):Destroy(); 
+			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10); 
+		end
 		if not KeybindList.Frame.Frame:FindFirstChild(text) then 
 			local TextLabel = C.INST("TextLabel")
-			--local size = GetTextBounds(''..text..''..keybind..'', Enum.Font.Code, 14)
-			--[[if size >= (KeybindList.Frame.Size.X - 8) then
-			KeybindList.Frame.Size = C.UDIM2(0, Size + 8, 0, 20)
-			KeybindList.Frame.Grad.Size = C.UDIM2(0,KeybindList.Frame.Size.X, 0,4)
-			KeybindList.Frame.Frame.Size = C.UDIM2(0, Size + 8, 0, 20 * #keybindss)
-			end--]]
-			--[[TextLabel.BackgroundColor3 = C.COL3RGB(1, 1, 1) 
-			TextLabel.BorderColor3 = C.COL3RGB(255,20,147) 
-			TextLabel.
-			TextLabel.BorderSizePixel = 0 
-			TextLabel.Size = C.UDIM2(0, 170, 0, 20) 
-			TextLabel.ZIndex = 2 
-			TextLabel.Font = Enum.Font.SourceSansSemibold 
-			TextLabel.Text = ""..text.." : Enabled"
-			TextLabel.TextColor3 = C.COL3RGB(255, 255, 255) 
-			TextLabel.TextSize = 14.000 
-			TextLabel.Name = text 
-			TextLabel.Parent = KeybindList.TextLabel.Frame --]]
 			local Size = GetTextBounds("["..keybind..'] '..text..'', Enum.Font.SourceSans, 14)
-			local XOriginalSize = KeybindList.Frame.Frame.Size.X.Offset
-			local XScale = Size
 			
-			if XScale >= XOriginalSize then
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,10)
+			if KeybindList.Frame.Frame.Size.X.Offset <= Size then
+				--biggestkeybind = text
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,0)
 				KeybindList.Frame.Size = KeybindList.Frame.Size + C.UDIM2(0, Size, 0, 0)
 				KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size + C.UDIM2(0, Size, 0 ,0)
-			else
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,0,0,10)
 			end
-				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-					KeybindList.Frame.Frame.Visible = false
-					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-				else
-					KeybindList.Frame.Frame.Visible = true
-				end
+			local table = {['Text'] = text, [2] = "["..keybind..'] '..text..''}
+			C.INSERT(keybindss, table)
+				C.TBLSORT(keybindss, function(a,b) 
+					return C.LEN(a[2]) < C.LEN(b[2]) 
+				end)
+			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,0,0,10)
+			
 			TextLabel.Name = text
 			TextLabel.Parent = KeybindList.Frame.Frame
 			TextLabel.Active = true
@@ -703,99 +682,108 @@ do
 	end 
 		
 	function keybindtoggle(text) 
+		if C.TBLFIND(keybindss, text) then
+			C.TBLREMOVE(keybindss, text)
+			local table = {['Text'] = text,[2] = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Enabled'}
+			C.INSERT(keybindss, table)
+			C.TBLSORT(keybindss, function(a,b) 
+				return C.LEN(a[2]) < C.LEN(b[2])
+			end)
+		end
 		KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Enabled'
-	end 
-					function keybindhold(text)
-						KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Held'
-					end
+		local Size = GetTextBounds(' : Enabled', Enum.Font.SourceSans, 14) --+ 15
+		local SizeValue = GetTextBounds(KeybindList.Frame.Frame:FindFirstChild(text).Text, Enum.Font.SourceSans, 14) --+ 15
+		local XOffset = KeybindList.Frame.Frame.Size.X.Offset
+		
+		if XOffset <= SizeValue then
+			--biggestkeybind = text
+			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,0)
+			KeybindList.Frame.Size = KeybindList.Frame.Size + C.UDIM2(0, Size, 0, 0)
+			KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size + C.UDIM2(0, Size, 0 ,0)
+		end
+		print(XOffset)
+		print(Size)
+		--print(Size - 15)
+	end
 
+	function keybindhold(text)
+		if C.TBLFIND(keybindss, text) then
+			C.TBLREMOVE(keybindss, text)
+			local table = {['Text'] = text, [2] = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Held'}
+			C.INSERT(keybindss, table)
+			C.TBLSORT(keybindss, function(a,b) 
+				return C.LEN(a[2]) < C.LEN(b[2])
+			end)
+		end
+		KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Held'
+		local Size = GetTextBounds(' : Held', Enum.Font.SourceSans, 14)
+		local SizeValue = GetTextBounds(KeybindList.Frame.Frame:FindFirstChild(text).Text, Enum.Font.SourceSans, 14) --+ 15
+		local XOffset = KeybindList.Frame.Frame.Size.X.Offset
+		
+		if XOffset <= SizeValue then
+			--biggestkeybind = text
+			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,0)
+			KeybindList.Frame.Size = KeybindList.Frame.Size + C.UDIM2(0, Size, 0, 0)
+			KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size + C.UDIM2(0, Size, 0 ,0)
+		end
+	end
+	
 	function keybindremove(text, keybind) 
-		if KeybindList.Frame.Frame:FindFirstChild(text) and KeybindList.Frame.Frame:FindFirstChild(text).Text then
-
-			KeybindList.Frame.Frame:FindFirstChild(text):Destroy()
-			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10)
-					if not KeybindList.Frame.Frame:FindFirstChild(text) then 
-			local TextLabel = C.INST("TextLabel")
-			--local size = GetTextBounds(''..text..''..keybind..'', Enum.Font.Code, 14)
-			--[[if size >= (KeybindList.Frame.Size.X - 8) then
-			KeybindList.Frame.Size = C.UDIM2(0, Size + 8, 0, 20)
-			KeybindList.Frame.Grad.Size = C.UDIM2(0,KeybindList.Frame.Size.X, 0,4)
-			KeybindList.Frame.Frame.Size = C.UDIM2(0, Size + 8, 0, 20 * #keybindss)
-			end--]]
-			--[[TextLabel.BackgroundColor3 = C.COL3RGB(1, 1, 1) 
-			TextLabel.BorderColor3 = C.COL3RGB(255,20,147) 
-			TextLabel.
-			TextLabel.BorderSizePixel = 0 
-			TextLabel.Size = C.UDIM2(0, 170, 0, 20) 
-			TextLabel.ZIndex = 2 
-			TextLabel.Font = Enum.Font.SourceSansSemibold 
-			TextLabel.Text = ""..text.." : Enabled"
-			TextLabel.TextColor3 = C.COL3RGB(255, 255, 255) 
-			TextLabel.TextSize = 14.000 
-			TextLabel.Name = text 
-			TextLabel.Parent = KeybindList.TextLabel.Frame --]]
-			local Size = GetTextBounds("["..keybind..'] '..text..'', Enum.Font.SourceSans, 14)
-			local XOriginalSize = KeybindList.Frame.Frame.Size.X.Offset
-			local XScale = Size
-			
-			if XScale >= XOriginalSize then
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,10)
-			else
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,0,0,10)
+		if KeybindList.Frame.Frame:FindFirstChild(text) then
+			--print('found')
+			--local text2 = (string.find(text, ' : Enabled') and ' : Enabled' or string.find(text, ' : Held') and ' : Held')
+			KeybindList.Frame.Frame:FindFirstChild(text).Text = C.GSUB(KeybindList.Frame.Frame:FindFirstChild(text).Text, " : Enabled", '')
+			KeybindList.Frame.Frame:FindFirstChild(text).Text = C.GSUB(KeybindList.Frame.Frame:FindFirstChild(text).Text, " : Held", '')
+			C.TBLSORT(keybindss, function(a,b) 
+				return C.LEN(a[2]) < C.LEN(b[2])
+			end)
+			if keybindss[1]['Text'] == text then
+				size1 = GetTextBounds(keybindss[1][2], Enum.Font.SourceSans, 14)
+				size2 = GetTextBounds(keybindss[2][2], Enum.Font.SourceSans, 14)
+				size3 = size1 - size2
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0, size3,0,0)
+				KeybindList.Frame.Size = KeybindList.Frame.Size - C.UDIM2(0, size3, 0, 0)
+				KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size - C.UDIM2(0, size3, 0 ,0)				
 			end
-				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-					KeybindList.Frame.Frame.Visible = false
-					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-				else
-					KeybindList.Frame.Frame.Visible = true
-				end
-			TextLabel.Name = text
-			TextLabel.Parent = KeybindList.Frame.Frame
-			TextLabel.Active = true
-			TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-			TextLabel.BackgroundTransparency = 1.000
-			TextLabel.LayoutOrder = 1
-			TextLabel.Position = UDim2.new(0,10,0,0)
-			TextLabel.Size = UDim2.new(0, 60, 0, 20)
-			TextLabel.ZIndex = 694201337
-			TextLabel.Font = Enum.Font.SourceSans
-			TextLabel.LineHeight = 1.190
-			TextLabel.Text = "["..keybind..'] '..text..''
-			TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-			TextLabel.TextSize = 14.000
-			TextLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+			local Size = GetTextBounds(KeybindList.Frame.Frame:FindFirstChild(text).Text, Enum.Font.SourceSans, 14) --+ 15
+			--local SizeValue = GetTextBounds(KeybindList.Frame.Frame:FindFirstChild(text).Text, Enum.Font.SourceSans, 14) --+ 15
+			local XOffset = KeybindList.Frame.Frame.Size.X.Offset
+			
+			if XOffset <= Size then
+				--biggestkeybind = text
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,0)
+				KeybindList.Frame.Size = KeybindList.Frame.Size + C.UDIM2(0, Size, 0, 0)
+				KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size + C.UDIM2(0, Size, 0 ,0)
+			end
 		end 
-				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-					KeybindList.Frame.Frame.Visible = false
-					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-				else
-					KeybindList.Frame.Frame.Visible = true
-				end
+		if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
+			KeybindList.Frame.Frame.Visible = false
+			KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
+			KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
+		else
+			KeybindList.Frame.Frame.Visible = true
 		end
 	end 
 
 	function keybindremove2(text) 
 		if KeybindList.Frame.Frame:FindFirstChild(text) then
-				
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10)
-				local XOffset = KeybindList.Frame.Frame.Size.X.Offset
-				if XOffset <= 60 then
-					--KeybindList.Frame.Frame.Size.X.Offset = 60
-					KeybindList.Frame.Frame.Size = C.UDIM2(KeybindList.Frame.Frame.Size.X.Scale, 60, KeybindList.Frame.Frame.Size.Y.Scale, KeybindList.Frame.Frame.Size.Y.Offset)
-				end
-				if KeybindList.Frame.Frame.Size.Y.Offset == 28 then
-					--KeybindList.Frame.Frame.Size.X.Offset = 60
-					KeybindList.Frame.Frame.Size = C.UDIM2(KeybindList.Frame.Frame.Size.X.Scale, 60, KeybindList.Frame.Frame.Size.Y.Scale, KeybindList.Frame.Frame.Size.Y.Offset)
-				end
-				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-					KeybindList.Frame.Frame.Visible = false
-					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-				else
-					KeybindList.Frame.Frame.Visible = true
-				end
+			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10)
+			local XOffset = KeybindList.Frame.Frame.Size.X.Offset
+			if XOffset <= 60 then
+				--KeybindList.Frame.Frame.Size.X.Offset = 60
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, 60, 0, 0)
+			end
+			if KeybindList.Frame.Frame.Size.Y.Offset == 28 then
+				--KeybindList.Frame.Frame.Size.X.Offset = 60
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,60,0,0)
+			end
+			if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
+				KeybindList.Frame.Frame.Visible = false
+				KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
+				KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
+			else
+				KeybindList.Frame.Frame.Visible = true
+			end
 			KeybindList.Frame.Frame:FindFirstChild(text):Destroy() 
 		end 
 	end 
@@ -1403,7 +1391,7 @@ do
 											keybindremove(text, Element.value.Key) 
 											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = C.COL3RGB(46, 46, 46)}) 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
-										end 
+										end
 										values[tabname][sectorname][tabtext][text] = Element.value 
 										callback(Element.value) 
 									end 
@@ -6861,7 +6849,7 @@ elseif type == "Button" then
 
 		Lunar.Parent = game.CoreGui 
 		return menu 
-	end 
+	end
 	local MX_ONHIT = C.INST("ScreenGui")
 	do
 	local OnHitFrame = C.INST("Frame")
@@ -7913,7 +7901,7 @@ wait(1)
 RunService:UnbindFromRenderStep("Rage")
 delfile(cfglocation..'unload script cfg.txt')
 game.CoreGui['electric boogalo']:Destroy()
-PasteDisabled = true
+getgenv().PasteDisabled = true
 end)
 
 local trannyenabled = false
@@ -8028,9 +8016,104 @@ local mydadbeatsme = {
 daddy:Element('Dropdown', 'what slot', {options = {'knife', 'pistol', 'primary', '1st grenade slot', '2nd grenade slot', '3rd grenade slot', '4th grenade slot', 'bomb slot'}})
 daddy:Element('ScrollDrop', 'weapon', {options = mydadbeatsme})
 
+local ssExploits = others:Sector('funny exploits', 'Right')
+local ssLoop
 
+--local Loopkill = rage:Sector("Loop kill", "Right") 
+--[[ssExploits:Element("lmao", "Player", {options = loopkillplr, Amount = 20}, function(tbl)
 
+ end)
+ssExploits:Element('Toggle', 'insta kill', {}, function(tbl)
+	while tbl.Toggle do wait()
+		if game.Players[values.others["funny exploits"].Player.Dropdown] and IsAlive(game.Players[values.others["funny exploits"].Player.Dropdown]) then
+			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = game.Players[values.others["funny exploits"].Player.Dropdown].Character.Humanoid.Health})
+		end
+	end
+end)
+ssExploits:Element('Toggle', 'insta kill everyone', {}, function(tbl)
+	while tbl.Toggle do wait()
+		for i,v in pairs(game.Players:GetPlayers()) do
+			if IsAlive(v) then
+				game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = v.Character.Humanoid.Health})
+			end
+		end
+	end
+end)--]]
+ssExploits:Element('Button', 'funny msg', {}, function()
+game.ReplicatedStorage.Events.IDBody:FireServer("id", {
+    Identified = {Value = false},
+    Name = values.others['funny exploits']['msg part 1'].Text,
+    Role = {Value = values.others['funny exploits']['msg part 2'].Text}
+})
+end)
+ssExploits:Element('Text', 'msg part 1')
+ssExploits:Element('Text', 'msg part 2')
+ssExploits:Element('Button', 'win T', {}, function()
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.Exploded})
+end)
+ssExploits:Element('Button', 'win CT', {}, function()
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.Defused})
+end)
+ssExploits:Element('Button', 'reset scores', {}, function()
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.CTWins})
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.TWins})
 
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.Preparation})
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.GameOver})
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.CanRespawn})
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = game.ReplicatedStorage.Warmup})
+	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = game.ReplicatedStorage.Warmup})
+end)
+ssExploits:Element('Button', 'no ammo', {}, function()
+	for i,v in pairs(game.ReplicatedStorage.Weapons:GetChildren()) do
+		if v:FindFirstChild("Ammo") then
+			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = v.Ammo}) -- no ammo
+		end
+	end
+end)
+ssExploits:Element('Button', 'no auto', {}, function()
+	for i,v in pairs(game.ReplicatedStorage.Weapons:GetChildren()) do
+		if v:FindFirstChild("Auto") then
+			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = v.Auto})
+		end
+	end
+end)
+ssExploits:Element('Button', 'no firerate', {}, function()
+	for i,v in pairs(game.ReplicatedStorage.Weapons:GetChildren()) do
+		if v:FindFirstChild("FireRate") then
+			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = v.FireRate})
+		end
+	end
+end)
+ssExploits:Element('Button', 'no spread', {}, function()
+	for i,v in pairs(game.ReplicatedStorage.Weapons:GetChildren()) do
+		if v:FindFirstChild("Spread") then
+			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = v.Spread})
+		end
+	end
+end)
+ssExploits:Element('Button', 'no reload time', {}, function()
+	for i,v in pairs(game.ReplicatedStorage.Weapons:GetChildren()) do
+		if v:FindFirstChild("ReloadTime") then
+			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = v.ReloadTime}) -- breaks reload lol
+		end
+	end
+end)
+ssExploits:Element('Button', 'no recoil', {}, function()
+	for i,v in pairs(game.ReplicatedStorage.Weapons:GetChildren()) do
+		if v:FindFirstChild("Recoil") then
+			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = v.Recoil.AngleX})
+			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = v.Recoil.AngleY})
+		end
+	end
+end)
+ssExploits:Element('Button', 'freeze game', {}, function()
+	for i,v in pairs(game.ReplicatedStorage.Weapons:GetChildren()) do
+		if v:FindFirstChild("ReloadTime") then
+			game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.Preparation}) -- breaks reload lol
+		end
+	end
+end)
 local copy = others:Sector("Disord links", "Right") 
 copy:Element("Button", "My discord", {}, function() 
 	setclipboard("IAmSamuel#9008") 
