@@ -4026,7 +4026,7 @@ end
 								end 
 							elseif type == "ToggleColor" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
-								Element.value = {Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), SetColor} 
+								Element.value = {Rainbow = false, RainbowSpeed = 3, Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), SetColor} 
 
 								local Toggle = C.INST("Frame") 
 								local Button = C.INST("TextButton") 
@@ -4476,13 +4476,11 @@ end
 								
 								
 								-------------------------------------------------------------------
-								do
 									local Toggle123 = C.INST("Frame") 
 									local Button123 = C.INST("TextButton") 
 									local Color123 = C.INST("Frame") 
 									local TextLabel123 = C.INST("TextLabel") 
-									local ToggleValue = false
-									local RainbowSpeed = 1								
+									
 									Toggle123.Name = "Toggle123" 
 									Toggle123.Parent = Frame 
 									Toggle123.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
@@ -4528,7 +4526,7 @@ end
 									TextLabel123.ZIndex = 4
 
 									local function update123() 
-										if ToggleValue then 
+										if Element.value.Rainbow then 
 											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
 											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
@@ -4540,13 +4538,16 @@ end
 									end
 									
 									Button123.MouseButton1Down:Connect(function() 
-										ToggleValue = not ToggleValue
-										update123() 
-										if ToggleValue then
-											while true do wait()
-												if ToggleValue then
-													for i = 0,1,0.001*RainbowSpeed do
-														ColorH, ColorS, ColorV = i,1,1
+										Element.value.Rainbow = not Element.value.Rainbow
+										update123() 				
+										--values[tabname][sectorname][tabtext][text] = Element.value 
+										--callback(Element.value) 
+									end)
+								
+											game.RunService.RenderStepped:Connect(function()
+												if Element.value.Rainbow then
+													--Element.value.RainbowSpeed
+														ColorH, ColorS, ColorV = (tick() % Element.value.RainbowSpeed/Element.value.RainbowSpeed),1,1
 
 														ColorH = C.CLAMP(ColorH,0,1) 
 														ColorS = C.CLAMP(ColorS,0,1) 
@@ -4564,16 +4565,8 @@ end
 																							--library.options['armColor']:SetColor(Color3.fromHSV(i,1,1))
 														wait()
 																				--        library.options['Accent Color']:SetColor(Color3.fromHSV(i,1,1)) -- also u can change any flag that has color by prinitng flags (table.foreach(library.flags,print)
-														if not ToggleValue then break end
-													end
-												else break end
-											end										
-										end
-										--values[tabname][sectorname][tabtext][text] = Element.value 
-										--callback(Element.value) 
-									end)
-								
-								
+												end
+											end)									
 								local Slider2113132 = C.INST("Frame") 
 								local TextLabel2113132 = C.INST("TextLabel") 
 								local Button2113132 = C.INST("TextButton") 
@@ -4639,13 +4632,13 @@ end
 								Value123123123.TextColor3 = C.COL3RGB(200, 200, 200) 
 								Value123123123.TextSize = 11.000 
 								Value123123123.ZIndex = 4
-								local min, max, default = 0, 50, 1
+								local min, max, default = 1, 6, 3
 								--Element.Value123123123 = {Slider2113132 = default}
 								local a
 								if min > 0 then 
-									a = ((RainbowSpeed - min)) / (max-min) 
+									a = ((Element.value.RainbowSpeed - min)) / (max-min) 
 								else 
-									a = (RainbowSpeed-min)/(max-min) 
+									a = (Element.value.RainbowSpeed-min)/(max-min) 
 								end 
 								Value123123123.Text = default
 								Frame123123.Size = C.UDIM2(a,0,1,0) 
@@ -4657,7 +4650,7 @@ end
 									Frame123123.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
 									val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) or 0 
 									Value123123123.Text = val 
-									RainbowSpeed = val 
+									Element.value.RainbowSpeed = val 
 									--values[tabname][sectorname][text] = Element.Value123123123 
 									--callback(Element.Value123123123) 
 									moveconnection = mouse.Move:Connect(function() 
@@ -4678,8 +4671,7 @@ end
 											releaseconnection:Disconnect() 
 										end 
 									end) 
-								end) 	
-end								
+								end) 							
 								---------------------------------------------------------------------------------------------------------------------
 								
 								
@@ -4858,13 +4850,14 @@ end
 									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
 									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
 									update() 
+									update123()
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
 
 									callback(value) 
 								end 
 							elseif type == "ToggleTrans" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
-								Element.value = {Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), Transparency = data.default and data.default.Transparency or 0} 
+								Element.value = {Rainbow = false, RainbowSpeed = 3,Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), Transparency = data.default and data.default.Transparency or 0} 
 
 								local Toggle = C.INST("Frame") 
 								local Button = C.INST("TextButton") 
@@ -5305,13 +5298,11 @@ CopyColorsType = 'RGB'
 								
 								
 								-------------------------------------------------------------------
-								do
+
 									local Toggle123 = C.INST("Frame") 
 									local Button123 = C.INST("TextButton") 
 									local Color123 = C.INST("Frame") 
-									local TextLabel123 = C.INST("TextLabel") 
-									local ToggleValue = false
-									local RainbowSpeed = 1								
+									local TextLabel123 = C.INST("TextLabel") 							
 									Toggle123.Name = "Toggle123" 
 									Toggle123.Parent = Frame 
 									Toggle123.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
@@ -5357,7 +5348,7 @@ CopyColorsType = 'RGB'
 									TextLabel123.ZIndex = 4
 
 									local function update123() 
-										if ToggleValue then 
+										if Element.value.Rainbow then 
 											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
 											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
@@ -5369,13 +5360,14 @@ CopyColorsType = 'RGB'
 									end
 									
 									Button123.MouseButton1Down:Connect(function() 
-										ToggleValue = not ToggleValue
+										Element.value.Rainbow = not Element.value.Rainbow
 										update123() 
-										if ToggleValue then
-											while true do wait()
-												if ToggleValue then
-													for i = 0,1,0.001*RainbowSpeed do
-														ColorH, ColorS, ColorV = i,1,1
+									end)
+								
+											game.RunService.RenderStepped:Connect(function()
+												if Element.value.Rainbow then
+
+														ColorH, ColorS, ColorV = tick() % Element.value.RainbowSpeed/Element.value.RainbowSpeed,1,1
 
 														ColorH = C.CLAMP(ColorH,0,1) 
 														ColorS = C.CLAMP(ColorS,0,1) 
@@ -5393,16 +5385,9 @@ CopyColorsType = 'RGB'
 																							--library.options['armColor']:SetColor(Color3.fromHSV(i,1,1))
 														wait()
 																				--        library.options['Accent Color']:SetColor(Color3.fromHSV(i,1,1)) -- also u can change any flag that has color by prinitng flags (table.foreach(library.flags,print)
-														if not ToggleValue then break end
-													end
-												else break end
-											end								
-										end
-										--values[tabname][sectorname][tabtext][text] = Element.value 
-										--callback(Element.value) 
-									end)
-								
-								
+
+												end
+											end)												
 								local Slider2113132 = C.INST("Frame") 
 								local TextLabel2113132 = C.INST("TextLabel") 
 								local Button2113132 = C.INST("TextButton") 
@@ -5416,7 +5401,7 @@ CopyColorsType = 'RGB'
 								Slider2113132.BackgroundTransparency = 1.000 
 								Slider2113132.Position = C.UDIM2(0, -15, 0, 277) --edit here
 								Slider2113132.Size = C.UDIM2(1, 0, 0, 25) 
-								Slider2113132.ZIndex = 4
+								Slider2113132.ZIndex = 3
 
 								TextLabel2113132.Parent = Slider2113132 
 								TextLabel2113132.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
@@ -5428,7 +5413,7 @@ CopyColorsType = 'RGB'
 								TextLabel2113132.TextColor3 = C.COL3RGB(200, 200, 200) 
 								TextLabel2113132.TextSize = 11.000
 								TextLabel2113132.TextXAlignment = Enum.TextXAlignment.Left 
-								TextLabel2113132.ZIndex = 4
+								TextLabel2113132.ZIndex = 3
 
 								Button2113132.Name = "Button2113132" 
 								Button2113132.Parent = Slider2113132 
@@ -5441,13 +5426,13 @@ CopyColorsType = 'RGB'
 								Button2113132.Text = "" 
 								Button2113132.TextColor3 = C.COL3RGB(0, 0, 0) 
 								Button2113132.TextSize = 11.000
-								Button2113132.ZIndex = 4
+								Button2113132.ZIndex = 3
 
 								Frame123123.Parent = Button2113132 
 								Frame123123.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								Frame123123.BorderSizePixel = 0 
 								Frame123123.Size = C.UDIM2(0.5, 0, 1, 0) 
-								Frame123123.ZIndex = 4
+								Frame123123.ZIndex = 3
 								
 								UIGradient123123.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
 								
@@ -5468,13 +5453,13 @@ CopyColorsType = 'RGB'
 								Value123123123.TextColor3 = C.COL3RGB(200, 200, 200) 
 								Value123123123.TextSize = 11.000 
 								Value123123123.ZIndex = 4
-								local min, max, default = 0, 50, 1
+								local min, max, default = 1, 6, 3
 								--Element.Value123123123 = {Slider2113132 = default}
 								local a
 								if min > 0 then 
-									a = ((RainbowSpeed - min)) / (max-min) 
+									a = ((Element.value.RainbowSpeed - min)) / (max-min) 
 								else 
-									a = (RainbowSpeed-min)/(max-min) 
+									a = (Element.value.RainbowSpeed-min)/(max-min) 
 								end 
 								Value123123123.Text = default
 								Frame123123.Size = C.UDIM2(a,0,1,0) 
@@ -5486,7 +5471,7 @@ CopyColorsType = 'RGB'
 									Frame123123.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
 									val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) or 0 
 									Value123123123.Text = val 
-									RainbowSpeed = val 
+									Element.value.RainbowSpeed = val 
 									--values[tabname][sectorname][text] = Element.Value123123123 
 									--callback(Element.Value123123123) 
 									moveconnection = mouse.Move:Connect(function() 
@@ -5507,8 +5492,7 @@ CopyColorsType = 'RGB'
 											releaseconnection:Disconnect() 
 										end 
 									end) 
-								end) 	
-end								
+								end) 								
 								---------------------------------------------------------------------------------------------------------------------
 
 								Colorpick.Name = "Colorpick" 
@@ -5580,7 +5564,7 @@ end
 								Transpick.Image = "rbxassetid://3887014957" 
 								Transpick.ScaleType = Enum.ScaleType.Tile 
 								Transpick.TileSize = C.UDIM2(0, 10, 0, 10) 
-								Transpick.ZIndex = 3 
+								Transpick.ZIndex = 4 
 
 								Transcolor.Name = "Transcolor" 
 								Transcolor.Parent = Transpick 
@@ -5589,7 +5573,7 @@ end
 								Transcolor.Size = C.UDIM2(1, 0, 1, 0) 
 								Transcolor.Image = "rbxassetid://3887017050" 
 								Transcolor.ImageColor3 = C.COL3RGB(255, 0, 4) 
-								Transcolor.ZIndex = 3 
+								Transcolor.ZIndex = 4 
 
 								Transdrag.Name = "Transdrag" 
 								Transdrag.Parent = Transcolor 
@@ -5597,7 +5581,7 @@ end
 								Transdrag.BorderColor3 = C.COL3RGB(18, 18, 16) 
 								Transdrag.Position = C.UDIM2(0, -1, 0, 0) 
 								Transdrag.Size = C.UDIM2(0, 2, 1, 0) 
-								Transdrag.ZIndex = 3 
+								Transdrag.ZIndex = 4
 
 								ColorP.MouseButton1Down:Connect(function() 
 									Frame.Visible = not Frame.Visible 
@@ -5748,8 +5732,10 @@ end
 									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
 									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
 									update() 
+									update123()
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
 								end 
+								
 								elseif type == "TextBox" then 
 									Section.Size = Section.Size + C.UDIM2(0,0,0,30) 
 									Element.value = {Text = data.default and data.default.text or ""} 
@@ -6999,7 +6985,7 @@ local misc = gui:Tab('misc')
 
 ----------------------------------------------LEGIT TAB----------------------------------------------------------------------------------------------------------------------------------------------------------------
 animations = {}
-getgenv().client = {}; do
+local client = {}; do
     local gc = getgc(true)  
     for i = #gc, 1, -1 do
         local v = gc[i]
@@ -7027,7 +7013,7 @@ getgenv().client = {}; do
                 client.uiscaler = v
             end
             if rawget(v, 'player') then
-                print("Got animation")
+                --print("Got animation")
                 table.insert(animations, v)
             end
         end
@@ -7383,13 +7369,15 @@ players:Element('Slider', "Text Font Size", {min = 13, max = 18, default = 18}, 
 	EspLibrary.settings.textsize = tbl.Slider
 end)
 
+
+
 --big ass code incoming
-local function DrawLine()
+--[[local function DrawLine()
     local l = Drawing.new("Line")
     l.Visible = false
     l.From = C.Vec2(0, 0)
     l.To = C.Vec2(1, 1)
-    l.Color = values.visuals.players['skeleton esp'].Color
+    l.Color = values.visuals.ESP['skeleton esp'].Color
     l.Thickness = 1
     l.Transparency = 1
     return l
@@ -7530,7 +7518,7 @@ local function DrawESP(plr)
                     end
                     connection:Disconnect()
                 end
-				if plr.TeamColor == LocalPlayer.TeamColor and not (values.visuals.players['Team Check'].Toggle) then
+				if plr.TeamColor == LocalPlayer.TeamColor and not (values.visuals.ESP['Team Check'].Toggle) then
 					Visibility(false)
 				   for i, v in pairs(limbs) do
 						v.Transparency = 0
@@ -7539,7 +7527,7 @@ local function DrawESP(plr)
                     connection:Disconnect()
 				end
             end
-				if not values.visuals.players['skeleton esp'].Toggle then 
+				if not values.visuals.ESP['skeleton esp'].Toggle then 
 				Visibility(false)
 				   for i, v in pairs(limbs) do
 						v.Transparency = 0
@@ -7556,7 +7544,7 @@ end
 players:Element('ToggleColor', 'skeleton esp', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
 	if tbl.Toggle then
 		for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-			if v.Name ~= LocalPlayer.Name and (values.visuals.players['Team Check'].Toggle and true or v.Team ~= LocalPlayer.Team) then
+			if v.Name ~= LocalPlayer.Name and (values.visuals.ESP['Team Check'].Toggle and true or v.Team ~= LocalPlayer.Team) then
 				DrawESP(v)
 			end
 		end
@@ -7566,7 +7554,7 @@ players:Element('ToggleColor', 'skeleton esp', {default = {Color = C.COL3RGB(255
 			end
 		end)
 	end
-end)
+end)--]]
 
 
 
@@ -7574,6 +7562,7 @@ end)
 local effects = visuals:Sector('effects', "Right")
 
 function UpdateWeapon()
+	if not IsAlive(LocalPlayer) then return end
 		for i,obj in pairs(Camera:GetChildren()) do
 			if obj.Name ~= "Left Arm" or obj.Name ~= 'Right Arm' then
 				Weapon = obj
@@ -7682,10 +7671,10 @@ end
 end
 
 function UpdateArms()
+if not IsAlive(LocalPlayer) then return end
 		for i,obj in pairs(Camera:GetChildren()) do
 			if obj.Name == "Left Arm" then
 				Weapon = obj
-				print('found left arm')
 			end
 		end
 	local selected = values.visuals.effects["left arm material"].Dropdown
@@ -7964,14 +7953,7 @@ end)
 				Weapon = obj
 			end
 		end
-		
---[[effects:Element("ToggleColor", "world color", {default = {Color = C.COL3RGB(255,255,255)}}, function(val) 
-	if val.Toggle then 
-		Camera.ColorCorrection.TintColor = val.Color 
-	else 
-		Camera.ColorCorrection.TintColor = C.COL3RGB(255,255,255) 
-	end 
-end)--]] 
+	
 effects:Element("Toggle", "shadowmap technology", nil, function(val) sethiddenproperty(Lighting, "Technology", val.Toggle and "ShadowMap" or "Legacy") end) 
 effects:Element("ToggleColor", "indoor ambient", {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl) 
 	if tbl.Toggle then 
@@ -7988,7 +7970,32 @@ effects:Element("ToggleColor", "outdoor ambient", {default = {Color = C.COL3RGB(
 	end 
 end)
 
-local client = {}; do
+local Lighting = game:GetService("Lighting")
+local OldBrightness = Lighting.Brightness
+local OldAmbience = Lighting.Ambient
+
+local ambientenabled = false
+local fullbright = false
+local world = visuals:Sector('world', 'Right')
+world:Element('Toggle', 'Fullbright', {}, function(tbl)
+	fullbright = tbl.Toggle
+end)
+--world:Element('Toggle', 'Disco mode')
+world:Element('ToggleColor','Ambient', {}, function(tbl)
+	ambientenabled = tbl.Toggle
+end)
+
+    Lighting:GetPropertyChangedSignal("Brightness"):Connect(function(v)
+        if fullbright then
+            Lighting.Brightness = 1000
+            Lighting.GlobalShadows=false
+        else
+            Lighting.Brightness = OldBrightness
+            Lighting.GlobalShadows=true
+        end
+    end)
+
+do
    for i,v in pairs(getgc(true)) do
        if (type(v) == "table") then
             if (rawget(v, "getbodyparts")) then
@@ -8317,8 +8324,289 @@ end)
 			end
 			end)
 
-				local addons = misc:Sector("addons", "Left") 
-				addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
+for i,v in pairs(animations) do
+   if v.player then 
+        local old_player = v.player
+        v.player = function(a, b)
+            if client.char.alive and client.gamelogic.currentgun and values.misc['Weapon mods']['no anims'].Toggle then
+                if client.gamelogic.currentgun.type ~= "KNIFE" then
+                    for i,v in pairs(client.gamelogic.currentgun.data.animations) do
+                        if b == v then
+                            return function() end
+                        end
+                    end
+                end
+            end
+            return old_player(a,b)
+        end
+    end
+end
+
+local weapons = misc:Sector("Weapon mods", 'Right')
+weapons:Element('Toggle','no anims')
+--[[weapons:Element('Toggle','no gun bob')
+weapons:Element('Toggle','Spread modification')
+weapons:Element('Slider','Spread modifier', {min = 0, max = 1000, default = 1000})
+weapons:Element('Toggle','No recoil')
+weapons:Element('Toggle','Custom reload speed')
+weapons:Element('Toggle','Custom firerate')
+
+weapons:Element('Slider','Recoil modifier', {min = 0, max = 1000, default = 1000})
+weapons:Element('Slider','Reload speed modifier', {min = 0, max = 1000, default = 1000})
+weapons:Element('Slider','Firerate modifier', {min = 0, max = 2000, default = 2000})--]]
+
+local other = misc:Sector('Client', 'Right')
+--[[other:Element('Toggle', 'Knife aura')
+other:Element('Slider', 'Distance', {min = 1, max = 50})
+other:Element('Toggle', 'Held only')--]]
+
+other:Element('Toggle','Custom walkspeed')
+other:Element('Slider', 'Walkspeed modifier', {min = 10,max = 70})
+other:Element('Toggle','Custom jump power')
+other:Element('Slider', 'Jump power modifier', {min = 2,max = 80})
+
+other:Element('Toggle','No fall damage')
+other:Element('Toggle','Hitbox extender')
+other:Element('Slider','Hitbox extender modifier', {min = 0, max = 5})
+
+--other:Element('Toggle','GrenadeTP')
+--other:Element('Slider','Blow up time (ms)', {min = 0, max = 2500})
+
+    function closest()
+        local Distance = math.huge
+        local Closest
+        local Bodyparts
+        local AimPart
+        local RealMouseLocation = UserInputService:GetMouseLocation()
+        local Pos, OnScreen = nil, nil
+        local Autowallable = false 
+        local inFOV = false 
+        for i,v in pairs(Players:GetPlayers()) do
+            if (v ~= LocalPlayer) and (v.Team ~= LocalPlayer.Team) and client.replication.bodyparts[v] and client.replication.bodyparts[v].head then
+                Bodyparts = client.replication.bodyparts[v]
+                -- Bulletcheck arguments : Origin, Target, Trajectory, Acceleration, Penetration Depth 
+                local Pos2, OnScreen2 = Camera:WorldToScreenPoint(Bodyparts.head.Position)
+                local Dist = (Vector2.new(Pos2.X, Pos2.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
+                if Dist < Distance then
+                    AimPart = Bodyparts['head']
+                    Distance = Dist
+                    Closest = v
+                    inFOV = true 
+                    Pos, OnScreen = Pos2, OnScreen2
+                end
+            end
+        end
+        return {Closest = Closest, OnScreen = OnScreen, Part = AimPart, InFOV = inFOV}
+    end
+
+    local oldsend = client.network.send
+    equipped = 1
+    client.network.send = function(self, name, ...)
+        if name == "falldamage" and values.misc.Client['No fall damage'].Toggle then
+            return 
+        end
+        
+        if name == "equip" then 
+            equipped = ...
+        end
+        
+ --[[       if name == "newgrenade" and values.misc.Client.GrenadeTP.Toggle then
+            local args = {...}
+            if args[2].blowuptime then args[2].blowuptime = values.misc.Client['Blow up time (ms)'].Slider end
+            local ClosestPlayer = closest()
+            if not ClosestPlayer or not ClosestPlayer.Closest or not ClosestPlayer.Part then return old(self, data, ...) end
+            for i,v in pairs(args[2].frames) do
+                if v ~= args[2].frames[1] then
+                    if ClosestPlayer.OnScreen then
+                        if v.p0 then
+                            v.p0 = ClosestPlayer.Part.Position
+                        end
+                    end
+                end
+            end
+        end--]]
+        return oldsend(self, name, ...)
+    end
+
+    RunService:BindToRenderStep("Misc", 1, function()
+        if values.misc.Client['Hitbox extender'].Toggle then
+            for i,v in pairs(Players:GetPlayers()) do
+                if IsAlive(v) and client.replication.bodyparts[v] and client.replication.bodyparts[v].head and client.char.alive then
+                    local bp = client.replication.bodyparts[v]
+                    local hbv = values.misc.Client['Hitbox extender modifier'].Slider
+                    bp.head.Size = Vector3.new(hbv,hbv,hbv)
+                    bp.torso.Size = Vector3.new(hbv,hbv,hbv)
+                    bp.lleg.Size = Vector3.new(hbv,hbv,hbv)
+                    bp.rleg.Size = Vector3.new(hbv,hbv,hbv)
+                    bp.larm.Size = Vector3.new(hbv,hbv,hbv)
+                    bp.rarm.Size = Vector3.new(hbv,hbv,hbv)
+                end
+            end
+        end 
+
+        if values.misc.Client['Custom walkspeed'].Toggle then
+            client.char:setbasewalkspeed(values.misc.Client['Walkspeed modifier'].Slider)
+        else
+			client.char:setbasewalkspeed(16)
+		end
+        if not ambientenabled and fullbright then
+            Lighting.Ambient = Color3.fromRGB(255,255,255)
+            Lighting.Brightness = 1000
+        end
+        if fullbright then
+            Lighting.Brightness = 1000
+            Lighting.Ambient = Color3.fromRGB(255,255,255)
+        end
+        if not fullbright and ambientenabled then
+            Lighting.Ambient = values.visuals.world.Ambience.Color
+        elseif not fullbright and not ambientenabled then
+            Lighting.Ambient = OldAmbience
+        end
+        if ambientenabled then
+            Lighting.Ambient = values.visuals.world.Ambience.Color 
+        end
+        
+        if values.misc.Client['Knife aura'] and client.char.alive then
+            if values.misc.Client['Held only'] then
+                if client.gamelogic.currentgun.type ~= "KNIFE" then
+                    return
+                end
+            end
+            for i,v in pairs(Players:GetPlayers()) do
+                if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team then
+                    if IsAlive(v) and client.replication.bodyparts[v] then
+                        local Closest 
+                        local Distance = values.misc.Client.Distance.Slider
+                        local Dist = (client.replication.bodyparts[v].head.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+                        if Dist < Distance then
+                            Dist = Distance
+                            oldsend(client.network, "equip", 3) -- thx iray for telling me this
+                            client.network:send("knifehit", client.replication.getplayerhit(client.replication.bodyparts[v].head), tick(), "Head")
+                            client.network:send("equip", equipped) 
+                        end
+                    end
+                end
+            end
+        end
+        --[[if SpaceDown and client.char.alive and library.flags.BunnyHop then
+            client.char:setbasewalkspeed(library.flags.BunnyHopSpeed)
+            client.char:jump(4)
+        elseif not SpaceDown and client.char.alive and not library.flags.WalkspeedOn then
+            client.char:setbasewalkspeed(12)
+        end--]]
+    end)
+	
+    local oldjump = client.char.jump
+    client.char.jump = function(tbl, jp)
+        if values.misc.Client['Custom jump power'].Toggle then
+            return oldjump(tbl, values.misc.Client['Jump power modifier'].Slider)
+        end
+        return oldjump(tbl, jp)
+    end
+--[[weapons:Element('Toggle','no anims')
+weapons:Element('Toggle','no gun bob')
+weapons:Element('Toggle','Spread modification')
+weapons:Element('Slider','Spread modifier', {min = 0, max = 1000, default = 1000})
+weapons:Element('Toggle','Enable recoil')
+weapons:Element('Toggle','Custom reload speed')
+weapons:Element('Toggle','Custom firerate')
+
+weapons:Element('Slider','Recoil modifier', {min = 0, max = 1000, default = 1000})
+weapons:Element('Slider','Reload speed modifier', {min = 0, max = 1000, default = 1000})
+weapons:Element('Slider','Firerate modifier', {min = 0, max = 2000, default = 2000})--]]
+--[[function SolveVector3(Vector)
+    if values.misc.Client['Recoil modifier'].Slider == 0 then
+        return Vector3.new()
+    else
+        return Vector * values.misc.Client['Recoil modifier'].Slider
+    end
+end 
+
+    local vec = Vector3.new()
+    local SolveVector3 = function(vector)return SolveVector3(vector) end
+    local loadgun = debug.getupvalue(client.loadmodules, 6)
+    local modifydata = debug.getupvalue(loadgun, 1)
+    debug.setupvalue(loadgun, 1, function(...)
+        retv = modifydata(...)
+        v1 = retv
+        if values.misc.Client['Custom firerate'].Toggle then
+            if type(retv.firerate) == 'number' then
+                retv.firerate = retv.firerate + values.misc.Client['Firerate modifier'].Slider
+            end
+        end
+
+        if not values.misc.Client['No recoil'].Toggle then
+            v1.rotkickmin = SolveVector3(v1.rotkickmin)
+            v1.rotkickmax = SolveVector3(v1.rotkickmax)
+            v1.transkickmin = SolveVector3(v1.transkickmin)
+            v1.transkickmax = SolveVector3(v1.transkickmax)
+            --v1.camkickmin = SolveVector3(v1.camkickmin)
+            --v1.camkickmax = SolveVector3(v1.camkickmax)
+            --v1.camkickspeed = 0;
+            v1.aimrotkickmin = SolveVector3(v1.aimrotkickmin)
+            v1.aimrotkickmax = SolveVector3(v1.aimrotkickmax)
+            v1.aimtranskickmin = SolveVector3(v1.aimtranskickmin)
+            v1.aimtranskickmax = SolveVector3(v1.aimtranskickmax)
+            v1.aimcamkickmin = SolveVector3(v1.aimcamkickmin)
+            v1.aimcamkickmax = SolveVector3(v1.aimcamkickmax)
+            --v1.aimcamkickspeed = 0;
+            --v1.modelkickspeed = 0;
+            --v1.modelrecoverspeed = 0;
+            --v1.modelkickdamper = 0.0;
+            --v1.aimkickmult = 0.0;
+        end
+        if values.misc.Client['Spread modification'].Toggle then
+            v1.hipfirespread = v1.hipfirespread * values.misc.Client['Spread modifier'].Slider;
+            v1.hipfirestability = v1.hipfirestability * values.misc.Client['Spread modifier'].Slider;
+            v1.hipfirespreadrecover = v1.hipfirespreadrecover * values.misc.Client['Spread modifier'].Slider;
+        end
+        if values.misc.Client['Custom reload speed'].Toggle then
+            local anim = v1.animations
+            if anim.tacticalreload then
+                v1.animations.tacticalreload.resettime = values.misc.Client['Reload speed modifier'].Slider
+                v1.animations.tacticalreload.stdtimescale = values.misc.Client['Reload speed modifier'].Slider
+                v1.animations.tacticalreload.timescale = values.misc.Client['Reload speed modifier'].Slider
+            elseif anim.reload then
+                v1.animations.reload.resettime = values.misc.Client['Reload speed modifier'].Slider
+                v1.animations.reload.stdtimescale = values.misc.Client['Reload speed modifier'].Slider
+                v1.animations.reload.timescale = values.misc.Client['Reload speed modifier'].Slider
+            elseif anim.pullbolt then
+                v1.animations.pullbolt.stdtimescale = values.misc.Client['Reload speed modifier'].Slider
+                v1.animations.pullbolt.timescale = values.misc.Client['Reload speed modifier'].Slider
+                v1.animations.pullbolt.resettime = values.misc.Client['Reload speed modifier'].Slider
+            end
+        end
+        return retv
+    end)
+    local gunbob = debug.getupvalue(loadgun, 58)
+    debug.setupvalue(loadgun, 58, function(...)
+        if values.misc.Client['no gun bob'].Toggle then 
+            return CFrame.new()
+        end
+        return gunbob(...)
+    end)--]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local addons = misc:Sector("addons", "Left") 
+addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
 					if tbl.Toggle then
 						local oldUiColor = MainUIColor --Colorpick, ColorDrag, HueFrameGradient, Huepick, Huedrag
 						MainUIColor = tbl.Color
@@ -8407,7 +8695,7 @@ end)
 					end
 				end)
 
-				watermarkthemes = {}
+watermarkthemes = {}
 watermarklocation = nil
 fonts = {
 	'Legacy',
@@ -8586,35 +8874,31 @@ for a,b in next, themebackground do
     insertwithoutdupes(Images_names, a)
 end
 				
-			addons:Element('ToggleColor', 'ui border', {default = {Color = C.COL3RGB(255,255,255)}})	
+addons:Element('ToggleColor', 'ui border', {default = {Color = C.COL3RGB(255,255,255)}})	
 				
-				addons:Element('ToggleKeybind', 'gui keybind', {default = {Key = RightShift, Type = Toggle, Toggle = true}}, function(tbl)
+addons:Element('ToggleKeybind', 'gui keybind', {default = {Key = RightShift, Type = Toggle, Toggle = true}}, function(tbl)
 	if tbl.Toggle then
 		watermarklocation.watermark.Draggable = tbl.Active
 		ovascreengui['ova'].Enabled = tbl.Active
 		library.uiopen = tbl.Active
 	end
 end)
-				addons:Element("TextBox", "mnt", {placeholder = "Custom cheat name"}, function()
-					game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TextLabel.Text = values.misc.addons.mnt.Text
-					valuewtr = values.misc.addons.mnt.Text
-					print(valuewtr)
-				end)
+addons:Element("TextBox", "mnt", {placeholder = "Custom cheat name"}, function()
+	game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TextLabel.Text = values.misc.addons.mnt.Text
+	valuewtr = values.misc.addons.mnt.Text
+	print(valuewtr)
+end)
 
 
 
 addons:Element('Dropdown', 'background', {options = Images_names})
-
 addons:Element('ToggleTrans', 'background color', {default = {Color = C.COL3RGB(180,180,180), Transparency = 0}})
-
 local watermark = misc:Sector('watermark', 'Right')
 
 watermark:Element('Toggle', 'enabled', {default = {Toggle = true}}, function(tbl)
 	watermarklocation.Enabled = tbl.Toggle
 end)
-
 watermark:Element('Dropdown', 'themes', {options = watermarkthemes})
-
 local watermarktext
 watermark:Element('TextBox', 'watermark text', {placeholder = 'text here', default = {text = '         yes.no'}}, function(tbl)
 	pcall(function()
@@ -8630,26 +8914,21 @@ end)
 watermark:Element('Dropdown', 'text font', {options = fonts}, function(tbl)
 	watermarklocation.watermark.title.Font = Enum.Font[tbl.Dropdown]
 end)
-
 watermark:Element('Slider', 'text size', {min = 0, max = 50, default = watermarklocation.watermark.title.TextSize}, function(tbl)
 	watermarklocation.watermark.title.TextSize = tbl.Slider
 end)
-
 watermark:Element('Slider', 'text line height', {min = -50, max = 50, default = watermarklocation.watermark.title.LineHeight}, function(tbl)
 	watermarklocation.watermark.title.LineHeight = 1.1 * (tbl.Slider / 10)
 end)
-
 watermark:Element('Slider', 'watermark lenght', {min = 0, max = 100, default = 89}, function(tbl)
 	watermarklocation.watermark.Size = C.UDIM2(0, tbl.Slider * 5, 0, values.misc.watermark['watermark height'].Slider)
 end)
 watermark:Element('Slider', 'watermark height', {min = 0, max = 100, default = 20}, function(tbl)
 	watermarklocation.watermark.Size = C.UDIM2(0, values.misc.watermark['watermark lenght'].Slider * 5, 0, tbl.Slider)
 end)
-
 watermark:Element('ToggleColor', 'border color', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
 	watermarklocation.watermark.BorderColor3 = tbl.Color
 end)
-
 watermark:Element('ToggleColor', 'text color', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
 	watermarklocation.watermark.title.TextColor3 = tbl.Color
 end)
