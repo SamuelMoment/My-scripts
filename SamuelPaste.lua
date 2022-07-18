@@ -9217,29 +9217,74 @@ players:Element("Jumbobox", "outlines", {options = {"drawings", "text"}, default
 players:Element("Dropdown", "font", {options = {"Plex", "Monospace", "System", "UI"}}) 
 players:Element("Slider", "size", {min = 12, max = 16, default = 13}) 
 
+
 --players:Element('Slider', 'cham thickness', {min = 0, max = 10, default = 0})
+local chams = {}
+local champlayer = function(v)
+	if not chams[v] and v.Character and (v.TeamColor ~= LocalPlayer.TeamColor or values.visuals.players.teammates.Toggle) then
+		local highlight = C.INST('Highlight', game.CoreGui)
+		highlight.Name = v.Name
+		highlight.Adornee = v.Character
+		highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+		if values.visuals.players['chams'].Toggle then
+			highlight.FillColor = values.visuals.players['chams'].Color
+			highlight.FillTransparency = values.visuals.players['chams'].Transparency
+		else
+			highlight.FillTransparency = 0
+		end
+		if values.visuals.players['visible chams'].Toggle then
+			highlight.OutlineColor = (values.visuals.players['visible chams'].Color)
+			highlight.OutlineTransparency = (values.visuals.players['visible chams'].Transparency)
+		else
+			highlight.OutlineTransparency = 0
+		end
+		chams[v] = highlight
+	elseif chams[v] then
+		if values.visuals.players['chams'].Toggle then
+			chams[v].FillColor = values.visuals.players['chams'].Color
+			chams[v].FillTransparency = values.visuals.players['chams'].Transparency
+		else
+			chams[v].FillTransparency = 0
+		end
+		if values.visuals.players['visible chams'].Toggle then
+			chams[v].OutlineColor = (values.visuals.players['visible chams'].Color)
+			chams[v].OutlineTransparency = (values.visuals.players['visible chams'].Transparency)
+		else
+			chams[v].OutlineTransparency = 0
+		end	
+	end
+	RunService:BindToRenderStep(v.Name, 10, function()
+	--local char, root = EspLibrary:GetCharacter(v)
+		if v.Character then
+			if chams[v] then
+				chams[v]:Destroy()
+				chams[v] = nil
+			end
+		else
+			if not chams[v] and EspLibrary:GetCharacter(v) and (v.TeamColor ~= LocalPlayer.TeamColor or values.visuals.players.teammates.Toggle) then
+				local highlight = C.INST('Highlight', game.CoreGui)
+				highlight.Name = v.Name
+				highlight.Adornee = v.Character
+				highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+				highlight.FillColor = values.visuals.players['chams'].Color
+				highlight.FillTransparency = (values.visuals.players['chams'].Toggle and values.visuals.players['chams'].Transparency or 1)
+				highlight.OutlineColor = (values.visuals.players['visible chams'].Toggle and values.visuals.players['visible chams'].Color)
+				highlight.OutlineTransparency = (values.visuals.players['visible chams'].Toggle and values.visuals.players['visible chams'].Transparency or 1)
+				chams[v] = highlight
+			elseif chams[v] then
+				chams[v].FillColor = values.visuals.players['chams'].Color
+				chams[v].FillTransparency = (values.visuals.players['chams'].Toggle and values.visuals.players['chams'].Transparency or 1)
+				chams[v].OutlineColor = (values.visuals.players['visible chams'].Toggle and values.visuals.players['visible chams'].Color)
+				chams[v].OutlineTransparency = (values.visuals.players['visible chams'].Toggle and values.visuals.players['visible chams'].Transparency or 1)
+			end
+		end
+	end)
+end
 
 players:Element('ToggleTrans', 'chams', {default = {Color = C.COL3RGB(255,255,255), Transparency = 0}}, function(tbl)
 	for _,Player in pairs(Players:GetPlayers()) do
-		if Player.Character then
-		--local savedname = Player.Name
-			for _2,Obj in pairs(Player.Character:GetDescendants()) do
-				if Obj.Name == 'WallCham' then
-					if tbl.Toggle then
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-							Obj.Visible = true
-							
-						else
-							Obj.Visible = false
-						end
-					else
-						Obj.Visible = false
-					end
-					Obj.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or tbl.Color)
-					Obj.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
-				end
-			end
-		end
+	if Player == LocalPlayer then continue end
+		champlayer(Player)
 	end
 end)
 
@@ -9247,23 +9292,8 @@ end)
 
 players:Element('ToggleTrans', 'visible chams',  {default = {Color = C.COL3RGB(255,255,255), Transparency = 0}}, function(tbl)
 	for _,Player in pairs(Players:GetPlayers()) do
-		if Player.Character then
-			for _2,Obj in pairs(Player.Character:GetDescendants()) do
-				if Obj.Name == 'VisibleCham' then
-					if tbl.Toggle then
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-							Obj.Visible = true
-						else
-							Obj.Visible = false
-						end
-					else
-						Obj.Visible = false
-					end
-					Obj.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or tbl.Color)
-					Obj.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or tbl.Transparency)
-				end
-			end
-		end
+	if Player == LocalPlayer then continue end
+		champlayer(Player)
 	end
 end)
 --big ass code incoming
@@ -14565,21 +14595,9 @@ Players.PlayerAdded:Connect(function(Player)
 	Player:GetPropertyChangedSignal("Team"):Connect(function(new)
 		wait()
 		if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-			for _2,Obj in pairs(Player.Character:GetDescendants()) do
-				if Obj.Name == "VisibleCham" then
-					if values.visuals.players["visible chams"].Toggle then
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-							Obj.Visible = true
-						else
-							Obj.Visible = false
-						end
-					else
-						Obj.Visible = false
-					end
-					Obj.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
-					Obj.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
-				end
-			end
+--[[			for _2,Obj in pairs(Player.Character:GetDescendants()) do
+
+			end--]]
 		end
 	end)
     Player.CharacterAdded:Connect(function(Character)
@@ -14595,103 +14613,21 @@ Players.PlayerAdded:Connect(function(Player)
 			Value.Parent = Character.HumanoidRootPart
 			for _,obj in pairs(Character:GetChildren()) do
 				if obj:IsA('BasePart') and Player ~= LocalPlayer and obj.Name ~= 'HumanoidRootPart' and obj.Name ~= 'Head' and obj.Name ~= 'BackC4' and obj.Name ~= 'HeadHB' then
-					local VisibleCham
-					--[[if obj.Name == 'FakeHead' then 
-						VisibleCham = C.INST('CylinderHandleAdornment')
-						VisibleCham.Height = 1.2 + (values.visuals.players['vcham thickness'].Slider/30)
-						VisibleCham.Radius = 0.61 + (values.visuals.players['vcham thickness'].Slider/20)
-						VisibleCham.CFrame = C.CF(0,0,0) * C.CFAngles(1.6,0,0)
-					else --]]
-						VisibleCham = C.INST('BoxHandleAdornment')
-						--VisibleCham.Size = obj.Size + C.Vec3( (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10))
-						VisibleCham.Size = obj.Size + C.Vec3(0.1,0.1,0.1)
 
-					--end
-					VisibleCham.Name = 'VisibleCham'
-					VisibleCham.AlwaysOnTop = false
-					VisibleCham.ZIndex = 8
-					VisibleCham.AlwaysOnTop = false
-					VisibleCham.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
-
-					local WallCham
-					--[[if obj.Name == 'FakeHead' then 
-						WallCham = C.INST('CylinderHandleAdornment')
-						WallCham.Height = 1.2 + (values.visuals.players['cham thickness'].Slider/20)
-						WallCham.Radius = 0.61 + (values.visuals.players['cham thickness'].Slider/20)
-						WallCham.CFrame = C.CF(0,0,0) * C.CFAngles(1.6,0,0) 
-					else --]]
-						WallCham = C.INST('BoxHandleAdornment')
-						WallCham.Size = obj.Size + Vector3.new(0.1,0.1,0.1)
-						--WallCham.Size = obj.Size + C.Vec3( (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10))
-					--end
-					WallCham.Name = 'WallCham'
-					WallCham.AlwaysOnTop = true
-					WallCham.ZIndex = 5
-					WallCham.AlwaysOnTop = true
-					WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
-
-					if values.visuals.players.chams.Toggle then
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-							WallCham.Visible = true
-						else
-							WallCham.Visible = false
-						end
-					else
-						WallCham.Visible = false
-					end
-
-					if values.visuals.players['visible chams'].Toggle then
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-							VisibleCham.Visible = true
-						else
-							VisibleCham.Visible = false
-						end
-					else
-						VisibleCham.Visible = false
-					end
-
-					C.INSERT(ChamItems, {VisibleCham, obj})
-					C.INSERT(ChamItems, {WallCham, obj})
-
-					VisibleCham.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
-					WallCham.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
-	
-					VisibleCham.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
-					WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
-			
-					VisibleCham.AdornCullingMode = 'Never'
-					WallCham.AdornCullingMode = 'Never'
-
-					VisibleCham.Adornee = obj
-					VisibleCham.Parent = obj
-
-					WallCham.Adornee = obj
-					WallCham.Parent = obj
 				end
 			end
 		end
 	end)
 end)
+
 for _,Player in pairs(Players:GetPlayers()) do
 	if Player ~= LocalPlayer then
 		Player:GetPropertyChangedSignal("Team"):Connect(function(new)
 			wait()
 			if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-				for _2,Obj in pairs(Player.Character:GetDescendants()) do
-					if Obj.Name == "VisibleCham" then
-						if values.visuals.players["visible chams"].Toggle then
-							if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-								Obj.Visible = true
-							else
-								Obj.Visible = false
-							end
-						else
-							Obj.Visible = false
-						end
-						Obj.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
-						Obj.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
-					end
-				end
+				--[[for _2,Obj in pairs(Player.Character:GetDescendants()) do
+
+				end--]]
 			end
 		end)
 	else
@@ -14699,21 +14635,9 @@ for _,Player in pairs(Players:GetPlayers()) do
 			wait()
 			for _,Player in pairs(Players:GetPlayers()) do
 				if Player.Character then
-					for _2,Obj in pairs(Player.Character:GetDescendants()) do
-						if Obj.Name == "VisibleCham" then
-							if values.visuals.players["visible chams"].Toggle then
-								if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-									Obj.Visible = true
-								else
-									Obj.Visible = false
-								end
-							else
-								Obj.Visible = false
-							end
-							Obj.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
-							Obj.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
-						end
-					end
+					--[[for _2,Obj in pairs(Player.Character:GetDescendants()) do
+
+					end--]]
 				end
 			end
 		end)
@@ -14730,36 +14654,9 @@ for _,Player in pairs(Players:GetPlayers()) do
 			Value.Name = 'OldPosition'
 			Value.Parent = Player.Character.HumanoidRootPart
 			for _,obj in pairs(Player.Character:GetChildren()) do
-				if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
-					local VisibleCham = C.INST("BoxHandleAdornment")
-					VisibleCham.Name = "VisibleCham"
-					VisibleCham.AlwaysOnTop = false
-					VisibleCham.ZIndex = 5
-					VisibleCham.Size = obj.Size + C.Vec3(0.18,0.18,0.18)
-					VisibleCham.AlwaysOnTop = false
-					VisibleCham.Transparency = 0.05
+				--[[if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
 
-
-					if values.visuals.players["visible chams"].Toggle then
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-							VisibleCham.Visible = true
-						else
-							VisibleCham.Visible = false
-						end
-					else
-						VisibleCham.Visible = false
-					end
-
-					C.INSERT(ChamItems, VisibleCham)
-
-					VisibleCham.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
-					VisibleCham.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
-
-					VisibleCham.AdornCullingMode = "Never"
-
-					VisibleCham.Adornee = obj
-					VisibleCham.Parent = obj
-				end
+				end--]]
 			end
 		end
     end)
@@ -14770,36 +14667,9 @@ for _,Player in pairs(Players:GetPlayers()) do
 			Value.Parent = Player.Character.HumanoidRootPart
 		for _,obj in pairs(Player.Character:GetChildren()) do
 			CollisionTBL(obj)
-			if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
-				local VisibleCham = C.INST("BoxHandleAdornment")
-				VisibleCham.Name = "VisibleCham"
-				VisibleCham.AlwaysOnTop = false
-				VisibleCham.ZIndex = 5
-				VisibleCham.Size = obj.Size + C.Vec3(0.18,0.18,0.18)
-				VisibleCham.AlwaysOnTop = false
-				VisibleCham.Transparency = 0.05
+			--[[if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
 
-
-				if values.visuals.players["visible chams"].Toggle then
-					if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-						VisibleCham.Visible = true
-					else
-						VisibleCham.Visible = false
-					end
-				else
-					VisibleCham.Visible = false
-				end
-
-				C.INSERT(ChamItems, VisibleCham)
-
-				VisibleCham.Color3 = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Color or values.visuals.players["visible chams"].Color) 
-				VisibleCham.Transparency = (values.rage["Loop kill"]['Target Vchams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Vchams'].Transparency or values.visuals.players["visible chams"].Transparency)
-
-				VisibleCham.AdornCullingMode = "Never"
-
-				VisibleCham.Adornee = obj
-				VisibleCham.Parent = obj
-			end
+			end--]]
 		end
 	end
 end
@@ -14809,19 +14679,7 @@ Players.PlayerAdded:Connect(function(Player)
 		wait()
 		if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
 			for _2,Obj in pairs(Player.Character:GetDescendants()) do
-				if Obj.Name == "WallCham" then
-					if values.visuals.players["chams"].Toggle then
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-							Obj.Visible = true
-						else
-							Obj.Visible = false
-						end
-					else
-						Obj.Visible = false
-					end
-					Obj.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
-					Obj.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
-				end
+
 			end
 		end
 	end)
@@ -14836,38 +14694,6 @@ Players.PlayerAdded:Connect(function(Player)
 			Value.Value = Player.Character.HumanoidRootPart.Position
 			Value.Name = 'OldPosition'
 			Value.Parent = Player.Character.HumanoidRootPart
-			for _,obj in pairs(Character:GetChildren()) do
-				if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
-
-					local WallCham = C.INST("BoxHandleAdornment")
-					WallCham.Name = "WallCham"
-					WallCham.AlwaysOnTop = true
-					WallCham.ZIndex = 5
-					WallCham.Size = obj.Size + C.Vec3(0.08,0.08,0.08)
-					WallCham.AlwaysOnTop = true
-					WallCham.Transparency = 0
-
-					if values.visuals.players["chams"].Toggle then
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-							WallCham.Visible = true
-						else
-							WallCham.Visible = false
-						end
-					else
-						WallCham.Visible = false
-					end
-
-					C.INSERT(ChamItems, WallCham)
-
-					WallCham.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
-					WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
-
-					WallCham.AdornCullingMode = "Never"
-
-					WallCham.Adornee = obj
-					WallCham.Parent = obj
-				end
-			end
 		end
     end)
 end)
@@ -14876,21 +14702,9 @@ for _,Player in pairs(Players:GetPlayers()) do
 		Player:GetPropertyChangedSignal("Team"):Connect(function(new)
 			wait()
 			if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-				for _2,Obj in pairs(Player.Character:GetDescendants()) do
-					if Obj.Name == "WallCham" then
-						if values.visuals.players["chams"].Toggle then
-							if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-								Obj.Visible = true
-							else
-								Obj.Visible = false
-							end
-						else
-							Obj.Visible = false
-						end
-						Obj.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
-						Obj.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
-					end
-				end
+				--[[for _2,Obj in pairs(Player.Character:GetDescendants()) do
+
+				end--]]
 			end
 		end)
 	else
@@ -14898,21 +14712,9 @@ for _,Player in pairs(Players:GetPlayers()) do
 			wait()
 			for _,Player in pairs(Players:GetPlayers()) do
 				if Player.Character then
-					for _2,Obj in pairs(Player.Character:GetDescendants()) do
-						if Obj.Name == "WallCham" then
-							if values.visuals.players["chams"].Toggle then
-								if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-									Obj.Visible = true
-								else
-									Obj.Visible = false
-								end
-							else
-								Obj.Visible = false
-							end
-							Obj.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
-							Obj.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
-						end
-					end
+					--[[for _2,Obj in pairs(Player.Character:GetDescendants()) do
+
+					end--]]
 				end
 			end
 		end)
@@ -14928,38 +14730,12 @@ for _,Player in pairs(Players:GetPlayers()) do
 			Value.Value = Player.Character.HumanoidRootPart.Position
 			Value.Name = 'OldPosition'
 			Value.Parent = Player.Character.HumanoidRootPart
-			for _,obj in pairs(Player.Character:GetChildren()) do
+			--[[for _,obj in pairs(Player.Character:GetChildren()) do
 				if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
 
-					local WallCham = C.INST("BoxHandleAdornment")
-					WallCham.Name = "WallCham"
-					WallCham.AlwaysOnTop = true
-					WallCham.ZIndex = 5
-					WallCham.Size = obj.Size + C.Vec3(0.08,0.08,0.08)
-					WallCham.AlwaysOnTop = true
-					WallCham.Transparency = 0
 
-					if values.visuals.players["chams"].Toggle then
-						if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-							WallCham.Visible = true
-						else
-							WallCham.Visible = false
-						end
-					else
-						WallCham.Visible = false
-					end
-
-					C.INSERT(ChamItems, WallCham)
-
-					WallCham.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
-					WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
-
-					WallCham.AdornCullingMode = "Never"
-
-					WallCham.Adornee = obj
-					WallCham.Parent = obj
 				end
-			end
+			end--]]
 		end
     end)
 	if Player.Character ~= nil and Player.Character:FindFirstChild("UpperTorso") then
@@ -14971,33 +14747,7 @@ for _,Player in pairs(Players:GetPlayers()) do
 			CollisionTBL(obj)
 			if obj:IsA("BasePart") and Player ~= LocalPlayer and obj.Name ~= "HumanoidRootPart" and obj.Name ~= "Head" and obj.Name ~= "BackC4" and obj.Name ~= "HeadHB" then
 
-				local WallCham = C.INST("BoxHandleAdornment")
-				WallCham.Name = "WallCham"
-				WallCham.AlwaysOnTop = true
-				WallCham.ZIndex = 5
-				WallCham.Size = obj.Size + C.Vec3(0.08,0.08,0.08)
-				WallCham.AlwaysOnTop = true
-				WallCham.Transparency = 0
 
-				if values.visuals.players["chams"].Toggle then
-					if values.visuals.players.teammates.Toggle or Player.Team ~= LocalPlayer.Team then
-						WallCham.Visible = true
-					else
-						WallCham.Visible = false
-					end
-				else
-					WallCham.Visible = false
-				end
-
-				C.INSERT(ChamItems, WallCham)
-
-				WallCham.Color3 = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Color or values.visuals.players.chams.Color)
-				WallCham.Transparency = (values.rage["Loop kill"]['Target Chams'].Toggle and Player.Name == values.rage["Loop kill"]['Player'].Dropdown and values.rage["Loop kill"]['Target Chams'].Transparency or values.visuals.players['chams'].Transparency)
-
-				WallCham.AdornCullingMode = "Never"
-
-				WallCham.Adornee = obj
-				WallCham.Parent = obj
 			end
 		end
 	end

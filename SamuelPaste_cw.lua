@@ -6969,1642 +6969,234 @@ local workspace = game:GetService('Workspace')
 local Camera = workspace.CurrentCamera
 local Left = "Left"
 local Right = "Right"
-local Weapon = nil
 local Mouse = LocalPlayer:GetMouse()
-local function VectorRGB(RGB) 
-	return C.Vec3(RGB.R, RGB.G, RGB.B) 
-end 
+
 local gui = library:New("SamuelPaste")
-local legit = gui:Tab('legit')
-local rage = gui:Tab('rage')
-local visuals = gui:Tab('visuals')
+local main = gui:Tab('main')
 local misc = gui:Tab('misc')
+local visuals = gui:Tab('visuals')
 
+for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"kick") then v.kick = function() return end end end 
+for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999 end end 
 
-
-
-----------------------------------------------LEGIT TAB----------------------------------------------------------------------------------------------------------------------------------------------------------------
-animations = {}
-local client = {}; do
-    local gc = getgc(true)  
-    for i = #gc, 1, -1 do
-        local v = gc[i]
-        local type = type(v)
-        if type == 'function' then
-            if debug.getinfo(v).name == "loadmodules" then
-                client.loadmodules = v
-            end
-        end 
-        if type == "table" then
-            if (rawget(v, 'send')) then
-                client.network = v
-            elseif (rawget(v, 'basecframe')) then
-                client.camera = v
-            elseif (rawget(v, "gammo")) then
-                client.gamelogic = v
-            elseif (rawget(v, "getbodyparts")) then
-                client.replication = v
-                client.replication.bodyparts = debug.getupvalue(client.replication.getbodyparts, 1)
-            elseif (rawget(v, "updateammo")) then
-                client.hud = v
-            elseif (rawget(v, "setbasewalkspeed")) then
-                client.char = v
-            elseif (rawget(v, "getscale")) then
-                client.uiscaler = v
-            end
-            if rawget(v, 'player') then
-                --print("Got animation")
-                table.insert(animations, v)
-            end
-        end
-    end
-end
-    EspLibrary:Init()
-    EspLibrary.settings.limitdistance = false
-
-    function EspLibrary:GetHealth(Player)
-        return client.hud:getplayerhealth(Player)
-    end
-
-    function EspLibrary:GetCharacter(Player)
-        local Character = client.replication.getbodyparts(Player)
-
-        return Character and Character.torso.Parent, Character and Character.torso
-    end
-
-local Fov = Drawing.new("Circle") 
-Fov.Filled = true 
-Fov.Color = C.COL3RGB(15,15,15) 
-Fov.Transparency = 0.5 
-Fov.Position = C.Vec2(Mouse.X, Mouse.Y + 16) 
-Fov.Radius = 120 
-
-local aimbot = legit:Sector("aimbot", "Left") 
-aimbot:Element("ToggleKeybind", "aim assist") 
-aimbot:Element("ToggleKeybind", "silent aim")
-aimbot:Element("ToggleKeybind", "triggerbot")
-local main = legit:MSector("main", "Left") 
-local default = main:Tab('default')
---default:Element("Dropdown", "target", {options = {"crosshair", "health", "distance"}}) 
-default:Element("Dropdown", "hitbox", {options = {"Head", 'Torso', 'Left Arm', 'Right Arm', 'Left Leg', 'Right Leg', 'Random'}}) 
-default:Element("Dropdown", "silent aim mode", {options = {'Silent','Mouse'}})
-default:Element('Slider', 'smoothness', {min = 3, max = 100, default = 3})
-local FOVLegit = 120
-default:Element("Slider", "FOV", {min = 5, max = 600, default = 120}, function(tbl)
-	FOVLegit = tbl.Slider
-end)
---default:Element("Slider", "smoothing", {min = 1, max = 50, default = 1}) 
-default:Element("Toggle", "silent aim")
-default:Element("Toggle", "follow barrel", {}, function(tbl)
-	followbarrel = tbl.Toggle
-end)
-default:Element("Toggle", "visible check")
-default:Element("Slider", "hitchance", {min = 1, max = 100, default = 100}) 
---default:Element("Dropdown", "priority", {options = {"closest", "head", "chest"}}) 
---default:Element("Toggle", "triggerbot") 
---default:Element("Slider", "delay (ms)", {min = 0, max = 300, default = 200}) 
---default:Element("Slider", "minimum dmg", {min = 0, max = 100, default = 15})
-local settings = legit:Sector("settings", "Right") 
-settings:Element("Toggle", "free for all") 
-settings:Element('ToggleTrans', 'draw fov', {default = {Color = C.COL3RGB(255,255,255), Transparency = 0}})
-settings:Element('Toggle', 'filled fov')
-settings:Element('Slider', 'fov thickness', {min = 1, max = 10, default = 1})
---settings:Element("Toggle", "forcefield check") 
-
-
-    local MouseDown = false
-    UserInputService.InputBegan:Connect(function(key)
-        if key.UserInputType == Enum.UserInputType.MouseButton1 then
-            MouseDown = true
-        end
-    end)
-
-    UserInputService.InputEnded:Connect(function(key)
-        if key.UserInputType == Enum.UserInputType.MouseButton1 then
-            MouseDown = false
-        end
-    end)
-	
-function IsAlive(player)
-    if client.replication.bodyparts[player] and client.replication.bodyparts[player].head then
-        return true 
-    end
-    return false
-end
-
-function PlayerOnScreen(player)
-    if IsAlive(player) then
-        local Pos, OnScreen = Camera:WorldToViewportPoint(client.replication.bodyparts[player].head.Position)
-        local RealMouseLocation = game:GetService('UserInputService'):GetMouseLocation()
-        local Distance = FOVLegit
-        local IsInFOV = false 
-        local Dist = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
-        if Dist < Distance then 
-            Distance = Dist
-            IsInFOV = true
-        end
-        return {OnScreen = OnScreen, IsInFOV = IsInFOV}
-    end
-end
-function IsVisible(player)
-    if IsAlive(player) and client.replication.bodyparts[player] then
-        local HeadPos = client.replication.bodyparts[player].head.Position
-        local Hit = workspace:FindPartOnRayWithIgnoreList(Ray.new(Camera.CFrame.p, HeadPos - Camera.CFrame.p), {
-            workspace.Ignore,
-            workspace.Players,
-            workspace.Terrain,
-            Camera
-        })
-        return Hit == nil 
-    end
-    return false
-end
-
-    local Closest
-    local ClosestPosition
-    local OnScreen, ScreenPos = nil,nil
-    RunService:BindToRenderStep("Aimbot", 1, function()
-        --CharAlive = client.char.alive
-        if client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then
-            Barrel = client.gamelogic.currentgun.barrel
-        else
-            Barrel = nil
-        end
-        --[[Circle.NumSides = library.flags.FOVRadius
-        Circle.Thickness = library.flags.FOVThickness
-        Circle.Color = library.flags.FOVColor
-        Circle.Radius = library.flags.FOVLegit
-        Circle.Transparency = library.flags.FOVTransparency
-        Circle.Color = library.flags.FOVColor
-        Circle.Visible = library.flags.ShowFOV--]]
-		Fov.Visible = values.legit.settings['draw fov'].Toggle
-
-		Fov.Transparency = values.legit.settings['draw fov'].Transparency
-	
-		Fov.Color =  values.legit.settings['draw fov'].Color
-		Fov.Position = C.Vec2(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-		Fov.Radius = FOVLegit
-		Fov.Thickness = values.legit.settings['fov thickness'].Slider
-		Fov.Filled = values.legit.settings['filled fov'].Toggle
-
-        if client.char.alive and client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then 
-            if followbarrel then
-                local Pos, OnScreen = Camera:WorldToViewportPoint(client.gamelogic.currentgun.barrel.CFrame * Vector3.new(0, 0, -10))
-                Fov.Position = Vector2.new(Pos.X, Pos.Y)
-            else
-                Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
-            end
-        else
-            Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
-        end
-        if values.legit.aimbot['silent aim'].Toggle and values.legit.main.default['silent aim'].Toggle and client.char.alive then
-            local Distance = FOVLegit
-			--print("got slider")
-            local Bodyparts
-            local RealMouseLocation
-            if followbarrel then
-                local Pos = Camera:WorldToViewportPoint(client.gamelogic.currentgun.barrel.CFrame * Vector3.new(0, 0, -10))
-                RealMouseLocation = Vector2.new(Pos.X, Pos.Y) --cba changing variable name + ratio
-            else
-                RealMouseLocation = game:GetService('UserInputService'):GetMouseLocation()
-            end
-            if RealMouseLocation ~= nil then
-                for i,v in pairs(Players:GetPlayers()) do
-                    if (v ~= LocalPlayer) and (v.Team ~= LocalPlayer.Team) and IsAlive(v) then
-                        Bodyparts = client.replication.bodyparts[v]
-                        local Pos, OnScreen = Camera:WorldToViewportPoint(Bodyparts.head.Position)
-                        local Dist = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
-                        if Dist < Distance then
-                            Distance = Dist
-                            Closest = v
-                            aimtarget = v 
-                        end
-                    end
-                end
-				--print("closest found")
-                local ScreenPos, OnScreen = nil, nil
-                if Closest and client.replication.bodyparts[Closest] then 
-					--print('got closest')
-                    local ClosestParts = client.replication.bodyparts[Closest]
-                    if values.legit.main.default.hitbox.Dropdown == "Head" then
-                        ClosestPosition = ClosestParts.head.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.head.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Torso" then
-                        ClosestPosition = ClosestParts.torso.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.torso.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Left Arm" then
-                        ClosestPosition = ClosestParts.larm.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.larm.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Right Arm" then
-                        ClosestPosition = ClosestParts.rarm.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.rarm.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Left Leg" then
-                        ClosestPosition = ClosestParts.lleg.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.lleg.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Right Leg" then
-                        ClosestPosition = ClosestParts.rleg.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(ClosestParts.rleg.Position)
-                    elseif values.legit.main.default.hitbox.Dropdown == "Random" then
-                        local Parts = { -- garbage code
-                            ClosestParts.head,
-                            ClosestParts.torso,
-                            ClosestParts.larm,
-                            ClosestParts.rarm,
-                            ClosestParts.lleg,
-                            ClosestParts.rleg
-                        }
-                        local Part = Parts[math.random(1, #Parts)]
-                        ClosestPosition = Part.Position
-                        ScreenPos, OnScreen = Camera:WorldToScreenPoint(Part.Position)
-                    end
-					--print("picked hitboxes")
-                    if values.legit.main.default['silent aim mode'].Dropdown == "Silent" then
-                        if math.random(1,100) < values.legit.main.default['hitchance'].Slider then
-                            ClosestPosition = ClosestParts.head.Position
-                        else
-                            ClosestPosition = ClosestParts.torso.Position
-                        end
-						--print('is silent aim')
-                    end
-                    if OnScreen and values.legit.main.default['silent aim mode'].Dropdown == "Mouse" and MouseDown then
-                        local Smoothing = math.clamp(values.legit.main.default.smoothness.Slider, 3, 100) 
-                        local X = ((ScreenPos.X) - (Mouse.X)) / Smoothing
-                        local Y = ((ScreenPos.Y) - (Mouse.Y)) / Smoothing 
-                        if values.legit.main.default['visible check'].Toggle and not IsVisible(Closest) then
-                            return print('not visible, mouse')
-                        end
-                        mousemoverel(X, Y)
-						--print('visible, mouse')
-                    end
-                else --print("no hitboxes") 
-				end
-            end
-        else --print('not enabled') 
+local Remotes = {}
+local player = game.Players.LocalPlayer
+local NetworkEnvironment = getmenv(rawget(rawget(require(game.ReplicatedStorage.Framework.Nevermore), '_lookupTable'), 'Network'))
+local EventsTable = debug.getupvalue(NetworkEnvironment.GetEventHandler, 1)
+local FunctionsTable = debug.getupvalue(NetworkEnvironment.GetFunctionHandler, 1)
+local function AddRemotes(StorageTable)
+	for Name, Info in pairs(StorageTable) do
+		if rawget(Info, 'Remote') then
+			Remotes[rawget(Info, 'Remote')] = Name
 		end
-    end)
-	
-	    local Old
-    Old = hookmetamethod(game, "__index", function(Self, Key)
-        if values.legit.main.default['silent aim mode'].Dropdown == "Silent" and client.char.alive then
-            if Key == "CFrame" and not checkcaller() then
-                if client.gamelogic.currentgun and client.gamelogic.currentgun.barrel then
-                    if Self == client.gamelogic.currentgun.barrel or Self == client.gamelogic.currentgun.aimsightdata[1].sightpart then
-					--print('is silent aim, hook')
-                        if Closest and ClosestPosition then
-                            if getcallingscript().Name == "RenderSteppedRunner" then
-                                local PlayerOnScreen1 = PlayerOnScreen(Closest)
-                                if PlayerOnScreen1 and PlayerOnScreen1.OnScreen then
-                                    local OnScreen = PlayerOnScreen1.OnScreen
-                                    local IsInFOV = PlayerOnScreen1.IsInFOV
-                                    local Position = Self.Position
-                                    if IsInFOV and OnScreen then
-                                        if values.legit.main.default['visible check'].Toggle and not IsVisible(Closest) then
-                                            return Old(Self, Key)
-                                        end
-                                        --local CFramePosition = CFrame.new(Position, ClosestPosition)
-                                        return CFrame.new(Position, ClosestPosition)
-                                    end 
-                                end
-                            end
-                        end
-						
-                    end
-                end
-            end
-        end
-        return Old(Self, Key)
-    end)
--------------------------------------------RAGE TAB------------------------------------------------
-local loopkillloop
+	end
+end
+AddRemotes(EventsTable)
+AddRemotes(FunctionsTable)
+local Index
+Index = hookmetamethod(game, '__index', function(Self, Key)
+	if checkcaller() and (Key == 'Name' or Key == 'name') and Remotes[Self] then
+	    return Remotes[Self]
+	end
 
-local Loopkill = rage:Sector("Loop kill", "Right") 
-Loopkill:Element("lmao", "Player", {options = loopkillplr, Amount = 20}, function(tbl)
-	pcall(function()
-		loopkillloop:Disconnect()
-	end)
- 	if game.Players:FindFirstChild(tbl.Dropdown) then
-		loopkillloop = RunService.RenderStepped:Connect(function()
-			wait(0.1)
-			values.rage["Loop kill"]['Alive: '].stringchange('Alive: '..(IsAlive(game.Players:FindFirstChild(tbl.Dropdown)) and 'yes' or 'no'))
-			values.rage['Loop kill']['Team: '].stringchange('Team: '..game.Players:FindFirstChild(tbl.Dropdown).Team.Name)
-			values.rage['Loop kill']['Account age: '].stringchange('Account age: '..game.Players:FindFirstChild(tbl.Dropdown).AccountAge..' days')
-		end)
+	return Index(Self, Key)
+end)
+function getEvent(name)
+	for i, v in ipairs(game:GetService("ReplicatedStorage").Communication.Events:GetChildren()) do
+		if v.Name == name then
+			return v
+		end
+	end
+end
+function getFunction(name)
+	for i, v in ipairs(game:GetService("ReplicatedStorage").Communication.Functions:GetChildren()) do
+		if v.Name == name then
+			return v
+		end
+	end
+end
+
+local chat = main:Sector('chat', 'Right')
+chat:Element('ToggleColor','custom tag')
+chat:Element('ToggleColor','custom nickname')
+chat:Element('ToggleColor','custom text color')
+
+chat:Element('TextBox', 'tag',{placeholder = "custom tag"})
+chat:Element('TextBox', 'nickname',{placeholder = "custom nickname"})
+
+chat:Element('Toggle','custom message size')
+chat:Element('Slider','size', {min = 1, max = 100})
+chat:Element('Toggle', 'custom font')
+fonts = {
+	'Legacy',
+	'Arial',
+	'ArialBold',
+	'SourceSans',
+	'SourceSansBold',
+	'SourceSansSemibold',
+	'SourceSansLight',
+	'SourceSansItalic',
+	'Bodoni',
+	'Garamond',
+	'Cartoon',
+	'Code',
+	'Highway',
+	'SciFi',
+	'Arcade',
+	'Fantasy',
+	'Antique',
+	'Gotham',
+	'GothamSemibold',
+	'GothamBold',
+	'GothamBlack',
+	'AmaticSC',
+	'Bangers',
+	'Creepster',
+	'DenkOne',
+	'Fondamento',
+	'FredokaOne',
+	'GrenzeGotisch',
+	'IndieFlower',
+	'JosefinSans',
+	'Jura',
+	'Kalam',
+	'LuckiestGuy',
+	'Merriweather',
+	'Michroma',
+	'Nunito',
+	'Oswald',
+	'PatrickHand',
+	'PermanentMarker',
+	'Roboto',
+	'RobotoCondensed',
+	'RobotoMono',
+	'Sarpanch',
+	'SpecialElite',
+	'TitilliumWeb',
+	'Ubuntu',
+}
+chat:Element('Dropdown', 'message font',{options = fonts})
+
+function toInteger(color)
+	return C.FLOOR(color.r*255)*256^2+C.FLOOR(color.g*255)*256+C.FLOOR(color.b*255)
+end
+
+function toHex(color)
+	local int = toInteger(color)
+	
+	local current = int
+	local final = ""
+	
+	local hexChar = {
+		"A", "B", "C", "D", "E", "F"
+	}
+	
+	repeat local remainder = current % 16
+		local char = tostring(remainder)
 		
-		values.rage["Loop kill"]['Alive: '].stringchange('Alive: ')
-		values.rage['Loop kill']['Team: '].stringchange('Team: ')
-		values.rage['Loop kill']['Account age: '].stringchange('Account age: ')
-	end
-end)
-
-
-
-Loopkill:Element("ToggleColor", "Target box", {default = {Color = C.COL3RGB(255,255,255)}}) 
-Loopkill:Element("ToggleColor", "Target name", {default = {Color = C.COL3RGB(255,255,255)}}) 
-Loopkill:Element("ToggleColor", "Target health", {default = {Color = C.COL3RGB(0,1,0)}}) 
-
-Loopkill:Element('Label', 'Alive: ')
-Loopkill:Element('Label', 'Team: ')
-Loopkill:Element('Label', 'Account age: ')
-
-
---------------------------------------------VISUALS TAB AKA ESP-----------------------------------------
-local players = visuals:Sector("ESP", "Left") 
-players:Element('Toggle', "enabled", {}, function(tbl)
-	EspLibrary.settings.enabled = tbl.Toggle
-end)
-players:Element('Slider', "Refresh Rate (ms)", {min = 0, max = 1000, default = 5}, function(tbl)
-	EspLibrary.settings.refreshrate = tbl.Slider
-end)
-players:Element('Toggle', "Team check", {}, function(tbl)
-	EspLibrary.settings.teamcheck = tbl.Toggle
-end)
-players:Element('Toggle', "Team color", {default = {Toggle = true}}, function(tbl)
-	EspLibrary.settings.teamcolor = tbl.Toggle
-end)
-players:Element('ToggleColor', "Names enabled", {default = {Color = C.COL3RGB(1,1,1),Toggle = true}}, function(tbl)
-	EspLibrary.settings.names = tbl.Toggle
-	EspLibrary.settings.namescolor = tbl.Color
-end)
-players:Element('Toggle', "Names Outline", {}, function(tbl)
-	EspLibrary.settings.namesoutline = tbl.Toggle
-end)
-players:Element('ToggleColor', "Distance", {default = {Color = C.COL3RGB(1,1,1),Toggle = true}}, function(tbl)
-	EspLibrary.settings.distance = tbl.Toggle
-	EspLibrary.settings.distancecolor = tbl.Color
-end)
-players:Element('Toggle', "Distance Outline", {}, function(tbl)
-	EspLibrary.settings.distanceoutline = tbl.Toggle
-end)
-players:Element('ToggleColor', "Boxes", {default = {Color = C.COL3RGB(1,1,1), Toggle = true}}, function(tbl)
-	EspLibrary.settings.boxes = tbl.Toggle
-	EspLibrary.settings.boxescolor = tbl.Color
-end)
-players:Element('Toggle', "Boxes Outline", {}, function(tbl)
-	EspLibrary.settings.boxesoutline = tbl.Toggle
-end)
-players:Element('ToggleTrans', "Boxes Fill", {default = {Color = C.COL3RGB(1,1,1)}}, function(tbl)
-	EspLibrary.settings.boxesfill = tbl.Toggle
-	EspLibrary.settings.boxesfillcolor = tbl.Color
-	EspLibrary.settings.boxesfilltrans = tbl.Transparency
-end)
-players:Element('ToggleColor', "Healtbars", {default = {Color = C.COL3RGB(1,1,1)}}, function(tbl)
-	EspLibrary.settings.healthbars = tbl.Toggle
-	EspLibrary.settings.healthbarscolor = tbl.Color
-end)
-players:Element('Slider', "Healthbar X Offset", {min = 0, max = 10, default = 2}, function(tbl)
-	EspLibrary.settings.healthbarsoffset = tbl.Slider
-end)
-players:Element('ToggleColor', "Tracers", {default = {Color = C.COL3RGB(1,1,1)}}, function(tbl)
-	EspLibrary.settings.tracers = tbl.Toggle
-	EspLibrary.settings.tracerscolor = tbl.Color
-end)
-EspLibrary.settings.tracersorigin = 'Mouse'
-players:Element('Dropdown', "Tracers side of screen", {options = {"Mouse","Top", "Left", "Right", "Bottom", "Center"}}, function(tbl)
-	EspLibrary.settings.tracersorigin = tbl.Dropdown
-end)
-players:Element('Dropdown', "Text Font", {options = {"UI", "System", "Plex", "Monospace"}}, function(tbl)
-	EspLibrary.settings.textfont = Drawing.Fonts[tbl.Dropdown]
-end)
-players:Element('Slider', "Text Font Size", {min = 13, max = 18, default = 18}, function(tbl)
-	EspLibrary.settings.textsize = tbl.Slider
-end)
-
-
-
---big ass code incoming
---[[local function DrawLine()
-    local l = Drawing.new("Line")
-    l.Visible = false
-    l.From = C.Vec2(0, 0)
-    l.To = C.Vec2(1, 1)
-    l.Color = values.visuals.ESP['skeleton esp'].Color
-    l.Thickness = 1
-    l.Transparency = 1
-    return l
-end
-
-local function DrawESP(plr)
-    repeat wait() until plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil
-    local limbs = {}
-    local R15 = (plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R15) and true or false
-    if R15 then 
-        limbs = {
-            -- Spine
-            Head_UpperTorso = DrawLine(),
-            UpperTorso_LowerTorso = DrawLine(),
-            -- Left Arm
-            UpperTorso_LeftUpperArm = DrawLine(),
-            LeftUpperArm_LeftLowerArm = DrawLine(),
-            LeftLowerArm_LeftHand = DrawLine(),
-            -- Right Arm
-            UpperTorso_RightUpperArm = DrawLine(),
-            RightUpperArm_RightLowerArm = DrawLine(),
-            RightLowerArm_RightHand = DrawLine(),
-            -- Left Leg
-            LowerTorso_LeftUpperLeg = DrawLine(),
-            LeftUpperLeg_LeftLowerLeg = DrawLine(),
-            LeftLowerLeg_LeftFoot = DrawLine(),
-            -- Right Leg
-            LowerTorso_RightUpperLeg = DrawLine(),
-            RightUpperLeg_RightLowerLeg = DrawLine(),
-            RightLowerLeg_RightFoot = DrawLine(),
-        }
-    else 
-        limbs = {
-            Head_Spine = DrawLine(),
-            Spine = DrawLine(),
-            LeftArm = DrawLine(),
-            LeftArm_UpperTorso = DrawLine(),
-            RightArm = DrawLine(),
-            RightArm_UpperTorso = DrawLine(),
-            LeftLeg = DrawLine(),
-            LeftLeg_LowerTorso = DrawLine(),
-            RightLeg = DrawLine(),
-            RightLeg_LowerTorso = DrawLine()
-        }
-    end
-    local function Visibility(state)
-        for i, v in pairs(limbs) do
-            v.Visible = state
-        end
-    end
-
-    local function Colorize(color)
-        for i, v in pairs(limbs) do
-            v.Color = color
-        end
-    end
-
-        local connection
-        connection = RunService.RenderStepped:Connect(function()
-            if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 then
-                local HUM, vis = Camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
-                if vis then
-                    local H = Camera:WorldToViewportPoint(plr.Character.Head.Position)
-                    if limbs.Head_Spine.From ~= Vector2.new(H.X, H.Y) then
-                        local T_Height = plr.Character.Torso.Size.Y/2 - 0.2
-                        local UT = Camera:WorldToViewportPoint((plr.Character.Torso.CFrame * CFrame.new(0, T_Height, 0)).p)
-                        local LT = Camera:WorldToViewportPoint((plr.Character.Torso.CFrame * CFrame.new(0, -T_Height, 0)).p)
-
-                        local LA_Height = plr.Character["Left Arm"].Size.Y/2 - 0.2
-                        local LUA = Camera:WorldToViewportPoint((plr.Character["Left Arm"].CFrame * CFrame.new(0, LA_Height, 0)).p)
-                        local LLA = Camera:WorldToViewportPoint((plr.Character["Left Arm"].CFrame * CFrame.new(0, -LA_Height, 0)).p)
-
-                        local RA_Height = plr.Character["Right Arm"].Size.Y/2 - 0.2
-                        local RUA = Camera:WorldToViewportPoint((plr.Character["Right Arm"].CFrame * CFrame.new(0, RA_Height, 0)).p)
-                        local RLA = Camera:WorldToViewportPoint((plr.Character["Right Arm"].CFrame * CFrame.new(0, -RA_Height, 0)).p)
-
-                        local LL_Height = plr.Character["Left Leg"].Size.Y/2 - 0.2
-                        local LUL = Camera:WorldToViewportPoint((plr.Character["Left Leg"].CFrame * CFrame.new(0, LL_Height, 0)).p)
-                        local LLL = Camera:WorldToViewportPoint((plr.Character["Left Leg"].CFrame * CFrame.new(0, -LL_Height, 0)).p)
-
-                        local RL_Height = plr.Character["Right Leg"].Size.Y/2 - 0.2
-                        local RUL = Camera:WorldToViewportPoint((plr.Character["Right Leg"].CFrame * CFrame.new(0, RL_Height, 0)).p)
-                        local RLL = Camera:WorldToViewportPoint((plr.Character["Right Leg"].CFrame * CFrame.new(0, -RL_Height, 0)).p)
-
-                        -- Head
-                        limbs.Head_Spine.From = Vector2.new(H.X, H.Y)
-                        limbs.Head_Spine.To = Vector2.new(UT.X, UT.Y)
-
-                        --Spine
-                        limbs.Spine.From = Vector2.new(UT.X, UT.Y)
-                        limbs.Spine.To = Vector2.new(LT.X, LT.Y)
-
-                        --Left Arm
-                        limbs.LeftArm.From = Vector2.new(LUA.X, LUA.Y)
-                        limbs.LeftArm.To = Vector2.new(LLA.X, LLA.Y)
-
-                        limbs.LeftArm_UpperTorso.From = Vector2.new(UT.X, UT.Y)
-                        limbs.LeftArm_UpperTorso.To = Vector2.new(LUA.X, LUA.Y)
-
-                        --Right Arm
-                        limbs.RightArm.From = Vector2.new(RUA.X, RUA.Y)
-                        limbs.RightArm.To = Vector2.new(RLA.X, RLA.Y)
-
-                        limbs.RightArm_UpperTorso.From = Vector2.new(UT.X, UT.Y)
-                        limbs.RightArm_UpperTorso.To = Vector2.new(RUA.X, RUA.Y)
-
-                        --Left Leg
-                        limbs.LeftLeg.From = Vector2.new(LUL.X, LUL.Y)
-                        limbs.LeftLeg.To = Vector2.new(LLL.X, LLL.Y)
-
-                        limbs.LeftLeg_LowerTorso.From = Vector2.new(LT.X, LT.Y)
-                        limbs.LeftLeg_LowerTorso.To = Vector2.new(LUL.X, LUL.Y)
-
-                        --Right Leg
-                        limbs.RightLeg.From = Vector2.new(RUL.X, RUL.Y)
-                        limbs.RightLeg.To = Vector2.new(RLL.X, RLL.Y)
-
-                        limbs.RightLeg_LowerTorso.From = Vector2.new(LT.X, LT.Y)
-                        limbs.RightLeg_LowerTorso.To = Vector2.new(RUL.X, RUL.Y)
-                    end
-
-                    if limbs.Head_Spine.Visible ~= true then
-                        Visibility(true)
-                    end
-                else 
-                    if limbs.Head_Spine.Visible ~= false then
-                        Visibility(false)
-                    end
-                end
-            else 
-                if limbs.Head_UpperTorso.Visible ~= false then
-                    Visibility(false)
-                end
-                if game.Players:FindFirstChild(plr.Name) == nil then 
-                    for i, v in pairs(limbs) do
-						v.Transparency = 0
-                        v:Remove()
-                    end
-                    connection:Disconnect()
-                end
-				if plr.TeamColor == LocalPlayer.TeamColor and not (values.visuals.ESP['Team Check'].Toggle) then
-					Visibility(false)
-				   for i, v in pairs(limbs) do
-						v.Transparency = 0
-                        v:Remove()
-                    end
-                    connection:Disconnect()
-				end
-            end
-				if not values.visuals.ESP['skeleton esp'].Toggle then 
-				Visibility(false)
-				   for i, v in pairs(limbs) do
-						v.Transparency = 0
-                        v:Remove()
-                    end
-                    connection:Disconnect()
-				end			
-			
-        end)
-
-
-end
-
-players:Element('ToggleColor', 'skeleton esp', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
-	if tbl.Toggle then
-		for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-			if v.Name ~= LocalPlayer.Name and (values.visuals.ESP['Team Check'].Toggle and true or v.Team ~= LocalPlayer.Team) then
-				DrawESP(v)
-			end
-		end
-		game.Players.PlayerAdded:Connect(function(newplr)
-			if newplr.Name ~= LocalPlayer.Name and tbl.Toggle then
-				DrawESP(newplr)
-			end
-		end)
-	end
-end)--]]
-
-
-
-
-local effects = visuals:Sector('effects', "Right")
-
-function UpdateWeapon()
-	if not IsAlive(LocalPlayer) then return end
-		for i,obj in pairs(Camera:GetChildren()) do
-			if obj.Name ~= "Left Arm" or obj.Name ~= 'Right Arm' then
-				Weapon = obj
-			end
-		end
-	local selected = values.visuals.effects["weapon material"].Dropdown
-	local ffanim = values.visuals.effects["weapon ff anim"].Dropdown
-	for i,obj in pairs(Weapon:GetChildren()) do
-		--if (not obj:IsA('Part') or not obj:IsA('MeshPart')) then return end
-		if not obj:FindFirstChild('OldMaterial') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldMaterial'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Material.Name
-		end
-		if not obj:FindFirstChild('OldTransparency') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldTransparency'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Transparency
-		end	
-		if not obj:FindFirstChild('OldColor') then
-			local StringValue = Instance.new('Color3Value')
-			StringValue.Name = 'OldColor'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Color
-		end
-		if not obj:FindFirstChild('OldReflectance') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldReflectance'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Reflectance
-		end
-		if obj:IsA('MeshPart') and not obj:FindFirstChild('OldTextureID') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldTextureID'
-			StringValue.Parent = obj
-			StringValue.Value = obj.TextureID		
-		end
-		if obj:FindFirstChild("Mesh") and not obj.Mesh:FindFirstChild('OldVertex') then
-			local e = Instance.new('Vector3Value',obj.Mesh)
-			e.Name = 'OldVertex'
-			e.Value = obj.Mesh.VertexColor
+		if remainder >= 10 then
+			char = hexChar[1 + remainder - 10]
 		end
 		
-		if values.visuals.effects["weapon chams"].Toggle then
-			if obj:IsA("MeshPart") and selected == "ForceField" then 
-				if ffanim == "nothing" then
-					obj.TextureID = ""
-				elseif ffanim == "skin" then
-
-				elseif ffanim == "galaxy" then
-					obj.TextureID = "rbxassetid://268022762"
-				elseif ffanim == "weird" then
-					obj.TextureID = "rbxassetid://1066669420"
-				elseif ffanim == "cover" then
-					obj.TextureID = "rbxassetid://5827121543"
-				elseif ffanim == "light" then
-					obj.TextureID = "rbxassetid://5826866653"
-				elseif ffanim == "rought" then
-					obj.TextureID = "rbxassetid://5834264212"
-				elseif ffanim == "parts" then
-					obj.TextureID = "rbxassetid://5917340153"
-				elseif ffanim == "corrupted" then
-					obj.TextureID = "rbxassetid://6187334802"
-				elseif ffanim == "lines2" then
-					obj.TextureID = "rbxassetid://9667524738"
-				elseif ffanim == "lines" then
-					obj.TextureID = "rbxassetid://5838417242"
-				elseif ffanim == "scanning" then
-					obj.TextureID = "rbxassetid://5843010904"
-				elseif ffanim == "lava" then
-					obj.TextureID = "rbxassetid://53883408"
-				elseif ffanim == "pulse" then
-					obj.TextureID = "rbxassetid://wtf"
-				elseif ffanim == "web" then
-					obj.TextureID = "rbxassetid://301464986"
-				elseif ffanim == "swirl" then
-					obj.TextureID = "rbxassetid://8133639623"
-				elseif obj:IsA('MeshPart') and (selected == "Smooth" or selected == "Flat") then obj.TextureID = '' end
-			end
-			
-if obj:IsA("Part") and obj:FindFirstChild("Mesh") and not obj:IsA("BlockMesh") and not obj.Mesh:IsA('BlockMesh') then
-	obj.Mesh.VertexColor = VectorRGB(values.visuals.effects["weapon chams"].Color)
-	if selected == "Smooth" or selected == "Flat" then
-		obj.Mesh.TextureId = ""
-	end
-end
-			obj.Color = values.visuals.effects["weapon chams"].Color
-			obj.Material = (selected == "Smooth" and "SmoothPlastic" or selected == "Flat" and "Neon" or selected == "ForceField" and "ForceField") or selected
-			obj.Reflectance = values.visuals.effects["reflectance"].Slider/10
-			obj.Transparency = values.visuals.effects["weapon chams"].Transparency
-		else
-			if obj:IsA("MeshPart") then 
-				obj.TextureID = obj.OldTextureID.Value
-			end
-			if obj:IsA("Part") and obj:FindFirstChild("Mesh") and not obj:IsA("BlockMesh") then
-				obj.Mesh.VertexColor = obj.Mesh.OldVertex.Value
-			end
-			obj.Color = obj.OldColor.Value
-			obj.Material = obj.OldMaterial.Value
-			obj.Reflectance = obj.OldReflectance.Value
-			obj.Transparency = obj.OldTransparency.Value			
-		end
-	end
+		current = C.FLOOR(current/16)
+		final = final..char
+	until current <= 0
+	
+	return "#"..string.reverse(final)
 end
 
-function UpdateArms()
-if not IsAlive(LocalPlayer) then return end
-		for i,obj in pairs(Camera:GetChildren()) do
-			if obj.Name == "Left Arm" then
-				Weapon = obj
-			end
-		end
-	local selected = values.visuals.effects["left arm material"].Dropdown
-	local ffanim = values.visuals.effects["left arm ff anim"].Dropdown
-	for i,obj in pairs(Weapon:GetChildren()) do
-		--if (not obj:IsA('Part') or not obj:IsA('MeshPart')) then return end
-		if not obj:FindFirstChild('OldMaterial') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldMaterial'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Material.Name
-		end
-		if not obj:FindFirstChild('OldTransparency') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldTransparency'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Transparency
-		end	
-		if not obj:FindFirstChild('OldColor') then
-			local StringValue = Instance.new('Color3Value')
-			StringValue.Name = 'OldColor'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Color
-		end
-		if not obj:FindFirstChild('OldReflectance') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldReflectance'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Reflectance
-		end
-		if obj:IsA('MeshPart') and not obj:FindFirstChild('OldTextureID') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldTextureID'
-			StringValue.Parent = obj
-			StringValue.Value = obj.TextureID		
-		end
-		if obj:FindFirstChild("Mesh") and not obj.Mesh:FindFirstChild('OldVertex') then
-			local e = Instance.new('Vector3Value',obj.Mesh)
-			e.Name = 'OldVertex'
-			e.Value = obj.Mesh.VertexColor
-		end
-		
-		if values.visuals.effects["left arm chams"].Toggle then
-			if obj:IsA("MeshPart") and selected == "ForceField" then 
-				if ffanim == "nothing" then
-					obj.TextureID = ""
-				elseif ffanim == "skin" then
-
-				elseif ffanim == "galaxy" then
-					obj.TextureID = "rbxassetid://268022762"
-				elseif ffanim == "weird" then
-					obj.TextureID = "rbxassetid://1066669420"
-				elseif ffanim == "cover" then
-					obj.TextureID = "rbxassetid://5827121543"
-				elseif ffanim == "light" then
-					obj.TextureID = "rbxassetid://5826866653"
-				elseif ffanim == "rought" then
-					obj.TextureID = "rbxassetid://5834264212"
-				elseif ffanim == "parts" then
-					obj.TextureID = "rbxassetid://5917340153"
-				elseif ffanim == "corrupted" then
-					obj.TextureID = "rbxassetid://6187334802"
-				elseif ffanim == "lines2" then
-					obj.TextureID = "rbxassetid://9667524738"
-				elseif ffanim == "lines" then
-					obj.TextureID = "rbxassetid://5838417242"
-				elseif ffanim == "scanning" then
-					obj.TextureID = "rbxassetid://5843010904"
-				elseif ffanim == "lava" then
-					obj.TextureID = "rbxassetid://53883408"
-				elseif ffanim == "pulse" then
-					obj.TextureID = "rbxassetid://wtf"
-				elseif ffanim == "web" then
-					obj.TextureID = "rbxassetid://301464986"
-				elseif ffanim == "swirl" then
-					obj.TextureID = "rbxassetid://8133639623"
-				elseif obj:IsA('MeshPart') and (selected == "Smooth" or selected == "Flat") then obj.TextureID = '' end
-			end
-			
-if obj:IsA("Part") and obj:FindFirstChild("Mesh") and not obj:IsA("BlockMesh") and not obj.Mesh:IsA('BlockMesh') then
-	obj.Mesh.VertexColor = VectorRGB(values.visuals.effects["left arm chams"].Color)
-	if selected == "Smooth" or selected == "Flat" then
-		obj.Mesh.TextureId = ""
-	end
-end
-			obj.Color = values.visuals.effects["left arm chams"].Color
-			obj.Material = (selected == "Smooth" and "SmoothPlastic" or selected == "Flat" and "Neon" or selected == "ForceField" and "ForceField") or selected
-			obj.Reflectance = values.visuals.effects["left arm reflectance"].Slider/10
-			obj.Transparency = values.visuals.effects["left arm chams"].Transparency
-		else
-			if obj:IsA("MeshPart") then 
-				obj.TextureID = obj.OldTextureID.Value
-			end
-			if obj:IsA("Part") and obj:FindFirstChild("Mesh") and not obj:IsA("BlockMesh") then
-				obj.Mesh.VertexColor = obj.Mesh.OldVertex.Value
-			end
-			obj.Color = obj.OldColor.Value
-			obj.Material = obj.OldMaterial.Value
-			obj.Reflectance = obj.OldReflectance.Value
-			obj.Transparency = obj.OldTransparency.Value			
-		end
-	end
-	
-	
-	
-	
-	
-	
-	
-		for i,obj in pairs(Camera:GetChildren()) do
-			if obj.Name == "Right Arm" then
-				Weapon = obj
-			end
-		end
-	local selected = values.visuals.effects["right arm material"].Dropdown
-	local ffanim = values.visuals.effects["right arm ff anim"].Dropdown
-	for i,obj in pairs(Weapon:GetChildren()) do
-		--if (not obj:IsA('Part') or not obj:IsA('MeshPart')) then return end
-		if not obj:FindFirstChild('OldMaterial') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldMaterial'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Material.Name
-		end
-		if not obj:FindFirstChild('OldTransparency') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldTransparency'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Transparency
-		end	
-		if not obj:FindFirstChild('OldColor') then
-			local StringValue = Instance.new('Color3Value')
-			StringValue.Name = 'OldColor'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Color
-		end
-		if not obj:FindFirstChild('OldReflectance') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldReflectance'
-			StringValue.Parent = obj
-			StringValue.Value = obj.Reflectance
-		end
-		if obj:IsA('MeshPart') and not obj:FindFirstChild('OldTextureID') then
-			local StringValue = Instance.new('StringValue')
-			StringValue.Name = 'OldTextureID'
-			StringValue.Parent = obj
-			StringValue.Value = obj.TextureID		
-		end
-		if obj:FindFirstChild("Mesh") and not obj.Mesh:FindFirstChild('OldVertex') then
-			local e = Instance.new('Vector3Value',obj.Mesh)
-			e.Name = 'OldVertex'
-			e.Value = obj.Mesh.VertexColor
-		end
-		
-		if values.visuals.effects["right arm chams"].Toggle then
-			if obj:IsA("MeshPart") and selected == "ForceField" then 
-				if ffanim == "nothing" then
-					obj.TextureID = ""
-				elseif ffanim == "skin" then
-
-				elseif ffanim == "galaxy" then
-					obj.TextureID = "rbxassetid://268022762"
-				elseif ffanim == "weird" then
-					obj.TextureID = "rbxassetid://1066669420"
-				elseif ffanim == "cover" then
-					obj.TextureID = "rbxassetid://5827121543"
-				elseif ffanim == "light" then
-					obj.TextureID = "rbxassetid://5826866653"
-				elseif ffanim == "rought" then
-					obj.TextureID = "rbxassetid://5834264212"
-				elseif ffanim == "parts" then
-					obj.TextureID = "rbxassetid://5917340153"
-				elseif ffanim == "corrupted" then
-					obj.TextureID = "rbxassetid://6187334802"
-				elseif ffanim == "lines2" then
-					obj.TextureID = "rbxassetid://9667524738"
-				elseif ffanim == "lines" then
-					obj.TextureID = "rbxassetid://5838417242"
-				elseif ffanim == "scanning" then
-					obj.TextureID = "rbxassetid://5843010904"
-				elseif ffanim == "lava" then
-					obj.TextureID = "rbxassetid://53883408"
-				elseif ffanim == "pulse" then
-					obj.TextureID = "rbxassetid://wtf"
-				elseif ffanim == "web" then
-					obj.TextureID = "rbxassetid://301464986"
-				elseif ffanim == "swirl" then
-					obj.TextureID = "rbxassetid://8133639623"
-				elseif obj:IsA('MeshPart') and (selected == "Smooth" or selected == "Flat") then obj.TextureID = '' end
-			end
-			
-if obj:IsA("Part") and obj:FindFirstChild("Mesh") and not obj:IsA("BlockMesh") and not obj.Mesh:IsA('BlockMesh') then
-	obj.Mesh.VertexColor = VectorRGB(values.visuals.effects["right arm chams"].Color)
-	if selected == "Smooth" or selected == "Flat" then
-		obj.Mesh.TextureId = ""
-	end
-end
-			obj.Color = values.visuals.effects["right arm chams"].Color
-			obj.Material = (selected == "Smooth" and "SmoothPlastic" or selected == "Flat" and "Neon" or selected == "ForceField" and "ForceField") or selected
-			obj.Reflectance = values.visuals.effects["right arm reflectance"].Slider/10
-			obj.Transparency = values.visuals.effects["right arm chams"].Transparency
-		else
-			if obj:IsA("MeshPart") then 
-				obj.TextureID = obj.OldTextureID.Value
-			end
-			if obj:IsA("Part") and obj:FindFirstChild("Mesh") and not obj:IsA("BlockMesh") then
-				obj.Mesh.VertexColor = obj.Mesh.OldVertex.Value
-			end
-			obj.Color = obj.OldColor.Value
-			obj.Material = obj.OldMaterial.Value
-			obj.Reflectance = obj.OldReflectance.Value
-			obj.Transparency = obj.OldTransparency.Value			
-		end
-	end	
-	
-	
-	
-end
-
-effects:Element('ToggleColor','weapon chams', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
-	UpdateWeapon()
-end)
-effects:Element("Dropdown", "weapon material", {options = {"Smooth","Flat", "ForceField", "Glass"}}, function(tbl) 
-	UpdateWeapon()
-end)
-effects:Element("Dropdown", "weapon ff anim", {options = {"nothing",'skin','galaxy','weird','cover','light','rought','parts','corrupted','lines2','lines','scanning','lava','pulse', 'web', 'swirl'}}, function(tbl)
-	UpdateWeapon()
-end)
-
-effects:Element("Slider", "reflectance", {min = 0, max = 100, default = 0}, function(tbl) 
-	UpdateWeapon()
-end) 
-
-
-
-
-
-effects:Element('ToggleColor','left arm chams', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
-	UpdateArms()
-end)
-effects:Element("Dropdown", "left arm material", {options = {"Smooth","Flat", "ForceField", "Glass"}}, function(tbl) 
-	UpdateArms()
-end)
-effects:Element("Dropdown", "left arm ff anim", {options = {"nothing",'skin','galaxy','weird','cover','light','rought','parts','corrupted','lines2','lines','scanning','lava','pulse', 'web', 'swirl'}}, function(tbl)
-	UpdateArms()
-end)
-
-effects:Element("Slider", "left arm reflectance", {min = 0, max = 100, default = 0}, function(tbl) 
-	UpdateArms()
-end) 
-
-
-
-
-effects:Element('ToggleColor','right arm chams', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
-	UpdateArms()
-end)
-effects:Element("Dropdown", "right arm material", {options = {"Smooth","Flat", "ForceField", "Glass"}}, function(tbl) 
-	UpdateArms()
-end)
-effects:Element("Dropdown", "right arm ff anim", {options = {"nothing",'skin','galaxy','weird','cover','light','rought','parts','corrupted','lines2','lines','scanning','lava','pulse', 'web', 'swirl'}}, function(tbl)
-	UpdateArms()
-end)
-
-effects:Element("Slider", "right arm reflectance", {min = 0, max = 100, default = 0}, function(tbl) 
-	UpdateArms()
-end) 
-
-Camera.ChildAdded:Connect(function(obj)
-	UpdateWeapon() 
-	UpdateArms()
-end)
-
-		for i,obj in pairs(Camera:GetChildren()) do
-			if obj.Name ~= "Left Arm" or obj.Name ~= 'Right Arm' then
-				Weapon = obj
-			end
-		end
-	
-effects:Element("Toggle", "shadowmap technology", nil, function(val) sethiddenproperty(Lighting, "Technology", val.Toggle and "ShadowMap" or "Legacy") end) 
-effects:Element("ToggleColor", "indoor ambient", {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl) 
-	if tbl.Toggle then 
-		game.Lighting.Ambient = tbl.Color
-	else 
-		game.Lighting.Ambient = C.COL3RGB(255,255,255) 
-	end 
-end)
-effects:Element("ToggleColor", "outdoor ambient", {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl) 
-	if tbl.Toggle then 
-		game.Lighting.OutdoorAmbient = tbl.Color
-	else 
-		game.Lighting.OutdoorAmbient = C.COL3RGB(255,255,255) 
-	end 
-end)
-
-local Lighting = game:GetService("Lighting")
-local OldBrightness = Lighting.Brightness
-local OldAmbience = Lighting.Ambient
-
-local ambientenabled = false
-local fullbright = false
-local world = visuals:Sector('world', 'Right')
-world:Element('Toggle', 'Fullbright', {}, function(tbl)
-	fullbright = tbl.Toggle
-end)
---world:Element('Toggle', 'Disco mode')
-world:Element('ToggleColor','Ambient', {}, function(tbl)
-	ambientenabled = tbl.Toggle
-end)
-
-    Lighting:GetPropertyChangedSignal("Brightness"):Connect(function(v)
-        if fullbright then
-            Lighting.Brightness = 1000
-            Lighting.GlobalShadows=false
-        else
-            Lighting.Brightness = OldBrightness
-            Lighting.GlobalShadows=true
-        end
-    end)
-
-do
-   for i,v in pairs(getgc(true)) do
-       if (type(v) == "table") then
-            if (rawget(v, "getbodyparts")) then
-                client.replication = v
-                client.replication.bodyparts = debug.getupvalue(client.replication.getbodyparts, 1)
-           end
-       end
-   end
-end
-
-game:GetService("RunService").RenderStepped:Connect(function()
-   for i,v in pairs(game.Players:GetPlayers()) do
-       if (v and client.replication.bodyparts[v]) then
-           local char = client.replication.bodyparts[v]
-           char.head.Parent.Name = v.Name
-           v.Character = char.head.Parent
-       end
-   end
-end)
-
-
-
-
-
-
-
-
-
-
------------------------------------------------MISC TAB-------------------------------------------
-
-local allcfgs = {} 
-
-for _,cfg in pairs(listfiles('SamuelPaste_pf/cfgs')) do 
-	local cfgname = C.GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
-	C.INSERT(allcfgs, cfgname) 
-end
-
-local configs = misc:Sector("configs", "Left") 
-configs:Element("TextBox", "config", {placeholder = "config name"}) -- values.misc.configs.config.Text
-configs:Element("Button", "save new cfg", {}, function() 
-	if values.misc.configs.config.Text ~= "" then 
-		library:SaveConfig(values.misc.configs.config.Text) 
-		insertwithoutdupes(allcfgs, ""..values.misc.configs.config.Text..".txt")
-	end
-	ConfigUpdateCfgList2:Fire()
-	ConfigUpdateCfgList:Fire()
-end) 
-configs:Element("Button", "load", {}, function() 
-	ConfigLoad:Fire(values.misc["configs"].config.Text)
-end)
-configs:Element("cfgtype", "cfgs", {options = allcfgs, Amount = 5})
-configs:Element("Button", "load from list", {}, function() 
-	ConfigLoad1:Fire(values.misc.configs.cfgs.Scroll)
-end)
-configs:Element("Button", "Update cfg in list", {}, function()
-	library:SaveConfig1(values.misc["configs"].cfgs.Scroll)
-end)
-configs:Element("Button", "Refresh cfg list", {}, function()
-table.clear(allcfgs)
-
-for _,cfg in pairs(listfiles('SamuelPaste_pf/cfgs')) do 
-	local cfgname = C.GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
-	C.INSERT(allcfgs, cfgname) 
-end
-	ConfigUpdateCfgList2:Fire()
-	ConfigUpdateCfgList:Fire()
-end)
-configs:Element("Button", 'overwrite cfgs from old folder', {}, function()
-	--[[for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-		local cfgname = GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
-		writefile(cfglocation..cfgname, readfile(cfg))
-	end--]]
-	for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-		local cfgname = C.GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
-		writefile('SamuelPaste/cfgs/'..cfgname, readfile(cfg))
-	end
-	table.clear(allcfgs)
-
-	for _,cfg in pairs(listfiles(cfglocation)) do 
-		local cfgname = C.GSUB(cfg, cfglocation.."\\", "") 
-		C.INSERT(allcfgs, cfgname) 
-	end
-		ConfigUpdateCfgList2:Fire()
-		ConfigUpdateCfgList:Fire()
-end)
-
-configs:Element("Toggle", "keybind list", nil, function(tbl) 
-	library:SetKeybindVisible(tbl.Toggle) 
-end) 
-		configs:Element("Toggle", "specators list", {}, function(tbl)
-			library:SetSpectatorVisible(tbl.Toggle) 
-		end)
-			configs:Element("Toggle", "keystrokes", {}, function(tbl)
-				if tbl.Toggle then
-						 local ScreenGuiKey = C.INST("ScreenGui")
-			local W = C.INST("TextLabel")
-			local A = C.INST("TextLabel")
-			local S = C.INST("TextLabel")
-			local D = C.INST("TextLabel")
-			local E = C.INST("TextLabel")
-			local R = C.INST("TextLabel")
-			local _ = C.INST("TextLabel")
-			local _2 = C.INST("TextLabel")
-			local _3 = C.INST("TextLabel")
-			local _4 = C.INST("TextLabel")
-			local _5 = C.INST("TextLabel")
-			local _6 = C.INST("TextLabel")
-
-
-			ScreenGuiKey.Parent = game.CoreGui
-			ScreenGuiKey.Name = "keystrokess"
-
-			W.Name = "W"
-			W.Parent = ScreenGuiKey
-			W.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			W.BackgroundTransparency = 1.000
-			W.Position = UDIM2(0.488053292, 0, 0.728395104, 0)
-			W.Size = UDIM2(0, 29, 0, 28)
-			W.Visible = false
-			W.Font = Enum.Font.Code
-			W.Text = "W"
-			W.TextColor3 = C.COL3RGB(255, 255, 255)
-			W.TextSize = 14.000
-			W.TextStrokeTransparency = 0.000
-			
-			_.Name = "_"
-			_.Parent = ScreenGuiKey
-			_.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_.BackgroundTransparency = 1.000
-			_.Position = UDIM2(0.488053292, 0, 0.728395104, 0)
-			_.Size = UDIM2(0, 29, 0, 28)
-			_.Visible = true
-			_.Font = Enum.Font.Code
-			_.Text = "_"
-			_.TextColor3 = C.COL3RGB(255, 255, 255)
-			_.TextSize = 14.000
-			_.TextStrokeTransparency = 0.000
-
-			A.Name = "A"
-			A.Parent = ScreenGuiKey
-			A.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			A.BackgroundTransparency = 1.000
-			A.Position = UDIM2(0.453584045, 0, 0.777777791, 0)
-			A.Size = UDIM2(0, 29, 0, 28)
-			A.Visible = false
-			A.Font = Enum.Font.Code
-			A.Text = "A"
-			A.TextColor3 = C.COL3RGB(255, 255, 255)
-			A.TextSize = 14.000
-			A.TextStrokeTransparency = 0.000
-			
-			_2.Name = "_2"
-			_2.Parent = ScreenGuiKey
-			_2.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_2.BackgroundTransparency = 1.000
-			_2.Position = UDIM2(0.453584045, 0, 0.777777791, 0)
-			_2.Size = UDIM2(0, 29, 0, 28)
-			_2.Visible = true
-			_2.Font = Enum.Font.Code
-			_2.Text = "_"
-			_2.TextColor3 = C.COL3RGB(255, 255, 255)
-			_2.TextSize = 14.000
-			_2.TextStrokeTransparency = 0.000
-
-			S.Name = "S"
-			S.Parent = ScreenGuiKey
-			S.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			S.BackgroundTransparency = 1.000
-			S.Position = UDIM2(0.488053292, 0, 0.777777791, 0)
-			S.Size = UDIM2(0, 29, 0, 28)
-			S.Visible = false
-			S.Font = Enum.Font.Code
-			S.Text = "S"
-			S.TextColor3 = C.COL3RGB(255, 255, 255)
-			S.TextSize = 14.000
-			S.TextStrokeTransparency = 0.000
-			
-			_3.Name = "_3"
-			_3.Parent = ScreenGuiKey
-			_3.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_3.BackgroundTransparency = 1.000
-			_3.Position = UDIM2(0.488053292, 0, 0.777777791, 0)
-			_3.Size = UDIM2(0, 29, 0, 28)
-			_3.Visible = true
-			_3.Font = Enum.Font.Code
-			_3.Text = "_"
-			_3.TextColor3 = C.COL3RGB(255, 255, 255)
-			_3.TextSize = 14.000
-			_3.TextStrokeTransparency = 0.000
-
-			D.Name = "D"
-			D.Parent = ScreenGuiKey
-			D.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			D.BackgroundTransparency = 1.000
-			D.Position = UDIM2(0.522522688, 0, 0.777777791, 0)
-			D.Size = UDIM2(0, 29, 0, 28)
-			D.Visible = false
-			D.Font = Enum.Font.Code
-			D.Text = "D"
-			D.TextColor3 = C.COL3RGB(255, 255, 255)
-			D.TextSize = 14.000
-			D.TextStrokeTransparency = 0.000
-			
-			_4.Name = "_4"
-			_4.Parent = ScreenGuiKey
-			_4.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_4.BackgroundTransparency = 1.000
-			_4.Position = UDIM2(0.522522688, 0, 0.777777791, 0)
-			_4.Size = UDIM2(0, 29, 0, 28)
-			_4.Visible = true
-			_4.Font = Enum.Font.Code
-			_4.Text = "_"
-			_4.TextColor3 = C.COL3RGB(255, 255, 255)
-			_4.TextSize = 14.000
-			_4.TextStrokeTransparency = 0.000
-
-			E.Name = "E"
-			E.Parent = ScreenGuiKey
-			E.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			E.BackgroundTransparency = 1.000
-			E.Position = UDIM2(0.453584045, 0, 0.728395045, 0)
-			E.Size = UDIM2(0, 29, 0, 28)
-			E.Visible = false
-			E.Font = Enum.Font.Code
-			E.Text = "C"
-			E.TextColor3 = C.COL3RGB(255, 255, 255)
-			E.TextSize = 14.000
-			E.TextStrokeTransparency = 0.000
-			
-			_5.Name = "_5"
-			_5.Parent = ScreenGuiKey
-			_5.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_5.BackgroundTransparency = 1.000
-			_5.Position = UDIM2(0.453584045, 0, 0.728395045, 0)
-			_5.Size = UDIM2(0, 29, 0, 28)
-			_5.Visible = true
-			_5.Font = Enum.Font.Code
-			_5.Text = "_"
-			_5.TextColor3 = C.COL3RGB(255, 255, 255)
-			_5.TextSize = 14.000
-			_5.TextStrokeTransparency = 0.000
-
-			R.Name = "R"
-			R.Parent = ScreenGuiKey
-			R.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			R.BackgroundTransparency = 1.000
-			R.Position = UDIM2(0.522522688, 0, 0.728395045, 0)
-			R.Size = UDIM2(0, 29, 0, 28)
-			R.Visible = false
-			R.Font = Enum.Font.Code
-			R.Text = "J"
-			R.TextColor3 = C.COL3RGB(255, 255, 255)
-			R.TextSize = 14.000
-			R.TextStrokeTransparency = 0.000
-			
-			_6.Name = "_6"
-			_6.Parent = ScreenGuiKey
-			_6.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_6.BackgroundTransparency = 1.000
-			_6.Position = UDIM2(0.522522688, 0, 0.728395045, 0)
-			_6.Size = UDIM2(0, 29, 0, 28)
-			_6.Visible = true
-			_6.Font = Enum.Font.Code
-			_6.Text = "_"
-			_6.TextColor3 = C.COL3RGB(255, 255, 255)
-			_6.TextSize = 14.000
-			_6.TextStrokeTransparency = 0.000
-	 
-
-			local UserInputService = game:GetService("UserInputService")
-
-			local W1Key = Enum.KeyCode.W
-			local A1Key = Enum.KeyCode.A
-			local S1Key = Enum.KeyCode.S
-			local D1Key = Enum.KeyCode.D
-			local E1Key = Enum.KeyCode.LeftControl
-			local R1Key = Enum.KeyCode.R
-			local SpaceKey = Enum.KeyCode.Space
-
-			UserInputService.InputBegan:Connect(function(input)
-				if (input.KeyCode == W1Key) then
-					W.Visible = true
-					_.Visible = false
-				elseif (input.KeyCode == A1Key) then
-					A.Visible = true
-					_2.Visible = false
-				elseif (input.KeyCode == S1Key) then
-					S.Visible = true
-					_3.Visible = false
-				elseif (input.KeyCode == D1Key) then
-					D.Visible = true
-					_4.Visible = false
-				elseif (input.KeyCode == E1Key) then
-					E.Visible = true
-					_5.Visible = false
-				elseif (input.KeyCode == SpaceKey) then
-					R.Visible = true
-					_6.Visible = false
+local edited = false
+local oldIncomingMessage = game:GetService("TextChatService").OnIncomingMessage
+task.spawn(function()
+	while wait(5) do
+		if values.main.chat['custom tag'].Toggle or values.main.chat['custom font'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom nickname'].Toggle or values.main.chat['custom text color'].Toggle then
+		game:GetService("TextChatService").OnIncomingMessage = function(L)
+		if L.TextSource.UserId == game.Players.LocalPlayer.UserId then
+			if edited == false then
+			oldPrefixText = L.PrefixText
+			customtTag = ""
+			if values.main.chat['custom tag'].Toggle then
+				customTagFont = 1
+				customtTag = ''
+				customtTag = string.gsub(customtTag, '<font color = #01a2ff>', '')
+				print(customtTag)
+				
+				customtTag = customtTag..'<font color = '..'\"'..toHex(values.main.chat['custom tag'].Color)..'\">'
+				--print(L.PrefixText)
+				
+				if values.main.chat['custom message size'].Toggle then
+					customtTag = customtTag..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
+					customTagFont += 1
+					--print(L.PrefixText)
 				end
-			end)
-
-			UserInputService.InputEnded:Connect(function(input)
-				if (input.KeyCode == W1Key) then
-					W.Visible = false
-					_.Visible = true
-				elseif (input.KeyCode == A1Key) then
-					A.Visible = false
-					_2.Visible = true
-				elseif (input.KeyCode == S1Key) then
-					S.Visible = false
-					_3.Visible = true
-				elseif (input.KeyCode == D1Key) then
-					D.Visible = false
-					_4.Visible = true
-				elseif (input.KeyCode == E1Key) then
-					E.Visible = false
-					_5.Visible = true	
-				elseif (input.KeyCode == SpaceKey) then
-					R.Visible = false
-					_6.Visible = true
+				if values.main.chat['custom font'].Toggle then
+					customtTag = customtTag..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
+					customTagFont += 1
+					--print(L.PrefixText)
+				else
+					customtTag = customtTag..'<font face = "SourceSansSemibold">'
+					customTagFont += 1
+					--print(L.PrefixText)
 				end
-			end)		
+				--print(L.PrefixText)
+				
+				customtTag = customtTag..'['..values.main.chat.tag.Text..']'..(string.rep('</font>',customTagFont))
+				print(customtTag)
+			end
+			if values.main.chat['custom nickname'].Toggle then
+				customNickname = 1	
+				--print(L.PrefixText)
+				L.PrefixText = customTag..'<font color = '..'\"'..toHex(values.main.chat['custom nickname'].Color)..'\">'
+				
+				if values.main.chat['custom message size'].Toggle then
+					L.PrefixText = L.PrefixText..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
+					customNickname += 1	
+				end
+				if values.main.chat['custom font'].Toggle then
+					L.PrefixText = L.PrefixText..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
+					customNickname += 1	
+				else
+					L.PrefixText = L.PrefixText..'<font face = \"SourceSansSemibold\">'
+					customNickname += 1	
+				end
+				L.PrefixText = L.PrefixText..values.main.chat.nickname.Text..(string.rep('</font>', customNickname))	
+				print(L.PrefixText)			
 			else
-			game.CoreGui.keystrokess:Destroy()
+				L.PrefixText = L.PrefixText..oldPrefixText
 			end
-			end)
-
-for i,v in pairs(animations) do
-   if v.player then 
-        local old_player = v.player
-        v.player = function(a, b)
-            if client.char.alive and client.gamelogic.currentgun and values.misc['Weapon mods']['no anims'].Toggle then
-                if client.gamelogic.currentgun.type ~= "KNIFE" then
-                    for i,v in pairs(client.gamelogic.currentgun.data.animations) do
-                        if b == v then
-                            return function() end
-                        end
-                    end
-                end
-            end
-            return old_player(a,b)
-        end
-    end
-end
-
-local weapons = misc:Sector("Weapon mods", 'Right')
-weapons:Element('Toggle','no anims')
---[[weapons:Element('Toggle','no gun bob')
-weapons:Element('Toggle','Spread modification')
-weapons:Element('Slider','Spread modifier', {min = 0, max = 1000, default = 1000})
-weapons:Element('Toggle','No recoil')
-weapons:Element('Toggle','Custom reload speed')
-weapons:Element('Toggle','Custom firerate')
-
-weapons:Element('Slider','Recoil modifier', {min = 0, max = 1000, default = 1000})
-weapons:Element('Slider','Reload speed modifier', {min = 0, max = 1000, default = 1000})
-weapons:Element('Slider','Firerate modifier', {min = 0, max = 2000, default = 2000})--]]
-
-local other = misc:Sector('Client', 'Right')
---[[other:Element('Toggle', 'Knife aura')
-other:Element('Slider', 'Distance', {min = 1, max = 50})
-other:Element('Toggle', 'Held only')--]]
-
-other:Element('Toggle','Custom walkspeed')
-other:Element('Slider', 'Walkspeed modifier', {min = 10,max = 70})
-other:Element('Toggle','Custom jump power')
-other:Element('Slider', 'Jump power modifier', {min = 2,max = 80})
-
-other:Element('Toggle','No fall damage')
-other:Element('Toggle','Hitbox extender')
-other:Element('Slider','Hitbox extender modifier', {min = 0, max = 5})
-
---other:Element('Toggle','GrenadeTP')
---other:Element('Slider','Blow up time (ms)', {min = 0, max = 2500})
-
-    function closest()
-        local Distance = math.huge
-        local Closest
-        local Bodyparts
-        local AimPart
-        local RealMouseLocation = UserInputService:GetMouseLocation()
-        local Pos, OnScreen = nil, nil
-        local Autowallable = false 
-        local inFOV = false 
-        for i,v in pairs(Players:GetPlayers()) do
-            if (v ~= LocalPlayer) and (v.Team ~= LocalPlayer.Team) and client.replication.bodyparts[v] and client.replication.bodyparts[v].head then
-                Bodyparts = client.replication.bodyparts[v]
-                -- Bulletcheck arguments : Origin, Target, Trajectory, Acceleration, Penetration Depth 
-                local Pos2, OnScreen2 = Camera:WorldToScreenPoint(Bodyparts.head.Position)
-                local Dist = (Vector2.new(Pos2.X, Pos2.Y) - Vector2.new(RealMouseLocation.X, RealMouseLocation.Y)).Magnitude
-                if Dist < Distance then
-                    AimPart = Bodyparts['head']
-                    Distance = Dist
-                    Closest = v
-                    inFOV = true 
-                    Pos, OnScreen = Pos2, OnScreen2
-                end
-            end
-        end
-        return {Closest = Closest, OnScreen = OnScreen, Part = AimPart, InFOV = inFOV}
-    end
-
-    local oldsend = client.network.send
-    equipped = 1
-    client.network.send = function(self, name, ...)
-        if name == "falldamage" and values.misc.Client['No fall damage'].Toggle then
-            return 
-        end
-        
-        if name == "equip" then 
-            equipped = ...
-        end
-        
- --[[       if name == "newgrenade" and values.misc.Client.GrenadeTP.Toggle then
-            local args = {...}
-            if args[2].blowuptime then args[2].blowuptime = values.misc.Client['Blow up time (ms)'].Slider end
-            local ClosestPlayer = closest()
-            if not ClosestPlayer or not ClosestPlayer.Closest or not ClosestPlayer.Part then return old(self, data, ...) end
-            for i,v in pairs(args[2].frames) do
-                if v ~= args[2].frames[1] then
-                    if ClosestPlayer.OnScreen then
-                        if v.p0 then
-                            v.p0 = ClosestPlayer.Part.Position
-                        end
-                    end
-                end
-            end
-        end--]]
-        return oldsend(self, name, ...)
-    end
-
-    RunService:BindToRenderStep("Misc", 1, function()
-        if values.misc.Client['Hitbox extender'].Toggle then
-            for i,v in pairs(Players:GetPlayers()) do
-                if IsAlive(v) and client.replication.bodyparts[v] and client.replication.bodyparts[v].head and client.char.alive then
-                    local bp = client.replication.bodyparts[v]
-                    local hbv = values.misc.Client['Hitbox extender modifier'].Slider
-                    bp.head.Size = Vector3.new(hbv,hbv,hbv)
-                    bp.torso.Size = Vector3.new(hbv,hbv,hbv)
-                    bp.lleg.Size = Vector3.new(hbv,hbv,hbv)
-                    bp.rleg.Size = Vector3.new(hbv,hbv,hbv)
-                    bp.larm.Size = Vector3.new(hbv,hbv,hbv)
-                    bp.rarm.Size = Vector3.new(hbv,hbv,hbv)
-                end
-            end
-        end 
-
-        if values.misc.Client['Custom walkspeed'].Toggle then
-            client.char:setbasewalkspeed(values.misc.Client['Walkspeed modifier'].Slider)
-        else
-			client.char:setbasewalkspeed(16)
+			local text = L.Text
+			if values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle then
+				customText = 0
+				--L.Text = '<font '
+					if values.main.chat['custom text color'].Toggle then
+					L.Text = '<font color = '..'\"'..toHex(values.main.chat['custom text color'].Color)..'\">'
+					
+					customText += 1
+					end
+					if values.main.chat['custom message size'].Toggle then
+					L.Text = L.Text..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
+					customText += 1
+					end
+					if values.main.chat['custom font'].Toggle then
+					L.Text = L.Text..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
+					customText += 1
+					else
+					L.Text = L.Text..'<font face = "SourceSansSemibold">'
+					customText += 1
+					end
+				L.Text = L.Text..text..(string.rep('</font>', customText))
+			end
+			edited = true
+			else
+			edited = false
+			end
 		end
-        if not ambientenabled and fullbright then
-            Lighting.Ambient = Color3.fromRGB(255,255,255)
-            Lighting.Brightness = 1000
-        end
-        if fullbright then
-            Lighting.Brightness = 1000
-            Lighting.Ambient = Color3.fromRGB(255,255,255)
-        end
-        if not fullbright and ambientenabled then
-            Lighting.Ambient = values.visuals.world.Ambience.Color
-        elseif not fullbright and not ambientenabled then
-            Lighting.Ambient = OldAmbience
-        end
-        if ambientenabled then
-            Lighting.Ambient = values.visuals.world.Ambience.Color 
-        end
-        
-        if values.misc.Client['Knife aura'] and client.char.alive then
-            if values.misc.Client['Held only'] then
-                if client.gamelogic.currentgun.type ~= "KNIFE" then
-                    return
-                end
-            end
-            for i,v in pairs(Players:GetPlayers()) do
-                if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team then
-                    if IsAlive(v) and client.replication.bodyparts[v] then
-                        local Closest 
-                        local Distance = values.misc.Client.Distance.Slider
-                        local Dist = (client.replication.bodyparts[v].head.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-                        if Dist < Distance then
-                            Dist = Distance
-                            oldsend(client.network, "equip", 3) -- thx iray for telling me this
-                            client.network:send("knifehit", client.replication.getplayerhit(client.replication.bodyparts[v].head), tick(), "Head")
-                            client.network:send("equip", equipped) 
-                        end
-                    end
-                end
-            end
-        end
-        --[[if SpaceDown and client.char.alive and library.flags.BunnyHop then
-            client.char:setbasewalkspeed(library.flags.BunnyHopSpeed)
-            client.char:jump(4)
-        elseif not SpaceDown and client.char.alive and not library.flags.WalkspeedOn then
-            client.char:setbasewalkspeed(12)
-        end--]]
-    end)
-	
-    local oldjump = client.char.jump
-    client.char.jump = function(tbl, jp)
-        if values.misc.Client['Custom jump power'].Toggle then
-            return oldjump(tbl, values.misc.Client['Jump power modifier'].Slider)
-        end
-        return oldjump(tbl, jp)
-    end
---[[weapons:Element('Toggle','no anims')
-weapons:Element('Toggle','no gun bob')
-weapons:Element('Toggle','Spread modification')
-weapons:Element('Slider','Spread modifier', {min = 0, max = 1000, default = 1000})
-weapons:Element('Toggle','Enable recoil')
-weapons:Element('Toggle','Custom reload speed')
-weapons:Element('Toggle','Custom firerate')
-
-weapons:Element('Slider','Recoil modifier', {min = 0, max = 1000, default = 1000})
-weapons:Element('Slider','Reload speed modifier', {min = 0, max = 1000, default = 1000})
-weapons:Element('Slider','Firerate modifier', {min = 0, max = 2000, default = 2000})--]]
---[[function SolveVector3(Vector)
-    if values.misc.Client['Recoil modifier'].Slider == 0 then
-        return Vector3.new()
-    else
-        return Vector * values.misc.Client['Recoil modifier'].Slider
-    end
-end 
-
-    local vec = Vector3.new()
-    local SolveVector3 = function(vector)return SolveVector3(vector) end
-    local loadgun = debug.getupvalue(client.loadmodules, 6)
-    local modifydata = debug.getupvalue(loadgun, 1)
-    debug.setupvalue(loadgun, 1, function(...)
-        retv = modifydata(...)
-        v1 = retv
-        if values.misc.Client['Custom firerate'].Toggle then
-            if type(retv.firerate) == 'number' then
-                retv.firerate = retv.firerate + values.misc.Client['Firerate modifier'].Slider
-            end
-        end
-
-        if not values.misc.Client['No recoil'].Toggle then
-            v1.rotkickmin = SolveVector3(v1.rotkickmin)
-            v1.rotkickmax = SolveVector3(v1.rotkickmax)
-            v1.transkickmin = SolveVector3(v1.transkickmin)
-            v1.transkickmax = SolveVector3(v1.transkickmax)
-            --v1.camkickmin = SolveVector3(v1.camkickmin)
-            --v1.camkickmax = SolveVector3(v1.camkickmax)
-            --v1.camkickspeed = 0;
-            v1.aimrotkickmin = SolveVector3(v1.aimrotkickmin)
-            v1.aimrotkickmax = SolveVector3(v1.aimrotkickmax)
-            v1.aimtranskickmin = SolveVector3(v1.aimtranskickmin)
-            v1.aimtranskickmax = SolveVector3(v1.aimtranskickmax)
-            v1.aimcamkickmin = SolveVector3(v1.aimcamkickmin)
-            v1.aimcamkickmax = SolveVector3(v1.aimcamkickmax)
-            --v1.aimcamkickspeed = 0;
-            --v1.modelkickspeed = 0;
-            --v1.modelrecoverspeed = 0;
-            --v1.modelkickdamper = 0.0;
-            --v1.aimkickmult = 0.0;
-        end
-        if values.misc.Client['Spread modification'].Toggle then
-            v1.hipfirespread = v1.hipfirespread * values.misc.Client['Spread modifier'].Slider;
-            v1.hipfirestability = v1.hipfirestability * values.misc.Client['Spread modifier'].Slider;
-            v1.hipfirespreadrecover = v1.hipfirespreadrecover * values.misc.Client['Spread modifier'].Slider;
-        end
-        if values.misc.Client['Custom reload speed'].Toggle then
-            local anim = v1.animations
-            if anim.tacticalreload then
-                v1.animations.tacticalreload.resettime = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.tacticalreload.stdtimescale = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.tacticalreload.timescale = values.misc.Client['Reload speed modifier'].Slider
-            elseif anim.reload then
-                v1.animations.reload.resettime = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.reload.stdtimescale = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.reload.timescale = values.misc.Client['Reload speed modifier'].Slider
-            elseif anim.pullbolt then
-                v1.animations.pullbolt.stdtimescale = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.pullbolt.timescale = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.pullbolt.resettime = values.misc.Client['Reload speed modifier'].Slider
-            end
-        end
-        return retv
-    end)
-    local gunbob = debug.getupvalue(loadgun, 58)
-    debug.setupvalue(loadgun, 58, function(...)
-        if values.misc.Client['no gun bob'].Toggle then 
-            return CFrame.new()
-        end
-        return gunbob(...)
-    end)--]]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	end
+		else
+		game:GetService("TextChatService").OnIncomingMessage = oldIncomingMessage
+		end
+	end
+end)
 local addons = misc:Sector("addons", "Left") 
 addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
 					if tbl.Toggle then
@@ -8697,54 +7289,7 @@ addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, 
 
 watermarkthemes = {}
 watermarklocation = nil
-fonts = {
-	'Legacy',
-	'Arial',
-	'ArialBold',
-	'SourceSans',
-	'SourceSansBold',
-	'SourceSansSemibold',
-	'SourceSansLight',
-	'SourceSansItalic',
-	'Bodoni',
-	'Garamond',
-	'Cartoon',
-	'Code',
-	'Highway',
-	'SciFi',
-	'Arcade',
-	'Fantasy',
-	'Antique',
-	'Gotham',
-	'GothamSemibold',
-	'GothamBold',
-	'GothamBlack',
-	'AmaticSC',
-	'Bangers',
-	'Creepster',
-	'DenkOne',
-	'Fondamento',
-	'FredokaOne',
-	'GrenzeGotisch',
-	'IndieFlower',
-	'JosefinSans',
-	'Jura',
-	'Kalam',
-	'LuckiestGuy',
-	'Merriweather',
-	'Michroma',
-	'Nunito',
-	'Oswald',
-	'PatrickHand',
-	'PermanentMarker',
-	'Roboto',
-	'RobotoCondensed',
-	'RobotoMono',
-	'Sarpanch',
-	'SpecialElite',
-	'TitilliumWeb',
-	'Ubuntu',
-}
+
 
 do
 	local watermark = C.INST('ScreenGui')
