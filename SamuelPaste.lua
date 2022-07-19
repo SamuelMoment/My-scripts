@@ -1,6 +1,14 @@
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
+
+--[[
+method i want to use for keybinds incase i forget
+table[keybind1] = should be bigggest keybind, value should be table[keybind1] - table[keybind2]
+table[keybind2] = should be less bigger
+tbh i forget the method i wanted to use first so yeah
+--]]
+
 if game.CoreGui:FindFirstChild("electric boogalo") then return error('script is already executed or you executed another script')end
 getgenv().PasteDisabled = false
 local wait = task.wait -- small test
@@ -636,33 +644,54 @@ do
 		TextLabel.TextSize = 14.000
 		TextLabel.TextXAlignment = Enum.TextXAlignment.Left--]]
 		makeDraggable(Frame)
-		
-		--local keybindss = {}
-		--local biggestkeybind
-	end
-	local keybindss = {}
-	function keybindadd(text,keybind) 
-		if KeybindList.Frame.Frame:FindFirstChild(text) then 
-			KeybindList.Frame.Frame:FindFirstChild(text):Destroy(); 
-			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10); 
 		end
+		
+		local keybindss = {}
+		local biggestkeybind
+		
+	function keybindadd(text,keybind) 
+	if KeybindList.Frame.Frame:FindFirstChild(text) then 
+		KeybindList.Frame.Frame:FindFirstChild(text):Destroy(); 
+		KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10); 
+	end
 		if not KeybindList.Frame.Frame:FindFirstChild(text) then 
 			local TextLabel = C.INST("TextLabel")
+			--local size = GetTextBounds(''..text..''..keybind..'', Enum.Font.Code, 14)
+			--[[if size >= (KeybindList.Frame.Size.X - 8) then
+			KeybindList.Frame.Size = C.UDIM2(0, Size + 8, 0, 20)
+			KeybindList.Frame.Grad.Size = C.UDIM2(0,KeybindList.Frame.Size.X, 0,4)
+			KeybindList.Frame.Frame.Size = C.UDIM2(0, Size + 8, 0, 20 * #keybindss)
+			end--]]
+			--[[TextLabel.BackgroundColor3 = C.COL3RGB(1, 1, 1) 
+			TextLabel.BorderColor3 = C.COL3RGB(255,20,147) 
+			TextLabel.
+			TextLabel.BorderSizePixel = 0 
+			TextLabel.Size = C.UDIM2(0, 170, 0, 20) 
+			TextLabel.ZIndex = 2 
+			TextLabel.Font = Enum.Font.SourceSansSemibold 
+			TextLabel.Text = ""..text.." : Enabled"
+			TextLabel.TextColor3 = C.COL3RGB(255, 255, 255) 
+			TextLabel.TextSize = 14.000 
+			TextLabel.Name = text 
+			TextLabel.Parent = KeybindList.TextLabel.Frame --]]
 			local Size = GetTextBounds("["..keybind..'] '..text..'', Enum.Font.SourceSans, 14)
+			local XOriginalSize = KeybindList.Frame.Frame.Size.X.Offset
+			local XScale = Size
 			
-			if KeybindList.Frame.Frame.Size.X.Offset <= Size then
-				--biggestkeybind = text
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,0)
+			if XScale >= XOriginalSize then
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,10)
 				KeybindList.Frame.Size = KeybindList.Frame.Size + C.UDIM2(0, Size, 0, 0)
 				KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size + C.UDIM2(0, Size, 0 ,0)
+			else
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,0,0,10)
 			end
-			local table = {['Text'] = text, [2] = "["..keybind..'] '..text..''}
-			C.INSERT(keybindss, table)
-				C.TBLSORT(keybindss, function(a,b) 
-					return C.LEN(a[2]) < C.LEN(b[2]) 
-				end)
-			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,0,0,10)
-			
+				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
+					KeybindList.Frame.Frame.Visible = false
+					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
+					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
+				else
+					KeybindList.Frame.Frame.Visible = true
+				end
 			TextLabel.Name = text
 			TextLabel.Parent = KeybindList.Frame.Frame
 			TextLabel.Active = true
@@ -682,108 +711,99 @@ do
 	end 
 		
 	function keybindtoggle(text) 
-		if C.TBLFIND(keybindss, text) then
-			C.TBLREMOVE(keybindss, text)
-			local table = {['Text'] = text,[2] = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Enabled'}
-			C.INSERT(keybindss, table)
-			C.TBLSORT(keybindss, function(a,b) 
-				return C.LEN(a[2]) < C.LEN(b[2])
-			end)
-		end
 		KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Enabled'
-		local Size = GetTextBounds(' : Enabled', Enum.Font.SourceSans, 14) --+ 15
-		local SizeValue = GetTextBounds(KeybindList.Frame.Frame:FindFirstChild(text).Text, Enum.Font.SourceSans, 14) --+ 15
-		local XOffset = KeybindList.Frame.Frame.Size.X.Offset
-		
-		if XOffset <= SizeValue then
-			--biggestkeybind = text
-			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,0)
-			KeybindList.Frame.Size = KeybindList.Frame.Size + C.UDIM2(0, Size, 0, 0)
-			KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size + C.UDIM2(0, Size, 0 ,0)
-		end
-		print(XOffset)
-		print(Size)
-		--print(Size - 15)
-	end
+	end 
+					function keybindhold(text)
+						KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Held'
+					end
 
-	function keybindhold(text)
-		if C.TBLFIND(keybindss, text) then
-			C.TBLREMOVE(keybindss, text)
-			local table = {['Text'] = text, [2] = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Held'}
-			C.INSERT(keybindss, table)
-			C.TBLSORT(keybindss, function(a,b) 
-				return C.LEN(a[2]) < C.LEN(b[2])
-			end)
-		end
-		KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Held'
-		local Size = GetTextBounds(' : Held', Enum.Font.SourceSans, 14)
-		local SizeValue = GetTextBounds(KeybindList.Frame.Frame:FindFirstChild(text).Text, Enum.Font.SourceSans, 14) --+ 15
-		local XOffset = KeybindList.Frame.Frame.Size.X.Offset
-		
-		if XOffset <= SizeValue then
-			--biggestkeybind = text
-			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,0)
-			KeybindList.Frame.Size = KeybindList.Frame.Size + C.UDIM2(0, Size, 0, 0)
-			KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size + C.UDIM2(0, Size, 0 ,0)
-		end
-	end
-	
 	function keybindremove(text, keybind) 
-		if KeybindList.Frame.Frame:FindFirstChild(text) then
-			--print('found')
-			--local text2 = (string.find(text, ' : Enabled') and ' : Enabled' or string.find(text, ' : Held') and ' : Held')
-			KeybindList.Frame.Frame:FindFirstChild(text).Text = C.GSUB(KeybindList.Frame.Frame:FindFirstChild(text).Text, " : Enabled", '')
-			KeybindList.Frame.Frame:FindFirstChild(text).Text = C.GSUB(KeybindList.Frame.Frame:FindFirstChild(text).Text, " : Held", '')
-			C.TBLSORT(keybindss, function(a,b) 
-				return C.LEN(a[2]) < C.LEN(b[2])
-			end)
-			if keybindss[1]['Text'] == text then
-				size1 = GetTextBounds(keybindss[1][2], Enum.Font.SourceSans, 14)
-				size2 = GetTextBounds(keybindss[2][2], Enum.Font.SourceSans, 14)
-				size3 = size1 - size2
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0, size3,0,0)
-				KeybindList.Frame.Size = KeybindList.Frame.Size - C.UDIM2(0, size3, 0, 0)
-				KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size - C.UDIM2(0, size3, 0 ,0)				
-			end
-			local Size = GetTextBounds(KeybindList.Frame.Frame:FindFirstChild(text).Text, Enum.Font.SourceSans, 14) --+ 15
-			--local SizeValue = GetTextBounds(KeybindList.Frame.Frame:FindFirstChild(text).Text, Enum.Font.SourceSans, 14) --+ 15
-			local XOffset = KeybindList.Frame.Frame.Size.X.Offset
+		if KeybindList.Frame.Frame:FindFirstChild(text) and KeybindList.Frame.Frame:FindFirstChild(text).Text then
+
+			KeybindList.Frame.Frame:FindFirstChild(text):Destroy()
+			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10)
+					if not KeybindList.Frame.Frame:FindFirstChild(text) then 
+			local TextLabel = C.INST("TextLabel")
+			--local size = GetTextBounds(''..text..''..keybind..'', Enum.Font.Code, 14)
+			--[[if size >= (KeybindList.Frame.Size.X - 8) then
+			KeybindList.Frame.Size = C.UDIM2(0, Size + 8, 0, 20)
+			KeybindList.Frame.Grad.Size = C.UDIM2(0,KeybindList.Frame.Size.X, 0,4)
+			KeybindList.Frame.Frame.Size = C.UDIM2(0, Size + 8, 0, 20 * #keybindss)
+			end--]]
+			--[[TextLabel.BackgroundColor3 = C.COL3RGB(1, 1, 1) 
+			TextLabel.BorderColor3 = C.COL3RGB(255,20,147) 
+			TextLabel.
+			TextLabel.BorderSizePixel = 0 
+			TextLabel.Size = C.UDIM2(0, 170, 0, 20) 
+			TextLabel.ZIndex = 2 
+			TextLabel.Font = Enum.Font.SourceSansSemibold 
+			TextLabel.Text = ""..text.." : Enabled"
+			TextLabel.TextColor3 = C.COL3RGB(255, 255, 255) 
+			TextLabel.TextSize = 14.000 
+			TextLabel.Name = text 
+			TextLabel.Parent = KeybindList.TextLabel.Frame --]]
+			local Size = GetTextBounds("["..keybind..'] '..text..'', Enum.Font.SourceSans, 14)
+			local XOriginalSize = KeybindList.Frame.Frame.Size.X.Offset
+			local XScale = Size
 			
-			if XOffset <= Size then
-				--biggestkeybind = text
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,0)
-				KeybindList.Frame.Size = KeybindList.Frame.Size + C.UDIM2(0, Size, 0, 0)
-				KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size + C.UDIM2(0, Size, 0 ,0)
+			if XScale >= XOriginalSize then
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,10)
+			else
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,0,0,10)
 			end
+				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
+					KeybindList.Frame.Frame.Visible = false
+					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
+					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
+				else
+					KeybindList.Frame.Frame.Visible = true
+				end
+			TextLabel.Name = text
+			TextLabel.Parent = KeybindList.Frame.Frame
+			TextLabel.Active = true
+			TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			TextLabel.BackgroundTransparency = 1.000
+			TextLabel.LayoutOrder = 1
+			TextLabel.Position = UDim2.new(0,10,0,0)
+			TextLabel.Size = UDim2.new(0, 60, 0, 20)
+			TextLabel.ZIndex = 694201337
+			TextLabel.Font = Enum.Font.SourceSans
+			TextLabel.LineHeight = 1.190
+			TextLabel.Text = "["..keybind..'] '..text..''
+			TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			TextLabel.TextSize = 14.000
+			TextLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
 		end 
-		if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-			KeybindList.Frame.Frame.Visible = false
-			KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-			KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-		else
-			KeybindList.Frame.Frame.Visible = true
+				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
+					KeybindList.Frame.Frame.Visible = false
+					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
+					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
+				else
+					KeybindList.Frame.Frame.Visible = true
+				end
 		end
 	end 
 
 	function keybindremove2(text) 
 		if KeybindList.Frame.Frame:FindFirstChild(text) then
-			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10)
-			local XOffset = KeybindList.Frame.Frame.Size.X.Offset
-			if XOffset <= 60 then
-				--KeybindList.Frame.Frame.Size.X.Offset = 60
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, 60, 0, 0)
-			end
-			if KeybindList.Frame.Frame.Size.Y.Offset == 28 then
-				--KeybindList.Frame.Frame.Size.X.Offset = 60
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,60,0,0)
-			end
-			if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-				KeybindList.Frame.Frame.Visible = false
-				KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-				KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-			else
-				KeybindList.Frame.Frame.Visible = true
-			end
+				
+				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10)
+				local XOffset = KeybindList.Frame.Frame.Size.X.Offset
+				if XOffset <= 60 then
+					--KeybindList.Frame.Frame.Size.X.Offset = 60
+					KeybindList.Frame.Frame.Size = C.UDIM2(KeybindList.Frame.Frame.Size.X.Scale, 60, KeybindList.Frame.Frame.Size.Y.Scale, KeybindList.Frame.Frame.Size.Y.Offset)
+				end
+				if KeybindList.Frame.Frame.Size.Y.Offset == 28 then
+					--KeybindList.Frame.Frame.Size.X.Offset = 60
+					KeybindList.Frame.Frame.Size = C.UDIM2(KeybindList.Frame.Frame.Size.X.Scale, 60, KeybindList.Frame.Frame.Size.Y.Scale, KeybindList.Frame.Frame.Size.Y.Offset)
+				end
+				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
+					KeybindList.Frame.Frame.Visible = false
+					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
+					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
+				else
+					KeybindList.Frame.Frame.Visible = true
+				end
 			KeybindList.Frame.Frame:FindFirstChild(text):Destroy() 
 		end 
 	end 
@@ -1391,7 +1411,7 @@ do
 											keybindremove(text, Element.value.Key) 
 											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = C.COL3RGB(46, 46, 46)}) 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
-										end
+										end 
 										values[tabname][sectorname][tabtext][text] = Element.value 
 										callback(Element.value) 
 									end 
@@ -4012,7 +4032,7 @@ end
 								end 
 							elseif type == "ToggleColor" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
-								Element.value = {Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), SetColor} 
+								Element.value = {Rainbow = false, RainbowSpeed = 3, Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), SetColor} 
 
 								local Toggle = C.INST("Frame") 
 								local Button = C.INST("TextButton") 
@@ -4462,13 +4482,11 @@ end
 								
 								
 								-------------------------------------------------------------------
-								do
 									local Toggle123 = C.INST("Frame") 
 									local Button123 = C.INST("TextButton") 
 									local Color123 = C.INST("Frame") 
 									local TextLabel123 = C.INST("TextLabel") 
-									local ToggleValue = false
-									local RainbowSpeed = 1								
+									
 									Toggle123.Name = "Toggle123" 
 									Toggle123.Parent = Frame 
 									Toggle123.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
@@ -4514,7 +4532,7 @@ end
 									TextLabel123.ZIndex = 4
 
 									local function update123() 
-										if ToggleValue then 
+										if Element.value.Rainbow then 
 											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
 											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
@@ -4526,13 +4544,16 @@ end
 									end
 									
 									Button123.MouseButton1Down:Connect(function() 
-										ToggleValue = not ToggleValue
-										update123() 
-										if ToggleValue then
-											while true do wait()
-												if ToggleValue then
-													for i = 0,1,0.001*RainbowSpeed do
-														ColorH, ColorS, ColorV = i,1,1
+										Element.value.Rainbow = not Element.value.Rainbow
+										update123() 				
+										--values[tabname][sectorname][tabtext][text] = Element.value 
+										--callback(Element.value) 
+									end)
+								
+											game.RunService.RenderStepped:Connect(function()
+												if Element.value.Rainbow then
+													--Element.value.RainbowSpeed
+														ColorH, ColorS, ColorV = (tick() % Element.value.RainbowSpeed/Element.value.RainbowSpeed),1,1
 
 														ColorH = C.CLAMP(ColorH,0,1) 
 														ColorS = C.CLAMP(ColorS,0,1) 
@@ -4550,16 +4571,8 @@ end
 																							--library.options['armColor']:SetColor(Color3.fromHSV(i,1,1))
 														wait()
 																				--        library.options['Accent Color']:SetColor(Color3.fromHSV(i,1,1)) -- also u can change any flag that has color by prinitng flags (table.foreach(library.flags,print)
-														if not ToggleValue then break end
-													end
-												else break end
-											end										
-										end
-										--values[tabname][sectorname][tabtext][text] = Element.value 
-										--callback(Element.value) 
-									end)
-								
-								
+												end
+											end)									
 								local Slider2113132 = C.INST("Frame") 
 								local TextLabel2113132 = C.INST("TextLabel") 
 								local Button2113132 = C.INST("TextButton") 
@@ -4625,13 +4638,13 @@ end
 								Value123123123.TextColor3 = C.COL3RGB(200, 200, 200) 
 								Value123123123.TextSize = 11.000 
 								Value123123123.ZIndex = 4
-								local min, max, default = 0, 50, 1
+								local min, max, default = 1, 6, 3
 								--Element.Value123123123 = {Slider2113132 = default}
 								local a
 								if min > 0 then 
-									a = ((RainbowSpeed - min)) / (max-min) 
+									a = ((Element.value.RainbowSpeed - min)) / (max-min) 
 								else 
-									a = (RainbowSpeed-min)/(max-min) 
+									a = (Element.value.RainbowSpeed-min)/(max-min) 
 								end 
 								Value123123123.Text = default
 								Frame123123.Size = C.UDIM2(a,0,1,0) 
@@ -4643,7 +4656,7 @@ end
 									Frame123123.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
 									val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) or 0 
 									Value123123123.Text = val 
-									RainbowSpeed = val 
+									Element.value.RainbowSpeed = val 
 									--values[tabname][sectorname][text] = Element.Value123123123 
 									--callback(Element.Value123123123) 
 									moveconnection = mouse.Move:Connect(function() 
@@ -4664,8 +4677,7 @@ end
 											releaseconnection:Disconnect() 
 										end 
 									end) 
-								end) 	
-end								
+								end) 							
 								---------------------------------------------------------------------------------------------------------------------
 								
 								
@@ -4759,7 +4771,20 @@ end
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
 
 									values[tabname][sectorname][text] = data.default.Color 
-								end 
+								elseif Element.value.Color ~= nil then
+									ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
+
+									ColorH = C.CLAMP(ColorH,0,1) 
+									ColorS = C.CLAMP(ColorS,0,1) 
+									ColorV = C.CLAMP(ColorV,0,1) 
+									ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+
+									values[tabname][sectorname][text] = Element.value.Color 
+								end
 
 								local mouse = LocalPlayer:GetMouse() 
 								game:GetService("UserInputService").InputBegan:Connect(function(input) 
@@ -4844,13 +4869,14 @@ end
 									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
 									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
 									update() 
+									update123()
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
 
 									callback(value) 
-								end 
+								end
 							elseif type == "ToggleTrans" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
-								Element.value = {Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), Transparency = data.default and data.default.Transparency or 0} 
+								Element.value = {Rainbow = false, RainbowSpeed = 3,Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), Transparency = data.default and data.default.Transparency or 0} 
 
 								local Toggle = C.INST("Frame") 
 								local Button = C.INST("TextButton") 
@@ -5291,13 +5317,11 @@ CopyColorsType = 'RGB'
 								
 								
 								-------------------------------------------------------------------
-								do
+
 									local Toggle123 = C.INST("Frame") 
 									local Button123 = C.INST("TextButton") 
 									local Color123 = C.INST("Frame") 
-									local TextLabel123 = C.INST("TextLabel") 
-									local ToggleValue = false
-									local RainbowSpeed = 1								
+									local TextLabel123 = C.INST("TextLabel") 							
 									Toggle123.Name = "Toggle123" 
 									Toggle123.Parent = Frame 
 									Toggle123.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
@@ -5343,7 +5367,7 @@ CopyColorsType = 'RGB'
 									TextLabel123.ZIndex = 4
 
 									local function update123() 
-										if ToggleValue then 
+										if Element.value.Rainbow then 
 											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
 											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
@@ -5355,13 +5379,14 @@ CopyColorsType = 'RGB'
 									end
 									
 									Button123.MouseButton1Down:Connect(function() 
-										ToggleValue = not ToggleValue
+										Element.value.Rainbow = not Element.value.Rainbow
 										update123() 
-										if ToggleValue then
-											while true do wait()
-												if ToggleValue then
-													for i = 0,1,0.001*RainbowSpeed do
-														ColorH, ColorS, ColorV = i,1,1
+									end)
+								
+											game.RunService.RenderStepped:Connect(function()
+												if Element.value.Rainbow then
+
+														ColorH, ColorS, ColorV = tick() % Element.value.RainbowSpeed/Element.value.RainbowSpeed,1,1
 
 														ColorH = C.CLAMP(ColorH,0,1) 
 														ColorS = C.CLAMP(ColorS,0,1) 
@@ -5379,16 +5404,9 @@ CopyColorsType = 'RGB'
 																							--library.options['armColor']:SetColor(Color3.fromHSV(i,1,1))
 														wait()
 																				--        library.options['Accent Color']:SetColor(Color3.fromHSV(i,1,1)) -- also u can change any flag that has color by prinitng flags (table.foreach(library.flags,print)
-														if not ToggleValue then break end
-													end
-												else break end
-											end								
-										end
-										--values[tabname][sectorname][tabtext][text] = Element.value 
-										--callback(Element.value) 
-									end)
-								
-								
+
+												end
+											end)												
 								local Slider2113132 = C.INST("Frame") 
 								local TextLabel2113132 = C.INST("TextLabel") 
 								local Button2113132 = C.INST("TextButton") 
@@ -5402,7 +5420,7 @@ CopyColorsType = 'RGB'
 								Slider2113132.BackgroundTransparency = 1.000 
 								Slider2113132.Position = C.UDIM2(0, -15, 0, 277) --edit here
 								Slider2113132.Size = C.UDIM2(1, 0, 0, 25) 
-								Slider2113132.ZIndex = 4
+								Slider2113132.ZIndex = 3
 
 								TextLabel2113132.Parent = Slider2113132 
 								TextLabel2113132.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
@@ -5414,7 +5432,7 @@ CopyColorsType = 'RGB'
 								TextLabel2113132.TextColor3 = C.COL3RGB(200, 200, 200) 
 								TextLabel2113132.TextSize = 11.000
 								TextLabel2113132.TextXAlignment = Enum.TextXAlignment.Left 
-								TextLabel2113132.ZIndex = 4
+								TextLabel2113132.ZIndex = 3
 
 								Button2113132.Name = "Button2113132" 
 								Button2113132.Parent = Slider2113132 
@@ -5427,13 +5445,13 @@ CopyColorsType = 'RGB'
 								Button2113132.Text = "" 
 								Button2113132.TextColor3 = C.COL3RGB(0, 0, 0) 
 								Button2113132.TextSize = 11.000
-								Button2113132.ZIndex = 4
+								Button2113132.ZIndex = 3
 
 								Frame123123.Parent = Button2113132 
 								Frame123123.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								Frame123123.BorderSizePixel = 0 
 								Frame123123.Size = C.UDIM2(0.5, 0, 1, 0) 
-								Frame123123.ZIndex = 4
+								Frame123123.ZIndex = 3
 								
 								UIGradient123123.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
 								
@@ -5454,13 +5472,13 @@ CopyColorsType = 'RGB'
 								Value123123123.TextColor3 = C.COL3RGB(200, 200, 200) 
 								Value123123123.TextSize = 11.000 
 								Value123123123.ZIndex = 4
-								local min, max, default = 0, 50, 1
+								local min, max, default = 1, 6, 3
 								--Element.Value123123123 = {Slider2113132 = default}
 								local a
 								if min > 0 then 
-									a = ((RainbowSpeed - min)) / (max-min) 
+									a = ((Element.value.RainbowSpeed - min)) / (max-min) 
 								else 
-									a = (RainbowSpeed-min)/(max-min) 
+									a = (Element.value.RainbowSpeed-min)/(max-min) 
 								end 
 								Value123123123.Text = default
 								Frame123123.Size = C.UDIM2(a,0,1,0) 
@@ -5472,7 +5490,7 @@ CopyColorsType = 'RGB'
 									Frame123123.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
 									val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) or 0 
 									Value123123123.Text = val 
-									RainbowSpeed = val 
+									Element.value.RainbowSpeed = val 
 									--values[tabname][sectorname][text] = Element.Value123123123 
 									--callback(Element.Value123123123) 
 									moveconnection = mouse.Move:Connect(function() 
@@ -5493,8 +5511,7 @@ CopyColorsType = 'RGB'
 											releaseconnection:Disconnect() 
 										end 
 									end) 
-								end) 	
-end								
+								end) 								
 								---------------------------------------------------------------------------------------------------------------------
 
 								Colorpick.Name = "Colorpick" 
@@ -5566,7 +5583,7 @@ end
 								Transpick.Image = "rbxassetid://3887014957" 
 								Transpick.ScaleType = Enum.ScaleType.Tile 
 								Transpick.TileSize = C.UDIM2(0, 10, 0, 10) 
-								Transpick.ZIndex = 3 
+								Transpick.ZIndex = 4 
 
 								Transcolor.Name = "Transcolor" 
 								Transcolor.Parent = Transpick 
@@ -5575,7 +5592,7 @@ end
 								Transcolor.Size = C.UDIM2(1, 0, 1, 0) 
 								Transcolor.Image = "rbxassetid://3887017050" 
 								Transcolor.ImageColor3 = C.COL3RGB(255, 0, 4) 
-								Transcolor.ZIndex = 3 
+								Transcolor.ZIndex = 4 
 
 								Transdrag.Name = "Transdrag" 
 								Transdrag.Parent = Transcolor 
@@ -5583,7 +5600,7 @@ end
 								Transdrag.BorderColor3 = C.COL3RGB(18, 18, 16) 
 								Transdrag.Position = C.UDIM2(0, -1, 0, 0) 
 								Transdrag.Size = C.UDIM2(0, 2, 1, 0) 
-								Transdrag.ZIndex = 3 
+								Transdrag.ZIndex = 4
 
 								ColorP.MouseButton1Down:Connect(function() 
 									Frame.Visible = not Frame.Visible 
@@ -5609,6 +5626,19 @@ end
 
 								if data.default and data.default.Color ~= nil then 
 									ColorH, ColorS, ColorV = data.default.Color:ToHSV() 
+
+									ColorH = C.CLAMP(ColorH,0,1) 
+									ColorS = C.CLAMP(ColorS,0,1) 
+									ColorV = C.CLAMP(ColorV,0,1) 
+									ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+									Transcolor.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+								elseif Element.value.Color ~= nil then
+									ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
 
 									ColorH = C.CLAMP(ColorH,0,1) 
 									ColorS = C.CLAMP(ColorS,0,1) 
@@ -5734,8 +5764,10 @@ end
 									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
 									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
 									update() 
+									update123()
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
 								end 
+								
 								elseif type == "TextBox" then 
 									Section.Size = Section.Size + C.UDIM2(0,0,0,30) 
 									Element.value = {Text = data.default and data.default.text or ""} 
@@ -6849,7 +6881,7 @@ elseif type == "Button" then
 
 		Lunar.Parent = game.CoreGui 
 		return menu 
-	end
+	end 
 	local MX_ONHIT = C.INST("ScreenGui")
 	do
 	local OnHitFrame = C.INST("Frame")
