@@ -217,20 +217,20 @@ function library:Tween(...) game:GetService("TweenService"):Create(...):Play() e
 --makefolder("pastedstormy") 
 --makefolder("pastedstormy/pastedstormycfgs/")
  
-local cfglocation = "SamuelPaste_pf/cfgs/"
-makefolder('SamuelPaste_pf')
-makefolder('SamuelPaste_pf/cfgs')
+local cfglocation = "SamuelPaste_cw/cfgs/"
+makefolder('SamuelPaste_cw')
+makefolder('SamuelPaste_cw/cfgs')
 
 
-if not isfile('SamuelPaste_pf/customkillsay.txt') then
-	writefile('SamuelPaste_pf/customkillsay.txt', "message1\
+if not isfile('SamuelPaste_cw/customkillsay.txt') then
+	writefile('SamuelPaste_cw/customkillsay.txt', "message1\
 message2\
 message3"
 )
 end
 
-if not isfile('SamuelPaste_pf/customchatspam.txt') then
-	writefile('SamuelPaste_pf/customchatspam.txt', "message1\
+if not isfile('SamuelPaste_cw/customchatspam.txt') then
+	writefile('SamuelPaste_cw/customchatspam.txt', "message1\
 message2\
 message3"
 )
@@ -265,12 +265,7 @@ getgenv().emojis = {
 	[":neutral:"] = utf8.char(128528);
 	[":sob:"] = utf8.char(128557);
 }
-local allcfgs = {} 
 
-for _,cfg in pairs(listfiles('SamuelPaste_pf/cfgs')) do 
-	local cfgname = C.GSUB(cfg, 'SamuelPaste_pf/cfgs\\', "") 
-	C.INSERT(allcfgs, cfgname) 
-end
 --[[if #allcfgs == 0 then
 INSERT(allcfgs, 'shit so script wont crash')
 end--]]
@@ -4765,7 +4760,20 @@ end
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
 
 									values[tabname][sectorname][text] = data.default.Color 
-								end 
+								elseif Element.value.Color ~= nil then
+									ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
+
+									ColorH = C.CLAMP(ColorH,0,1) 
+									ColorS = C.CLAMP(ColorS,0,1) 
+									ColorV = C.CLAMP(ColorV,0,1) 
+									ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+
+									values[tabname][sectorname][text] = Element.value.Color 
+								end
 
 								local mouse = LocalPlayer:GetMouse() 
 								game:GetService("UserInputService").InputBegan:Connect(function(input) 
@@ -4854,7 +4862,7 @@ end
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
 
 									callback(value) 
-								end 
+								end
 							elseif type == "ToggleTrans" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
 								Element.value = {Rainbow = false, RainbowSpeed = 3,Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), Transparency = data.default and data.default.Transparency or 0} 
@@ -5607,6 +5615,19 @@ CopyColorsType = 'RGB'
 
 								if data.default and data.default.Color ~= nil then 
 									ColorH, ColorS, ColorV = data.default.Color:ToHSV() 
+
+									ColorH = C.CLAMP(ColorH,0,1) 
+									ColorS = C.CLAMP(ColorS,0,1) 
+									ColorV = C.CLAMP(ColorV,0,1) 
+									ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+									Transcolor.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+								elseif Element.value.Color ~= nil then
+									ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
 
 									ColorH = C.CLAMP(ColorH,0,1) 
 									ColorS = C.CLAMP(ColorS,0,1) 
@@ -6967,55 +6988,298 @@ local Lighting = game:GetService("Lighting")
 local Workspace = game:GetService('Workspace')
 local workspace = game:GetService('Workspace')
 local Camera = workspace.CurrentCamera
-local Left = "Left"
-local Right = "Right"
 local Mouse = LocalPlayer:GetMouse()
+for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"kick") then v.kick = function() return end end end 
+for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999 end end 
+for i,v in pairs(getgc(true)) do
+   if typeof(v) == 'table' and rawget(v, 'getIsBodyMoverCreatedByGame') then
+		v.getIsBodyMoverCreatedByGame = function(gg)
+		    return true
+		end
+   end
+   if typeof(v) == 'table' and rawget(v, 'kick') then
+		v.kick = function() return wait(9e9) end
+   end
+   if typeof(v) == 'table' and rawget(v, 'randomDelayKick') then
+		v.randomDelayKick = function() return wait(9e9) end
+   end
+   if typeof(v) == 'table' and rawget(v, 'connectCharacter') then
+		v.connectCharacter = function(gg) return wait(9e9) end
+   end
+   if typeof(v) == "table" and rawget(v,"Remote") then
+       v.Remote.Name = v.Name
+   end
+end
+local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(self, ...)
+  local args = {...}
+  local method = getnamecallmethod();
+ 
+  if (method == "Kick" or method == "kick") and self == game.Players.LocalPlayer then
+      return;
+  end
+ 
+  return oldnamecall(self, unpack(args))
+end)
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local flyKeyDown
+local flyKeyUp
+local events = game:GetService("ReplicatedStorage").Communication.Events
+local functions = game:GetService("ReplicatedStorage").Communication.Functions
+
+functions.SpawnCharacter:FireServer()
+wait(0.5)
+for i = 1,2 do -- inf jump bypass
+    LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    events.StartFastRespawn:FireServer()
+    functions.CompleteFastRespawn:FireServer()
+    wait(.1)
+end
+local weapon_anims = {}
+
+for i,v in pairs(game:GetService("ReplicatedStorage").Shared.Assets.Melee:GetDescendants()) do
+    if v:IsA("Animation") then
+        if v.Name:find("Slash") or v.Name:find("Swing") then
+            table.insert(weapon_anims,v.AnimationId)
+        end
+    end
+end
+FLYING = false
+iyflyspeed = 1
+vehicleflyspeed = 1
+
+local function GetClosest(Distance)
+    local Character = LocalPlayer.Character
+    local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPart")
+    if not (Character or HumanoidRootPart) then return end
+
+    local TargetDistance = Distance
+    local Target
+
+    for i,v in ipairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            local TargetHRP = v.Character.HumanoidRootPart
+            local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
+            if mag < TargetDistance then
+                TargetDistance = mag
+                Target = v
+            end
+        end
+    end
+
+    return Target
+end
+
+function sFLY(vfly)
+    if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
+	local T = LocalPlayer.Character.HumanoidRootPart
+	local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+	local SPEED = 0
+
+	local function FLY()
+		FLYING = true
+		local BG = Instance.new('BodyGyro')
+		local BV = Instance.new('BodyVelocity')
+		BG.P = 9e4
+		BG.Parent = T
+		BV.Parent = T
+		BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+		BG.cframe = T.CFrame
+		BV.velocity = Vector3.new(0, 0, 0)
+		BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+		task.spawn(function()
+			repeat wait()
+			    if LocalPlayer.Character.Humanoid:FindFirstChild("RagdollRemoteEvent") ~= nil then
+                    LocalPlayer.Character.Humanoid:FindFirstChild("RagdollRemoteEvent"):FireServer(true)
+                end
+			    for i,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                   if v:IsA("BallSocketConstraint") then
+                        v.TwistLowerAngle = 0
+                        v.TwistUpperAngle = 0
+                        v.UpperAngle = 0
+                        v.Radius = 0
+                        if v.Parent.Name == "Right Arm" or v.Parent.Name == "Left Arm" then
+                            v.TwistLowerAngle = 0
+                            v.TwistUpperAngle = 0
+                            v.UpperAngle = 90
+                            v.Radius = 90
+                        end
+                    end
+                end
+				if not vfly and LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
+					LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = true
+				end
+				if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
+					SPEED = 50
+				elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
+					SPEED = 0
+				end
+				if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
+					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+					lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+				elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
+					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+				else
+					BV.velocity = Vector3.new(0, 0, 0)
+				end
+				BG.cframe = workspace.CurrentCamera.CoordinateFrame
+			until not FLYING
+			CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+			SPEED = 0
+			BG:Destroy()
+			BV:Destroy()
+			if LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
+				LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
+			end
+		end)
+	end
+	flyKeyDown = Mouse.KeyDown:Connect(function(KEY)
+		if KEY:lower() == 'w' then
+			CONTROL.F = (vfly and vehicleflyspeed or iyflyspeed)
+		elseif KEY:lower() == 's' then
+			CONTROL.B = - (vfly and vehicleflyspeed or iyflyspeed)
+		elseif KEY:lower() == 'a' then
+			CONTROL.L = - (vfly and vehicleflyspeed or iyflyspeed)
+		elseif KEY:lower() == 'd' then 
+			CONTROL.R = (vfly and vehicleflyspeed or iyflyspeed)
+		elseif QEfly and KEY:lower() == 'e' then
+			CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed)*2
+		elseif QEfly and KEY:lower() == 'q' then
+			CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed)*2
+		end
+		pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
+	end)
+	flyKeyUp = Mouse.KeyUp:Connect(function(KEY)
+		if KEY:lower() == 'w' then
+			CONTROL.F = 0
+		elseif KEY:lower() == 's' then
+			CONTROL.B = 0
+		elseif KEY:lower() == 'a' then
+			CONTROL.L = 0
+		elseif KEY:lower() == 'd' then
+			CONTROL.R = 0
+		elseif KEY:lower() == 'e' then
+			CONTROL.Q = 0
+		elseif KEY:lower() == 'q' then
+			CONTROL.E = 0
+		end
+	end)
+	FLY()
+end
+
+invisfling = function()
+local plr = game.Players.LocalPlayer
+local oldHumanoid = plr.Character.Humanoid
+local torso = game.Players.LocalPlayer.Character.HumanoidRootPart
+local mouse = plr:GetMouse()
+local flying = true
+local deb = true
+local ctrl = {f = 0, b = 0, l = 0, r = 0}
+local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+local maxspeed = 50
+local speed = 50
+
+workspace.CurrentCamera.CameraSubject = torso
+
+
+---local bambam = Instance.new("BodyThrust")
+---bambam.Parent = torso
+--bambam.Force = Vector3.new(9999999,0,9999999)
+--bambam.Location = torso.Position
+
+
+---
+function Fly()
+--game.Players.LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+local bambam = Instance.new("BodyThrust")
+bambam.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+bambam.Force = Vector3.new(99999,0,99999)
+bambam.Location = game.Players.LocalPlayer.Character.HumanoidRootPart.Position 
+Instance.new("SelectionBox",game.Players.LocalPlayer.Character.HumanoidRootPart).Adornee = game.Players.LocalPlayer.Character.HumanoidRootPart
+local bg = Instance.new("BodyGyro", torso)
+bg.P = 9e4
+bg.maxTorque = Vector3.new(0, 0, 0)
+bg.cframe = torso.CFrame
+local bv = Instance.new("BodyVelocity", torso)
+bv.velocity = Vector3.new(0,0,0)
+bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+repeat wait()
+if oldHumanoid:FindFirstChildOfClass'RemoteEvent' ~= nil then
+    oldHumanoid.RagdollRemoteEvent:FireServer(true)
+end
+game.ReplicatedStorage.Communication.Events.UpdateIsCrouching:FireServer(true)
+
+if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
+speed = speed+.2
+if speed > maxspeed then
+speed = maxspeed
+end
+elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
+speed = speed-1
+if speed < 0 then
+speed = 0
+end
+end
+if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
+bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
+elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
+bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+else
+bv.velocity = Vector3.new(0,0.1,0)
+end
+
+until not flying
+ctrl = {f = 0, b = 0, l = 0, r = 0}
+lastctrl = {f = 0, b = 0, l = 0, r = 0}
+speed = 0
+bg:Destroy()
+bv:Destroy()
+
+end
+mouse.KeyDown:connect(function(key)
+if key:lower() == "w" then
+ctrl.f = 1
+elseif key:lower() == "s" then
+ctrl.b = -1
+elseif key:lower() == "a" then
+ctrl.l = -1
+elseif key:lower() == "d" then
+ctrl.r = 1
+end
+end)
+mouse.KeyUp:connect(function(key)
+if key:lower() == "w" then
+ctrl.f = 0
+elseif key:lower() == "s" then
+ctrl.b = 0
+elseif key:lower() == "a" then
+ctrl.l = 0
+elseif key:lower() == "d" then
+ctrl.r = 0
+elseif key:lower() == "r" then
+
+end
+end)
+for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+    v:Destroy()
+end
+wait(.1)
+oldHumanoid.RagdollRemoteEvent:FireServer(true)
+wait(.5)
+coroutine.wrap(Fly)()
+wait(.5)
+game.Players.LocalPlayer.Character.HumanoidRootPart.RootJoint.Part0 = nil
+end
 
 local gui = library:New("SamuelPaste")
 local main = gui:Tab('main')
 local misc = gui:Tab('misc')
 local visuals = gui:Tab('visuals')
-
-for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"kick") then v.kick = function() return end end end 
-for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999 end end 
-
-local Remotes = {}
-local player = game.Players.LocalPlayer
-local NetworkEnvironment = getmenv(rawget(rawget(require(game.ReplicatedStorage.Framework.Nevermore), '_lookupTable'), 'Network'))
-local EventsTable = debug.getupvalue(NetworkEnvironment.GetEventHandler, 1)
-local FunctionsTable = debug.getupvalue(NetworkEnvironment.GetFunctionHandler, 1)
-local function AddRemotes(StorageTable)
-	for Name, Info in pairs(StorageTable) do
-		if rawget(Info, 'Remote') then
-			Remotes[rawget(Info, 'Remote')] = Name
-		end
-	end
-end
-AddRemotes(EventsTable)
-AddRemotes(FunctionsTable)
-local Index
-Index = hookmetamethod(game, '__index', function(Self, Key)
-	if checkcaller() and (Key == 'Name' or Key == 'name') and Remotes[Self] then
-	    return Remotes[Self]
-	end
-
-	return Index(Self, Key)
-end)
-function getEvent(name)
-	for i, v in ipairs(game:GetService("ReplicatedStorage").Communication.Events:GetChildren()) do
-		if v.Name == name then
-			return v
-		end
-	end
-end
-function getFunction(name)
-	for i, v in ipairs(game:GetService("ReplicatedStorage").Communication.Functions:GetChildren()) do
-		if v.Name == name then
-			return v
-		end
-	end
-end
-
+do
 local chat = main:Sector('chat', 'Right')
 chat:Element('ToggleColor','custom tag')
 chat:Element('ToggleColor','custom nickname')
@@ -7027,54 +7291,14 @@ chat:Element('TextBox', 'nickname',{placeholder = "custom nickname"})
 chat:Element('Toggle','custom message size')
 chat:Element('Slider','size', {min = 1, max = 100})
 chat:Element('Toggle', 'custom font')
-fonts = {
-	'Legacy',
-	'Arial',
-	'ArialBold',
-	'SourceSans',
-	'SourceSansBold',
-	'SourceSansSemibold',
-	'SourceSansLight',
-	'SourceSansItalic',
-	'Bodoni',
-	'Garamond',
-	'Cartoon',
-	'Code',
-	'Highway',
-	'SciFi',
-	'Arcade',
-	'Fantasy',
-	'Antique',
-	'Gotham',
-	'GothamSemibold',
-	'GothamBold',
-	'GothamBlack',
-	'AmaticSC',
-	'Bangers',
-	'Creepster',
-	'DenkOne',
-	'Fondamento',
-	'FredokaOne',
-	'GrenzeGotisch',
-	'IndieFlower',
-	'JosefinSans',
-	'Jura',
-	'Kalam',
-	'LuckiestGuy',
-	'Merriweather',
-	'Michroma',
-	'Nunito',
-	'Oswald',
-	'PatrickHand',
-	'PermanentMarker',
-	'Roboto',
-	'RobotoCondensed',
-	'RobotoMono',
-	'Sarpanch',
-	'SpecialElite',
-	'TitilliumWeb',
-	'Ubuntu',
-}
+
+fonts = {}
+for i,v in pairs(Enum.Font:GetEnumItems()) do
+	if v.Name ~= 'Unknown' then
+		table.insert(fonts,v.Name)
+	end
+end
+
 chat:Element('Dropdown', 'message font',{options = fonts})
 
 function toInteger(color)
@@ -7101,102 +7325,630 @@ function toHex(color)
 		current = C.FLOOR(current/16)
 		final = final..char
 	until current <= 0
-	
+	if string.len(final) == 4 then
+		final = final..'00'
+	end
 	return "#"..string.reverse(final)
 end
-
+print(toHex(Color3.new(0,255,255)))
 local edited = false
-local oldIncomingMessage = game:GetService("TextChatService").OnIncomingMessage
-task.spawn(function()
-	while wait(5) do
-		if values.main.chat['custom tag'].Toggle or values.main.chat['custom font'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom nickname'].Toggle or values.main.chat['custom text color'].Toggle then
-		game:GetService("TextChatService").OnIncomingMessage = function(L)
-		if L.TextSource.UserId == game.Players.LocalPlayer.UserId then
-			if edited == false then
-			oldPrefixText = L.PrefixText
-			customtTag = ""
-			if values.main.chat['custom tag'].Toggle then
-				customTagFont = 1
-				customtTag = ''
-				customtTag = string.gsub(customtTag, '<font color = #01a2ff>', '')
-				print(customtTag)
-				
-				customtTag = customtTag..'<font color = '..'\"'..toHex(values.main.chat['custom tag'].Color)..'\">'
-				--print(L.PrefixText)
-				
-				if values.main.chat['custom message size'].Toggle then
-					customtTag = customtTag..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
-					customTagFont += 1
-					--print(L.PrefixText)
-				end
-				if values.main.chat['custom font'].Toggle then
-					customtTag = customtTag..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
-					customTagFont += 1
-					--print(L.PrefixText)
-				else
-					customtTag = customtTag..'<font face = "SourceSansSemibold">'
-					customTagFont += 1
-					--print(L.PrefixText)
-				end
-				--print(L.PrefixText)
-				
-				customtTag = customtTag..'['..values.main.chat.tag.Text..']'..(string.rep('</font>',customTagFont))
-				print(customtTag)
-			end
-			if values.main.chat['custom nickname'].Toggle then
-				customNickname = 1	
-				--print(L.PrefixText)
-				L.PrefixText = customTag..'<font color = '..'\"'..toHex(values.main.chat['custom nickname'].Color)..'\">'
-				
-				if values.main.chat['custom message size'].Toggle then
-					L.PrefixText = L.PrefixText..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
-					customNickname += 1	
-				end
-				if values.main.chat['custom font'].Toggle then
-					L.PrefixText = L.PrefixText..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
-					customNickname += 1	
-				else
-					L.PrefixText = L.PrefixText..'<font face = \"SourceSansSemibold\">'
-					customNickname += 1	
-				end
-				L.PrefixText = L.PrefixText..values.main.chat.nickname.Text..(string.rep('</font>', customNickname))	
-				print(L.PrefixText)			
-			else
-				L.PrefixText = L.PrefixText..oldPrefixText
-			end
-			local text = L.Text
-			if values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle then
-				customText = 0
-				--L.Text = '<font '
-					if values.main.chat['custom text color'].Toggle then
-					L.Text = '<font color = '..'\"'..toHex(values.main.chat['custom text color'].Color)..'\">'
-					
-					customText += 1
-					end
-					if values.main.chat['custom message size'].Toggle then
-					L.Text = L.Text..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
-					customText += 1
-					end
-					if values.main.chat['custom font'].Toggle then
-					L.Text = L.Text..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
-					customText += 1
+--local oldIncomingMessage = game:GetService("TextChatService").OnIncomingMessage
+			game:GetService("TextChatService").OnIncomingMessage = function(L)
+				if L.TextSource.UserId == game.Players.LocalPlayer.UserId then
+					if edited == false and (values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle or values.main.chat['custom tag'].Toggle or values.main.chat['custom nickname'].Toggle) then
+						oldPrefixText = L.PrefixText
+						customTag = ""
+						if values.main.chat['custom tag'].Toggle then
+							customTagFont = 1
+							customTag = ''
+							customTag = string.gsub(customTag, '<font color = #01a2ff>', '')
+							--print(customtTag)
+							
+							customTag = customTag..'<font color = '..'\"'..toHex(values.main.chat['custom tag'].Color)..'\">'
+							--print(L.PrefixText)
+							
+							if values.main.chat['custom message size'].Toggle then
+								customTag = customTag..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
+								customTagFont += 1
+								--print(L.PrefixText)
+							end
+							if values.main.chat['custom font'].Toggle then
+								customTag = customTag..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
+								customTagFont += 1
+								--print(L.PrefixText)
+							end
+							--print(L.PrefixText)
+							
+							customTag = customTag..'['..values.main.chat.tag.Text..']'..(string.rep('</font>',customTagFont))
+							--print(customtTag)
+						end
+						if values.main.chat['custom nickname'].Toggle then
+							customNickname = 1	
+							--print(L.PrefixText)
+							L.PrefixText = customTag..'<font color = '..'\"'..toHex(values.main.chat['custom nickname'].Color)..'\">'
+							
+							if values.main.chat['custom message size'].Toggle then
+								L.PrefixText = L.PrefixText..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
+								customNickname += 1	
+							end
+							if values.main.chat['custom font'].Toggle then
+								L.PrefixText = L.PrefixText..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
+								customNickname += 1	
+							end
+							L.PrefixText = L.PrefixText..values.main.chat.nickname.Text..(string.rep('</font>', customNickname))	
+							--print(L.PrefixText)			
+						else
+							L.PrefixText = customTag..L.PrefixText
+						end
+						text = L.Text
+						if values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle then
+							customText = 0
+							--L.Text = '<font '
+							
+							L.Text = ''
+							text2 = ''
+								if values.main.chat['custom text color'].Toggle then
+								text2 = '<font color = '..'\"'..toHex(values.main.chat['custom text color'].Color)..'\">'
+								
+								customText += 1
+								end
+								if values.main.chat['custom message size'].Toggle then
+								text2 = text2..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
+								customText += 1
+								end
+								if values.main.chat['custom font'].Toggle then
+									text2 = text2..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
+									customText += 1
+								end
+							L.Text = text2..text..(string.rep('</font>', customText))
+						end
+						edited = true
 					else
-					L.Text = L.Text..'<font face = "SourceSansSemibold">'
-					customText += 1
+					edited = false
 					end
-				L.Text = L.Text..text..(string.rep('</font>', customText))
+				end
 			end
-			edited = true
-			else
-			edited = false
-			end
-		end
+end
+function parry()
+    game:GetService("ReplicatedStorage").Communication.Events.Parry:FireServer()
+end
+do
+local combat = main:Sector('combat', 'Left')
+    combat:Element("Toggle", "Auto Equip")
+    combat:Element("Toggle", "Auto Revive")
+    --combat:Element("Toggle", "Fast Respawn")
+    combat:Element("Toggle", "Kill Aura")
+    combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 1000, default = 600})
+    combat:Element("Toggle", "Spin")
+    combat:Element("Slider", "Spin Power", {min = 0, max = 50, default = 50})
+    combat:Element("Toggle", "Auto Parry")
+    combat:Element("Slider", "Auto Parry Distance", {min = 0, max = 25, default = 10})
+    combat:Element("Slider", "Auto Parry Chance", {min = 0, max = 100, default = 100})
+	local respawn = main:Sector('Respawn', 'Left')
+	respawn:Element('Toggle', 'Fast Respawn')
+	respawn:Element('Toggle', 'Auto spawn')
+	respawn:Element('Toggle', 'Respawn on death position')
+	--respawn:Element('Toggle', 'Respawn when low hp')
+	--respawn:Element('Slider', 'low hp', {min = 1, max = 100, default = 30})
+    task.spawn(function()
+        function added(p)
+        function balls(c)
+            local Humanoid = c:WaitForChild'Humanoid'
+            if Humanoid then
+                Humanoid.AnimationPlayed:Connect(function(anim)
+                    for i,v in pairs(weapon_anims) do
+                        if values.main.combat["Auto Parry"].Toggle and anim.Animation.AnimationId == v then
+                            if values.main.combat["Auto Parry Chance"].Slider >= 90 then
+                                if (LocalPlayer.Character  ~= nil and LocalPlayer.Character:FindFirstChild("Head") ~= nil and p.Character:FindFirstChild("Head")  ~= nil) then
+                                    local mag = (p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
+                                    if mag < values.main.combat["Auto Parry Distance"].Slider  then
+                                        parry()
+                                    end
+                                end
+                                else
+                                    local chance = math.random(1,90)
+                                    if chance >= values.main.combat["Auto Parry Chance"].Slider then
+                                        if (LocalPlayer.Character  ~= nil and LocalPlayer.Character:FindFirstChild("Head") ~= nil and p.Character:FindFirstChild("Head")  ~= nil) then
+                                        local mag = (p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
+                                        if mag < values.main.combat["Auto Parry Distance"].Slider  then
+                                            parry()
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end                    
+                end)
+            end
+        end
+    if p.Character then balls(p.Character) end
+    p.CharacterAdded:Connect(balls)
+    end
+        
+    for i,v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer then
+            added(v)
+        end
+    end
+        
+    Players.PlayerAdded:Connect(added)
+    end)
+    task.spawn(function()
+        while task.wait() do
+           pcall(function()
+                if values.main.combat["Kill Aura"].Toggle then
+                    local Closest = GetClosest(values.main.combat["Kill Aura Distance"].Slider)
+                    if Closest then
+                        if Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 0 then
+                        else
+                            local Weapon
+                            for i,v in pairs(LocalPlayer.Character:GetChildren()) do
+                                if v:IsA("Tool") then
+                                    if v:FindFirstChild('Hitboxes') ~= nil then
+                                        Weapon = v
+                                    end
+                                end
+                            end
+                            if not Weapon then
+                            else
+                                local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
+                                local rayDirection = Vector3.new(0, 0, 5)
+                                local raycastParams = RaycastParams.new();
+                                raycastParams.IgnoreWater = true;
+                                raycastParams.FilterType = Enum.RaycastFilterType.Blacklist;
+                                local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+                                local args1 = {
+                                    [1] = Weapon,
+                                    [2] = 1
+                                }
+
+                                events.MeleeSwing:FireServer(unpack(args1))
+                                task.wait(0.2)
+
+                                local args = {
+                                    [1] = Weapon,
+                                    [2] = Closest.Character.Head,
+                                    [3] = Weapon.Hitboxes.Hitbox,
+                                    [4] = Closest.Character.Head.Position,
+                                    [5] = Closest.Character.Head.CFrame:ToObjectSpace(CFrame.new(Closest.Character.Head.Position)),
+                                    [6] = raycastResult
+                                }
+
+                                events.MeleeDamage:FireServer(unpack(args))
+
+                                events.MeleeDamage:FireServer(unpack(args))
+                                
+                                if values.main.combat["Kill Aura Distance"].Slider > 14 then
+                                    for i,v in pairs(Weapon:GetDescendants()) do
+                                        if v:IsA'BasePart' then
+                                            v.CFrame = Closest.Character.HumanoidRootPart.CFrame
+                                            v.Velocity = Vector3.new(1000000,1000000,1000000)
+                                            v.CanCollide = false
+                                            v.Massless = true
+                                            --v.Anchored = true
+                                            if v:FindFirstChild'BodyVelocity' == nil and v:FindFirstChild("BodyGyro") == nil then
+                                                local bg = Instance.new("BodyGyro")
+                                                bg.CFrame = Closest.Character.HumanoidRootPart.CFrame
+                                                bg.MaxTorque = Vector3.new(math.huge,math.huge,math.huge)
+                                                bg.Parent = v
+
+                                                local boopyve = Instance.new("BodyVelocity") 
+                                                boopyve.MaxForce = Vector3.new(math.huge, 0, math.huge)
+                                                boopyve.P = math.huge
+                                                boopyve.Velocity = Vector3.new(1000000,1000000,1000000)
+                                                boopyve.Parent = v
+                                            end
+                                        end
+                                        if v:IsA('Motor6D') then
+                                            if v.Parent.Name == "Motor6Ds" then
+                                                v:Destroy()
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    elseif Closest == nil then
+                        for i,v in pairs(Weapon:GetDescendants()) do
+                            if v:IsA'BasePart' then
+                                v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                                v.Velocity = Vector3.new(1000000,1000000,1000000)
+                                v.CanCollide = false
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+    
+    task.spawn(function()
+        game:GetService("RunService").RenderStepped:Connect(function()
+            pcall(function()
+                for i,v in pairs(LocalPlayer.Backpack:GetChildren()) do
+                    if v:IsA("Tool") then
+                        if v:FindFirstChild('Hitboxes') ~= nil then
+                            if values.main.combat["Auto Equip"].Toggle then
+                                v.Parent = LocalPlayer.Character
+                            end
+                        end
+                    end
+                end
+            end)
+        end)
+    end)
+    
+    task.spawn(function()
+        while task.wait() do
+            pcall(function()
+                if values.main.combat["Auto Revive"].Toggle then
+                    if LocalPlayer.Character.Humanoid.Health <= 15 then
+                        events.SelfReviveStart:FireServer()
+                        events.SelfRevive:FireServer()
+                    end
+                end
+            end)
+        end
+    end)
+    
+    task.spawn(function()
+        while task.wait() do
+            pcall(function()
+                if values.main.Respawn["Fast Respawn"].Toggle then
+                    if LocalPlayer.Character.Humanoid.Health == 0 then
+						if values.main.Respawn['Respawn on death position'].Toggle then
+							deathpos = LocalPlayer.Character.HumanoidRootPart.CFrame
+						end
+						--events.SelfDamage:FireServer(150)
+						task.wait(1)
+                        events.StartFastRespawn:FireServer()
+                        functions.CompleteFastRespawn:FireServer()
+						if values.main.Respawn['Auto spawn'].Toggle then
+							repeat wait() until game.Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("MainMenu")
+							functions.SpawnCharacter:FireServer()
+							task.wait(1)
+							if values.main.Respawn['Respawn on death position'].Toggle and deathpos then
+								LocalPlayer.Character.HumanoidRootPart.CFrame = deathpos
+							end
+						end
+                    end
+                end
+            end)
+        end
+    end)
+    
+    task.spawn(function()
+        while task.wait() do
+            pcall(function()
+                if values.main.combat["Spin"].Toggle then
+                    if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") == nil then
+                        local Spin = Instance.new("BodyAngularVelocity")
+						Spin.Name = "spin"
+						Spin.Parent = LocalPlayer.Character.HumanoidRootPart
+						Spin.MaxTorque = Vector3.new(0, math.huge, 0)
+                        for i, v in (LocalPlayer.Character:GetChildren()) do
+	                        if v:IsA("BasePart") then
+		                        v.Massless = true
+		                        v.Velocity = Vector3.new(0, 0, 0)
+	                        end
+                        end
+                    else
+                        if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") ~= nil then
+                            LocalPlayer.Character.HumanoidRootPart.spin.AngularVelocity = Vector3.new(0,values.main.combat["Spin Power"].Slider, 0)
+                        end
+                    end
+                else
+                    if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") ~= nil then
+                        LocalPlayer.Character.HumanoidRootPart.spin:Destroy()
+                    end
+                end
+            end)
+        end
+    end)
+end
+
+do
+
+local allcfgs = {} 
+
+for _,cfg in pairs(listfiles('SamuelPaste_cw/cfgs')) do 
+	local cfgname = C.GSUB(cfg, 'SamuelPaste_cw/cfgs\\', "") 
+	C.INSERT(allcfgs, cfgname) 
+end
+
+
+
+local configs = misc:Sector("configs", "Left") 
+configs:Element("TextBox", "config", {placeholder = "config name"}) -- values.misc.configs.config.Text
+configs:Element("Button", "save new cfg", {}, function() 
+	if values.misc.configs.config.Text ~= "" then 
+		library:SaveConfig(values.misc.configs.config.Text) 
+		insertwithoutdupes(allcfgs, ""..values.misc.configs.config.Text..".txt")
 	end
-		else
-		game:GetService("TextChatService").OnIncomingMessage = oldIncomingMessage
-		end
-	end
+	ConfigUpdateCfgList2:Fire()
+	ConfigUpdateCfgList:Fire()
+end) 
+configs:Element("Button", "load", {}, function() 
+	ConfigLoad:Fire(values.misc["configs"].config.Text)
 end)
+configs:Element("cfgtype", "cfgs", {options = allcfgs, Amount = 5})
+configs:Element("Button", "load from list", {}, function() 
+	ConfigLoad1:Fire(values.misc.configs.cfgs.Scroll)
+end)
+configs:Element("Button", "Update cfg in list", {}, function()
+	library:SaveConfig1(values.misc["configs"].cfgs.Scroll)
+end)
+configs:Element("Button", "Refresh cfg list", {}, function()
+table.clear(allcfgs)
+
+for _,cfg in pairs(listfiles('SamuelPaste_cw/cfgs')) do 
+	local cfgname = C.GSUB(cfg, 'SamuelPaste_cw/cfgs\\', "") 
+	C.INSERT(allcfgs, cfgname) 
+end
+	ConfigUpdateCfgList2:Fire()
+	ConfigUpdateCfgList:Fire()
+end)
+configs:Element("Button", 'overwrite cfgs from old folder', {}, function()
+	--[[for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+		local cfgname = C.GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+		writefile(cfglocation..cfgname, readfile(cfg))
+	end--]]
+	for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
+		local cfgname = C.GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
+		writefile('SamuelPaste_cw/cfgs/'..cfgname, readfile(cfg))
+	end
+	table.clear(allcfgs)
+
+	for _,cfg in pairs(listfiles(cfglocation)) do 
+		local cfgname = C.GSUB(cfg, cfglocation.."\\", "") 
+		C.INSERT(allcfgs, cfgname) 
+	end
+		ConfigUpdateCfgList2:Fire()
+		ConfigUpdateCfgList:Fire()
+end)
+
+configs:Element("Toggle", "keybind list", nil, function(tbl) 
+	library:SetKeybindVisible(tbl.Toggle) 
+end) 
+		configs:Element("Toggle", "specators list", {}, function(tbl)
+			library:SetSpectatorVisible(tbl.Toggle) 
+		end)
+			configs:Element("Toggle", "keystrokes", {}, function(tbl)
+				if tbl.Toggle then
+						 local ScreenGuiKey = C.INST("ScreenGui")
+			local W = C.INST("TextLabel")
+			local A = C.INST("TextLabel")
+			local S = C.INST("TextLabel")
+			local D = C.INST("TextLabel")
+			local E = C.INST("TextLabel")
+			local R = C.INST("TextLabel")
+			local _ = C.INST("TextLabel")
+			local _2 = C.INST("TextLabel")
+			local _3 = C.INST("TextLabel")
+			local _4 = C.INST("TextLabel")
+			local _5 = C.INST("TextLabel")
+			local _6 = C.INST("TextLabel")
+
+
+			ScreenGuiKey.Parent = game.CoreGui
+			ScreenGuiKey.Name = "keystrokess"
+
+			W.Name = "W"
+			W.Parent = ScreenGuiKey
+			W.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			W.BackgroundTransparency = 1.000
+			W.Position = C.UDIM2(0.488053292, 0, 0.728395104, 0)
+			W.Size = C.UDIM2(0, 29, 0, 28)
+			W.Visible = false
+			W.Font = Enum.Font.Code
+			W.Text = "W"
+			W.TextColor3 = C.COL3RGB(255, 255, 255)
+			W.TextSize = 14.000
+			W.TextStrokeTransparency = 0.000
+			
+			_.Name = "_"
+			_.Parent = ScreenGuiKey
+			_.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			_.BackgroundTransparency = 1.000
+			_.Position = C.UDIM2(0.488053292, 0, 0.728395104, 0)
+			_.Size = C.UDIM2(0, 29, 0, 28)
+			_.Visible = true
+			_.Font = Enum.Font.Code
+			_.Text = "_"
+			_.TextColor3 = C.COL3RGB(255, 255, 255)
+			_.TextSize = 14.000
+			_.TextStrokeTransparency = 0.000
+
+			A.Name = "A"
+			A.Parent = ScreenGuiKey
+			A.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			A.BackgroundTransparency = 1.000
+			A.Position = C.UDIM2(0.453584045, 0, 0.777777791, 0)
+			A.Size = C.UDIM2(0, 29, 0, 28)
+			A.Visible = false
+			A.Font = Enum.Font.Code
+			A.Text = "A"
+			A.TextColor3 = C.COL3RGB(255, 255, 255)
+			A.TextSize = 14.000
+			A.TextStrokeTransparency = 0.000
+			
+			_2.Name = "_2"
+			_2.Parent = ScreenGuiKey
+			_2.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			_2.BackgroundTransparency = 1.000
+			_2.Position = C.UDIM2(0.453584045, 0, 0.777777791, 0)
+			_2.Size = C.UDIM2(0, 29, 0, 28)
+			_2.Visible = true
+			_2.Font = Enum.Font.Code
+			_2.Text = "_"
+			_2.TextColor3 = C.COL3RGB(255, 255, 255)
+			_2.TextSize = 14.000
+			_2.TextStrokeTransparency = 0.000
+
+			S.Name = "S"
+			S.Parent = ScreenGuiKey
+			S.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			S.BackgroundTransparency = 1.000
+			S.Position = C.UDIM2(0.488053292, 0, 0.777777791, 0)
+			S.Size = C.UDIM2(0, 29, 0, 28)
+			S.Visible = false
+			S.Font = Enum.Font.Code
+			S.Text = "S"
+			S.TextColor3 = C.COL3RGB(255, 255, 255)
+			S.TextSize = 14.000
+			S.TextStrokeTransparency = 0.000
+			
+			_3.Name = "_3"
+			_3.Parent = ScreenGuiKey
+			_3.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			_3.BackgroundTransparency = 1.000
+			_3.Position = C.UDIM2(0.488053292, 0, 0.777777791, 0)
+			_3.Size = C.UDIM2(0, 29, 0, 28)
+			_3.Visible = true
+			_3.Font = Enum.Font.Code
+			_3.Text = "_"
+			_3.TextColor3 = C.COL3RGB(255, 255, 255)
+			_3.TextSize = 14.000
+			_3.TextStrokeTransparency = 0.000
+
+			D.Name = "D"
+			D.Parent = ScreenGuiKey
+			D.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			D.BackgroundTransparency = 1.000
+			D.Position = C.UDIM2(0.522522688, 0, 0.777777791, 0)
+			D.Size = C.UDIM2(0, 29, 0, 28)
+			D.Visible = false
+			D.Font = Enum.Font.Code
+			D.Text = "D"
+			D.TextColor3 = C.COL3RGB(255, 255, 255)
+			D.TextSize = 14.000
+			D.TextStrokeTransparency = 0.000
+			
+			_4.Name = "_4"
+			_4.Parent = ScreenGuiKey
+			_4.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			_4.BackgroundTransparency = 1.000
+			_4.Position = C.UDIM2(0.522522688, 0, 0.777777791, 0)
+			_4.Size = C.UDIM2(0, 29, 0, 28)
+			_4.Visible = true
+			_4.Font = Enum.Font.Code
+			_4.Text = "_"
+			_4.TextColor3 = C.COL3RGB(255, 255, 255)
+			_4.TextSize = 14.000
+			_4.TextStrokeTransparency = 0.000
+
+			E.Name = "E"
+			E.Parent = ScreenGuiKey
+			E.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			E.BackgroundTransparency = 1.000
+			E.Position = C.UDIM2(0.453584045, 0, 0.728395045, 0)
+			E.Size = C.UDIM2(0, 29, 0, 28)
+			E.Visible = false
+			E.Font = Enum.Font.Code
+			E.Text = "C"
+			E.TextColor3 = C.COL3RGB(255, 255, 255)
+			E.TextSize = 14.000
+			E.TextStrokeTransparency = 0.000
+			
+			_5.Name = "_5"
+			_5.Parent = ScreenGuiKey
+			_5.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			_5.BackgroundTransparency = 1.000
+			_5.Position = C.UDIM2(0.453584045, 0, 0.728395045, 0)
+			_5.Size = C.UDIM2(0, 29, 0, 28)
+			_5.Visible = true
+			_5.Font = Enum.Font.Code
+			_5.Text = "_"
+			_5.TextColor3 = C.COL3RGB(255, 255, 255)
+			_5.TextSize = 14.000
+			_5.TextStrokeTransparency = 0.000
+
+			R.Name = "R"
+			R.Parent = ScreenGuiKey
+			R.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			R.BackgroundTransparency = 1.000
+			R.Position = C.UDIM2(0.522522688, 0, 0.728395045, 0)
+			R.Size = C.UDIM2(0, 29, 0, 28)
+			R.Visible = false
+			R.Font = Enum.Font.Code
+			R.Text = "J"
+			R.TextColor3 = C.COL3RGB(255, 255, 255)
+			R.TextSize = 14.000
+			R.TextStrokeTransparency = 0.000
+			
+			_6.Name = "_6"
+			_6.Parent = ScreenGuiKey
+			_6.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+			_6.BackgroundTransparency = 1.000
+			_6.Position = C.UDIM2(0.522522688, 0, 0.728395045, 0)
+			_6.Size = C.UDIM2(0, 29, 0, 28)
+			_6.Visible = true
+			_6.Font = Enum.Font.Code
+			_6.Text = "_"
+			_6.TextColor3 = C.COL3RGB(255, 255, 255)
+			_6.TextSize = 14.000
+			_6.TextStrokeTransparency = 0.000
+	 
+
+			local UserInputService = game:GetService("UserInputService")
+
+			local W1Key = Enum.KeyCode.W
+			local A1Key = Enum.KeyCode.A
+			local S1Key = Enum.KeyCode.S
+			local D1Key = Enum.KeyCode.D
+			local E1Key = Enum.KeyCode.LeftControl
+			local R1Key = Enum.KeyCode.R
+			local SpaceKey = Enum.KeyCode.Space
+
+			UserInputService.InputBegan:Connect(function(input)
+				if (input.KeyCode == W1Key) then
+					W.Visible = true
+					_.Visible = false
+				elseif (input.KeyCode == A1Key) then
+					A.Visible = true
+					_2.Visible = false
+				elseif (input.KeyCode == S1Key) then
+					S.Visible = true
+					_3.Visible = false
+				elseif (input.KeyCode == D1Key) then
+					D.Visible = true
+					_4.Visible = false
+				elseif (input.KeyCode == E1Key) then
+					E.Visible = true
+					_5.Visible = false
+				elseif (input.KeyCode == SpaceKey) then
+					R.Visible = true
+					_6.Visible = false
+				end
+			end)
+
+			UserInputService.InputEnded:Connect(function(input)
+				if (input.KeyCode == W1Key) then
+					W.Visible = false
+					_.Visible = true
+				elseif (input.KeyCode == A1Key) then
+					A.Visible = false
+					_2.Visible = true
+				elseif (input.KeyCode == S1Key) then
+					S.Visible = false
+					_3.Visible = true
+				elseif (input.KeyCode == D1Key) then
+					D.Visible = false
+					_4.Visible = true
+				elseif (input.KeyCode == E1Key) then
+					E.Visible = false
+					_5.Visible = true	
+				elseif (input.KeyCode == SpaceKey) then
+					R.Visible = false
+					_6.Visible = true
+				end
+			end)		
+			else
+			game.CoreGui.keystrokess:Destroy()
+			end
+			end)
+
+
 local addons = misc:Sector("addons", "Left") 
 addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
 					if tbl.Toggle then
@@ -7477,6 +8229,304 @@ end)
 watermark:Element('ToggleColor', 'text color', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
 	watermarklocation.watermark.title.TextColor3 = tbl.Color
 end)
+end
+
+do
+    local misc1 = misc:MSector("misc", "Right")
+    local misc2 = misc:MSector("misc2", "Right")
+    local miscsector = misc2:Tab("misc")
+    local player = misc1:Tab("player")
+    local utility = misc1:Tab("utility")
+    miscsector:Element("Button", "No Identity fling", nil, function()
+        invisfling()
+    end)
+    utility:Element("Toggle", "No Utility Damage (expect bombs)")
+    player:Element("Toggle", "Auto Airdrop-Claimer")
+    miscsector:Element("Toggle", "Fly",nil,function(state)
+        if values.misc.misc2.misc["Fly"].Toggle then
+            sFLY()
+            LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)
+        else
+            NOFLY()
+            LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+        end
+    end)
+    miscsector:Element("Toggle", "Noclip",nil,function(state)
+        if values.misc.misc2.misc["Noclip"].Toggle then
+            Clip = false
+        else
+	        Clip = true
+        end
+    end)
+    player:Element("Toggle", "Walk On Air (Q,E)")
+    player:Element("Toggle", "Jesus")
+    player:Element("Toggle", "No Fall Damage")
+    player:Element("Toggle", "No Ragdoll")
+    player:Element("Toggle", "No Dash Cooldown")
+    player:Element("Toggle", "Infinite Stamina")
+    player:Element("Toggle", "Infinite Air")
+    player:Element("Toggle", "Infinite Jump")
+    player:Element("Toggle", "No Jump Cooldown")
+    player:Element("Toggle", "Jump Whenever")
+    miscsector:Element("Toggle", "Hide Name")
+    player:Element("Toggle", "Walk Speed")
+    player:Element("Slider", "Speed", {min = 0, max = 150, default = 75})
+    player:Element("Toggle", "Jump Power")
+    player:Element("Slider", "Power", {min = 0, max = 500, default = 150})
+    Noclipping = game:GetService'RunService'.Stepped:Connect(NoclipLoop)
+    local Airdrops = game:GetService("Workspace").Airdrops
+    task.spawn(function()
+        Airdrops.ChildAdded:Connect(function(o)
+            if values.misc.misc.player["Auto Airdrop-Claimer"].Toggle then
+                local Airdrop = o
+                coroutine.wrap(function()
+                    for i = 1,10 do
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = Airdrop:WaitForChild'Crate'.Base.CFrame
+                    end
+                end)()
+                fireproximityprompt(Airdrop:WaitForChild'Crate'.Hitbox.ProximityPrompt)
+            end
+        end)
+    end)
+    task.spawn(function()
+        while task.wait() do
+            pcall(function()
+                if LocalPlayer.Character.Humanoid:FindFirstChildOfClass'RemoteEvent' ~= nil then
+                    if values.misc.misc.player["No Ragdoll"].Toggle then
+                        LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+                    end
+                end
+            end)
+        end
+    end)
+    task.spawn(function()
+        while task.wait() do
+            pcall(function()
+                for i, v in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"))) do
+					v:Disable()
+                end
+			    for i, v in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"))) do
+					v:Disable()
+				end
+                if values.misc.misc.player["Walk Speed"].Toggle then
+                    LocalPlayer.Character.Humanoid.WalkSpeed = values.misc.misc.player["Speed"].Slider
+                    if values.misc.misc.player["Speed"].Slider > 75 then
+                        LocalPlayer.Character.HumanoidRootPart.Anchored = true
+                        task.wait(0.0001)
+                        LocalPlayer.Character.HumanoidRootPart.Anchored = false
+                    end
+                    if LocalPlayer.Character:FindFirstChild("Float") ~= nil then
+                        LocalPlayer.Character:FindFirstChild("Float"):Destroy()
+                    end
+                else
+                    task.wait()
+                    if LocalPlayer.Character.Humanoid.WalkSpeed > 30 then
+                        LocalPlayer.Character.Humanoid.WalkSpeed = 16
+                    end
+                    LocalPlayer.Character.HumanoidRootPart.Anchored = false
+                end
+                
+                if values.misc.misc.player["Jump Power"].Toggle then
+                    LocalPlayer.Character.Humanoid.JumpPower = values.misc.misc.player["Power"].Slider
+                else
+                    LocalPlayer.Character.Humanoid.JumpPower = 50
+                end
+            end)
+        end
+    end)
+    task.spawn(function()
+        game:GetService'RunService'.RenderStepped:Connect(function()
+            if values.misc.misc2.misc["Hide Name"].Toggle then
+                events.UpdateIsCrouching:FireServer(true)
+            end
+        end)
+    end)
+    
+    task.spawn(function()
+        game:GetService'RunService'.RenderStepped:Connect(function()
+            if values.misc.misc.player["Walk On Air (Q,E)"].Toggle then
+                if not values.misc.misc.player["Walk Speed"].Toggle then
+                    events.UpdateIsParkouring:FireServer(true)
+                end            
+            end
+        end)
+    end)
+    
+    task.spawn(function()
+        game:GetService("RunService").RenderStepped:Connect(function()
+            if values.misc.misc.player["Jesus"].Toggle then
+                if workspace.Map:FindFirstChildOfClass"Model" ~= nil then
+                    workspace.Map:FindFirstChildOfClass"Model".MapConfiguration.WaterAreas.WaterArea.CanCollide = true
+                end
+            else
+                if workspace.Map:FindFirstChildOfClass"Model" ~= nil then
+                    workspace.Map:FindFirstChildOfClass"Model".MapConfiguration.WaterAreas.WaterArea.CanCollide = false
+                end
+            end
+        end)
+    end)
+    
+    local UIS = game:GetService('UserInputService')
+    
+    UIS.InputBegan:Connect(function(k,j)
+        if j then return end
+        if k.KeyCode ==  Enum.KeyCode.Space then
+            if values.misc.misc.player["Infinite Jump"].Toggle then
+                pcall(function()
+                    LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end)
+            end
+        end
+    end)
+    
+        local FloatValue = -3.1
+	    qUp = Mouse.KeyUp:Connect(function(KEY)
+		    if KEY == 'q' then
+			    FloatValue = FloatValue + 0.5
+		    end
+	    end)
+	    eUp = Mouse.KeyUp:Connect(function(KEY)
+		    if KEY == 'e' then
+			    FloatValue = FloatValue - 0.5
+		    end
+	    end)
+	    qDown = Mouse.KeyDown:Connect(function(KEY)
+		    if KEY == 'q' then
+			    FloatValue = FloatValue - 0.5
+	    	end
+	    end)
+	    eDown = Mouse.KeyDown:Connect(function(KEY)
+	        if KEY == 'e' then
+			    FloatValue = FloatValue + 0.5
+		    end
+	    end)
+	   local runService = game:GetService'RunService'.RenderStepped:Connect(function()
+	   if (values.misc.misc.player["Walk On Air (Q,E)"].Toggle and not values.misc.misc.player["Walk Speed"].Toggle) then
+	       if LocalPlayer.Character:FindFirstChild("Float") == nil then
+               local Float = Instance.new('Part')
+	           Float.Name = "Float"
+	           Float.Parent = LocalPlayer.Character
+	           Float.Transparency = 1
+	           Float.Size = Vector3.new(2,0.2,1.5)
+	           Float.Anchored = true
+	       else
+	           LocalPlayer.Character:FindFirstChild("Float").CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,FloatValue,0)
+	       end
+	    elseif not values.misc.misc.player["Walk On Air (Q,E)"].Toggle and LocalPlayer.Character:FindFirstChild("Float") ~= nil then
+            LocalPlayer.Character:FindFirstChild("Float"):Destroy()
+            events.UpdateIsParkouring:FireServer(false)
+            FloatValue = -3.1
+        end
+	end)
+    
+    local newindex
+
+    newindex = hookmetamethod(game, "__namecall", function(self, ...)
+        local howcalledomg = getnamecallmethod()
+        local whataretheargs = {...}
+    
+        if not checkcaller() and self.Name == "GotHitRE" and values.misc.misc.utility["No Utility Damage (expect bombs)"].Toggle  and howcalledomg == "FireServer" then
+            return
+        end
+        if not checkcaller() and self.Name == "RagdollRemoteEvent" and values.misc.misc.player["No Ragdoll"].Toggle  and howcalledomg == "FireServer" then
+            args[1] = false
+        end
+        if not checkcaller() and (self.Name == "StartFallDamage" or self.Name == "TakeFallDamage") and (values.misc.misc.player["No Fall Damage"].Toggle)  and howcalledomg == "FireServer" then
+            return
+        end
+        if not checkcaller() and self.Name == "UpdateIsCrouching" and values.misc.misc2.misc["Hide Name"].Toggle  and howcalledomg == "FireServer" then
+            return
+        elseif not checkcaller() and self.Name == "UpdateIsCrouching" and not values.misc.misc2.misc["Hide Name"].Toggle then
+            return newindex(self, ...)
+        end
+        
+        if not checkcaller() and (self.Name == "UpdateIsParkouring" and values.misc.misc.player["Walk On Air (Q,E)"].Toggle) and howcalledomg == "FireServer" then
+            return
+        elseif not checkcaller() and self.Name == "UpdateIsParkouring" and not values.misc.misc.player["Walk On Air (Q,E)"].Toggle and howcalledomg == "FireServer" then
+            return newindex(self, ...)
+        end
+
+        return newindex(self, ...)
+    end)
+    
+    for i,v in pairs(getgc(true)) do
+        if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then 
+            local old = v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING
+            
+            task.spawn(function()
+                while true do
+                    if values.misc.misc.player["Infinite Air"].Toggle then
+                        v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999
+                    else
+                        v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = old
+                    end
+                    task.wait()
+                end
+            end)
+        end
+        if typeof(v) == 'table' and rawget(v, 'getCanJump') then
+            local old = v.getCanJump
+            
+            v.getCanJump = function()
+                if values.misc.misc.player["Jump Whenever"].Toggle then
+                    return true
+                else
+                    return old()
+                end
+            end
+        end
+        
+        if typeof(v) == 'table' and rawget(v, 'JUMP_DELAY_ADD') then
+            local old = v.JUMP_DELAY_ADD
+            
+            task.spawn(function()
+                while true do
+                    if values.misc.misc.player["No Jump Cooldown"].Toggle then
+                        v.JUMP_DELAY_ADD = 0.5
+                    else
+                        v.JUMP_DELAY_ADD = old
+                    end
+                    task.wait()
+                end
+            end)
+        end
+        
+        if typeof(v) == 'table' and rawget(v, '_setStamina') then
+            local old = v._setStamina
+            
+            v._setStamina = function(gg, gg2)
+                if values.misc.misc.player["Infinite Stamina"].Toggle then
+                    gg._stamina = math.huge
+                    gg._staminaChangedSignal:Fire(150)        
+                else
+                    return old(gg,gg2)
+                end    
+            end
+        end
+        
+        if typeof(v) == "table" and rawget(v,"DASH_COOLDOWN") then
+            local old = v.DASH_COOLDOWN
+            
+            task.spawn(function()
+                while true do
+                    if values.misc.misc.player["No Dash Cooldown"].Toggle then
+                        v.DASH_COOLDOWN = -500
+                    else
+                        v.DASH_COOLDOWN = old
+                    end
+                    task.wait()
+                end
+            end)
+        end
+    end
+end
+
+
+
+
+
+
+
 
 while true do task.wait()
 	for i,b in next, watermarklocation.watermark:GetChildren() do 

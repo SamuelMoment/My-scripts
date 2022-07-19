@@ -4765,7 +4765,20 @@ end
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
 
 									values[tabname][sectorname][text] = data.default.Color 
-								end 
+								elseif Element.value.Color ~= nil then
+									ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
+
+									ColorH = C.CLAMP(ColorH,0,1) 
+									ColorS = C.CLAMP(ColorS,0,1) 
+									ColorV = C.CLAMP(ColorV,0,1) 
+									ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+
+									values[tabname][sectorname][text] = Element.value.Color 
+								end
 
 								local mouse = LocalPlayer:GetMouse() 
 								game:GetService("UserInputService").InputBegan:Connect(function(input) 
@@ -4854,7 +4867,7 @@ end
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
 
 									callback(value) 
-								end 
+								end
 							elseif type == "ToggleTrans" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
 								Element.value = {Rainbow = false, RainbowSpeed = 3,Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), Transparency = data.default and data.default.Transparency or 0} 
@@ -5607,6 +5620,19 @@ CopyColorsType = 'RGB'
 
 								if data.default and data.default.Color ~= nil then 
 									ColorH, ColorS, ColorV = data.default.Color:ToHSV() 
+
+									ColorH = C.CLAMP(ColorH,0,1) 
+									ColorS = C.CLAMP(ColorS,0,1) 
+									ColorV = C.CLAMP(ColorV,0,1) 
+									ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+									Transcolor.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+								elseif Element.value.Color ~= nil then
+									ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
 
 									ColorH = C.CLAMP(ColorH,0,1) 
 									ColorS = C.CLAMP(ColorS,0,1) 
