@@ -8230,7 +8230,32 @@ watermark:Element('ToggleColor', 'text color', {default = {Color = C.COL3RGB(255
 	watermarklocation.watermark.title.TextColor3 = tbl.Color
 end)
 end
+function NOFLY()
+	FLYING = false
+	if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
+	if LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
+		LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
+	end
+	LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+    for i = 1,5 do
+        LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+        wait(.1)
+    end
+	pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
+end
 
+local Noclipping
+local Clip = false
+
+function NoclipLoop()
+	if menu.values[4].misc2.misc["Noclip"].Toggle and Clip == false and LocalPlayer.Character ~= nil then
+		for _, child in pairs(LocalPlayer.Character:GetDescendants()) do
+			if child:IsA("BasePart") and child.CanCollide == true and child.Name ~= floatName then
+				child.CanCollide = false
+			end
+		end
+	end
+end
 do
     local misc1 = misc:MSector("misc", "Right")
     local misc2 = misc:MSector("misc2", "Right")
