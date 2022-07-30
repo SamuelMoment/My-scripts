@@ -7071,209 +7071,211 @@ local function GetClosest(Distance)
     return Target
 end
 
-function sFLY(vfly)
-    if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
-	local T = LocalPlayer.Character.HumanoidRootPart
-	local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-	local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-	local SPEED = 0
-
-	local function FLY()
-		FLYING = true
-		local BG = Instance.new('BodyGyro')
-		local BV = Instance.new('BodyVelocity')
-		BG.P = 9e4
-		BG.Parent = T
-		BV.Parent = T
-		BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-		BG.cframe = T.CFrame
-		BV.velocity = Vector3.new(0, 0, 0)
-		BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
-		task.spawn(function()
-			repeat wait()
-			    if LocalPlayer.Character.Humanoid:FindFirstChild("RagdollRemoteEvent") ~= nil then
-                    LocalPlayer.Character.Humanoid:FindFirstChild("RagdollRemoteEvent"):FireServer(true)
-                end
-			    for i,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                   if v:IsA("BallSocketConstraint") then
-                        v.TwistLowerAngle = 0
-                        v.TwistUpperAngle = 0
-                        v.UpperAngle = 0
-                        v.Radius = 0
-                        if v.Parent.Name == "Right Arm" or v.Parent.Name == "Left Arm" then
-                            v.TwistLowerAngle = 0
-                            v.TwistUpperAngle = 0
-                            v.UpperAngle = 90
-                            v.Radius = 90
-                        end
-                    end
-                end
-				if not vfly and LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
-					LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = true
-				end
-				if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
-					SPEED = 50
-				elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
-					SPEED = 0
-				end
-				if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
-					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
-					lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
-				elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
-					BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
-				else
-					BV.velocity = Vector3.new(0, 0, 0)
-				end
-				BG.cframe = workspace.CurrentCamera.CoordinateFrame
-			until not FLYING
-			CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-			lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
-			SPEED = 0
-			BG:Destroy()
-			BV:Destroy()
-			if LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
-				LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
-			end
-		end)
-	end
-	flyKeyDown = Mouse.KeyDown:Connect(function(KEY)
-		if KEY:lower() == 'w' then
-			CONTROL.F = (vfly and vehicleflyspeed or iyflyspeed)
-		elseif KEY:lower() == 's' then
-			CONTROL.B = - (vfly and vehicleflyspeed or iyflyspeed)
-		elseif KEY:lower() == 'a' then
-			CONTROL.L = - (vfly and vehicleflyspeed or iyflyspeed)
-		elseif KEY:lower() == 'd' then 
-			CONTROL.R = (vfly and vehicleflyspeed or iyflyspeed)
-		elseif QEfly and KEY:lower() == 'e' then
-			CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed)*2
-		elseif QEfly and KEY:lower() == 'q' then
-			CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed)*2
-		end
-		pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
-	end)
-	flyKeyUp = Mouse.KeyUp:Connect(function(KEY)
-		if KEY:lower() == 'w' then
-			CONTROL.F = 0
-		elseif KEY:lower() == 's' then
-			CONTROL.B = 0
-		elseif KEY:lower() == 'a' then
-			CONTROL.L = 0
-		elseif KEY:lower() == 'd' then
-			CONTROL.R = 0
-		elseif KEY:lower() == 'e' then
-			CONTROL.Q = 0
-		elseif KEY:lower() == 'q' then
-			CONTROL.E = 0
-		end
-	end)
-	FLY()
-end
-
-invisfling = function()
-local plr = game.Players.LocalPlayer
-local oldHumanoid = plr.Character.Humanoid
-local torso = game.Players.LocalPlayer.Character.HumanoidRootPart
-local mouse = plr:GetMouse()
-local flying = true
-local deb = true
-local ctrl = {f = 0, b = 0, l = 0, r = 0}
-local lastctrl = {f = 0, b = 0, l = 0, r = 0}
-local maxspeed = 50
-local speed = 50
-
-workspace.CurrentCamera.CameraSubject = torso
-
-
----local bambam = Instance.new("BodyThrust")
----bambam.Parent = torso
---bambam.Force = Vector3.new(9999999,0,9999999)
---bambam.Location = torso.Position
-
-
----
-function Fly()
---game.Players.LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
-local bambam = Instance.new("BodyThrust")
-bambam.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
-bambam.Force = Vector3.new(99999,0,99999)
-bambam.Location = game.Players.LocalPlayer.Character.HumanoidRootPart.Position 
-Instance.new("SelectionBox",game.Players.LocalPlayer.Character.HumanoidRootPart).Adornee = game.Players.LocalPlayer.Character.HumanoidRootPart
-local bg = Instance.new("BodyGyro", torso)
-bg.P = 9e4
-bg.maxTorque = Vector3.new(0, 0, 0)
-bg.cframe = torso.CFrame
-local bv = Instance.new("BodyVelocity", torso)
-bv.velocity = Vector3.new(0,0,0)
-bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
-repeat wait()
-if oldHumanoid:FindFirstChildOfClass'RemoteEvent' ~= nil then
-    oldHumanoid.RagdollRemoteEvent:FireServer(true)
-end
-game.ReplicatedStorage.Communication.Events.UpdateIsCrouching:FireServer(true)
-
-if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
-speed = speed+.2
-if speed > maxspeed then
-speed = maxspeed
-end
-elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
-speed = speed-1
-if speed < 0 then
-speed = 0
-end
-end
-if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
-bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
-lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
-elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
-bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
-else
-bv.velocity = Vector3.new(0,0.1,0)
-end
-
-until not flying
-ctrl = {f = 0, b = 0, l = 0, r = 0}
-lastctrl = {f = 0, b = 0, l = 0, r = 0}
-speed = 0
-bg:Destroy()
-bv:Destroy()
-
-end
-mouse.KeyDown:connect(function(key)
-if key:lower() == "w" then
-ctrl.f = 1
-elseif key:lower() == "s" then
-ctrl.b = -1
-elseif key:lower() == "a" then
-ctrl.l = -1
-elseif key:lower() == "d" then
-ctrl.r = 1
-end
-end)
-mouse.KeyUp:connect(function(key)
-if key:lower() == "w" then
-ctrl.f = 0
-elseif key:lower() == "s" then
-ctrl.b = 0
-elseif key:lower() == "a" then
-ctrl.l = 0
-elseif key:lower() == "d" then
-ctrl.r = 0
-elseif key:lower() == "r" then
-
-end
-end)
-for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-    v:Destroy()
-end
-wait(.1)
-oldHumanoid.RagdollRemoteEvent:FireServer(true)
-wait(.5)
-coroutine.wrap(Fly)()
-wait(.5)
-game.Players.LocalPlayer.Character.HumanoidRootPart.RootJoint.Part0 = nil
-end
+ function sFLY(vfly,ragdoll,platform)
+     if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
+     local T = LocalPlayer.Character.HumanoidRootPart
+     local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+     local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+     local SPEED = 0
+ 
+     local function FLY()
+         FLYING = true
+         local BG = Instance.new('BodyGyro')
+         local BV = Instance.new('BodyVelocity')
+         BG.P = 9e4
+         BG.Parent = T
+         BV.Parent = T
+         BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+         BG.cframe = T.CFrame
+         BV.velocity = Vector3.new(0, 0, 0)
+         BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+         task.spawn(function()
+             repeat wait()
+                 if LocalPlayer.Character.Humanoid:FindFirstChild("RagdollRemoteEvent") ~= nil then
+                     if ragdoll then
+                        LocalPlayer.Character.Humanoid:FindFirstChild("RagdollRemoteEvent"):FireServer(true)
+                     end
+                 end
+                 for i,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                    if v:IsA("BallSocketConstraint") then
+                         v.TwistLowerAngle = 0
+                         v.TwistUpperAngle = 0
+                         v.UpperAngle = 0
+                         v.Radius = 0
+                         if v.Parent.Name == "Right Arm" or v.Parent.Name == "Left Arm" then
+                             v.TwistLowerAngle = 0
+                             v.TwistUpperAngle = 0
+                             v.UpperAngle = 90
+                             v.Radius = 90
+                         end
+                     end
+                 end
+                 if not vfly and LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
+                     LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = platform
+                 end
+                 if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
+                     SPEED = 50
+                 elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
+                     SPEED = 0
+                 end
+                 if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
+                     BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+                     lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+                 elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
+                     BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+                 else
+                     BV.velocity = Vector3.new(0, 0, 0)
+                 end
+                 BG.cframe = workspace.CurrentCamera.CoordinateFrame
+             until not FLYING
+             CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+             lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+             SPEED = 0
+             BG:Destroy()
+             BV:Destroy()
+             if LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
+                 LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
+             end
+         end)
+     end
+     flyKeyDown = Mouse.KeyDown:Connect(function(KEY)
+         if KEY:lower() == 'w' then
+             CONTROL.F = (vfly and vehicleflyspeed or iyflyspeed)
+         elseif KEY:lower() == 's' then
+             CONTROL.B = - (vfly and vehicleflyspeed or iyflyspeed)
+         elseif KEY:lower() == 'a' then
+             CONTROL.L = - (vfly and vehicleflyspeed or iyflyspeed)
+         elseif KEY:lower() == 'd' then 
+             CONTROL.R = (vfly and vehicleflyspeed or iyflyspeed)
+         elseif QEfly and KEY:lower() == 'e' then
+             CONTROL.Q = (vfly and vehicleflyspeed or iyflyspeed)*2
+         elseif QEfly and KEY:lower() == 'q' then
+             CONTROL.E = -(vfly and vehicleflyspeed or iyflyspeed)*2
+         end
+         pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
+     end)
+     flyKeyUp = Mouse.KeyUp:Connect(function(KEY)
+         if KEY:lower() == 'w' then
+             CONTROL.F = 0
+         elseif KEY:lower() == 's' then
+             CONTROL.B = 0
+         elseif KEY:lower() == 'a' then
+             CONTROL.L = 0
+         elseif KEY:lower() == 'd' then
+             CONTROL.R = 0
+         elseif KEY:lower() == 'e' then
+             CONTROL.Q = 0
+         elseif KEY:lower() == 'q' then
+             CONTROL.E = 0
+         end
+     end)
+     FLY()
+ end
+ 
+ invisfling = function()
+ local plr = game.Players.LocalPlayer
+ local oldHumanoid = plr.Character.Humanoid
+ local torso = game.Players.LocalPlayer.Character.HumanoidRootPart
+ local mouse = plr:GetMouse()
+ local flying = true
+ local deb = true
+ local ctrl = {f = 0, b = 0, l = 0, r = 0}
+ local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+ local maxspeed = 50
+ local speed = 50
+ 
+ workspace.CurrentCamera.CameraSubject = torso
+ 
+ 
+ ---local bambam = Instance.new("BodyThrust")
+ ---bambam.Parent = torso
+ --bambam.Force = Vector3.new(9999999,0,9999999)
+ --bambam.Location = torso.Position
+ 
+ 
+ ---
+ function Fly()
+ --game.Players.LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+ local bambam = Instance.new("BodyThrust")
+ bambam.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+ bambam.Force = Vector3.new(99999,0,99999)
+ bambam.Location = game.Players.LocalPlayer.Character.HumanoidRootPart.Position 
+ Instance.new("SelectionBox",game.Players.LocalPlayer.Character.HumanoidRootPart).Adornee = game.Players.LocalPlayer.Character.HumanoidRootPart
+ local bg = Instance.new("BodyGyro", torso)
+ bg.P = 9e4
+ bg.maxTorque = Vector3.new(0, 0, 0)
+ bg.cframe = torso.CFrame
+ local bv = Instance.new("BodyVelocity", torso)
+ bv.velocity = Vector3.new(0,0,0)
+ bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+ repeat wait()
+ if oldHumanoid:FindFirstChildOfClass'RemoteEvent' ~= nil then
+     oldHumanoid.RagdollRemoteEvent:FireServer(true)
+ end
+ game.ReplicatedStorage.Communication.Events.UpdateIsCrouching:FireServer(true)
+ 
+ if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
+ speed = speed+.2
+ if speed > maxspeed then
+ speed = maxspeed
+ end
+ elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
+ speed = speed-1
+ if speed < 0 then
+ speed = 0
+ end
+ end
+ if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
+ bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+ lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
+ elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
+ bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+ else
+ bv.velocity = Vector3.new(0,0.1,0)
+ end
+ 
+ until not flying
+ ctrl = {f = 0, b = 0, l = 0, r = 0}
+ lastctrl = {f = 0, b = 0, l = 0, r = 0}
+ speed = 0
+ bg:Destroy()
+ bv:Destroy()
+ 
+ end
+ mouse.KeyDown:connect(function(key)
+ if key:lower() == "w" then
+ ctrl.f = 1
+ elseif key:lower() == "s" then
+ ctrl.b = -1
+ elseif key:lower() == "a" then
+ ctrl.l = -1
+ elseif key:lower() == "d" then
+ ctrl.r = 1
+ end
+ end)
+ mouse.KeyUp:connect(function(key)
+ if key:lower() == "w" then
+ ctrl.f = 0
+ elseif key:lower() == "s" then
+ ctrl.b = 0
+ elseif key:lower() == "a" then
+ ctrl.l = 0
+ elseif key:lower() == "d" then
+ ctrl.r = 0
+ elseif key:lower() == "r" then
+ 
+ end
+ end)
+ for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+     v:Destroy()
+ end
+ wait(.1)
+ oldHumanoid.RagdollRemoteEvent:FireServer(true)
+ wait(.5)
+ coroutine.wrap(Fly)()
+ wait(.5)
+ game.Players.LocalPlayer.Character.HumanoidRootPart.RootJoint.Part0 = nil
+ end
 
 local gui = library:New("SamuelPaste")
 local main = gui:Tab('main')
@@ -8248,7 +8250,7 @@ local Noclipping
 local Clip = false
 
 function NoclipLoop()
-	if menu.values[4].misc2.misc["Noclip"].Toggle and Clip == false and LocalPlayer.Character ~= nil then
+	if values.misc.misc2.misc["Noclip"].Toggle and Clip == false and LocalPlayer.Character ~= nil then
 		for _, child in pairs(LocalPlayer.Character:GetDescendants()) do
 			if child:IsA("BasePart") and child.CanCollide == true and child.Name ~= floatName then
 				child.CanCollide = false
@@ -8267,6 +8269,13 @@ do
     end)
     utility:Element("Toggle", "No Utility Damage (expect bombs)")
     player:Element("Toggle", "Auto Airdrop-Claimer")
+     miscsector:Element("Toggle","Velocity Fly",nil,function(state)
+         if state.Toggle then
+             sFLY(false,false,false)
+         else
+             NOFLY()
+         end
+     end)
     miscsector:Element("Toggle", "Fly",nil,function(state)
         if values.misc.misc2.misc["Fly"].Toggle then
             sFLY()
@@ -8303,13 +8312,10 @@ do
     task.spawn(function()
         Airdrops.ChildAdded:Connect(function(o)
             if values.misc.misc.player["Auto Airdrop-Claimer"].Toggle then
-                local Airdrop = o
-                coroutine.wrap(function()
-                    for i = 1,10 do
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = Airdrop:WaitForChild'Crate'.Base.CFrame
-                    end
-                end)()
-                fireproximityprompt(Airdrop:WaitForChild'Crate'.Hitbox.ProximityPrompt)
+                 local Airdrop = o
+                 LocalPlayer.Character.HumanoidRootPart.CFrame = Airdrop:WaitForChild'Crate'.Base.CFrame
+                 wait(.2)
+                 fireproximityprompt(Airdrop:WaitForChild'Crate'.Hitbox.ProximityPrompt)
             end
         end)
     end)
@@ -8359,6 +8365,19 @@ do
             end)
         end
     end)
+	local mt = getrawmetatable(game)
+	setreadonly(mt, false)
+	local old = mt.__newindex	
+	mt.__newindex = newcclosure(function(o, k, v)
+	    if values.misc.misc.player["Walk Speed"].Toggle and (k == 'WalkSpeed') then
+            v = values.misc.misc.player["Speed"].Slider
+        end
+                
+        if values.misc.misc.player["Jump Power"].Toggle and (k == 'JumpPower') then
+            v = values.misc.misc.player["Power"].Slider
+		end
+		return old(o, k, v)
+	end)		
     task.spawn(function()
         game:GetService'RunService'.RenderStepped:Connect(function()
             if values.misc.misc2.misc["Hide Name"].Toggle then
