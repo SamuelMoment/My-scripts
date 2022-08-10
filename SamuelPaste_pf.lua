@@ -7011,7 +7011,7 @@ local misc = gui:Tab('misc')
 
 ----------------------------------------------LEGIT TAB----------------------------------------------------------------------------------------------------------------------------------------------------------------
 animations = {}
-local client = {}; do
+getgenv().client = {}; do
     local gc = getgc(true)  
     for i = #gc, 1, -1 do
         local v = gc[i]
@@ -8369,22 +8369,26 @@ for i,v in pairs(animations) do
 end
 
 local weapons = misc:Sector("Weapon mods", 'Right')
+--weapons:Element('Label',"TO MAKE IT WORK U HAVE TO REEQUIP OR RESPAWN")
 weapons:Element('Toggle','no anims')
---[[weapons:Element('Toggle','no gun bob')
+weapons:Element('Toggle','no gun bob')
 weapons:Element('Toggle','Spread modification')
 weapons:Element('Slider','Spread modifier', {min = 0, max = 1000, default = 1000})
-weapons:Element('Toggle','No recoil')
+weapons:Element('Toggle','Recoil modifier')
 weapons:Element('Toggle','Custom reload speed')
-weapons:Element('Toggle','Custom firerate')
+weapons:Element('Toggle','Inf amount of ammo')
+--weapons:Element('Toggle','Custom firerate')
 
-weapons:Element('Slider','Recoil modifier', {min = 0, max = 1000, default = 1000})
+weapons:Element('Slider','Recoil modifier ', {min = 0, max = 100, default = 0})
 weapons:Element('Slider','Reload speed modifier', {min = 0, max = 1000, default = 1000})
-weapons:Element('Slider','Firerate modifier', {min = 0, max = 2000, default = 2000})--]]
+--weapons:Element('Slider','Firerate modifier', {min = 0, max = 2000, default = 2000})
+
 
 local other = misc:Sector('Client', 'Right')
---[[other:Element('Toggle', 'Knife aura')
+
+other:Element('Toggle', 'Knife aura')
 other:Element('Slider', 'Distance', {min = 1, max = 50})
-other:Element('Toggle', 'Held only')--]]
+other:Element('Toggle', 'Held only')
 
 other:Element('Toggle','Custom walkspeed')
 other:Element('Slider', 'Walkspeed modifier', {min = 10,max = 70})
@@ -8429,8 +8433,9 @@ other:Element('Slider','Hitbox extender modifier', {min = 0, max = 5})
     equipped = 1
     client.network.send = function(self, name, ...)
         if name == "falldamage" and values.misc.Client['No fall damage'].Toggle then
-            return 
-        end
+				sex = {...}
+				sex[1] = 0.0000000001
+		end
         
         if name == "equip" then 
             equipped = ...
@@ -8484,16 +8489,16 @@ other:Element('Slider','Hitbox extender modifier', {min = 0, max = 5})
             Lighting.Ambient = Color3.fromRGB(255,255,255)
         end
         if not fullbright and ambientenabled then
-            Lighting.Ambient = values.visuals.world.Ambience.Color
+            Lighting.Ambient = values.visuals.world.Ambient.Color
         elseif not fullbright and not ambientenabled then
             Lighting.Ambient = OldAmbience
         end
         if ambientenabled then
-            Lighting.Ambient = values.visuals.world.Ambience.Color 
+            Lighting.Ambient = values.visuals.world.Ambient.Color 
         end
         
-        if values.misc.Client['Knife aura'] and client.char.alive then
-            if values.misc.Client['Held only'] then
+        if values.misc.Client['Knife aura'].Toggle and client.char.alive then
+            if values.misc.Client['Held only'].Toggle then
                 if client.gamelogic.currentgun.type ~= "KNIFE" then
                     return
                 end
@@ -8506,8 +8511,11 @@ other:Element('Slider','Hitbox extender modifier', {min = 0, max = 5})
                         local Dist = (client.replication.bodyparts[v].head.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
                         if Dist < Distance then
                             Dist = Distance
-                            oldsend(client.network, "equip", 3) -- thx iray for telling me this
-                            client.network:send("knifehit", client.replication.getplayerhit(client.replication.bodyparts[v].head), tick(), "Head")
+                            oldsend(client.network, "equip", 3)
+							oldsend(client.network, "stab")
+							task.wait(0.2)-- thx iray for telling me this
+							table.foreach(client.replication.bodyparts[v],print)
+                            client.network:send("knifehit", client.replication.getplayerhit(client.replication.bodyparts[v].head), "Head")
                             client.network:send("equip", equipped) 
                         end
                     end
@@ -8540,36 +8548,48 @@ weapons:Element('Toggle','Custom firerate')
 weapons:Element('Slider','Recoil modifier', {min = 0, max = 1000, default = 1000})
 weapons:Element('Slider','Reload speed modifier', {min = 0, max = 1000, default = 1000})
 weapons:Element('Slider','Firerate modifier', {min = 0, max = 2000, default = 2000})--]]
---[[function SolveVector3(Vector)
-    if values.misc.Client['Recoil modifier'].Slider == 0 then
-        return Vector3.new()
+function SolveVector3(Vector)
+    if values.misc['Weapon mods']['Recoil modifier '].Slider == 0 then
+        return Vector3.new(0,0,0)
     else
-        return Vector * values.misc.Client['Recoil modifier'].Slider
+        return Vector * values.misc['Weapon mods']['Recoil modifier '].Slider
     end
 end 
 
-    local vec = Vector3.new()
-    local SolveVector3 = function(vector)return SolveVector3(vector) end
-    local loadgun = debug.getupvalue(client.loadmodules, 6)
-    local modifydata = debug.getupvalue(loadgun, 1)
-    debug.setupvalue(loadgun, 1, function(...)
-        retv = modifydata(...)
-        v1 = retv
-        if values.misc.Client['Custom firerate'].Toggle then
-            if type(retv.firerate) == 'number' then
-                retv.firerate = retv.firerate + values.misc.Client['Firerate modifier'].Slider
-            end
-        end
 
-        if not values.misc.Client['No recoil'].Toggle then
+for i,v in pairs(getgc(true)) do
+    if type(v) == "function"then
+        local name =  getinfo(v).name
+        if name == "loadgun" then
+            loadgun = v
+        end
+    end
+    if loadgun then break end
+end
+
+
+    local oldmodifiedgundata = debug.getupvalue(loadgun,1)
+    debug.setupvalue(loadgun,1,function(arg1,arg2,arg3)
+		setreadonly(arg1,false)
+		v1 = arg1
+
+        --[[if values.misc['Weapon mods']['Custom firerate'].Toggle then
+            if type(retv.firecap) == 'number' then
+                retv.firecap = retv.firecap + values.misc['Weapon mods']['Firerate modifier'].Slider
+            end
+        end--]]
+        if values.misc['Weapon mods']['Recoil modifier'].Toggle then
+
             v1.rotkickmin = SolveVector3(v1.rotkickmin)
             v1.rotkickmax = SolveVector3(v1.rotkickmax)
             v1.transkickmin = SolveVector3(v1.transkickmin)
             v1.transkickmax = SolveVector3(v1.transkickmax)
+			
             --v1.camkickmin = SolveVector3(v1.camkickmin)
             --v1.camkickmax = SolveVector3(v1.camkickmax)
-            --v1.camkickspeed = 0;
-            v1.aimrotkickmin = SolveVector3(v1.aimrotkickmin)
+            v1.camkickspeed = 0;
+            
+			v1.aimrotkickmin = SolveVector3(v1.aimrotkickmin)
             v1.aimrotkickmax = SolveVector3(v1.aimrotkickmax)
             v1.aimtranskickmin = SolveVector3(v1.aimtranskickmin)
             v1.aimtranskickmax = SolveVector3(v1.aimtranskickmax)
@@ -8580,37 +8600,42 @@ end
             --v1.modelrecoverspeed = 0;
             --v1.modelkickdamper = 0.0;
             --v1.aimkickmult = 0.0;
+
         end
-        if values.misc.Client['Spread modification'].Toggle then
-            v1.hipfirespread = v1.hipfirespread * values.misc.Client['Spread modifier'].Slider;
-            v1.hipfirestability = v1.hipfirestability * values.misc.Client['Spread modifier'].Slider;
-            v1.hipfirespreadrecover = v1.hipfirespreadrecover * values.misc.Client['Spread modifier'].Slider;
+		if values.misc['Weapon mods']['Inf amount of ammo'].Toggle then
+			v1.magsize = 99999999999999999999999
+			v1.sparerounds = 99999999999999999999
+		end		
+        if values.misc['Weapon mods']['Spread modification'].Toggle then
+			v1.hipfirespread = v1.hipfirespread * values.misc['Weapon mods']['Spread modifier'].Slider;
+			v1.hipfirestability = v1.hipfirestability * values.misc['Weapon mods']['Spread modifier'].Slider;
+            v1.hipfirespreadrecover = v1.hipfirespreadrecover * values.misc['Weapon mods']['Spread modifier'].Slider;
         end
-        if values.misc.Client['Custom reload speed'].Toggle then
+        if values.misc['Weapon mods']['Custom reload speed'].Toggle then
             local anim = v1.animations
             if anim.tacticalreload then
-                v1.animations.tacticalreload.resettime = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.tacticalreload.stdtimescale = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.tacticalreload.timescale = values.misc.Client['Reload speed modifier'].Slider
+                v1.animations.tacticalreload.resettime = values.misc['Weapon mods']['Reload speed modifier'].Slider
+                v1.animations.tacticalreload.stdtimescale = values.misc['Weapon mods']['Reload speed modifier'].Slider
+                v1.animations.tacticalreload.timescale = values.misc['Weapon mods']['Reload speed modifier'].Slider
             elseif anim.reload then
-                v1.animations.reload.resettime = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.reload.stdtimescale = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.reload.timescale = values.misc.Client['Reload speed modifier'].Slider
+                v1.animations.reload.resettime = values.misc['Weapon mods']['Reload speed modifier'].Slider
+                v1.animations.reload.stdtimescale = values.misc['Weapon mods']['Reload speed modifier'].Slider
+                v1.animations.reload.timescale = values.misc['Weapon mods']['Reload speed modifier'].Slider
             elseif anim.pullbolt then
-                v1.animations.pullbolt.stdtimescale = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.pullbolt.timescale = values.misc.Client['Reload speed modifier'].Slider
-                v1.animations.pullbolt.resettime = values.misc.Client['Reload speed modifier'].Slider
+                v1.animations.pullbolt.stdtimescale = values.misc['Weapon mods']['Reload speed modifier'].Slider
+                v1.animations.pullbolt.timescale = values.misc['Weapon mods']['Reload speed modifier'].Slider
+                v1.animations.pullbolt.resettime = values.misc['Weapon mods']['Reload speed modifier'].Slider
             end
         end
-        return retv
+        return oldmodifiedgundata(arg1,arg2,arg3)
     end)
     local gunbob = debug.getupvalue(loadgun, 58)
     debug.setupvalue(loadgun, 58, function(...)
-        if values.misc.Client['no gun bob'].Toggle then 
+        if values.misc['Weapon mods']['no gun bob'].Toggle then 
             return CFrame.new()
         end
         return gunbob(...)
-    end)--]]
+    end)
 
 
 

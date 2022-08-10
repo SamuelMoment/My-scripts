@@ -9293,7 +9293,7 @@ local champlayer = function(v)
 				chams[v] = nil
 			end
 		else
-			if not chams[v] and EspLibrary:GetCharacter(v) and (v.TeamColor ~= LocalPlayer.TeamColor or values.visuals.players.teammates.Toggle) then
+			if not chams[v] and v.Character and (v.TeamColor ~= LocalPlayer.TeamColor or values.visuals.players.teammates.Toggle) then
 				local highlight = C.INST('Highlight', game.CoreGui)
 				highlight.Name = v.Name
 				highlight.Adornee = v.Character
