@@ -8630,7 +8630,7 @@ end
         return oldmodifiedgundata(arg1,arg2,arg3)
     end)
     local gunbob = debug.getupvalue(loadgun, 58)
-    debug.setupvalue(loadgun, 58, function(...)
+    debug.setupvalue(loadgun, 57, function(...)
         if values.misc['Weapon mods']['no gun bob'].Toggle then 
             return CFrame.new()
         end

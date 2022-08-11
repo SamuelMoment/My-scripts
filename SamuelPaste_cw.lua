@@ -5,9 +5,6 @@ getgenv().values = {} --blahwrlqwrqwr
 local library = {tabs = {}}
 local Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/backup_signal.lua"))()
 --------------------------------------------------------------
-local EspLibrary = loadstring(game:HttpGet('https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/esp_library.lua'))()
-EspLibrary.settings.enabled = false
---------------------------------------------------------------
 --local Api = loadstring(game:HttpGet("https://pastebin.com/raw/5L3wV43u"))() 
 --local ConfigSave = Signal.new("ConfigSave") 
 local ConfigLoad = Signal.new("ConfigLoad")
@@ -6871,6 +6868,7 @@ elseif type == "Button" then
 		Lunar.Parent = game.CoreGui 
 		return menu 
 	end 
+
 	local MX_ONHIT = C.INST("ScreenGui")
 	do
 	local OnHitFrame = C.INST("Frame")
@@ -7017,9 +7015,67 @@ local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(sel
   if (method == "Kick" or method == "kick") and self == game.Players.LocalPlayer then
       return;
   end
- 
+    if self.Name == 'RangedHit' then
+		if values.main['Ranged sector']['Always headshot'].Toggle then
+			args[2] = args[2].Parent.Head
+		end
+    end
   return oldnamecall(self, unpack(args))
 end)
+	getgenv().rangedvalues = {}
+for i,v in pairs(getgc(true)) do
+	if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'minSpread') then
+--[[local function shallowCopy(original)
+	local copy = {}
+	for key, value in pairs(original) do
+		copy[key] = value
+	end
+	return copy
+end		
+			pcall(function()
+				table.clear(rangedvalues[string.lower(v.displayName)])
+			end)--]]
+			rangedvalues[string.lower(v.displayName)] = {
+		['minSpread'] = v.minSpread,
+		['maxSpread'] = v.maxSpread,
+		['recoilXMin'] = v.recoilXMin,
+		['recoilXMax'] = v.recoilXMax,
+		['recoilYMin'] = v.recoilYMin,
+		['recoilYMax'] = v.recoilYMax,
+		['recoilZMin'] = v.recoilZMin,	
+		['recoilZMax'] = v.recoilZMax,
+		['startShootingAfterCharge'] = v.startShootingAfterCharge,
+		['chargeOnDuration'] = v.chargeOnDuration,
+		['chargeOffDuration'] = v.chargeOffDuration,
+		['gravity'] = v.gravity,
+		['maxDistance'] = v.maxDistance,
+			}
+			--rangedvalues[string.lower(v.displayName)] = shallowCopy(v)
+			--table.freeze(rangedvalues[string.lower(v.displayName)])
+			--shit didnt work properly fuck u whoever reads that
+		--print(rangedvalues[string.lower(v.displayName)].displayName)
+	end
+end
+
+
+for i,v in pairs(getgc(true)) do
+	if type(v) == 'table' and rawget(v,'cancelReload') then
+		task.spawn(function()
+			oldReload = v.cancelReload
+			game.RunService.RenderStepped:Connect(function()
+				pcall(function()
+					if values.main['Ranged sector']['No reload cancel'].Toggle then
+						v.cancelReload = function(...)
+							return
+						end
+					else
+						v.cancelReload = oldReload
+					end
+				end)
+			end)
+		end)
+	end
+end
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
@@ -7028,14 +7084,14 @@ local flyKeyUp
 local events = game:GetService("ReplicatedStorage").Communication.Events
 local functions = game:GetService("ReplicatedStorage").Communication.Functions
 
-functions.SpawnCharacter:FireServer()
-wait(0.5)
-for i = 1,2 do -- inf jump bypass
-    LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+--functions.SpawnCharacter:FireServer()
+--wait(0.5)
+for i = 1,10 do -- inf jump bypass
     events.StartFastRespawn:FireServer()
     functions.CompleteFastRespawn:FireServer()
     wait(.1)
 end
+print('sex')
 local weapon_anims = {}
 
 for i,v in pairs(game:GetService("ReplicatedStorage").Shared.Assets.Melee:GetDescendants()) do
@@ -7281,6 +7337,7 @@ local gui = library:New("SamuelPaste")
 local main = gui:Tab('main')
 local misc = gui:Tab('misc')
 local visuals = gui:Tab('visuals')
+print('sex2')
 do
 local chat = main:Sector('chat', 'Right')
 chat:Element('ToggleColor','custom tag')
@@ -7475,7 +7532,8 @@ local combat = main:Sector('combat', 'Left')
         
     Players.PlayerAdded:Connect(added)
     end)
-    task.spawn(function()
+    --print('task.spawn #1')
+	task.spawn(function()
         while task.wait() do
            pcall(function()
                 if values.main.combat["Kill Aura"].Toggle then
@@ -7563,7 +7621,7 @@ local combat = main:Sector('combat', 'Left')
             end)
         end
     end)
-    
+ -- print('task.spawn #2')  
     task.spawn(function()
         game:GetService("RunService").RenderStepped:Connect(function()
             pcall(function()
@@ -7579,7 +7637,7 @@ local combat = main:Sector('combat', 'Left')
             end)
         end)
     end)
-    
+    --print('task.spawn #3')
     task.spawn(function()
         while task.wait() do
             pcall(function()
@@ -7592,7 +7650,7 @@ local combat = main:Sector('combat', 'Left')
             end)
         end
     end)
-    
+   -- print('task.spawn #4')
     task.spawn(function()
         while task.wait() do
             pcall(function()
@@ -7618,7 +7676,7 @@ local combat = main:Sector('combat', 'Left')
             end)
         end
     end)
-    
+    --print('task.spawn #5')
     task.spawn(function()
         while task.wait() do
             pcall(function()
@@ -7647,7 +7705,257 @@ local combat = main:Sector('combat', 'Left')
             end)
         end
     end)
-end
+--print('task.spawn #6')
+task.spawn(function()
+	getgenv().silent = main:Sector("Ranged sector", 'Right')
+	silent:Element('Toggle', 'silent aim')
+	silent:Element('ToggleTrans', 'Highlight target')
+	silent:Element('ToggleTrans', 'Outline highlight target')	
+	task.spawn(function()
+		game.RunService.RenderStepped:Connect(function()
+			if values.main['Ranged sector']['Highlight target'].Toggle or values.main['Ranged sector']['Outline highlight target'].Toggle then
+				if not game.CoreGui:FindFirstChild('SilentAimTarget') then
+					local highlight = C.INST('Highlight',game.CoreGui)
+					highlight.Name = 'SilentAimTarget'
+					
+					highlight.FillColor = values.main['Ranged sector']['Highlight target'].Color
+					highlight.FillTransparency = values.main['Ranged sector']['Highlight target'].Transparency
+					if values.main['Ranged sector']['Outline highlight target'].Toggle then
+						highlight.OutlineColor = values.main['Ranged sector']['Outline highlight target'].Color
+						highlight.OutlineTransparency = values.main['Ranged sector']['Outline highlight target'].Transparency
+					else
+						highlight.OutlineTransparency = 1
+					end
+				elseif game.CoreGui:FindFirstChild('SilentAimTarget') then
+					highlight = game.CoreGui:FindFirstChild('SilentAimTarget')
+					--highlight.Name = 'SilentAimTarget'
+					highlight.FillColor = values.main['Ranged sector']['Highlight target'].Color
+					highlight.FillTransparency = values.main['Ranged sector']['Highlight target'].Transparency
+					if values.main['Ranged sector']['Outline highlight target'].Toggle then
+						highlight.OutlineColor = values.main['Ranged sector']['Outline highlight target'].Color
+						highlight.OutlineTransparency = values.main['Ranged sector']['Outline highlight target'].Transparency
+					else
+						highlight.OutlineTransparency = 1
+					end			
+				end
+			end
+		end)
+	end)
+
+
+	local ARROW
+	local shot = false
+	local arrowsshooted = 0
+	local Players = game.Players
+	local mouse = LocalPlayer:GetMouse()
+	local function getClosestToMouse() -- got this from cheese bcuz im too lazy again and yes he got from devforum
+		local player, nearestDistance = nil, math.huge*9e9
+		for i,v in pairs(Players:GetPlayers()) do
+			if v ~= Players.LocalPlayer and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") then
+				local root, visible = workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+				if visible then
+					local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(root.X, root.Y)).Magnitude
+
+					if distance < nearestDistance then
+						nearestDistance = distance
+						player = v
+					end
+				end
+			end
+		end
+		return player
+	end
+	workspace.EffectsJunk.ChildAdded:Connect(function(p)
+		task.wait() -- yields to prevent some shit lol!
+		if LocalPlayer.Character:FindFirstChildOfClass("Tool") == nil then
+			shot = false
+			return
+		end
+		local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+		if Tool:FindFirstChild("ClientAmmo") == nil then
+			shot = false
+			return
+		end
+		if (shot and p:IsA("MeshPart") and p:FindFirstChild("Tip") ~= nil) then
+			ARROW = p
+			Instance.new("SelectionBox",p).Adornee = p
+			shot = false
+		end
+	end)
+
+	for i,v in pairs(getgc(true)) do
+		if typeof(v) == "table" and rawget(v,"shoot") then
+			local Old = v.shoot
+			v.shoot = function(tbl)
+				shot = true
+				arrowsshooted = tbl.shotIdx
+				return Old(tbl)
+			end
+		end
+		
+		if typeof(v) == "table" and rawget(v,"calculateFireDirection") then
+			old = v.calculateFireDirection
+			v.calculateFireDirection = function(p3,p4,p5,p6)
+				local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+				if Tool:FindFirstChild("ClientAmmo") == nil then
+					return old(p3,p4,p5,p6)
+				end
+				if not values.main['Ranged sector']['silent aim'].Toggle then
+					return old(p3,p4,p5,p6)
+				end
+				if shot then
+					local closest = getClosestToMouse() or nil
+					-- looked into goofy ah script made by cheese and then just cnp'd the prediction (doesnt help tbh)
+					if closest ~= nil and closest.Character then
+					local Prediction = closest.Character.Head.CFrame + (closest.Character.Head.Velocity * 0.19 + Vector3.new(0, .1, 0))
+					return (CFrame.lookAt(Tool.Contents.Handle.FirePoint.WorldCFrame.Position, Prediction.Position)).LookVector * 30;
+					end
+				end
+				return old(p3,p4,p5,p6)
+			end
+		end
+	end
+
+	firehit = function(character,arrow)
+		local fakepos = character.Head.Position + Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5))
+		local args = {
+			[1] = LocalPlayer.Character:FindFirstChildOfClass("Tool"),
+			[2] = character.Head,
+			[3] = fakepos,
+			[4] = character.Head.CFrame:ToObjectSpace(CFrame.new(fakepos)),
+			[5] = fakepos * Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5)),
+			[6] = tostring(arrowsshooted)
+		}
+		game:GetService("ReplicatedStorage").Communication.Events.RangedHit:FireServer(unpack(args))
+	end
+	--local bruh = Instance.new("SelectionBox",workspace)
+	--bruh.Color3 = Color3.fromRGB(163, 61, 54)
+	while wait() do
+		pcall(function()
+			local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+			if Tool:FindFirstChild("ClientAmmo") == nil then
+				return
+			end
+			if not values.main['Ranged sector']['silent aim'].Toggle then
+				return
+			end			
+			local closest = getClosestToMouse() or nil
+			if closest  ~= nil and closest.Character and game.CoreGui:FindFirstChild('SilentAimTarget') then
+				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = closest.Character
+			end
+			if ARROW then
+				if closest then
+					if (ARROW.Position - closest.Character.HumanoidRootPart.Position).Magnitude <= 15 then
+						firehit(closest.Character,ARROW)
+						ARROW = nil
+						shot = false
+					end
+				end
+			end
+		end)
+	end
+
+
+
+
+end)
+		silent:Element('Toggle', 'Wallbang')
+		task.spawn(function()
+			while game.RunService.RenderStepped:Wait() do 
+				if values.main['Ranged sector'].Wallbang.Toggle then
+					game.CollectionService:AddTag(game:GetService("Workspace").Map,'RANGED_CASTER_IGNORE_LIST')		
+				else
+					game.CollectionService:RemoveTag(game:GetService("Workspace").Map,'RANGED_CASTER_IGNORE_LIST')		
+				end		
+			end
+		end)
+		silent:Element('Toggle', 'No recoil')
+		silent:Element('Toggle', 'No spread')
+		silent:Element('Toggle', 'Inf range')
+		silent:Element('Toggle', 'Instant charge')
+		silent:Element('Toggle', 'No reload cancel')
+		silent:Element('Toggle', 'Always headshot')
+		silent:Element('Button', 'Apply ranged mods',{}, function()
+			for i,v in pairs(getgc(true)) do
+				if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'displayName') then
+					if values.main['Ranged sector']['No recoil'].Toggle then
+						--print('-------------------------------')
+						
+						
+							randomstring = string.lower(v.displayName)
+							--print(rangedvalues[randomstring]['recoilXMax'])
+						--print(v.recoilXMax)
+						--print('-------------------------------')
+						--string = string..v.displayName..'\n'..rangedvalues[string.lower(v.displayName)].recoilXMax..'\n'..v.recoilXMax..'\n'..'-------------------------------'..'\n'
+						v.recoilYMin = 0
+						v.recoilZMin = 0
+						v.recoilXMin = 0
+						v.recoilYMax = 0
+						v.recoilZMax = 0
+						v.recoilXMax = 0
+						--print('-------------------------------')
+						print(v.recoilXMax)
+						print(rangedvalues[string.lower(v.displayName)]['recoilXMax'])
+						print('-------------------------------')
+						--string = string..'\n'..rangedvalues[string.lower(v.displayName)].recoilXMax..'\n'..v.recoilXMax..'\n'..'-------------------------------'..'\n'
+					else
+					--table.foreach(rangedvalues[string.lower(v.displayName)],print)
+						v.recoilYMin = rangedvalues[string.lower(v.displayName)]['recoilYMin']
+						v.recoilZMin = rangedvalues[string.lower(v.displayName)]['recoilZMin']
+						v.recoilXMin = rangedvalues[string.lower(v.displayName)]['recoilXMin']
+						v.recoilYMax = rangedvalues[string.lower(v.displayName)]['recoilYMax']
+						v.recoilZMax = rangedvalues[string.lower(v.displayName)]['recoilZMax']
+						v.recoilXMax = rangedvalues[string.lower(v.displayName)]['recoilXMax']		
+					end
+					if values.main['Ranged sector']['No spread'].Toggle then
+						v.minSpread = 0
+						v.maxSpread = 0
+					else
+						v.minSpread = rangedvalues[string.lower(v.displayName)]['minSpread']
+						v.maxSpread = rangedvalues[string.lower(v.displayName)]['maxSpread']
+					end
+					if values.main['Ranged sector']['Inf range'].Toggle then
+						v.gravity = Vector3.new(0,0,0)
+						v.maxDistance = 99999
+					else
+						v.gravity = rangedvalues[string.lower(v.displayName)]['gravity']
+						v.maxDistance = rangedvalues[string.lower(v.displayName)]['maxDistance']			
+					end
+					if values.main['Ranged sector']['Instant charge'].Toggle then
+						v.startShootingAfterCharge = true
+						v.chargeOnDuration = 0
+						v.chargeOffDuration = 0
+					else
+						v.startShootingAfterCharge = rangedvalues[string.lower(v.displayName)]['startShootingAfterCharge']
+						v.chargeOnDuration = rangedvalues[string.lower(v.displayName)]['chargeOnDuration']
+						v.chargeOffDuration = rangedvalues[string.lower(v.displayName)]['chargeOffDuration']
+					end
+				end
+			end
+			--setclipboard(string)
+		end)
+		game.CollectionService:AddTag(game:GetService("Workspace").Map,'CAMERA_COLLISION_IGNORE_LIST')
+
+		--[[task.spawn(function()
+			while task.wait() do
+				pcall(function()
+					if game.Players.LocalPlayer.Character and values.maim['Ranged sector']['Instant charge'].Toggle then
+						if game.Players.LocalPlayer.Character:FindFirstChild('Longbow') then
+							for i,v in pairs(getconnections(game.Players.LocalPlayer.Character['Longbow'].ChargeProgressClient:GetPropertyChangedSignal("Value"))) do
+								v:Disable()
+							end            
+							game.Players.LocalPlayer.Character['Longbow'].ChargeProgressClient.Value = 1
+						elseif game.Players.LocalPlayer.Character:FindFirstChild('Heavy Bow') then
+							for i,v in pairs(getconnections(game.Players.LocalPlayer.Character['Heavy Bow'].ChargeProgressClient:GetPropertyChangedSignal("Value"))) do
+								v:Disable()
+							end            
+							game.Players.LocalPlayer.Character['Heavy Bow'].ChargeProgressClient.Value = 1
+						end
+					end
+				end)
+			end
+		end)--]]
+	end
 
 do
 
@@ -7956,7 +8264,7 @@ addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, 
 					if tbl.Toggle then
 						local oldUiColor = MainUIColor --Colorpick, ColorDrag, HueFrameGradient, Huepick, Huedrag
 						MainUIColor = tbl.Color
-						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
+						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Tabs:GetDescendants()) do
 							if v:IsA('Frame') and v.BackgroundColor3 == oldUiColor and v.Name ~= 'Color' and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
 								v.BackgroundColor3 = MainUIColor
 							end
@@ -7982,7 +8290,7 @@ addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, 
 						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = tbl.Color
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = tbl.Color
 						--game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = tbl.Color
-						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
+						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Holder.TabButtons:GetChildren()) do
 							if v:IsA("TextButton") then
 								v.Gard.BackgroundColor3 = tbl.Color
 							end
@@ -8004,7 +8312,7 @@ addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, 
 						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
 						--game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
-					for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
+					for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Tabs:GetDescendants()) do
 						if v:IsA('Frame') and v.BackgroundColor3 == oldUiColor and v.Name ~= 'Color' and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
 								v.BackgroundColor3 = MainUIColor
 							end
@@ -8028,7 +8336,7 @@ addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, 
 							end
 					end
 					  
-						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
+						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Holder.TabButtons:GetChildren()) do
 							if v:IsA("TextButton") then
 								v.Gard.BackgroundColor3 = C.COL3RGB(MainUIColor)
 							end
@@ -8183,7 +8491,7 @@ addons:Element('ToggleKeybind', 'gui keybind', {default = {Key = RightShift, Typ
 	end
 end)
 addons:Element("TextBox", "mnt", {placeholder = "Custom cheat name"}, function()
-	game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TextLabel.Text = values.misc.addons.mnt.Text
+	game:GetService("CoreGui")["electric boogalo"].Holder.TextLabel.Text = values.misc.addons.mnt.Text
 	valuewtr = values.misc.addons.mnt.Text
 	print(valuewtr)
 end)
@@ -8259,6 +8567,26 @@ function NoclipLoop()
 	end
 end
 do
+for i,v in pairs(getgc(true)) do
+    if typeof(v) == 'table' and rawget(v,'knockbackCharacterPartAngular') then
+		oldknockbackCharacterPartAngular = v.knockbackCharacterPartAngular
+    end
+    if typeof(v) == 'table' then 
+        if rawget(v,'knockbackCharacterPart') then
+			oldknockbackCharacterPart = v.knockbackCharacterPart
+        end
+        if rawget(v,'knockbackPartAngular') then
+			oldknockbackPartAngular = v.knockbackPartAngular
+        end
+        if rawget(v,'knockbackPartForce') then
+			oldknockbackPartForce = v.knockbackPartForce
+		end
+        if rawget(v,'knockbackPart') then
+			oldknockbackPart = v.knockbackPart
+        end        
+    end
+end
+
     local misc1 = misc:MSector("misc", "Right")
     local misc2 = misc:MSector("misc2", "Right")
     local miscsector = misc2:Tab("misc")
@@ -8268,6 +8596,57 @@ do
         invisfling()
     end)
     utility:Element("Toggle", "No Utility Damage (expect bombs)")
+	utility:Element('Toggle', 'No knockback', {}, function(tbl)
+		for i,v in pairs(getgc(true)) do
+			if typeof(v) == 'table' and rawget(v,'knockbackCharacterPartAngular') then
+				if tbl.Toggle then
+					v.knockbackCharacterPartAngular = function(...)
+						return
+					end
+				else
+					v.knockbackCharacterPartAngular = oldknockbackCharacterPartAngular
+				end
+			end
+			if typeof(v) == 'table' then 
+				if rawget(v,'knockbackCharacterPart') then
+					if tbl.Toggle then
+						v.knockbackCharacterPart = function(...)
+							return
+						end
+					else
+						v.knockbackCharacterPart = oldknockbackCharacterPart
+					end
+				end
+				if rawget(v,'knockbackPartAngular') then
+					if tbl.Toggle then
+						v.knockbackPartAngular = function(...)
+							return
+						end
+					else
+						v.knockbackPartAngular = oldknockbackCharacterPartAngular
+					end
+				end
+				if rawget(v,'knockbackPartForce') then
+					if tbl.Toggle then
+						v.knockbackPartForce = function(...)
+							return
+						end
+					else
+						v.knockbackPartForce = oldknockbackPartForce
+					end
+				end
+				if rawget(v,'knockbackPart') then
+					if tbl.Toggle then
+						v.knockbackPart = function(...)
+							return
+						end
+					else
+						v.knockbackPart = oldknockbackPart
+					end
+				end        
+			end
+		end	
+	end)
     player:Element("Toggle", "Auto Airdrop-Claimer")
      miscsector:Element("Toggle","Velocity Fly",nil,function(state)
          if state.Toggle then
@@ -8302,7 +8681,9 @@ do
     player:Element("Toggle", "Infinite Jump")
     player:Element("Toggle", "No Jump Cooldown")
     player:Element("Toggle", "Jump Whenever")
-    miscsector:Element("Toggle", "Hide Name")
+    miscsector:Element("Toggle", "Kill Feed Spam")
+    miscsector:Element("Toggle", "Free Emotes") 
+	miscsector:Element("Toggle", "Hide Name")
     player:Element("Toggle", "Walk Speed")
     player:Element("Slider", "Speed", {min = 0, max = 150, default = 75})
     player:Element("Toggle", "Jump Power")
@@ -8465,52 +8846,88 @@ do
     
     local newindex
 
-    newindex = hookmetamethod(game, "__namecall", function(self, ...)
-        local howcalledomg = getnamecallmethod()
-        local whataretheargs = {...}
-    
-        if not checkcaller() and self.Name == "GotHitRE" and values.misc.misc.utility["No Utility Damage (expect bombs)"].Toggle  and howcalledomg == "FireServer" then
-            return
-        end
-        if not checkcaller() and self.Name == "RagdollRemoteEvent" and values.misc.misc.player["No Ragdoll"].Toggle  and howcalledomg == "FireServer" then
-            args[1] = false
-        end
-        if not checkcaller() and (self.Name == "StartFallDamage" or self.Name == "TakeFallDamage") and (values.misc.misc.player["No Fall Damage"].Toggle)  and howcalledomg == "FireServer" then
-            return
-        end
-        if not checkcaller() and self.Name == "UpdateIsCrouching" and values.misc.misc2.misc["Hide Name"].Toggle  and howcalledomg == "FireServer" then
-            return
-        elseif not checkcaller() and self.Name == "UpdateIsCrouching" and not values.misc.misc2.misc["Hide Name"].Toggle then
-            return newindex(self, ...)
-        end
-        
-        if not checkcaller() and (self.Name == "UpdateIsParkouring" and values.misc.misc.player["Walk On Air (Q,E)"].Toggle) and howcalledomg == "FireServer" then
-            return
-        elseif not checkcaller() and self.Name == "UpdateIsParkouring" and not values.misc.misc.player["Walk On Air (Q,E)"].Toggle and howcalledomg == "FireServer" then
-            return newindex(self, ...)
-        end
 
-        return newindex(self, ...)
-    end)
-    
-    for i,v in pairs(getgc(true)) do
-        if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then 
-            local old = v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING
-            
-            task.spawn(function()
-                while true do
-                    if values.misc.misc.player["Infinite Air"].Toggle then
-                        v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999
-                    else
-                        v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = old
-                    end
-                    task.wait()
-                end
-            end)
+    local newindex
+
+    newindex =
+        hookmetamethod(
+        game,
+        "__namecall",
+        function(self, ...)
+            local howcalledomg = getnamecallmethod()
+            local whataretheargs = {...}
+
+            if
+                not checkcaller() and self.Name == "GotHitRE" and
+                    values.misc.misc.utility["No Utility Damage (expect bombs)"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return wait(9e9)
+            end
+            if
+                not checkcaller() and self.Name == "RagdollRemoteEvent" and
+                    values.misc.misc.player["No Ragdoll"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return wait(9e9)
+            end
+            if
+                not checkcaller() and self.Name == "StartFallDamage" or
+                    self.Name == "TakeFallDamage" and values.misc.misc.player["No Fall Damage"].Toggle and
+                        howcalledomg == "FireServer"
+             then
+                return wait(9e9)
+            end
+            if
+                not checkcaller() and self.Name == "UpdateIsCrouching" and values.misc.misc2.misc["Hide Name"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return
+            elseif
+                not checkcaller() and self.Name == "UpdateIsCrouching" and
+                    not values.misc.misc2.misc["Hide Name"].Toggle
+             then
+                return newindex(self, ...)
+            end
+
+            if
+                not checkcaller() and self.Name == "UpdateIsParkouring" and
+                    values.misc.misc.player["Walk On Air (Q,E)"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return
+            elseif
+                not checkcaller() and self.Name == "UpdateIsParkouring" and
+                    not values.misc.misc.player["Walk On Air (Q,E)"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return newindex(self, ...)
+            end
+
+            return newindex(self, ...)
         end
-        if typeof(v) == 'table' and rawget(v, 'getCanJump') then
+    )
+
+    for i, v in pairs(getgc(true)) do
+        if type(v) == "table" and rawget(v, "AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then
+            local old = v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING
+
+            task.spawn(
+                function()
+                    while true do
+                        if values.misc.misc.player["Infinite Air"].Toggle then
+                            v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999
+                        else
+                            v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = old
+                        end
+                        task.wait()
+                    end
+                end
+            )
+        end
+        if typeof(v) == "table" and rawget(v, "getCanJump") then
             local old = v.getCanJump
-            
+
             v.getCanJump = function()
                 if values.misc.misc.player["Jump Whenever"].Toggle then
                     return true
@@ -8519,48 +8936,87 @@ do
                 end
             end
         end
-        
-        if typeof(v) == 'table' and rawget(v, 'JUMP_DELAY_ADD') then
+
+        if typeof(v) == "table" and rawget(v, "JUMP_DELAY_ADD") then
             local old = v.JUMP_DELAY_ADD
-            
-            task.spawn(function()
-                while true do
-                    if values.misc.misc.player["No Jump Cooldown"].Toggle then
-                        v.JUMP_DELAY_ADD = 0.5
-                    else
-                        v.JUMP_DELAY_ADD = old
+
+            task.spawn(
+                function()
+                    while true do
+                        if values.misc.misc.player["No Jump Cooldown"].Toggle then
+                            v.JUMP_DELAY_ADD = 0.5
+                        else
+                            v.JUMP_DELAY_ADD = old
+                        end
+                        task.wait()
                     end
-                    task.wait()
                 end
-            end)
+            )
         end
-        
-        if typeof(v) == 'table' and rawget(v, '_setStamina') then
+
+        if typeof(v) == "table" and rawget(v, "_setStamina") then
             local old = v._setStamina
-            
+
             v._setStamina = function(gg, gg2)
                 if values.misc.misc.player["Infinite Stamina"].Toggle then
                     gg._stamina = math.huge
-                    gg._staminaChangedSignal:Fire(150)        
+                    gg._staminaChangedSignal:Fire(150)
                 else
-                    return old(gg,gg2)
-                end    
+                    return old(gg, gg2)
+                end
             end
         end
         
-        if typeof(v) == "table" and rawget(v,"DASH_COOLDOWN") then
-            local old = v.DASH_COOLDOWN
+        if typeof(v) == "table" and rawget(v, "toggleRagdoll") then
+            local old = v.toggleRagdoll
             
-            task.spawn(function()
-                while true do
-                    if values.misc.misc.player["No Dash Cooldown"].Toggle then
-                        v.DASH_COOLDOWN = -500
-                    else
-                        v.DASH_COOLDOWN = old
-                    end
-                    task.wait()
+            v.toggleRagdoll = function(gg, gg2, gg3)
+                if values.misc.misc.player["No Ragdoll"].Toggle then
+                    return
+                else
+                    return old(gg, gg2, gg3)
                 end
-            end)
+            end
+        end
+
+        if typeof(v) == "table" and rawget(v, "DASH_COOLDOWN") then
+            local old = v.DASH_COOLDOWN
+
+            task.spawn(
+                function()
+                    while true do
+                        if values.misc.misc.player["No Dash Cooldown"].Toggle then
+                            v.DASH_COOLDOWN = -500
+                        else
+                            v.DASH_COOLDOWN = old
+                        end
+                        task.wait()
+                    end
+                end
+            )
+        end
+
+        if typeof(v) == "table" and rawget(v, "gamepassIdRequired") then
+            task.spawn(
+                function()
+                    while true do
+                        if values.misc.misc2.misc["Free Emotes"].Toggle then
+                            if v.gamepassIdRequired == "danceEmotes" then
+                                v.gamepassIdRequired = nil
+                            elseif v.gamepassIdRequired == "toxicEmotes" then
+                                v.gamepassIdRequired = nil
+                            elseif v.gamepassIdRequired == "respectEmotes" then
+                                v.gamepassIdRequired = nil
+                            end
+                        else
+                            if v.gamepassIdRequired == nil then
+                                v.gamepassIdRequired = "danceEmotes"
+                            end
+                        end
+                        task.wait()
+                    end
+                end
+            )
         end
     end
 end
