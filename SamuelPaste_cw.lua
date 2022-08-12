@@ -7338,7 +7338,13 @@ local main = gui:Tab('main')
 local misc = gui:Tab('misc')
 local visuals = gui:Tab('visuals')
 print('sex2')
-do
+fonts = {}
+for i,v in pairs(Enum.Font:GetEnumItems()) do
+	if v.Name ~= 'Unknown' then
+		table.insert(fonts,v.Name)
+	end
+end
+--[[do
 local chat = main:Sector('chat', 'Right')
 chat:Element('ToggleColor','custom tag')
 chat:Element('ToggleColor','custom nickname')
@@ -7351,12 +7357,6 @@ chat:Element('Toggle','custom message size')
 chat:Element('Slider','size', {min = 1, max = 100})
 chat:Element('Toggle', 'custom font')
 
-fonts = {}
-for i,v in pairs(Enum.Font:GetEnumItems()) do
-	if v.Name ~= 'Unknown' then
-		table.insert(fonts,v.Name)
-	end
-end
 
 chat:Element('Dropdown', 'message font',{options = fonts})
 
@@ -7468,175 +7468,323 @@ local edited = false
 				end
 			end
 end
+--]]
 function parry()
     game:GetService("ReplicatedStorage").Communication.Events.Parry:FireServer()
 end
 do
 local combat = main:Sector('combat', 'Left')
-    combat:Element("Toggle", "Auto Equip")
-    combat:Element("Toggle", "Auto Revive")
-    --combat:Element("Toggle", "Fast Respawn")
+  -- local combat = main:Sector("combat")
+    local Autos = main:Sector("Autos", "Right")
+    local Misc = main:Sector("Misc", "Right")
+    local Spins = main:Sector("Spins",'Right')
+    Misc:Element("Toggle", "BHop")
+    Autos:Element("Toggle", "Auto Equip")
+    Autos:Element("Toggle", "Auto Revive")
+    --Autos:Element("Toggle", "Fast Respawn")
     combat:Element("Toggle", "Kill Aura")
-    combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 1000, default = 600})
-    combat:Element("Toggle", "Spin")
-    combat:Element("Slider", "Spin Power", {min = 0, max = 50, default = 50})
-    combat:Element("Toggle", "Auto Parry")
-    combat:Element("Slider", "Auto Parry Distance", {min = 0, max = 25, default = 10})
-    combat:Element("Slider", "Auto Parry Chance", {min = 0, max = 100, default = 100})
+    combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 12, default = 12})
+    combat:Element("Toggle", "Custom Kill Aura Distance")
+    combat:Element("Slider", "Custom Distance", {min = 0, max = 1000, default = 600})
+    combat:Element("Toggle", "Teleport Behind (for kill aura)")
+    combat:Element("Slider", "Teleport Distance", {min = 0, max = 5, default = 5})
+    combat:Element("Toggle", "Stomp Aura")
+    combat:Element("Slider", "Stomp Aura Distance", {min = 0, max = 25, default = 25})
+    combat:Element("Toggle", "Custom Stomp Aura Distance")
+    combat:Element("Slider", "Custom Stomp Distance", {min = 0, max = 1000, default = 600})
+    Spins:Element("Toggle", "Spin")
+    Spins:Element("Slider", "Spin Power", {min = 0, max = 50, default = 50})
+    Autos:Element("Toggle", "Auto Parry")
+    Autos:Element("Slider", "Auto Parry Distance", {min = 0, max = 25, default = 10})
+    Autos:Element("Slider", "Auto Parry Chance", {min = 0, max = 100, default = 100})
 	local respawn = main:Sector('Respawn', 'Left')
 	respawn:Element('Toggle', 'Fast Respawn')
 	respawn:Element('Toggle', 'Auto spawn')
 	respawn:Element('Toggle', 'Respawn on death position')
+	
 	--respawn:Element('Toggle', 'Respawn when low hp')
 	--respawn:Element('Slider', 'low hp', {min = 1, max = 100, default = 30})
-    task.spawn(function()
-        function added(p)
-        function balls(c)
-            local Humanoid = c:WaitForChild'Humanoid'
-            if Humanoid then
-                Humanoid.AnimationPlayed:Connect(function(anim)
-                    for i,v in pairs(weapon_anims) do
-                        if values.main.combat["Auto Parry"].Toggle and anim.Animation.AnimationId == v then
-                            if values.main.combat["Auto Parry Chance"].Slider >= 90 then
-                                if (LocalPlayer.Character  ~= nil and LocalPlayer.Character:FindFirstChild("Head") ~= nil and p.Character:FindFirstChild("Head")  ~= nil) then
-                                    local mag = (p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
-                                    if mag < values.main.combat["Auto Parry Distance"].Slider  then
-                                        parry()
-                                    end
-                                end
-                                else
-                                    local chance = math.random(1,90)
-                                    if chance >= values.main.combat["Auto Parry Chance"].Slider then
-                                        if (LocalPlayer.Character  ~= nil and LocalPlayer.Character:FindFirstChild("Head") ~= nil and p.Character:FindFirstChild("Head")  ~= nil) then
-                                        local mag = (p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
-                                        if mag < values.main.combat["Auto Parry Distance"].Slider  then
-                                            parry()
+    task.spawn( -- MODIFIED AUTO PARRY (from v3rm thanks to https://v3rmillion.net/showthread.php?tid=1129784)
+        -- i did some coding tho its kinda different because it doesnt check for animations but it gets all animations
+        function()
+            function added(p)
+                function balls(c)
+                    local Humanoid = c:WaitForChild "Humanoid"
+                    if Humanoid then
+                        Humanoid.AnimationPlayed:Connect(
+                            function(anim)
+                                for i, v in pairs(weapon_anims) do
+                                    if
+                                        values.main.Autos["Auto Parry"].Toggle and
+                                            anim.Animation.AnimationId == v
+                                     then
+                                        if values.main.Autos["Auto Parry Chance"].Slider >= 90 then
+                                            if
+                                                (LocalPlayer.Character ~= nil and
+                                                    LocalPlayer.Character:FindFirstChild("Head") ~= nil and
+                                                    p.Character:FindFirstChild("Head") ~= nil)
+                                             then
+                                                local mag =
+                                                    (p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
+                                                if mag < values.main.Autos["Auto Parry Distance"].Slider then
+                                                    parry()
+                                                end
+                                            end
+                                        else
+                                            local chance = math.random(1, 90)
+                                            if chance >= values.main.Autos["Auto Parry Chance"].Slider then
+                                                if
+                                                    (LocalPlayer.Character ~= nil and
+                                                        LocalPlayer.Character:FindFirstChild("Head") ~= nil and
+                                                        p.Character:FindFirstChild("Head") ~= nil)
+                                                 then
+                                                    local mag =
+                                                        (p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
+                                                    if mag < values.main.Autos["Auto Parry Distance"].Slider then
+                                                        parry()
+                                                    end
+                                                end
+                                            end
                                         end
                                     end
                                 end
                             end
+                        )
+                    end
+                end
+                if p.Character then
+                    balls(p.Character)
+                end
+                p.CharacterAdded:Connect(balls)
+            end
+
+            for i, v in pairs(Players:GetPlayers()) do
+                if v ~= LocalPlayer then
+                    added(v)
+                end
+            end
+
+            Players.PlayerAdded:Connect(added)
+        end
+    )
+    task.spawn(
+        function()
+            while task.wait() do
+                pcall(
+                    function()
+                        if values.main.combat["Kill Aura"].Toggle then
+                            local Closest
+                            if values.main.combat["Custom Kill Aura Distance"].Toggle then
+                                Closest = GetClosest(values.main.combat["Custom Distance"].Slider)
+                            else
+                                Closest = GetClosest(values.main.combat["Kill Aura Distance"].Slider)
+                            end
+                            if Closest then
+                                if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
+                                else
+                                    if values.main.combat["Teleport Behind (for kill aura)"].Toggle then
+                                        if not values.main.combat["Custom Kill Aura Distance"].Toggle then
+                                            LocalPlayer.Character.HumanoidRootPart.CFrame =
+                                                Closest.Character.HumanoidRootPart.CFrame *
+                                                CFrame.new(0, 0, values.main.combat["Teleport Distance"].Slider)
+                                        end
+                                    end
+                                    local Weapon
+                                    for i, v in pairs(LocalPlayer.Character:GetChildren()) do
+                                        if v:IsA("Tool") then
+                                            if v:FindFirstChild("Hitboxes") ~= nil then
+                                                Weapon = v
+                                            end
+                                        end
+                                    end
+                                    if not Weapon then
+                                    else
+                                        if values.main.combat["Custom Kill Aura Distance"].Toggle then
+                                            for i, v in pairs(Weapon:GetDescendants()) do
+                                                if v:IsA "BasePart" then
+                                                    v.CFrame = Closest.Character.HumanoidRootPart.CFrame
+                                                    v.Velocity = Vector3.new(100000, 100000, 100000)
+                                                    v.CanCollide = false
+                                                    v.Massless = true
+                                                    --v.Anchored = true
+                                                    if v:FindFirstChild "BodyVelocity" == nil then
+                                                        local boopyve = Instance.new("BodyVelocity")
+                                                        boopyve.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                                                        boopyve.P = math.huge
+                                                        boopyve.Velocity = Vector3.new(100000, 100000, 100000)
+                                                        boopyve.Parent = v
+                                                    end
+                                                end
+                                                if v:IsA("Motor6D") then
+                                                    if v.Parent.Name == "Motor6Ds" then
+                                                        v:Destroy()
+                                                    end
+                                                end
+                                            end
+                                        end
+
+                                        local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
+                                        local rayDirection = Vector3.new(0, 0, 5)
+                                        local raycastParams = RaycastParams.new()
+                                        raycastParams.IgnoreWater = true
+                                        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+                                        local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+                                        local args1 = {
+                                            [1] = Weapon,
+                                            [2] = math.random(1, 4)
+                                        }
+
+                                        events.MeleeSwing:FireServer(unpack(args1))
+                                        task.wait(0.2)
+
+                                        local args = {
+                                            [1] = Weapon,
+                                            [2] = Closest.Character.Head,
+                                            [3] = Weapon.Hitboxes.Hitbox,
+                                            [4] = Closest.Character.Head.Position,
+                                            [5] = Closest.Character.Head.CFrame:ToObjectSpace(
+                                                CFrame.new(Closest.Character.Head.Position)
+                                            ),
+                                            [6] = raycastResult
+                                        }
+                                        if Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
+                                            events.MeleeDamage:FireServer(unpack(args))
+
+                                            events.MeleeDamage:FireServer(unpack(args))
+                                        else
+                                            return
+                                        end
+                                    end
+                                end
+                            elseif Closest == nil then
+                                for i, v in pairs(Weapon:GetDescendants()) do
+                                    if v:IsA "BasePart" then
+                                        v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                                        v.Velocity = Vector3.new(100000,100000,100000)
+                                        v.CanCollide = false
+                                    end
+                                end
+                            end
                         end
-                    end                    
-                end)
+                    end
+                )
             end
         end
-    if p.Character then balls(p.Character) end
-    p.CharacterAdded:Connect(balls)
-    end
-        
-    for i,v in pairs(Players:GetPlayers()) do
-        if v ~= LocalPlayer then
-            added(v)
-        end
-    end
-        
-    Players.PlayerAdded:Connect(added)
-    end)
-    --print('task.spawn #1')
-	task.spawn(function()
-        while task.wait() do
-           pcall(function()
-                if values.main.combat["Kill Aura"].Toggle then
-                    local Closest = GetClosest(values.main.combat["Kill Aura Distance"].Slider)
-                    if Closest then
-                        if Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 0 then
-                        else
-                            local Weapon
-                            for i,v in pairs(LocalPlayer.Character:GetChildren()) do
-                                if v:IsA("Tool") then
-                                    if v:FindFirstChild('Hitboxes') ~= nil then
-                                        Weapon = v
-                                    end
-                                end
-                            end
-                            if not Weapon then
+    )
+
+    task.spawn(
+        function()
+            while task.wait() do
+                pcall(
+                    function()
+                        if values.main.combat["Stomp Aura"].Toggle then
+                            local Closest
+                            if values.main.combat["Custom Stomp Aura Distance"].Toggle then
+                                Closest = GetClosest(values.main.combat["Custom Stomp Distance"].Slider)
                             else
-                                local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
-                                local rayDirection = Vector3.new(0, 0, 5)
-                                local raycastParams = RaycastParams.new();
-                                raycastParams.IgnoreWater = true;
-                                raycastParams.FilterType = Enum.RaycastFilterType.Blacklist;
-                                local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-                                local args1 = {
-                                    [1] = Weapon,
-                                    [2] = 1
-                                }
-
-                                events.MeleeSwing:FireServer(unpack(args1))
-                                task.wait(0.2)
-
-                                local args = {
-                                    [1] = Weapon,
-                                    [2] = Closest.Character.Head,
-                                    [3] = Weapon.Hitboxes.Hitbox,
-                                    [4] = Closest.Character.Head.Position,
-                                    [5] = Closest.Character.Head.CFrame:ToObjectSpace(CFrame.new(Closest.Character.Head.Position)),
-                                    [6] = raycastResult
-                                }
-
-                                events.MeleeDamage:FireServer(unpack(args))
-
-                                events.MeleeDamage:FireServer(unpack(args))
-                                
-                                if values.main.combat["Kill Aura Distance"].Slider > 14 then
-                                    for i,v in pairs(Weapon:GetDescendants()) do
-                                        if v:IsA'BasePart' then
-                                            v.CFrame = Closest.Character.HumanoidRootPart.CFrame
-                                            v.Velocity = Vector3.new(1000000,1000000,1000000)
-                                            v.CanCollide = false
-                                            v.Massless = true
-                                            --v.Anchored = true
-                                            if v:FindFirstChild'BodyVelocity' == nil and v:FindFirstChild("BodyGyro") == nil then
-                                                local bg = Instance.new("BodyGyro")
-                                                bg.CFrame = Closest.Character.HumanoidRootPart.CFrame
-                                                bg.MaxTorque = Vector3.new(math.huge,math.huge,math.huge)
-                                                bg.Parent = v
-
-                                                local boopyve = Instance.new("BodyVelocity") 
-                                                boopyve.MaxForce = Vector3.new(math.huge, 0, math.huge)
-                                                boopyve.P = math.huge
-                                                boopyve.Velocity = Vector3.new(1000000,1000000,1000000)
-                                                boopyve.Parent = v
+                                Closest = GetClosest(values.main.combat["Stomp Aura Distance"].Slider)
+                            end
+                            if Closest then
+                                if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
+                                else
+                                    local Weapon = LocalPlayer.Character.Stomp
+                                    if not Weapon then
+                                    else
+                                        if Closest.Character.Humanoid.Health <= 15 then
+                                            if values.main.combat["Custom Stomp Aura Distance"].Toggle then
+                                                for i, v in pairs(Weapon:GetDescendants()) do
+                                                    if v:IsA "BasePart" then
+                                                        v.CFrame = Closest.Character.HumanoidRootPart.CFrame
+                                                        v.Velocity = Vector3.new(100000,100000,100000)
+                                                        v.CanCollide = false
+                                                        v.Massless = true
+                                                        --v.Anchored = true
+                                                        if v:FindFirstChild "BodyVelocity" == nil then
+                                                            local boopyve = Instance.new("BodyVelocity")
+                                                            boopyve.MaxForce =
+                                                                Vector3.new(math.huge, math.huge, math.huge)
+                                                            boopyve.P = math.huge
+                                                            boopyve.Velocity = Vector3.new(100000,100000,100000)
+                                                            boopyve.Parent = v
+                                                        end
+                                                    end
+                                                    if v:IsA("Motor6D") then
+                                                        if v.Parent.Name == "Motor6Ds" then
+                                                            v:Destroy()
+                                                        end
+                                                    end
+                                                end
                                             end
+
+                                            local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
+                                            local rayDirection = Vector3.new(0, 0, 5)
+                                            local raycastParams = RaycastParams.new()
+                                            raycastParams.IgnoreWater = true
+                                            raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+                                            local raycastResult =
+                                                workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+                                            local args1 = {
+                                                [1] = Weapon,
+                                                [2] = math.random(1, 4)
+                                            }
+
+                                            events.MeleeSwing:FireServer(unpack(args1))
+                                            task.wait(0.2)
+
+                                            local args = {
+                                                [1] = Weapon,
+                                                [2] = Closest.Character.Head,
+                                                [3] = Weapon.Hitboxes.RightLegHitbox,
+                                                [4] = Closest.Character.Head.Position,
+                                                [5] = Closest.Character.Head.CFrame:ToObjectSpace(
+                                                    CFrame.new(Closest.Character.Head.Position)
+                                                ),
+                                                [6] = raycastResult
+                                            }
+
+                                            events.MeleeDamage:FireServer(unpack(args))
+
+                                            events.MeleeDamage:FireServer(unpack(args))
                                         end
-                                        if v:IsA('Motor6D') then
-                                            if v.Parent.Name == "Motor6Ds" then
-                                                v:Destroy()
-                                            end
+                                    end
+                                end
+                            elseif Closest == nil then
+                                for i, v in pairs(Weapon:GetDescendants()) do
+                                    if v:IsA "BasePart" then
+                                        v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                                        v.Velocity = Vector3.new(100000,100000,100000)
+                                        v.CanCollide = false
+                                    end
+                                end
+                            end
+                        end
+                    end
+                )
+            end
+        end
+    )
+
+    task.spawn(
+        function()
+            game:GetService("RunService").RenderStepped:Connect(
+                function()
+                    pcall(
+                        function()
+                            for i, v in pairs(LocalPlayer.Backpack:GetChildren()) do
+                                if v:IsA("Tool") then
+                                    if v:FindFirstChild("Hitboxes") ~= nil then
+                                        if values.main.Autos["Auto Equip"].Toggle then
+                                            v.Parent = LocalPlayer.Character
                                         end
                                     end
                                 end
                             end
                         end
-                    elseif Closest == nil then
-                        for i,v in pairs(Weapon:GetDescendants()) do
-                            if v:IsA'BasePart' then
-                                v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-                                v.Velocity = Vector3.new(1000000,1000000,1000000)
-                                v.CanCollide = false
-                            end
-                        end
-                    end
+                    )
                 end
-            end)
+            )
         end
-    end)
- -- print('task.spawn #2')  
-    task.spawn(function()
-        game:GetService("RunService").RenderStepped:Connect(function()
-            pcall(function()
-                for i,v in pairs(LocalPlayer.Backpack:GetChildren()) do
-                    if v:IsA("Tool") then
-                        if v:FindFirstChild('Hitboxes') ~= nil then
-                            if values.main.combat["Auto Equip"].Toggle then
-                                v.Parent = LocalPlayer.Character
-                            end
-                        end
-                    end
-                end
-            end)
-        end)
-    end)
+    )
     --print('task.spawn #3')
     task.spawn(function()
         while task.wait() do
@@ -7677,35 +7825,55 @@ local combat = main:Sector('combat', 'Left')
         end
     end)
     --print('task.spawn #5')
-    task.spawn(function()
-        while task.wait() do
-            pcall(function()
-                if values.main.combat["Spin"].Toggle then
-                    if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") == nil then
-                        local Spin = Instance.new("BodyAngularVelocity")
-						Spin.Name = "spin"
-						Spin.Parent = LocalPlayer.Character.HumanoidRootPart
-						Spin.MaxTorque = Vector3.new(0, math.huge, 0)
-                        for i, v in (LocalPlayer.Character:GetChildren()) do
-	                        if v:IsA("BasePart") then
-		                        v.Massless = true
-		                        v.Velocity = Vector3.new(0, 0, 0)
-	                        end
-                        end
-                    else
-                        if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") ~= nil then
-                            LocalPlayer.Character.HumanoidRootPart.spin.AngularVelocity = Vector3.new(0,values.main.combat["Spin Power"].Slider, 0)
+    task.spawn(
+        function()
+            while task.wait() do
+                pcall(
+                    function() -- originally from outliers old source but i removed it and wrote a new one it kinda looks like the same but its a different one
+                        if values.main.Spins["Spin"].Toggle then
+                            if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") == nil then
+                                local Spin = Instance.new("BodyAngularVelocity")
+                                Spin.Name = "spin"
+                                Spin.Parent = LocalPlayer.Character.HumanoidRootPart
+                                Spin.MaxTorque = Vector3.new(0, math.huge, 0)
+                                for i, v in (LocalPlayer.Character:GetChildren()) do
+                                    if v:IsA("BasePart") then
+                                        v.Massless = true
+                                        v.Velocity = Vector3.new(0, 0, 0)
+                                    end
+                                end
+                            else
+                                if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") ~= nil then
+                                    LocalPlayer.Character.HumanoidRootPart.spin.AngularVelocity =
+                                        Vector3.new(0, values.main.Spins["Spin Power"].Slider, 0)
+                                end
+                            end
+                        else
+                            if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") ~= nil then
+                                LocalPlayer.Character.HumanoidRootPart.spin:Destroy()
+                            end
                         end
                     end
-                else
-                    if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") ~= nil then
-                        LocalPlayer.Character.HumanoidRootPart.spin:Destroy()
-                    end
-                end
-            end)
+                )
+            end
         end
-    end)
---print('task.spawn #6')
+    )
+
+    task.spawn(
+        function()
+            while task.wait() do
+                pcall(
+                    function()
+                        if values.main.Misc["BHop"].Toggle then
+                            if LocalPlayer.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
+                                LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                            end
+                        end
+                    end
+                )
+            end
+        end
+    )--print('task.spawn #6')
 task.spawn(function()
 	getgenv().silent = main:Sector("Ranged sector", 'Right')
 	silent:Element('Toggle', 'silent aim')
