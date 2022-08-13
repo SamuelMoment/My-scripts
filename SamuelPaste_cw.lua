@@ -8936,16 +8936,6 @@ end
     end)
     
     task.spawn(function()
-        game:GetService'RunService'.RenderStepped:Connect(function()
-            if values.misc.misc.player["Walk On Air (Q,E)"].Toggle then
-                if not values.misc.misc.player["Walk Speed"].Toggle then
-                    events.UpdateIsParkouring:FireServer(true)
-                end            
-            end
-        end)
-    end)
-    
-    task.spawn(function()
         game:GetService("RunService").RenderStepped:Connect(function()
             if values.misc.misc.player["Jesus"].Toggle then
                 if workspace.Map:FindFirstChildOfClass"Model" ~= nil then
@@ -8972,46 +8962,72 @@ end
         end
     end)
     
-        local FloatValue = -3.1
-	    qUp = Mouse.KeyUp:Connect(function(KEY)
-		    if KEY == 'q' then
-			    FloatValue = FloatValue + 0.5
-		    end
-	    end)
-	    eUp = Mouse.KeyUp:Connect(function(KEY)
-		    if KEY == 'e' then
-			    FloatValue = FloatValue - 0.5
-		    end
-	    end)
-	    qDown = Mouse.KeyDown:Connect(function(KEY)
-		    if KEY == 'q' then
-			    FloatValue = FloatValue - 0.5
-	    	end
-	    end)
-	    eDown = Mouse.KeyDown:Connect(function(KEY)
-	        if KEY == 'e' then
-			    FloatValue = FloatValue + 0.5
-		    end
-	    end)
-	   local runService = game:GetService'RunService'.RenderStepped:Connect(function()
-	   if (values.misc.misc.player["Walk On Air (Q,E)"].Toggle and not values.misc.misc.player["Walk Speed"].Toggle) then
-	       if LocalPlayer.Character:FindFirstChild("Float") == nil then
-               local Float = Instance.new('Part')
-	           Float.Name = "Float"
-	           Float.Parent = LocalPlayer.Character
-	           Float.Transparency = 1
-	           Float.Size = Vector3.new(2,0.2,1.5)
-	           Float.Anchored = true
-	       else
-	           LocalPlayer.Character:FindFirstChild("Float").CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,FloatValue,0)
-	       end
-	    elseif not values.misc.misc.player["Walk On Air (Q,E)"].Toggle and LocalPlayer.Character:FindFirstChild("Float") ~= nil then
-            LocalPlayer.Character:FindFirstChild("Float"):Destroy()
-            events.UpdateIsParkouring:FireServer(false)
-            FloatValue = -3.1
+    local FloatValue = -3.1
+    qUp =
+        Mouse.KeyUp:Connect(
+        function(KEY)
+            if KEY == "q" then
+                FloatValue = FloatValue + 0.5
+            end
         end
-	end)
-    
+    )
+    eUp =
+        Mouse.KeyUp:Connect(
+        function(KEY)
+            if KEY == "e" then
+                FloatValue = FloatValue - 0.5
+            end
+        end
+    )
+    qDown =
+        Mouse.KeyDown:Connect(
+        function(KEY)
+            if KEY == "q" then
+                FloatValue = FloatValue - 0.5
+            end
+        end
+    )
+    eDown =
+        Mouse.KeyDown:Connect(
+        function(KEY)
+            if KEY == "e" then
+                FloatValue = FloatValue + 0.5
+            end
+        end
+    )
+    local runService =
+        game:GetService "RunService".RenderStepped:Connect(
+        function()
+            if
+                (values.misc.misc.player["Walk On Air (Q,E)"].Toggle and
+                    not values.misc.misc.player["Walk Speed"].Toggle)
+             then
+                if LocalPlayer.Character:FindFirstChild("Float") == nil then
+                    local Float = Instance.new("Part")
+                    Float.Name = "Float"
+                    Float.Parent = LocalPlayer.Character
+                    Float.Transparency = 1
+                    Float.Size = Vector3.new(2, 0.2, 1.5)
+                    Float.Anchored = true
+                else
+                    LocalPlayer.Character:FindFirstChild("Float").CFrame =
+                        LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, FloatValue, 0)
+                end
+            elseif
+                not values.misc.misc.player["Walk On Air (Q,E)"].Toggle and
+                    LocalPlayer.Character:FindFirstChild("Float") ~= nil
+             then
+                LocalPlayer.Character:FindFirstChild("Float"):Destroy()
+                events.UpdateIsParkouring:FireServer(false)
+                FloatValue = -3.1
+            end
+            -- epic kill feed spammer
+            if values.misc.misc2.misc["Kill Feed Spam"].Toggle then
+                events.StartFastRespawn:FireServer()
+                functions.CompleteFastRespawn:FireServer()
+            end
+        end
+    )
     local newindex
 
 
