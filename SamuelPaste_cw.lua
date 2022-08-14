@@ -5756,8 +5756,8 @@ CopyColorsType = 'RGB'
 								
 								elseif type == "TextBox" then 
 									Section.Size = Section.Size + C.UDIM2(0,0,0,30) 
-									Element.value = {Text = data.default and data.default.text or ""} 
-
+									Element.value = {Text = data.default and data.default.text or "",NoLimit = data.default and data.default.NoLimit or false} 
+									NoLimit = data.NoLimit or false
 									local Box = C.INST("Frame") 
 									local TextBox = C.INST("TextBox") 
 
@@ -5785,7 +5785,7 @@ CopyColorsType = 'RGB'
 									values[tabname][sectorname][text] = Element.value 
 
 									TextBox:GetPropertyChangedSignal("Text"):Connect(function() 
-										if C.LEN(TextBox.Text) > 20 then 
+										if C.LEN(TextBox.Text) > 20 and (NoLimit == false) then 
 											TextBox.Text = C.SUB(TextBox.Text, 1, 20) 
 										end 
 										Element.value.Text = TextBox.Text 
@@ -6381,7 +6381,7 @@ end--]]
 									end) 
 								end) 
 							elseif type == "Button2" then 
-
+								errorCode = (data.errorCode or 'Error!')
 								Section.Size = Section.Size + C.UDIM2(0,0,0,24) 
 								local Button = C.INST("Frame") 
 								local Button_2 = C.INST("TextButton") 
@@ -6440,7 +6440,7 @@ end--]]
 												wait(1)
 												TextLabel.Text = text
 											else 
-												TextLabel.Text = 'Error!'
+												TextLabel.Text = errorCode
 												wait(1)
 												TextLabel.Text = text
 												print(lol)
@@ -6455,6 +6455,12 @@ end--]]
 									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 								end)
 elseif type == "Button" then 
+								errorCode = data.errorCode or 'Error!'
+								if tostring(data.errorCode) then
+								else
+								errorCode = 'Error!'
+								end
+								
 								Section.Size = Section.Size + C.UDIM2(0,0,0,24) 
 								local Button = C.INST("Frame") 
 								local Button_2 = C.INST("TextButton") 
@@ -6504,7 +6510,7 @@ elseif type == "Button" then
 												wait(1)
 												TextLabel.Text = text
 											else 
-												TextLabel.Text = 'Error!'
+												TextLabel.Text = errorCode
 												wait(1)
 												TextLabel.Text = text
 												print(lol)
@@ -7339,6 +7345,7 @@ local gui = library:New("SamuelPaste")
 local main = gui:Tab('main')
 local misc = gui:Tab('misc')
 local visuals = gui:Tab('visuals')
+local other = gui:Tab("other")
 print('sex2')
 fonts = {}
 for i,v in pairs(Enum.Font:GetEnumItems()) do
@@ -9338,7 +9345,78 @@ end
 
 
 
+do
+	local radio = other:Sector('Radio','Left')
+	radio:Element('TextBox', 'music',{placeholder = 'ID or path',NoLimit = true})
+	radio:Element('Dropdown','type',{options = {'Roblox ID','workspace mp3'}})
+	local function ValidateSong(songID) 
+		if not songID or not tonumber(songID) then return false end
 
+		local success, result = pcall(function()
+			return game.MarketplaceService:GetProductInfo(songID)
+		end)
+
+		if success and result and result.AssetTypeId == 3 then
+			return true
+		else
+			return false
+		end
+	end
+	radio:Element('Slider','Volume', {min = 0,max = 10}, function(tbl)
+		if getgenv().RadioSound then
+			RadioSound.Volume = tbl.Slider/10
+		end
+	end)
+	radio:Element('Button2','Play (resets audio)',{}, function()
+		
+		if values.other.Radio.type.Dropdown == 'Roblox ID' then
+			if ValidateSong(values.other.Radio.music.Text) == true then
+				if getgenv().RadioSound ~= nil then
+					RadioSound:Stop()
+					getgenv().RadioSound:Destroy()
+					getgenv().RadioSound = nil
+				end
+				getgenv().RadioSound = Instance.new('Sound',workspace)
+				RadioSound.Volume = values.other.Radio.Volume.Slider/10
+				RadioSound.SoundId = "rbxassetid://"..values.other.Radio.music.Text
+				RadioSound:Play()
+			else return error('Wrong id or path!') end
+		else
+			getAsset = getsynasset or getcustomasset
+			if not isfile(values.other.Radio.music.Text) then
+				return error('Wrong id or path!')
+			end
+			if getgenv().RadioSound then
+				getgenv().RadioSound:Destroy()
+				getgenv().RadioSound = nil
+			end
+			getgenv().RadioSound = Instance.new('Sound',workspace)
+			RadioSound.Volume = values.other.Radio.Volume.Slider/10
+			RadioSound.SoundId = getAsset(values.other.Radio.music.Text)
+			RadioSound:Play()			
+		end
+	end)
+	radio:Element('Button2','Pause',nil,function()
+		if RadioSound then
+			RadioSound:Pause()
+		end
+	end)
+	radio:Element('Button2','Resume',nil,function()
+		if RadioSound then
+			RadioSound:Resume()
+		end
+	end)	
+	radio:Element('Button2','Stop (reset audio)',nil,function()
+		if RadioSound then
+			RadioSound:Stop()
+		end
+	end)	
+	radio:Element('Toggle','Loop',nil,function(tbl)
+		if RadioSound then
+			RadioSound.Looped = tbl.Toggle
+		end
+	end)		
+end
 
 
 
