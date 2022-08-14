@@ -8989,6 +8989,43 @@ end
     miscsector:Element("Toggle", "Kill Feed Spam")
     miscsector:Element("Toggle", "Free Emotes") 
 	miscsector:Element("Toggle", "Hide Name")
+	miscsector:Element('Button', 'Horizontal body (permanent)',{}, function()
+		task.spawn(function()
+			local events = game:GetService("ReplicatedStorage").Communication.Events
+			local functions = game:GetService("ReplicatedStorage").Communication.Functions
+			for i,v in pairs(getgc(true)) do
+				if typeof(v) == "table" and rawget(v,"Remote") then
+					v.Remote.Name = v.Name
+				end
+			end
+			local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(self, ...)
+				local args = {...}
+				local method = getnamecallmethod();
+			  
+				if (method == "Kick" or method == "kick") and self == game.Players.LocalPlayer then
+					return;
+				end
+			  
+				return oldnamecall(self, unpack(args))
+			end)
+			while wait() do
+			for i = 1,15 do
+			local g = CFrame.new(Vector3.new(math.huge*9e9,math.huge*9e9,math.huge*9e9),Vector3.new(math.huge*9e9,math.huge*9e9,math.huge*9e9),Vector3.new(math.huge*9e9,math.huge*9e9,math.huge*9e9))
+			local args = {
+				[1] = {
+					-- the g * g is not needed its just for testing
+					[1] = g * g * g * g * g * g * g * g * g * g * g * g,
+					[2] = g * g * g * g * g * g * g * g * g * g * g * g,
+					[3] = g * g * g * g * g * g * g * g * g * g * g * g,
+					[4] = g * g * g * g * g * g * g * g * g * g * g * g
+				}
+			}
+
+			game:GetService("ReplicatedStorage").Communication.Events.ReplicateBodyRotation:FireServer(unpack(args))
+			end
+			end
+		end)
+	end)
     player:Element("Toggle", "Walk Speed")
     player:Element("Slider", "Speed", {min = 0, max = 150, default = 75})
     player:Element("Toggle", "Jump Power")
