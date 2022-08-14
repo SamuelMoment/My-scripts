@@ -7226,6 +7226,8 @@ end
          end
      end)
      FLY()
+	 local somethingidk = C.INST('BoolValue',LocalPlayer.Character)
+	 somethingidk.Name = 'isFlyingCheck'
  end
  
  invisfling = function()
@@ -7971,14 +7973,13 @@ task.spawn(function()
 				if not values.main['Ranged sector']['silent aim'].Toggle then
 					return old(p3,p4,p5,p6)
 				end
-				if shot then
-					local closest = getClosestToMouse() or nil
-					-- looked into goofy ah script made by cheese and then just cnp'd the prediction (doesnt help tbh)
-					if closest ~= nil and closest.Character then
-					local Prediction = closest.Character.Head.CFrame + (closest.Character.Head.Velocity * 0.19 + Vector3.new(0, .1, 0))
-					return (CFrame.lookAt(Tool.Contents.Handle.FirePoint.WorldCFrame.Position, Prediction.Position)).LookVector * 30;
+					if shot then
+						if not predicted then
+							return old(p3,p4,p5,p6)
+						else
+							return predicted
+						end
 					end
-				end
 				return old(p3,p4,p5,p6)
 			end
 		end
@@ -7998,6 +7999,96 @@ task.spawn(function()
 	end
 	--local bruh = Instance.new("SelectionBox",workspace)
 	--bruh.Color3 = Color3.fromRGB(163, 61, 54)
+-- dev forum
+local M = game.Players.LocalPlayer:GetMouse()
+local Cam = game.Workspace.CurrentCamera
+function WorldToScreen(Pos)
+    local point = Cam.CoordinateFrame:pointToObjectSpace(Pos)
+    local aspectRatio = M.ViewSizeX / M.ViewSizeY
+    local hfactor = math.tan(math.rad(Cam.FieldOfView) / 2)
+    local wfactor = aspectRatio*hfactor
+
+    local x = (point.x/point.z) / -wfactor
+    local y = (point.y/point.z) /  hfactor
+
+    return Vector2.new(M.ViewSizeX * (0.5 + 0.5 * x), M.ViewSizeY * (0.5 + 0.5 * y))
+end
+
+local Prediction
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local UIStroke = Instance.new("UIStroke")
+local Aiming = Instance.new("TextLabel")
+local Position = Instance.new("TextLabel")
+local PredictionV = Instance.new("TextLabel")
+
+--Properties:
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = 'Aiming real real'
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
+Frame.Size = UDim2.new(0, 10, 0, 10)
+
+
+UICorner.CornerRadius = UDim.new(10, 10)
+UICorner.Parent = Frame
+
+Aiming.Name = "Aiming"
+Aiming.Parent = Frame
+Aiming.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Aiming.BackgroundTransparency = 1.000
+Aiming.BorderColor3 = Color3.fromRGB(27, 42, 53)
+Aiming.Position = UDim2.new(-9.5, 0, 1.99999988, 0)
+Aiming.Size = UDim2.new(0, 200, 0, 11)
+Aiming.Font = Enum.Font.SpecialElite
+Aiming.Text = "Aiming At: None"
+Aiming.TextColor3 = Color3.fromRGB(255, 255, 255)
+Aiming.TextSize = 14.000
+
+Position.Name = "Position"
+Position.Parent = Frame
+Position.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Position.BackgroundTransparency = 1.000
+Position.BorderColor3 = Color3.fromRGB(27, 42, 53)
+Position.Position = UDim2.new(-9.5, 0, 3.99999988, 0)
+Position.Size = UDim2.new(0, 200, 0, 11)
+Position.Font = Enum.Font.SpecialElite
+Position.Text = "Position: None"
+Position.TextColor3 = Color3.fromRGB(255, 255, 255)
+Position.TextSize = 14.000
+
+PredictionV.Name = "PredictionV"
+PredictionV.Parent = Frame
+PredictionV.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+PredictionV.BackgroundTransparency = 1.000
+PredictionV.BorderColor3 = Color3.fromRGB(27, 42, 53)
+PredictionV.Position = UDim2.new(-9.5, 0, 5.99999988, 0)
+PredictionV.Size = UDim2.new(0, 200, 0, 11)
+PredictionV.Font = Enum.Font.SpecialElite
+PredictionV.Text = "Prediction Value: 0.01"
+PredictionV.TextColor3 = Color3.fromRGB(255, 255, 255)
+PredictionV.TextSize = 14.000
+
+UIStroke.Thickness = 2
+UIStroke.Parent = Frame
+	task.spawn(function()
+		RunService.RenderStepped:Connect(function()
+			if values.main['Ranged sector']['silent aim'].Toggle and values.main['Ranged sector']['Highlight target'].Toggle then
+				if game.CoreGui:FindFirstChild("Aiming real real") then
+					game.CoreGui:FindFirstChild('Aiming real real').Enabled = true
+				end
+			else
+				if game.CoreGui:FindFirstChild("Aiming real real") then
+					game.CoreGui:FindFirstChild('Aiming real real').Enabled = false
+				end			
+			end
+		end)
+	end)
 	while wait() do
 		pcall(function()
 			local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
@@ -8008,8 +8099,18 @@ task.spawn(function()
 				return
 			end			
 			local closest = getClosestToMouse() or nil
-			if closest  ~= nil and closest.Character and game.CoreGui:FindFirstChild('SilentAimTarget') then
-				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = closest.Character
+			if closest  ~= nil then
+				if closest.Character and game.CoreGui:FindFirstChild('SilentAimTarget') then
+					game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = closest.Character
+					--Frame.Transparency = 0
+					Aiming.Text = "Aiming At: "..closest.Name
+					PredictionV.Text = "Prediction Value: "..values.main['Ranged sector']['Prediction val'].Slider/100
+					Prediction = closest.Character.Head.CFrame + (closest.Character.Head.Velocity * values.main['Ranged sector']['Prediction val'].Slider/100 + Vector3.new(0, .1, 0))
+					predicted = (CFrame.lookAt(Tool.Contents.Handle.FirePoint.WorldCFrame.Position, Prediction.Position)).LookVector * 30;
+					Position.Text = "Position: "..Prediction.Position.X..", "..Prediction.Y..", "..Prediction.Y
+					local Vec = WorldToScreen(Prediction.Position)
+					Frame.Position = UDim2.new(0,Vec.X,0,Vec.Y)				
+				end
 			end
 			if ARROW then
 				if closest then
@@ -8031,12 +8132,15 @@ end)
 		task.spawn(function()
 			while game.RunService.RenderStepped:Wait() do 
 				if values.main['Ranged sector'].Wallbang.Toggle then
-					game.CollectionService:AddTag(game:GetService("Workspace").Map,'RANGED_CASTER_IGNORE_LIST')		
+					game.CollectionService:AddTag(game:GetService("Workspace").Map,'RANGED_CASTER_IGNORE_LIST')	
+					game.CollectionService:AddTag(game:GetService("Workspace").Terrain,'RANGED_CASTER_IGNORE_LIST')						
 				else
-					game.CollectionService:RemoveTag(game:GetService("Workspace").Map,'RANGED_CASTER_IGNORE_LIST')		
+					game.CollectionService:AddTag(game:GetService("Workspace").Map,'RANGED_CASTER_IGNORE_LIST')	
+					game.CollectionService:AddTag(game:GetService("Workspace").Terrain,'RANGED_CASTER_IGNORE_LIST')		
 				end		
 			end
 		end)
+		silent:Element('Slider', 'Prediction val', {min = 1,max = 100})
 		silent:Element('Toggle', 'No recoil')
 		silent:Element('Toggle', 'No spread')
 		silent:Element('Toggle', 'Inf range')
@@ -8818,20 +8922,46 @@ end
     player:Element("Toggle", "Auto Airdrop-Claimer")
      miscsector:Element("Toggle","Velocity Fly",nil,function(state)
          if state.Toggle then
-             sFLY(false,false,false)
+             NOFLY()
+			 sFLY(false,false,false)
          else
              NOFLY()
          end
      end)
     miscsector:Element("Toggle", "Fly",nil,function(state)
         if values.misc.misc2.misc["Fly"].Toggle then
-            sFLY()
+            NOFLY()
+			sFLY(false, true, true)
             LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)
         else
             NOFLY()
-            LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+            --LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
         end
     end)
+	isExecuting = false
+	RunService.RenderStepped:Connect(function()
+		if game.Players.LocalPlayer.Character then
+			if isExecuting == false and not LocalPlayer.Character:FindFirstChild('isFlyingCheck') and LocalPlayer.Character.Humanoid:FindFirstChild('RagdollRemoteEvent') then
+				isExecuting = true
+				if values.misc.misc2.misc["Fly"].Toggle then
+					NOFLY()
+					sFLY(false, true, true)
+					LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)
+				else
+					NOFLY()
+					LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+				end		
+				if values.misc.misc2.misc["Velocity Fly"].Toggle then
+					 NOFLY()
+					 sFLY(false,false,false)
+				else
+					NOFLY()
+				end
+				task.wait(0.2)
+				isExecuting = false
+			end
+		end
+	end)
     miscsector:Element("Toggle", "Noclip",nil,function(state)
         if values.misc.misc2.misc["Noclip"].Toggle then
             Clip = false
