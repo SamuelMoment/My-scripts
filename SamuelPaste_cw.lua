@@ -7110,8 +7110,42 @@ end
 FLYING = false
 iyflyspeed = 1
 vehicleflyspeed = 1
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-local function GetClosest(Distance)
+local function GetClosest(Distance,arg2)
+    local Character = LocalPlayer.Character
+    local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPart")
+    if not (Character or HumanoidRootPart) then return end
+
+    local TargetDistance = Distance
+    TargetHealth = 101
+    local Target
+
+    for i,v in ipairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 then
+            local TargetHRP = v.Character.HumanoidRootPart
+            local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
+            if arg2 == 'Health' then
+               if mag < TargetDistance and v.Character.Humanoid.Health < TargetHealth then
+                   TargetHealth = v.Character.Humanoid.Health
+                   Target = v
+                end
+            else
+                if mag < TargetDistance then
+                    TargetDistance = mag
+                    Target = v
+                end
+            end
+			if values.main.combat['Target player'].Toggle and v.Name == values.main.combat['Target'].Dropdown then
+				return v
+			end
+        end
+    end
+
+    return Target
+end
+--[[local function GetClosest(Distance)
     local Character = LocalPlayer.Character
     local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPart")
     if not (Character or HumanoidRootPart) then return end
@@ -7132,7 +7166,7 @@ local function GetClosest(Distance)
 
     return Target
 end
-
+--]]
  function sFLY(vfly,ragdoll,platform)
      if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
      local T = LocalPlayer.Character.HumanoidRootPart
@@ -7492,15 +7526,28 @@ local combat = main:Sector('combat', 'Left')
     Autos:Element("Toggle", "Auto Revive")
     --Autos:Element("Toggle", "Fast Respawn")
     combat:Element("Toggle", "Kill Aura")
-    combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 12, default = 12})
+    combat:Element("Dropdown", "Priority",{options = {'Distance','Health'}})    
+	combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 12, default = 12})
     combat:Element("Toggle", "Custom Kill Aura Distance")
     combat:Element("Slider", "Custom Distance", {min = 0, max = 1000, default = 600})
     combat:Element("Toggle", "Teleport Behind (for kill aura)")
     combat:Element("Slider", "Teleport Distance", {min = 0, max = 5, default = 5})
     combat:Element("Toggle", "Stomp Aura")
+	combat:Element("Dropdown", "Stomp aura priority",{options = {'Distance','Health'}})
     combat:Element("Slider", "Stomp Aura Distance", {min = 0, max = 25, default = 25})
     combat:Element("Toggle", "Custom Stomp Aura Distance")
     combat:Element("Slider", "Custom Stomp Distance", {min = 0, max = 1000, default = 600})
+	randomtableidk = {}
+	for _,v in pairs(game.Players:GetPlayers()) do 
+		C.INSERT(randomtableidk, v.Name)
+	end
+
+	if #randomtableidk == 0 then
+		C.INSERT(randomtableidk, 'none')
+	end
+	combat:Element('lmao','Target',{options = randomtableidk})
+	combat:Element('Toggle','Target player')
+	--values.main.combat['Target player'].Toggle
     Spins:Element("Toggle", "Spin")
     Spins:Element("Slider", "Spin Power", {min = 0, max = 50, default = 50})
     Autos:Element("Toggle", "Auto Parry")
@@ -7584,9 +7631,9 @@ local combat = main:Sector('combat', 'Left')
                         if values.main.combat["Kill Aura"].Toggle then
                             local Closest
                             if values.main.combat["Custom Kill Aura Distance"].Toggle then
-                                Closest = GetClosest(values.main.combat["Custom Distance"].Slider)
+                                Closest = GetClosest(values.main.combat["Custom Distance"].Slider,values.main.combat["Priority"].Dropdown)
                             else
-                                Closest = GetClosest(values.main.combat["Kill Aura Distance"].Slider)
+                                Closest = GetClosest(values.main.combat["Kill Aura Distance"].Slider,values.main.combat["Priority"].Dropdown)
                             end
                             if Closest then
                                 if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
@@ -7689,9 +7736,9 @@ local combat = main:Sector('combat', 'Left')
                         if values.main.combat["Stomp Aura"].Toggle then
                             local Closest
                             if values.main.combat["Custom Stomp Aura Distance"].Toggle then
-                                Closest = GetClosest(values.main.combat["Custom Stomp Distance"].Slider)
+                                Closest = GetClosest(values.main.combat["Custom Stomp Distance"].Slider,values.main.combat["Stomp aura priority"].Dropdown)
                             else
-                                Closest = GetClosest(values.main.combat["Stomp Aura Distance"].Slider)
+                                Closest = GetClosest(values.main.combat["Stomp Aura Distance"].Slider,values.main.combat["Stomp aura priority"].Dropdown)
                             end
                             if Closest then
                                 if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
@@ -7734,7 +7781,7 @@ local combat = main:Sector('combat', 'Left')
                                                 workspace:Raycast(rayOrigin, rayDirection, raycastParams)
                                             local args1 = {
                                                 [1] = Weapon,
-                                                [2] = math.random(1, 4)
+                                                [2] = 1
                                             }
 
                                             events.MeleeSwing:FireServer(unpack(args1))
