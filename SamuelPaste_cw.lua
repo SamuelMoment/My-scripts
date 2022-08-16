@@ -7387,14 +7387,21 @@ for i,v in pairs(Enum.Font:GetEnumItems()) do
 		table.insert(fonts,v.Name)
 	end
 end
---[[do
+do
+for a,b in next, getgc(true) do
+    if typeof(b) == 'table' and rawget(b, 'removeRichTextTags') then
+        replaceclosure(rawget(b, 'removeRichTextTags'), function(a)
+            return a
+        end)
+    end
+end
 local chat = main:Sector('chat', 'Right')
-chat:Element('ToggleColor','custom tag')
-chat:Element('ToggleColor','custom nickname')
+--chat:Element('ToggleColor','custom tag')
+--chat:Element('ToggleColor','custom nickname')
 chat:Element('ToggleColor','custom text color')
 
-chat:Element('TextBox', 'tag',{placeholder = "custom tag"})
-chat:Element('TextBox', 'nickname',{placeholder = "custom nickname"})
+--chat:Element('TextBox', 'tag',{placeholder = "custom tag"})
+--chat:Element('TextBox', 'nickname',{placeholder = "custom nickname"})
 
 chat:Element('Toggle','custom message size')
 chat:Element('Slider','size', {min = 1, max = 100})
@@ -7437,8 +7444,8 @@ local edited = false
 --local oldIncomingMessage = game:GetService("TextChatService").OnIncomingMessage
 			game:GetService("TextChatService").OnIncomingMessage = function(L)
 				if L.TextSource.UserId == game.Players.LocalPlayer.UserId then
-					if edited == false and (values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle or values.main.chat['custom tag'].Toggle or values.main.chat['custom nickname'].Toggle) then
-						oldPrefixText = L.PrefixText
+					if edited == false and (values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle) then --or values.main.chat['custom tag'].Toggle or values.main.chat['custom nickname'].Toggle) then
+						--[[oldPrefixText = L.PrefixText
 						customTag = ""
 						if values.main.chat['custom tag'].Toggle then
 							customTagFont = 1
@@ -7481,7 +7488,7 @@ local edited = false
 							--print(L.PrefixText)			
 						else
 							L.PrefixText = customTag..L.PrefixText
-						end
+						end--]]
 						text = L.Text
 						if values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle then
 							customText = 0
@@ -7511,7 +7518,7 @@ local edited = false
 				end
 			end
 end
---]]
+
 function parry()
     game:GetService("ReplicatedStorage").Communication.Events.Parry:FireServer()
 end
@@ -8141,15 +8148,43 @@ UIStroke.Parent = Frame
 					game.CoreGui:FindFirstChild('Aiming real real').Enabled = false
 				end			
 			end
+			PredictionV.Text = "Prediction Value: "..values.main['Ranged sector']['Prediction val'].Slider/100
+			--[[if not values.main['Ranged sector']['silent aim'].Toggle then
+				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
+			elseif getClosestToMouse() == nil then
+				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
+			else
+				pcall(function()
+					local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+					if Tool:FindFirstChild("ClientAmmo") == nil then
+						Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
+					end				
+				end)
+			end--]]
 		end)
 	end)
 	while wait() do
 		pcall(function()
+			if not LocalPlayer.Character:FindFirstChildOfClass('Tool') then
+				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
+				Aiming.Text = "Aiming At: None"
+				Position.Text = "Position: None"
+				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
+			return 
+		end
 			local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
 			if Tool:FindFirstChild("ClientAmmo") == nil then
+				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
+				Aiming.Text = "Aiming At: None"
+				Position.Text = "Position: None"
+				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
 				return
 			end
 			if not values.main['Ranged sector']['silent aim'].Toggle then
+				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
+				Aiming.Text = "Aiming At: None"
+				Position.Text = "Position: None"
+				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
 				return
 			end			
 			local closest = getClosestToMouse() or nil
@@ -8165,6 +8200,11 @@ UIStroke.Parent = Frame
 					local Vec = WorldToScreen(Prediction.Position)
 					Frame.Position = UDim2.new(0,Vec.X,0,Vec.Y)				
 				end
+			else
+				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
+				Aiming.Text = "Aiming At: None"
+				Position.Text = "Position: None"
+				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
 			end
 			if ARROW then
 				if closest then
@@ -8194,14 +8234,8 @@ end)
 				end		
 			end
 		end)
-		silent:Element('Slider', 'Prediction val', {min = 1,max = 100})
-		silent:Element('Toggle', 'No recoil')
-		silent:Element('Toggle', 'No spread')
-		silent:Element('Toggle', 'Inf range')
-		silent:Element('Toggle', 'Instant charge')
-		silent:Element('Toggle', 'No reload cancel')
-		silent:Element('Toggle', 'Always headshot')
-		silent:Element('Button', 'Apply ranged mods',{}, function()
+		rangedmods = Signal.new('rangedmods')
+		rangedmods:Connect(function()
 			for i,v in pairs(getgc(true)) do
 				if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'displayName') then
 					if values.main['Ranged sector']['No recoil'].Toggle then
@@ -8258,8 +8292,27 @@ end)
 					end
 				end
 			end
-			--setclipboard(string)
 		end)
+		silent:Element('Slider', 'Prediction val', {min = 1,max = 100})
+		silent:Element('Toggle', 'No recoil',{},function()
+			rangedmods:Fire()
+		end)
+		silent:Element('Toggle', 'No spread',{},function()
+			rangedmods:Fire()
+		end)
+		silent:Element('Toggle', 'Inf range',{},function()
+			rangedmods:Fire()
+		end)
+		silent:Element('Toggle', 'Instant charge',{},function()
+			rangedmods:Fire()
+		end)
+		silent:Element('Toggle', 'No reload cancel',{},function()
+			rangedmods:Fire()
+		end)
+		silent:Element('Toggle', 'Always headshot',{},function()
+			rangedmods:Fire()
+		end)
+
 		game.CollectionService:AddTag(game:GetService("Workspace").Map,'CAMERA_COLLISION_IGNORE_LIST')
 
 		--[[task.spawn(function()
