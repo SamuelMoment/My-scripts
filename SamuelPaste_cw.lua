@@ -48,7 +48,7 @@ local C = {
 ['FLOOR'] = math.floor, 
 ['ACOS'] = math.acos, 
 
-['RANDOM'] = math.random, 
+['math.random'] = math.random, 
 ['ATAN2'] = math.atan2, 
 
 ['HUGE'] = math.huge, 
@@ -111,7 +111,7 @@ end
 getclipboard = function()
 repeat wait() until iswindowactive()
    local ScreenGui = C.INST("ScreenGui")
-   ScreenGui.Name = tostring(C.RANDOM(10000,999999))
+   ScreenGui.Name = tostring(math.random(10000,999999))
    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
    ScreenGui.Parent = game.CoreGui
    
@@ -173,7 +173,7 @@ end
 function findtextrandom(text)
     if text:find(' @r ') then 
         local b = text:split(' @r ')
-        return b[RANDOM(#b)]
+        return b[math.random(#b)]
     else 
         return text
     end
@@ -6455,11 +6455,8 @@ end--]]
 									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 								end)
 elseif type == "Button" then 
-								errorCode = data.errorCode or 'Error!'
-								if tostring(data.errorCode) then
-								else
 								errorCode = 'Error!'
-								end
+
 								
 								Section.Size = Section.Size + C.UDIM2(0,0,0,24) 
 								local Button = C.INST("Frame") 
@@ -6997,7 +6994,7 @@ for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"kick") then
 for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999 end end 
 for i,v in pairs(getgc(true)) do
    if typeof(v) == 'table' and rawget(v, 'getIsBodyMoverCreatedByGame') then
-		v.getIsBodyMoverCreatedByGame = function(gg)
+		v.getIsBodyMoverCreatedByGame = function(...)
 		    return true
 		end
    end
@@ -7632,17 +7629,17 @@ local combat = main:Sector('combat', 'Left')
     )
     task.spawn(
         function()
-            while task.wait() do
-                pcall(
+            game.RunService.RenderStepped:Connect(function()
+               pcall(
                     function()
                         if values.main.combat["Kill Aura"].Toggle then
                             local Closest
                             if values.main.combat["Custom Kill Aura Distance"].Toggle then
-                                Closest = GetClosest(values.main.combat["Custom Distance"].Slider,values.main.combat["Priority"].Dropdown)
+                                Closest = GetClosest(values.main.combat["Custom Distance"].Slider,values.main.combat["Priority"].Dropdown) or nil
                             else
-                                Closest = GetClosest(values.main.combat["Kill Aura Distance"].Slider,values.main.combat["Priority"].Dropdown)
+                                Closest = GetClosest(values.main.combat["Kill Aura Distance"].Slider,values.main.combat["Priority"].Dropdown) or nil
                             end
-                            if Closest then
+                            if Closest ~= nil and Closest.Character and Closest.Character:FindFirstChild('HumanoidRootPart') then
                                 if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
                                 else
                                     if values.main.combat["Teleport Behind (for kill aura)"].Toggle then
@@ -7665,16 +7662,16 @@ local combat = main:Sector('combat', 'Left')
                                         if values.main.combat["Custom Kill Aura Distance"].Toggle then
                                             for i, v in pairs(Weapon:GetDescendants()) do
                                                 if v:IsA "BasePart" then
-                                                    v.CFrame = Closest.Character.HumanoidRootPart.CFrame
-                                                    v.Velocity = Vector3.new(100000, 100000, 100000)
+                                                    v.CFrame = Closest.Character.Head.CFrame
+                                                    v.Velocity =  Vector3.new(1000000000,100000000000,100000000000)
                                                     v.CanCollide = false
-                                                    v.Massless = true
+                                                    v.Massless = true												
                                                     --v.Anchored = true
                                                     if v:FindFirstChild "BodyVelocity" == nil then
                                                         local boopyve = Instance.new("BodyVelocity")
                                                         boopyve.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
                                                         boopyve.P = math.huge
-                                                        boopyve.Velocity = Vector3.new(100000, 100000, 100000)
+                                                        boopyve.Velocity =  Vector3.new(1000000000,100000000000,100000000000)
                                                         boopyve.Parent = v
                                                     end
                                                 end
@@ -7685,45 +7682,47 @@ local combat = main:Sector('combat', 'Left')
                                                 end
                                             end
                                         end
+										repeat wait() until Weapon.Hitboxes:FindFirstChild('Hitbox')
+                                        
+											local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
+											local rayDirection = Vector3.new(0, 0, 5)
+											local raycastParams = RaycastParams.new()
+											raycastParams.IgnoreWater = true
+											raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+											local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+											local args1 = {
+												[1] = Weapon,
+												[2] = math.random(1, 4)
+											}
 
-                                        local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
-                                        local rayDirection = Vector3.new(0, 0, 5)
-                                        local raycastParams = RaycastParams.new()
-                                        raycastParams.IgnoreWater = true
-                                        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-                                        local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-                                        local args1 = {
-                                            [1] = Weapon,
-                                            [2] = math.random(1, 4)
-                                        }
+											events.MeleeSwing:FireServer(unpack(args1))
+											task.wait(0.3)
+										
+											local args = {
+												[1] = Weapon,
+												[2] = Closest.Character.Head,
+												[3] = Weapon.Hitboxes:FindFirstChild('Hitbox'),
+												[4] = Closest.Character.Head.Position,
+												[5] = Closest.Character.Head.CFrame:ToObjectSpace(
+													CFrame.new(Closest.Character.Head.Position)
+												),
+												[6] = raycastResult
+											}
+											if Closest.Character:FindFirstChild("SemiTransparentShield") and Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
+												events.MeleeDamage:FireServer(unpack(args))
 
-                                        events.MeleeSwing:FireServer(unpack(args1))
-                                        task.wait(0.2)
-
-                                        local args = {
-                                            [1] = Weapon,
-                                            [2] = Closest.Character.Head,
-                                            [3] = Weapon.Hitboxes.Hitbox,
-                                            [4] = Closest.Character.Head.Position,
-                                            [5] = Closest.Character.Head.CFrame:ToObjectSpace(
-                                                CFrame.new(Closest.Character.Head.Position)
-                                            ),
-                                            [6] = raycastResult
-                                        }
-                                        if Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
-                                            events.MeleeDamage:FireServer(unpack(args))
-
-                                            events.MeleeDamage:FireServer(unpack(args))
-                                        else
-                                            return
-                                        end
+												events.MeleeDamage:FireServer(unpack(args))
+											else
+												return
+											end
+										
                                     end
                                 end
                             elseif Closest == nil then
                                 for i, v in pairs(Weapon:GetDescendants()) do
                                     if v:IsA "BasePart" then
-                                        v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-                                        v.Velocity = Vector3.new(100000,100000,100000)
+                                        v.CFrame = LocalPlayer.Character.Head.CFrame
+                                        v.Velocity = Vector3.new(1000000000,100000000000,100000000000)
                                         v.CanCollide = false
                                     end
                                 end
@@ -7731,13 +7730,18 @@ local combat = main:Sector('combat', 'Left')
                         end
                     end
                 )
-            end
+				--[[if not sucess then
+					if response ~= nil then
+						print(response)
+					end
+				end--]]
+            end)
         end
     )
 
     task.spawn(
         function()
-            while task.wait() do
+            while task.wait(0.3) do
                 pcall(
                     function()
                         if values.main.combat["Stomp Aura"].Toggle then
@@ -7778,7 +7782,6 @@ local combat = main:Sector('combat', 'Left')
                                                     end
                                                 end
                                             end
-
                                             local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
                                             local rayDirection = Vector3.new(0, 0, 5)
                                             local raycastParams = RaycastParams.new()
@@ -9047,7 +9050,7 @@ end
     end)
 	isExecuting = false
 	RunService.RenderStepped:Connect(function()
-		if game.Players.LocalPlayer.Character then
+		if game.Players.LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid') then
 			if isExecuting == false and not LocalPlayer.Character:FindFirstChild('isFlyingCheck') and LocalPlayer.Character.Humanoid:FindFirstChild('RagdollRemoteEvent') then
 				isExecuting = true
 				if values.misc.misc2.misc["Fly"].Toggle then
@@ -9076,6 +9079,105 @@ end
 	        Clip = true
         end
     end)
+
+
+for i,v in pairs(getgc(true)) do
+    if typeof(v) == 'table' then
+        if rawget(v,'RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE') then
+            old = v.RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE 
+            v.RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE = function(sex1,sex2)
+               sex1['isRagdolled'] = false
+               return old(sex1,sex2)
+            end
+        end
+        if rawget(v,'setupMotors') then
+            oldsetup = v.setupMotors
+            v.setupMotors = function(...)
+              --[[ for i,v in pairs({...}) do
+                   if typeof(v) == 'table' then
+                       table.foreach(v,print)
+                   end
+               end--]]
+             
+                return
+            end
+            v.setupState = function(...)
+                --[[for i,v in pairs({...}) do
+                   if typeof(v) == 'table' then
+                       table.foreach(v,print)
+                   end
+               end--]]
+                return
+            end
+        end
+    end
+end
+--game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false)
+--local fakingragdol = false
+	miscsector:Element('Button','Fake ragdoll',{},function()
+
+--game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false)
+ 
+		for i,v in pairs(getgc(true)) do
+			if typeof(v) == 'table' then
+
+				if rawget(v,'setupMotors') then
+					oldsetup = v.setupMotors
+					v.setupMotors = function(...)
+						return
+					end
+					v.setupState = function(...)
+						return
+					end
+				end
+			end
+		end
+		game.Players.LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)
+		task.wait(1)
+
+		for i,v in pairs(game.Players.LocalPlayer.Character.Torso:GetChildren()) do
+			if v:IsA('Motor6D') then
+				v.Enabled = true
+			end
+		end
+		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Running, true)
+
+		local StarterGui = game:GetService("StarterGui")
+		StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
+
+		game.Players.LocalPlayer.Character.Humanoid.AutoRotate = true
+
+		for i,v in pairs(getgc(true)) do
+			if typeof(v) == 'table' then
+
+				if rawget(v,'isStunned')  then
+					task.spawn(function()
+						v.isStunned = false
+					end)
+				end
+				if rawget(v,'isFrozen')  then
+					task.spawn(function()
+						v.isFrozen = false
+					end)
+				end
+				if rawget(v,'isRagdolled')  then
+					task.spawn(function()
+						v.isRagdolled = false
+					end)
+				end		
+			end
+		end
+		somerandomshit = false
+		repeat task.wait()
+			pcall(function()
+				if game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').AutoRotate == false then
+					game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').AutoRotate = true
+					somerandomshit = true
+				end
+			end)
+		until somerandomshit == true
+
+	end)
     player:Element("Toggle", "Walk On Air (Q,E)")
     player:Element("Toggle", "Jesus")
     player:Element("Toggle", "No Fall Damage")
@@ -9142,7 +9244,7 @@ end
             end
         end)
     end)
-    task.spawn(function()
+    --[[task.spawn(function()
         while task.wait() do
             pcall(function()
                 if LocalPlayer.Character.Humanoid:FindFirstChildOfClass'RemoteEvent' ~= nil then
@@ -9152,7 +9254,7 @@ end
                 end
             end)
         end
-    end)
+    end)--]]
     task.spawn(function()
         while task.wait() do
             pcall(function()
@@ -9479,7 +9581,176 @@ end
     end
 end
 
+do
+	local chatmessages_pasteed = {
+		"Lost to SamuelPaste? Who woulda thought",
+		"what was that? Can't hear u over my kill sound",
+		"he swings! and he misses",
+		--"I think im hvhing a homeless person",
+		"SamuelPaste is pasted did you know?",
+		"This hack is approved by Y1K and len",
+		"fun fact: this person is using SamuelPaste",
+		"oww, thats gonna leave a bruise in the morning",
+		"this is a tough workout!",
+		--"New years resolution: Keep clapping kids",
+		"No way you're this bad?",
+		--"Are you a chimney? Coz Im santa claus...",
+		--"Looks like you got coal for christmas",
+		"Are you a train? Coz you're getting railed rn",
+		--"You and ur mom are very similar, coz both of u are getting raped"
+		"你是垃圾，菜鸟可以做得更好。",
+		"imagine dying 😅😅😅 LLLL",
+		"Oops i forgot you were there, oh wait you actually dont exist anyways.",
+		"ez ez you got clapped by a low level haha!",
+		"🤓: you cant just exploit in here!!111!!111 its illegal!!!!",
+		"why are you dying to me bro fr fr",
+		"clapped by SamuelPaste user :skull:",
+		"bro got clapped lol",
+		"'🤓: imagine being fatherless'  where are yours then go check 😁😁😁",
+		"sorry did my kill aura hit you? if so then youre trash 😅",
+		"bro got skill issues 😅😅😅",
+		"bozo cant even beat me",
+		"fr fr SamuelPaste on top",
+		"What's up 'Hackle cheatle' here guys, I have been arresting due to multiple crimes including cheating.",
+		"wdym touch grass i have one of those on my feet",
+		"fortnite 19$ gift card who wants it!!!??",
+		--".gg/gswH7FGxyb <-- join for cool scripts (!!! real no fake !!!)",
+		"ez bozo",
+		"your dad never came back from the milk store for a reason",
+		"damn bro did your mother drop you when youre born",
+		"Who are you talking to? a kill say bot? 😅",
+		"damn bro you really need a therapist 😅😅",
+		"🤓: stop hacking!!!! its against the rules!!!",
+		"wenomechainsama tumajarbisaun",
+		"you should go back to kindergarden bro 😂",
+		"im just better than you!!!!!",
+		"SamuelPaste better than you smh smh smh 😅"		
+	}
 
+
+
+
+	--local number = 0
+	--local femboy = 1
+	--local customchatspam = 0
+	local killsaymessages = readfile('SamuelPaste_cw/customkillsay.txt'):split('\n', '')
+
+	local chat = misc:Sector("chat", "Left") 
+--[[	chat:Element("Toggle", "chat spam", nil, function(tbl) 
+		if tbl.Toggle then 
+			while values.misc.chat["chat spam"].Toggle and values.misc.chat.type.Dropdown ~= "emojie" and values.misc.chat.type.Dropdown ~= "femboy" do 
+				wait(values.misc.chat["speed (ms)"].Slider/1000)
+				ReplicatedStorage.Events.PlayerChatted:FireServer(
+				values.misc.chat.type.Dropdown == "Text" and values.misc.chat['chat spam message'].Text
+				or values.misc.chat.type.Dropdown == "SamuelPaste" and "$$$ I'm using SamuelPaste stormy lol $$$" 
+				or values.misc.chat.type.Dropdown == "SEMI" and "||| RATTED BY SEMI ||| DONT FUCK WITH BLOXSENSE USERS |||" 
+				or values.misc.chat.type.Dropdown == "bloxsense.gay" and "BloxSense.gay winning $$$"
+				or values.misc.chat.type.Dropdown == "hexagon winning" and "Hexagon is the best!"
+				or values.misc.chat.type.Dropdown == "hexagon losing" and "Hexagon sucks ass!!" -- randomkillsay[math.random(#randomkillsay)
+				or values.misc.chat.type.Dropdown == "losing to samuel paste (math.random)" and chatmessages_pasteed[math.random(#chatmessages_pasteed)]
+				or values.misc.chat.type.Dropdown == "racism (math.random)" and chatmessages_Racist[math.random(#chatmessages_Racist)]
+				)
+			end
+			while tbl.Toggle and (values.misc.chat.type.Dropdown == "emojie" or values.misc.chat.type.Dropdown == "femboy") do 
+			wait(0.5)
+				if values.misc.chat.type.Dropdown ~= "emojie" then
+					number = 1
+				else
+					number += 1
+				end
+				if number > #emojiesspam then 
+					number = 1
+				end
+				if values.misc.chat.type.Dropdown == 'femboy' then
+					femboy += 1
+					if femboy == 3 then
+					femboy = 1
+					end
+				end
+				if values.misc.chat.type.Dropdown == 'custom' then
+					
+					customchatspam = customchatspam + 1
+					if customchatspam == (#customchatspamtxt + 1) then
+					customchatspam = 1
+					end
+				end
+				ReplicatedStorage.Events.PlayerChatted:FireServer(
+				values.misc.chat.type.Dropdown == 'femboy' and femboy == 1 and 'I am gay dm me to get my pics '..values.misc.chat['femboy discord'].Text
+				or values.misc.chat.type.Dropdown == 'femboy' and femboy == 2 and 'DM me to get femboy pics '..values.misc.chat['femboy discord'].Text
+				or values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
+				or values.misc.chat.type.Dropdown == 'custom' and customchatspamtxt[customchatspam]
+				
+				)
+				
+			end 
+		end
+	end)
+	chat:Element("Dropdown", "type", {options = {
+		'Text',
+		"SamuelPaste", 
+		"losing to samuel paste (math.random)", 
+		"racism (math.random)", 
+		"emojie",
+		'femboy',
+		'custom'
+		}})
+	chat:Element("Slider", "speed (ms)", {min = 30, max = 400, default = 50})
+	chat:Element('TextBox', 'chat spam message', {placeholder = 'chat spam message'})
+	chat:Element('TextBox', 'femboy discord', {placeholder = 'your discord nickname'})--]]
+	
+	chat:Element("Toggle", "kill say")
+	chat:Element("Dropdown", "kill say type", {options = {"default", "random", "custom file"}})
+	chat:Element('Dropdown', 'custom file type', {options = {'1,2,3 etc.', 'random'}})
+	chat:Element("TextBox", "message", {placeholder = "message"})
+	chat:Element('Button','Clean chat',{}, function()
+	game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\na")
+	end)
+	killsaysignal = Signal.new('killsaysignal')
+	killsaysignal:Connect(function()
+		if values.misc.chat["kill say"].Toggle then 
+			if values.misc.chat["kill say type"].Dropdown == "default" then
+				game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
+					values.misc.chat["message"].Text ~= "" 
+					and values.misc.chat["message"].Text or "L bro cant win the pasted script"
+				)
+			elseif values.misc.chat['kill say type'].Dropdown == 'random' then
+			game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
+				randomkillsay[math.random(#randomkillsay)]
+			)
+			else
+				
+				local messages = readfile('SamuelPaste/customkillsay.txt'):split('\n', '')
+				if values.misc.chat['custom file type'].Dropdown == 'random' then
+					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
+						messages[math.random(#messages)]
+					)	
+				else
+					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
+						messages[customtypemessagesnumber]
+					)
+					customtypemessagesnumber = customtypemessagesnumber + 1
+					if customtypemessagesnumber == (#messages + 1) then
+					customtypemessagesnumber = 1
+					end
+				end
+			end
+		end
+	end)
+	for i,v in pairs(getgc(true)) do
+		if typeof(v) == 'table' then
+			if rawget(v,'removeKillFeedIdx') and rawget(v,'render') then
+				print('found')
+				oldrender = v.render
+				v.render = function(sex1)
+							if sex1.props.killfeedItemInfo.playerThatKilled == LocalPlayer and sex1.props.killfeedItemInfo.playerThatDied ~= LocalPlayer then
+								killsaysignal:Fire()
+							end
+					return oldrender(sex1)
+				end
+			end
+		end
+	end	
+end
 
 
 do
