@@ -8315,8 +8315,30 @@ end)
 		silent:Element('Toggle', 'Always headshot',{},function()
 			rangedmods:Fire()
 		end)
+		silent:Element('Toggle', 'Auto reload')
+		for i,v in pairs(getgc(true)) do
+			if typeof(v) == 'table' then
+				--if rawget(v,'shotIdx') then
+					if rawget(v,'startShooting') then
+						task.spawn(function()
+							local old = v.shoot
+							--print('found')
+							v.shoot = function(sex)
+			
+							old(sex)
+							--getgenv().shoot = function() return sex:shoot() end
+								if values.main['Ranged sector']['Auto reload'].Toggle then
+									sex:reload()
+								end
+							end
+						end)
+					end
+					
+				--end
+			end
+		end
 
-		game.CollectionService:AddTag(game:GetService("Workspace").Map,'CAMERA_COLLISION_IGNORE_LIST')
+		--game.CollectionService:AddTag(game:GetService("Workspace").Map,'CAMERA_COLLISION_IGNORE_LIST')
 
 		--[[task.spawn(function()
 			while task.wait() do
@@ -9166,33 +9188,8 @@ for i,v in pairs(getgc(true)) do
                 v.isRagdolled = false
             end)
         end
-        if rawget(v,'CROUCHED_HIP_HEIGHT_ADDITION') then
-            crouchedhip = v.CROUCHED_HIP_HEIGHT_ADDITION
-        end
-        if rawget(v,'toggleCrouching') then
-            oldtoggle = v.toggleCrouching
-            v.toggleCrouching(false)
-            v.toggleCrouching = function(sex)
-                if sex == true then
-                    game.Players.LocalPlayer.Character.Humanoid.HipHeight = crouchedhip
-                else
-                    game.Players.LocalPlayer.Character.Humanoid.HipHeight = 0
-                end
-                return oldtoggle(sex)
-            end
-        end
-        if rawget(v,'SLIDE_CLIENT_IS_SLIDING_CHANGE') then
-            oldslide = v.SLIDE_CLIENT_IS_SLIDING_CHANGE
-            v.SLIDE_CLIENT_IS_SLIDING_CHANGE = function(table1,table2)
-                randomtable = oldslide(table1,table2)
-                if randomtable.isSliding == true then
-                 game.Players.LocalPlayer.Character.Humanoid.HipHeight = -1.4
-                else
-                    game.Players.LocalPlayer.Character.Humanoid.HipHeight = 0
-                end
-                return randomtable
-            end
-        end
+
+
     end
 end
 		--somerandomshit = false
@@ -9743,7 +9740,7 @@ do
 				)
 			elseif values.misc.chat['kill say type'].Dropdown == 'random' then
 			game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-				randomkillsay[math.random(#randomkillsay)]
+				chatmessages_pasteed[math.random(#chatmessages_pasteed)]
 			)
 			else
 				
