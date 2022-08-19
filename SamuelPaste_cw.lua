@@ -7682,7 +7682,7 @@ local combat = main:Sector('combat', 'Left')
                                                 end
                                             end
                                         end
-										repeat wait() until Weapon.Hitboxes:FindFirstChild('Hitbox')
+										--repeat wait() until Weapon.Hitboxes:FindFirstChild('Hitbox')
                                         
 											local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
 											local rayDirection = Vector3.new(0, 0, 5)
@@ -7690,13 +7690,14 @@ local combat = main:Sector('combat', 'Left')
 											raycastParams.IgnoreWater = true
 											raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 											local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+											--task.wait(0.3)
 											local args1 = {
 												[1] = Weapon,
 												[2] = math.random(1, 4)
 											}
 
 											events.MeleeSwing:FireServer(unpack(args1))
-											task.wait(0.3)
+											task.wait(0.2)
 										
 											local args = {
 												[1] = Weapon,
@@ -7708,7 +7709,7 @@ local combat = main:Sector('combat', 'Left')
 												),
 												[6] = raycastResult
 											}
-											if Closest.Character:FindFirstChild("SemiTransparentShield") and Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
+											if Closest.Character:FindFirstChild("SemiTransparentShield") and Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 and (not Closest.Character:FindFirstChild("SemiTransparentShield"):FindFirstChildWhichIsA('Sound')) then
 												events.MeleeDamage:FireServer(unpack(args))
 
 												events.MeleeDamage:FireServer(unpack(args))
@@ -7741,7 +7742,7 @@ local combat = main:Sector('combat', 'Left')
 
     task.spawn(
         function()
-            while task.wait(0.3) do
+            while task.wait() do
                 pcall(
                     function()
                         if values.main.combat["Stomp Aura"].Toggle then
@@ -7791,7 +7792,7 @@ local combat = main:Sector('combat', 'Left')
                                                 workspace:Raycast(rayOrigin, rayDirection, raycastParams)
                                             local args1 = {
                                                 [1] = Weapon,
-                                                [2] = 1
+                                                [2] = math.random(1,4)
                                             }
 
                                             events.MeleeSwing:FireServer(unpack(args1))
