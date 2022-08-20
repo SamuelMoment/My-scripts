@@ -7629,7 +7629,7 @@ local combat = main:Sector('combat', 'Left')
     )
     task.spawn(
         function()
-            game.RunService.RenderStepped:Connect(function()
+            while task.wait(0.1) do
                pcall(
                     function()
                         if values.main.combat["Kill Aura"].Toggle then
@@ -7736,7 +7736,7 @@ local combat = main:Sector('combat', 'Left')
 						print(response)
 					end
 				end--]]
-            end)
+            end
         end
     )
 
@@ -7783,13 +7783,7 @@ local combat = main:Sector('combat', 'Left')
                                                     end
                                                 end
                                             end
-                                            local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
-                                            local rayDirection = Vector3.new(0, 0, 5)
-                                            local raycastParams = RaycastParams.new()
-                                            raycastParams.IgnoreWater = true
-                                            raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-                                            local raycastResult =
-                                                workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+
                                             local args1 = {
                                                 [1] = Weapon,
                                                 [2] = math.random(1,4)
@@ -7797,7 +7791,15 @@ local combat = main:Sector('combat', 'Left')
 
                                             events.MeleeSwing:FireServer(unpack(args1))
                                             task.wait(0.2)
-
+											
+                                            local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
+                                            local rayDirection = Vector3.new(0, 0, 5)
+                                            local raycastParams = RaycastParams.new()
+                                            raycastParams.IgnoreWater = true
+                                            raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+                                            local raycastResult =
+                                                workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+												
                                             local args = {
                                                 [1] = Weapon,
                                                 [2] = Closest.Character.Head,
