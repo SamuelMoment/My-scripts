@@ -9111,52 +9111,40 @@ for i,v in pairs(getgc(true)) do
         if rawget(v,'RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE') then
             old = v.RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE 
             v.RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE = function(sex1,sex2)
-               sex1['isRagdolled'] = false
+			   if fakingragdol == true then
+			   sex1['isRagdolled'] = false
+			   end
                return old(sex1,sex2)
             end
         end
         if rawget(v,'setupMotors') then
             oldsetup = v.setupMotors
             v.setupMotors = function(...)
-              --[[ for i,v in pairs({...}) do
-                   if typeof(v) == 'table' then
-                       table.foreach(v,print)
-                   end
-               end--]]
-             
+				
+                if fakingragdol == true then
                 return
+				else
+				return oldsetup(...)
+				end
             end
+			oldstate = v.setupState
             v.setupState = function(...)
-                --[[for i,v in pairs({...}) do
-                   if typeof(v) == 'table' then
-                       table.foreach(v,print)
-                   end
-               end--]]
+				if fakingragdol == true then
                 return
+				else 
+				return oldstate(...)
+				end
             end
         end
     end
 end
 --game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false)
---local fakingragdol = false
+local fakingragdol = false
 	miscsector:Element('Button','Fake ragdoll',{},function()
-
+		fakingragdol = true
 --game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false)
  
-		for i,v in pairs(getgc(true)) do
-			if typeof(v) == 'table' then
-
-				if rawget(v,'setupMotors') then
-					oldsetup = v.setupMotors
-					v.setupMotors = function(...)
-						return
-					end
-					v.setupState = function(...)
-						return
-					end
-				end
-			end
-		end
+		--fakingragdol = true
 		game.Players.LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)
 		task.wait(1)
 
@@ -9204,7 +9192,7 @@ end
 				end
 			end)
 		until somerandomshit == true
-
+		fakingragdol = false
 	end)
     player:Element("Toggle", "Walk On Air (Q,E)")
     player:Element("Toggle", "Jesus")
