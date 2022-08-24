@@ -7497,7 +7497,7 @@ chat:Element('Dropdown', 'message font',{options = fonts})
     ['en'] = "<!--ireflies are y-->en<!--'y and disgut'-->",
     ['ck'] = "<!--ireflies are y-->ck<!--'y and disgut'-->",
     ['na'] = "<!--ireflies are y-->na<!--'y and disgut'-->",
-    ['it'] = "<!--ireflies are y-->it<!--'y and disgut'-->",
+    --['it'] = "<!--ireflies are y-->it<!--'y and disgut'-->",
     ['we'] = "<!--ireflies are y-->we<!--'y and disgut'-->"
 	
 }
