@@ -7469,7 +7469,36 @@ chat:Element('Dropdown', 'message font',{options = fonts})
     ['rnhub'] = "<!--ireflies are y-->rnhub<!--'y and disgut'-->",
     ['tard'] = "<!--ireflies are y--><!--'y and disgut'-->tard",
     ['orn'] = "<!--ireflies are y--><!--'y and disgut'-->orn",
-	['gger'] = "<!--ireflies are y--><!--'y and disgut'-->gger"
+	['gg'] = "<!--ireflies are y--><!--'y and disgut'-->gger"
+    ['orn'] = "<!--ireflies are y--><!--'y and disgut'-->orn",
+    ['ss'] = "<!--ireflies are y--><!--'y and disgut'-->ss",
+    ['x'] = "<!--ireflies are y--><!--'y and disgut'-->x",
+    ['ll'] = "<!--ireflies are y--><!--'y and disgut'-->ll",
+    ['self'] = "<!--ireflies are y--><!--'y and disgut'-->self",
+	
+    ['UC'] = "<!--ireflies are y-->UC<!--'y and disgut'-->",
+    ['U'] = "<!--ireflies are y--><!--'y and disgut'-->U",
+    ['hu'] = "<!--ireflies are y--><!--'y and disgut'-->hu",
+    ['um'] = "<!--ireflies are y--><!--'y and disgut'-->um",
+    ['TCH'] = "<!--ireflies are y--><!--'y and disgut'-->TCH",
+    ['HIT'] = "<!--ireflies are y--><!--'y and disgut'-->HIT",
+    ['RD'] = "<!--ireflies are y-->RD<!--'y and disgut'-->",
+    ['rd'] = "<!--ireflies are y-->rd<!--'y and disgut'-->",
+    ['tf'] = "<!--ireflies are y-->tf<!--'y and disgut'-->",
+    ['oo'] = "<!--ireflies are y-->oo<!--'y and disgut'-->",
+    ['ak'] = "<!--ireflies are y-->ak<!--'y and disgut'-->",
+    --['rn'] = "<!--ireflies are y--><!--'y and disgut'-->rn",
+    ['rn'] = "<!--ireflies are y-->rn<!--'y and disgut'-->",
+    ['en'] = "<!--ireflies are y-->en<!--'y and disgut'-->",
+    ['ck'] = "<!--ireflies are y-->ck<!--'y and disgut'-->",
+    ['na'] = "<!--ireflies are y-->na<!--'y and disgut'-->",
+    ['it'] = "<!--ireflies are y-->it<!--'y and disgut'-->",
+    ['we'] = "<!--ireflies are y-->we<!--'y and disgut'-->",
+    ['en'] = "<!--ireflies are y-->en<!--'y and disgut'-->",
+    ['ck'] = "<!--ireflies are y-->ck<!--'y and disgut'-->",
+    ['na'] = "<!--ireflies are y-->na<!--'y and disgut'-->",
+    ['it'] = "<!--ireflies are y-->it<!--'y and disgut'-->",
+    ['we'] = "<!--ireflies are y-->we<!--'y and disgut'-->"
 	
 }
 fire = false
