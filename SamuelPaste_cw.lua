@@ -232,6 +232,66 @@ message2\
 message3"
 )
 end
+if not isfile('SamuelPaste_cw/customantitags.txt') then
+	writefile('SamuelPaste_cw/customantitags.txt', "--METHOD 1 = IN MIDDLE, METHOD 2 = AFTER, METHOD 3 = INFRONT \
+	['uc'] = {\
+        FULLWORD = {\
+            ['fuck'] = 1\
+        },\
+        METHOD = 1\
+    },\
+    ['gg'] = {\
+        FULLWORD = {\
+            ['nigga'] = 1,\
+            ['nigger'] = 2\
+        },\
+        METHOD = 1\
+    },\
+    ['hit'] = {\
+        FULLWORD = {\
+            ['hitler'] = 1\
+        },\
+        METHOD = 1\
+    },\
+    ['rs'] = {\
+        FULLWORD = {\
+            ['niggers'] = 1\
+        },\
+        METHOD = 2\
+    },\
+    ['ss'] = {\
+        FULLWORD = {\
+            ['pussy'] = 1\
+        },\
+        METHOD = 2\
+    },\
+    ['rn'] = {\
+        FULLWORD = {\
+            ['horny'] = 1\
+        },\
+        METHOD = 3\
+    },\
+    ['rd'] = {\
+        FULLWORD = {\
+            ['retard'] = 1\
+        },\
+        METHOD = 1\
+    },\
+    ['gi'] = {\
+        FULLWORD = {\
+            ['vagina'] = 1\
+        },\
+        METHOD = 1\
+    },\
+    ['x'] = {\
+        FULLWORD = {\
+            ['sex'] = 1\
+        },\
+        METHOD = 2\
+    }"
+)
+end
+
 
 getgenv().Players = game:GetService("Players") 
 getgenv().LocalPlayer = Players.LocalPlayer 
@@ -7459,7 +7519,8 @@ chat:Element('Dropdown', 'message font',{options = fonts})
 	--local customchatspam = 0
 	--local killsaymessages = readfile('SamuelPaste_cw/customkillsay.txt'):split('\n', '')
 	chat:Element('Toggle','No tags')
-	chat:Element('Dropdown','No tags method',{options = {'1','2'}})
+	chat:Element('Dropdown','No tags method',{options = {'main','1','2'}})
+	chat:Element('Dropdown','Main no tags method', {options = {'in script','custom file'}})
 	
 	randomtable = {
     ['uck'] = "<!--ireflies are y-->uck<!--'y and disgut'-->",
@@ -7469,7 +7530,7 @@ chat:Element('Dropdown', 'message font',{options = fonts})
     ['rnhub'] = "<!--ireflies are y-->rnhub<!--'y and disgut'-->",
     ['tard'] = "<!--ireflies are y--><!--'y and disgut'-->tard",
     ['orn'] = "<!--ireflies are y--><!--'y and disgut'-->orn",
-	['gg'] = "<!--ireflies are y--><!--'y and disgut'-->gger"
+	['gg'] = "<!--ireflies are y--><!--'y and disgut'-->gger",
     ['orn'] = "<!--ireflies are y--><!--'y and disgut'-->orn",
     ['ss'] = "<!--ireflies are y--><!--'y and disgut'-->ss",
     ['x'] = "<!--ireflies are y--><!--'y and disgut'-->x",
@@ -7501,6 +7562,148 @@ chat:Element('Dropdown', 'message font',{options = fonts})
     ['we'] = "<!--ireflies are y-->we<!--'y and disgut'-->"
 	
 }
+local CensoredTables1 = {
+    ['uc'] = {
+        FULLWORD = {
+            ['fuck'] = 1
+        },
+        METHOD = 2
+    },
+    ['gg'] = {
+        FULLWORD = {
+            ['nigga'] = 1,
+            ['nigger'] = 2
+        },
+        METHOD = 1
+    },
+    ['hit'] = {
+        FULLWORD = {
+            ['hitler'] = 1
+        },
+        METHOD = 1
+    },
+    -- METHOD TWO MUST BE DOWN IN ORDER TO PREVENT OTHER TO ERROR
+    ['rs'] = {
+        FULLWORD = {
+            ['niggers'] = 1
+        },
+        METHOD = 2
+    },
+    ['ss'] = {
+        FULLWORD = {
+            ['pussy'] = 1,
+			['ass'] = 2
+        },
+        METHOD = 2
+    },
+    ['rn'] = {
+        FULLWORD = {
+            ['horny'] = 1
+        },
+        METHOD = 3
+    },
+    ['rd'] = {
+        FULLWORD = {
+            ['retard'] = 1
+        },
+        METHOD = 1
+    },
+    ['gi'] = {
+        FULLWORD = {
+            ['vagina'] = 1
+        },
+        METHOD = 1
+    },
+    ['x'] = {
+        FULLWORD = {
+            ['sex'] = 1
+        },
+        METHOD = 2
+    }
+}
+function CheckIfIsInTable(Word)
+    --print(Word)
+	if values.main.chat['Main no tags method'].Dropdown == 'in script' then
+		CensoredTables = CensoredTables1
+	else
+		loadstring('CensoredTables = { '..readfile('SamuelPaste_cw/customantitags.txt')..'}')
+	end
+    for i,v in pairs(CensoredTables) do
+        for g,e in pairs(v.FULLWORD) do
+            if string.find(Word:lower(),g) then
+                if Word:upper():find(g:upper()) or Word:upper() == g:upper() then
+                    if Word == string.upper(Word) then
+                        return {toGsub = i,IsCap = true}
+                    end
+                end
+                return {toGsub = i,IsCap = false}
+            end
+        end
+    end
+end
+function bypass(Word)
+    local ReturnWord = ""
+    local Caps = false
+    local Method
+	
+	if values.main.chat['Main no tags method'].Dropdown == 'in script' then
+		CensoredTables = CensoredTables1
+	else
+		loadstring('CensoredTables = { '..readfile('SamuelPaste_cw/customantitags.txt')..'}')
+	end	
+	
+    for oi,v in pairs(CensoredTables) do
+        local Check = CheckIfIsInTable(Word)
+        if Check then
+            local i = Check.toGsub
+            --print('hi')
+            if Check.IsCap == true then
+                Caps = true
+            end
+            local NewV = ""
+            if v.METHOD == 1 then
+                if Caps then
+                    NewV = "<!--ireflies are y-->"..i:upper().."<!--'y and disgut'-->"
+                    --print(Word, "Capped")
+                else
+                    NewV = "<!--ireflies are y-->"..i.."<!--'y and disgut'-->"
+                    --print(NewV)
+                    --print(Word, "Not Capped")
+                end
+            elseif v.METHOD == 2 then
+                --print(Word,"how")
+                if Caps then
+                    NewV = "<!--ireflies are y--><!--'y and disgut'-->"..i:upper()
+                else
+                    NewV = "<!--ireflies are y--><!--'y and disgut'-->"..i
+                end
+            end
+            if not Caps and NewV then
+                ReturnWord = Word:gsub(i,NewV)
+                --print(ReturnWord)
+            elseif Caps and NewV then
+                ReturnWord = Word:gsub(i:upper(),NewV)
+            end
+        end
+    end
+    if ReturnWord then
+        return ReturnWord
+    else
+        return Word
+    end
+end
+
+game:GetService("TextChatService").OnIncomingMessage = function(L)
+    if L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then
+        local Bypassed = bypass(L.Text)
+        if Bypassed == "" or Bypassed == nil then
+        else
+            L.Text = Bypassed
+        end
+    end
+    --end
+end
+
 fire = false
 
 	chat:Element("Toggle", "kill say")
@@ -7597,7 +7800,7 @@ local edited = false
 									L.Text =  L.Text:gsub(i,v)
 								end
 							end
-						else
+						elseif values.main.chat['No tags method'].Dropdown == '2' then
 							if fire == false and L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then 
 								fire = true
 								message = L.Text:split('')
@@ -7609,7 +7812,13 @@ local edited = false
 							elseif L.TextSource and L.TextSource.UserId == game.Players.LocalPlayer.UserId then
 								fire = false
 							end        
-						end				
+						else
+							local Bypassed = bypass(L.Text)
+							if Bypassed == "" or Bypassed == nil then
+							else
+								L.Text = Bypassed
+							end
+						end
 					end					
 					if edited == false and (values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle) then --or values.main.chat['custom tag'].Toggle or values.main.chat['custom nickname'].Toggle) then
 						--[[oldPrefixText = L.PrefixText
@@ -7797,6 +8006,70 @@ local combat = main:Sector('combat', 'Left')
             Players.PlayerAdded:Connect(added)
         end
     )
+	task.spawn(function()
+		game.RunService.RenderStepped:Connect(function()
+			pcall(function()
+                            local Closest
+                            if values.main.combat["Custom Kill Aura Distance"].Toggle then
+                                Closest = GetClosest(values.main.combat["Custom Distance"].Slider,values.main.combat["Priority"].Dropdown) or nil
+							end
+				if Closest ~= nil and Closest.Character and Closest.Character:FindFirstChild('HumanoidRootPart') then    
+					local Weapon
+					for i, v in pairs(LocalPlayer.Character:GetChildren()) do
+						if v:IsA("Tool") then
+							if v:FindFirstChild("Hitboxes") ~= nil then
+								Weapon = v
+							end
+						end
+					end
+					if not Weapon then
+					else
+						if values.main.combat["Custom Kill Aura Distance"].Toggle then
+							for i, v in pairs(Weapon:GetDescendants()) do
+								if v:IsA "BasePart" then
+									v.CFrame = Closest.Character.Head.CFrame
+									v.Velocity =  Vector3.new(1000000000,100000000000,100000000000)
+									v.CanCollide = false
+									v.Massless = true												
+															--v.Anchored = true
+									if v:FindFirstChild "BodyVelocity" == nil then
+										local boopyve = Instance.new("BodyVelocity")
+										boopyve.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+										boopyve.P = math.huge
+										boopyve.Velocity =  Vector3.new(1000000000,100000000000,100000000000)
+										boopyve.Parent = v
+									end
+								end
+								if v:IsA("Motor6D") then
+									if v.Parent.Name == "Motor6Ds" then
+											v:Destroy()
+									end
+								end
+							end
+						end
+					end
+				    elseif Closest == nil then
+						local Weapon
+						for i, v in pairs(LocalPlayer.Character:GetChildren()) do
+							if v:IsA("Tool") then
+								if v:FindFirstChild("Hitboxes") ~= nil then
+									Weapon = v
+								end
+							end
+						end
+						if Weapon ~= nil then
+                            for i, v in pairs(Weapon:GetDescendants()) do
+                                if v:IsA "BasePart" then
+                                    v.CFrame = LocalPlayer.Character.Head.CFrame
+                                    v.Velocity = Vector3.new(1000000000,100000000000,100000000000)
+                                    v.CanCollide = false
+                                end
+							end
+                        end
+					end
+			end)
+		end)
+	end)
     task.spawn(
         function()
             while task.wait(0.1) do
@@ -7829,64 +8102,23 @@ local combat = main:Sector('combat', 'Left')
                                     end
                                     if not Weapon then
                                     else
-                                        if values.main.combat["Custom Kill Aura Distance"].Toggle then
-                                            for i, v in pairs(Weapon:GetDescendants()) do
-                                                if v:IsA "BasePart" then
-                                                    v.CFrame = Closest.Character.Head.CFrame
-                                                    v.Velocity =  Vector3.new(1000000000,100000000000,100000000000)
-                                                    v.CanCollide = false
-                                                    v.Massless = true												
-                                                    --v.Anchored = true
-                                                    if v:FindFirstChild "BodyVelocity" == nil then
-                                                        local boopyve = Instance.new("BodyVelocity")
-                                                        boopyve.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                                                        boopyve.P = math.huge
-                                                        boopyve.Velocity =  Vector3.new(1000000000,100000000000,100000000000)
-                                                        boopyve.Parent = v
-                                                    end
-                                                end
-                                                if v:IsA("Motor6D") then
-                                                    if v.Parent.Name == "Motor6Ds" then
-                                                        v:Destroy()
-                                                    end
-                                                end
-                                            end
-                                        end
 										--repeat wait() until Weapon.Hitboxes:FindFirstChild('Hitbox')
-                                        
-											local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
-											local rayDirection = Vector3.new(0, 0, 5)
-											local raycastParams = RaycastParams.new()
-											raycastParams.IgnoreWater = true
-											raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-											local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+                                        for i = 1,3 do
+											if Closest.Character:FindFirstChild("SemiTransparentShield") and Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 and (not Closest.Character:FindFirstChild("SemiTransparentShield"):FindFirstChildWhichIsA('Sound')) then
+	
 											--task.wait(0.3)
 											local args1 = {
 												[1] = Weapon,
-												[2] = math.random(1, 4)
+												[2] = i
 											}
 
 											events.MeleeSwing:FireServer(unpack(args1))
-											task.wait(0.2)
 										
-											local args = {
-												[1] = Weapon,
-												[2] = Closest.Character.Head,
-												[3] = Weapon.Hitboxes:FindFirstChild('Hitbox'),
-												[4] = Closest.Character.Head.Position,
-												[5] = Closest.Character.Head.CFrame:ToObjectSpace(
-													CFrame.new(Closest.Character.Head.Position)
-												),
-												[6] = raycastResult
-											}
-											if Closest.Character:FindFirstChild("SemiTransparentShield") and Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 and (not Closest.Character:FindFirstChild("SemiTransparentShield"):FindFirstChildWhichIsA('Sound')) then
-												events.MeleeDamage:FireServer(unpack(args))
-
-												events.MeleeDamage:FireServer(unpack(args))
-											else
-												return
+											events.MeleeDamage:FireServer(Weapon,Closest.Character.Head,Weapon.Hitboxes:FindFirstChild('Hitbox'),Weapon.Hitboxes:FindFirstChild('Hitbox').Position,CFrame.new(),Vector3.new(),Vector3.new())
+											wait()
 											end
-										
+										end
+										wait(.4)
                                     end
                                 end
                             elseif Closest == nil then
