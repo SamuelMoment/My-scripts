@@ -7406,7 +7406,126 @@ chat:Element('Toggle', 'custom font')
 
 
 chat:Element('Dropdown', 'message font',{options = fonts})
+	local chatmessages_pasteed = {
+		"Lost to SamuelPaste? Who woulda thought",
+		"what was that? Can't hear u over my kill sound",
+		"he swings! and he misses",
+		--"I think im hvhing a homeless person",
+		"SamuelPaste is pasted did you know?",
+		"This hack is approved by Y1K and len",
+		"fun fact: this person is using SamuelPaste",
+		"oww, thats gonna leave a bruise in the morning",
+		"this is a tough workout!",
+		--"New years resolution: Keep clapping kids",
+		"No way you're this bad?",
+		--"Are you a chimney? Coz Im santa claus...",
+		--"Looks like you got coal for christmas",
+		"Are you a train? Coz you're getting railed rn",
+		--"You and ur mom are very similar, coz both of u are getting raped"
+		"你是垃圾，菜鸟可以做得更好。",
+		"imagine dying 😅😅😅 LLLL",
+		"Oops i forgot you were there, oh wait you actually dont exist anyways.",
+		"ez ez you got clapped by a low level haha!",
+		"🤓: you cant just exploit in here!!111!!111 its illegal!!!!",
+		"why are you dying to me bro fr fr",
+		"clapped by SamuelPaste user :skull:",
+		"bro got clapped lol",
+		"'🤓: imagine being fatherless'  where are yours then go check 😁😁😁",
+		"sorry did my kill aura hit you? if so then youre trash 😅",
+		"bro got skill issues 😅😅😅",
+		"bozo cant even beat me",
+		"fr fr SamuelPaste on top",
+		"What's up 'Hackle cheatle' here guys, I have been arresting due to multiple crimes including cheating.",
+		"wdym touch grass i have one of those on my feet",
+		"fortnite 19$ gift card who wants it!!!??",
+		--".gg/gswH7FGxyb <-- join for cool scripts (!!! real no fake !!!)",
+		"ez bozo",
+		"your dad never came back from the milk store for a reason",
+		"damn bro did your mother drop you when youre born",
+		"Who are you talking to? a kill say bot? 😅",
+		"damn bro you really need a therapist 😅😅",
+		"🤓: stop hacking!!!! its against the rules!!!",
+		"wenomechainsama tumajarbisaun",
+		"you should go back to kindergarden bro 😂",
+		"im just better than you!!!!!",
+		"SamuelPaste better than you smh smh smh 😅"		
+	}
 
+
+
+
+	--local number = 0
+	--local femboy = 1
+	--local customchatspam = 0
+	--local killsaymessages = readfile('SamuelPaste_cw/customkillsay.txt'):split('\n', '')
+	chat:Element('Toggle','No tags')
+	chat:Element('Dropdown','No tags method',{options = {'1','2'}})
+	
+	randomtable = {
+    ['uck'] = "<!--ireflies are y-->uck<!--'y and disgut'-->",
+    ['tch'] = "<!--ngo and ill dit-->tch",
+    ['hit'] = "<!--ireflies are y--><!--'y and disgut'-->hit",
+    ['ic'] = "<!--ireflies are y-->ic<!--'y and disgut'-->",
+    ['rnhub'] = "<!--ireflies are y-->rnhub<!--'y and disgut'-->",
+    ['tard'] = "<!--ireflies are y--><!--'y and disgut'-->tard",
+    ['orn'] = "<!--ireflies are y--><!--'y and disgut'-->orn"
+	
+}
+fire = false
+
+	chat:Element("Toggle", "kill say")
+	chat:Element("Dropdown", "kill say type", {options = {"default", "random", "custom file"}})
+	chat:Element('Dropdown', 'custom file type', {options = {'1,2,3 etc.', 'random'}})
+	chat:Element("TextBox", "message", {placeholder = "message"})
+	chat:Element('Button','Clean chat',{}, function()
+	game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\na")
+	end)
+	killsaysignal = Signal.new('killsaysignal')
+	killsaysignal:Connect(function()
+		if values.main.chat["kill say"].Toggle then 
+			if values.main.chat["kill say type"].Dropdown == "default" then
+				game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
+					values.main.chat["message"].Text ~= "" 
+					and values.main.chat["message"].Text or "L bro cant win the pasted script"
+				)
+			elseif values.main.chat['kill say type'].Dropdown == 'random' then
+			game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
+				chatmessages_pasteed[math.random(#chatmessages_pasteed)]
+			)
+			else
+				
+				local messages = readfile('SamuelPaste/customkillsay.txt'):split('\n', '')
+				if values.main.chat['custom file type'].Dropdown == 'random' then
+					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
+						messages[math.random(#messages)]
+					)	
+				else
+					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
+						messages[customtypemessagesnumber]
+					)
+					customtypemessagesnumber = customtypemessagesnumber + 1
+					if customtypemessagesnumber == (#messages + 1) then
+					customtypemessagesnumber = 1
+					end
+				end
+			end
+		end
+	end)
+	for i,v in pairs(getgc(true)) do
+		if typeof(v) == 'table' then
+			if rawget(v,'removeKillFeedIdx') and rawget(v,'render') then
+				print('found')
+				oldrender = v.render
+				v.render = function(sex1)
+							if sex1.props.killfeedItemInfo.playerThatKilled == LocalPlayer and sex1.props.killfeedItemInfo.playerThatDied ~= LocalPlayer then
+								killsaysignal:Fire()
+							end
+					return oldrender(sex1)
+				end
+			end
+		end
+	end	
+	
 function toInteger(color)
 	return C.FLOOR(color.r*255)*256^2+C.FLOOR(color.g*255)*256+C.FLOOR(color.b*255)
 end
@@ -7436,11 +7555,32 @@ function toHex(color)
 	end
 	return "#"..string.reverse(final)
 end
-print(toHex(Color3.new(0,255,255)))
+
 local edited = false
 --local oldIncomingMessage = game:GetService("TextChatService").OnIncomingMessage
 			game:GetService("TextChatService").OnIncomingMessage = function(L)
 				if L.TextSource.UserId == game.Players.LocalPlayer.UserId then
+					if values.main.chat['No tags'].Toggle then
+						if values.main.chat['No tags method'].Dropdown == '1' then
+							if L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then 
+								for i,v in next, randomtable do
+									L.Text =  L.Text:gsub(i,v)
+								end
+							end
+						else
+							if fire == false and L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then 
+								fire = true
+								message = L.Text:split('')
+								l = ''
+								for i,v in next,message do
+									l = l.."<!--o m g -->"..v
+								end
+								L.Text = l
+							elseif L.TextSource and L.TextSource.UserId == game.Players.LocalPlayer.UserId then
+								fire = false
+							end        
+						end				
+					end					
 					if edited == false and (values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle) then --or values.main.chat['custom tag'].Toggle or values.main.chat['custom nickname'].Toggle) then
 						--[[oldPrefixText = L.PrefixText
 						customTag = ""
@@ -9597,176 +9737,8 @@ end
     end
 end
 
-do
-	local chatmessages_pasteed = {
-		"Lost to SamuelPaste? Who woulda thought",
-		"what was that? Can't hear u over my kill sound",
-		"he swings! and he misses",
-		--"I think im hvhing a homeless person",
-		"SamuelPaste is pasted did you know?",
-		"This hack is approved by Y1K and len",
-		"fun fact: this person is using SamuelPaste",
-		"oww, thats gonna leave a bruise in the morning",
-		"this is a tough workout!",
-		--"New years resolution: Keep clapping kids",
-		"No way you're this bad?",
-		--"Are you a chimney? Coz Im santa claus...",
-		--"Looks like you got coal for christmas",
-		"Are you a train? Coz you're getting railed rn",
-		--"You and ur mom are very similar, coz both of u are getting raped"
-		"你是垃圾，菜鸟可以做得更好。",
-		"imagine dying 😅😅😅 LLLL",
-		"Oops i forgot you were there, oh wait you actually dont exist anyways.",
-		"ez ez you got clapped by a low level haha!",
-		"🤓: you cant just exploit in here!!111!!111 its illegal!!!!",
-		"why are you dying to me bro fr fr",
-		"clapped by SamuelPaste user :skull:",
-		"bro got clapped lol",
-		"'🤓: imagine being fatherless'  where are yours then go check 😁😁😁",
-		"sorry did my kill aura hit you? if so then youre trash 😅",
-		"bro got skill issues 😅😅😅",
-		"bozo cant even beat me",
-		"fr fr SamuelPaste on top",
-		"What's up 'Hackle cheatle' here guys, I have been arresting due to multiple crimes including cheating.",
-		"wdym touch grass i have one of those on my feet",
-		"fortnite 19$ gift card who wants it!!!??",
-		--".gg/gswH7FGxyb <-- join for cool scripts (!!! real no fake !!!)",
-		"ez bozo",
-		"your dad never came back from the milk store for a reason",
-		"damn bro did your mother drop you when youre born",
-		"Who are you talking to? a kill say bot? 😅",
-		"damn bro you really need a therapist 😅😅",
-		"🤓: stop hacking!!!! its against the rules!!!",
-		"wenomechainsama tumajarbisaun",
-		"you should go back to kindergarden bro 😂",
-		"im just better than you!!!!!",
-		"SamuelPaste better than you smh smh smh 😅"		
-	}
 
 
-
-
-	--local number = 0
-	--local femboy = 1
-	--local customchatspam = 0
-	local killsaymessages = readfile('SamuelPaste_cw/customkillsay.txt'):split('\n', '')
-
-	local chat = misc:Sector("chat", "Left") 
---[[	chat:Element("Toggle", "chat spam", nil, function(tbl) 
-		if tbl.Toggle then 
-			while values.misc.chat["chat spam"].Toggle and values.misc.chat.type.Dropdown ~= "emojie" and values.misc.chat.type.Dropdown ~= "femboy" do 
-				wait(values.misc.chat["speed (ms)"].Slider/1000)
-				ReplicatedStorage.Events.PlayerChatted:FireServer(
-				values.misc.chat.type.Dropdown == "Text" and values.misc.chat['chat spam message'].Text
-				or values.misc.chat.type.Dropdown == "SamuelPaste" and "$$$ I'm using SamuelPaste stormy lol $$$" 
-				or values.misc.chat.type.Dropdown == "SEMI" and "||| RATTED BY SEMI ||| DONT FUCK WITH BLOXSENSE USERS |||" 
-				or values.misc.chat.type.Dropdown == "bloxsense.gay" and "BloxSense.gay winning $$$"
-				or values.misc.chat.type.Dropdown == "hexagon winning" and "Hexagon is the best!"
-				or values.misc.chat.type.Dropdown == "hexagon losing" and "Hexagon sucks ass!!" -- randomkillsay[math.random(#randomkillsay)
-				or values.misc.chat.type.Dropdown == "losing to samuel paste (math.random)" and chatmessages_pasteed[math.random(#chatmessages_pasteed)]
-				or values.misc.chat.type.Dropdown == "racism (math.random)" and chatmessages_Racist[math.random(#chatmessages_Racist)]
-				)
-			end
-			while tbl.Toggle and (values.misc.chat.type.Dropdown == "emojie" or values.misc.chat.type.Dropdown == "femboy") do 
-			wait(0.5)
-				if values.misc.chat.type.Dropdown ~= "emojie" then
-					number = 1
-				else
-					number += 1
-				end
-				if number > #emojiesspam then 
-					number = 1
-				end
-				if values.misc.chat.type.Dropdown == 'femboy' then
-					femboy += 1
-					if femboy == 3 then
-					femboy = 1
-					end
-				end
-				if values.misc.chat.type.Dropdown == 'custom' then
-					
-					customchatspam = customchatspam + 1
-					if customchatspam == (#customchatspamtxt + 1) then
-					customchatspam = 1
-					end
-				end
-				ReplicatedStorage.Events.PlayerChatted:FireServer(
-				values.misc.chat.type.Dropdown == 'femboy' and femboy == 1 and 'I am gay dm me to get my pics '..values.misc.chat['femboy discord'].Text
-				or values.misc.chat.type.Dropdown == 'femboy' and femboy == 2 and 'DM me to get femboy pics '..values.misc.chat['femboy discord'].Text
-				or values.misc.chat.type.Dropdown == "emojie" and emoteReplace(emojiesspam[number])
-				or values.misc.chat.type.Dropdown == 'custom' and customchatspamtxt[customchatspam]
-				
-				)
-				
-			end 
-		end
-	end)
-	chat:Element("Dropdown", "type", {options = {
-		'Text',
-		"SamuelPaste", 
-		"losing to samuel paste (math.random)", 
-		"racism (math.random)", 
-		"emojie",
-		'femboy',
-		'custom'
-		}})
-	chat:Element("Slider", "speed (ms)", {min = 30, max = 400, default = 50})
-	chat:Element('TextBox', 'chat spam message', {placeholder = 'chat spam message'})
-	chat:Element('TextBox', 'femboy discord', {placeholder = 'your discord nickname'})--]]
-	
-	chat:Element("Toggle", "kill say")
-	chat:Element("Dropdown", "kill say type", {options = {"default", "random", "custom file"}})
-	chat:Element('Dropdown', 'custom file type', {options = {'1,2,3 etc.', 'random'}})
-	chat:Element("TextBox", "message", {placeholder = "message"})
-	chat:Element('Button','Clean chat',{}, function()
-	game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\na")
-	end)
-	killsaysignal = Signal.new('killsaysignal')
-	killsaysignal:Connect(function()
-		if values.misc.chat["kill say"].Toggle then 
-			if values.misc.chat["kill say type"].Dropdown == "default" then
-				game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-					values.misc.chat["message"].Text ~= "" 
-					and values.misc.chat["message"].Text or "L bro cant win the pasted script"
-				)
-			elseif values.misc.chat['kill say type'].Dropdown == 'random' then
-			game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-				chatmessages_pasteed[math.random(#chatmessages_pasteed)]
-			)
-			else
-				
-				local messages = readfile('SamuelPaste/customkillsay.txt'):split('\n', '')
-				if values.misc.chat['custom file type'].Dropdown == 'random' then
-					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-						messages[math.random(#messages)]
-					)	
-				else
-					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-						messages[customtypemessagesnumber]
-					)
-					customtypemessagesnumber = customtypemessagesnumber + 1
-					if customtypemessagesnumber == (#messages + 1) then
-					customtypemessagesnumber = 1
-					end
-				end
-			end
-		end
-	end)
-	for i,v in pairs(getgc(true)) do
-		if typeof(v) == 'table' then
-			if rawget(v,'removeKillFeedIdx') and rawget(v,'render') then
-				print('found')
-				oldrender = v.render
-				v.render = function(sex1)
-							if sex1.props.killfeedItemInfo.playerThatKilled == LocalPlayer and sex1.props.killfeedItemInfo.playerThatDied ~= LocalPlayer then
-								killsaysignal:Fire()
-							end
-					return oldrender(sex1)
-				end
-			end
-		end
-	end	
-end
 
 
 do
