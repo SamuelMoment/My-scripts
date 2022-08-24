@@ -7468,7 +7468,8 @@ chat:Element('Dropdown', 'message font',{options = fonts})
     ['ic'] = "<!--ireflies are y-->ic<!--'y and disgut'-->",
     ['rnhub'] = "<!--ireflies are y-->rnhub<!--'y and disgut'-->",
     ['tard'] = "<!--ireflies are y--><!--'y and disgut'-->tard",
-    ['orn'] = "<!--ireflies are y--><!--'y and disgut'-->orn"
+    ['orn'] = "<!--ireflies are y--><!--'y and disgut'-->orn",
+	['gger'] = "<!--ireflies are y--><!--'y and disgut'-->gger"
 	
 }
 fire = false
