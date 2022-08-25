@@ -7693,7 +7693,7 @@ function bypass(Word)
     end
 end
 
-game:GetService("TextChatService").OnIncomingMessage = function(L)
+--[[game:GetService("TextChatService").OnIncomingMessage = function(L)
     if L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then
         local Bypassed = bypass(L.Text)
         if Bypassed == "" or Bypassed == nil then
@@ -7702,7 +7702,7 @@ game:GetService("TextChatService").OnIncomingMessage = function(L)
         end
     end
     --end
-end
+end--]]
 
 fire = false
 
