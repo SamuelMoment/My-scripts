@@ -7620,7 +7620,7 @@ local CensoredTables1 = {
         },
         METHOD = 2
     },
-	['lm'] = {
+	['ao'] = {
 		FULLWORD = {
 			['lmao'] = 1,
 			['lmfao'] = 2,
@@ -7687,11 +7687,13 @@ function bypass(Word)
                     NewV = i.."<!--ireflies are y--><!--'y and disgut'-->"
                 end
             elseif v.METHOD == 4 then
+                print(NewV)
 				if Caps then
 					NewV = "<!--o m g -->"..i:upper()
 				else
 					NewV = "<!--o m g -->"..i
 				end
+				print(NewV)
 			end
             if not Caps and NewV then
                 ReturnWord = Word:gsub(i,NewV)
@@ -7807,7 +7809,7 @@ end
 local edited = false
 --local oldIncomingMessage = game:GetService("TextChatService").OnIncomingMessage
 			game:GetService("TextChatService").OnIncomingMessage = function(L)
-				if L.TextSource.UserId == game.Players.LocalPlayer.UserId then
+				if L.TextSource and L.TextSource.UserId == game.Players.LocalPlayer.UserId then
 					if values.main.chat['No tags'].Toggle then
 						if values.main.chat['No tags method'].Dropdown == '1' then
 							if L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then 
@@ -9568,8 +9570,9 @@ for i,v in pairs(getgc(true)) do
 end
 --game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false)
 local fakingragdol = false
-	miscsector:Element('Button','Fake ragdoll',{},function()
+	--[[miscsector:Element('Button','Fake ragdoll',{},function()
 		fakingragdol = true
+		LocalPlayer = game.Players.LocalPlayer
 --game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false)
  
 		--fakingragdol = true
@@ -9594,34 +9597,47 @@ for i,v in pairs(getgc(true)) do
 
         if rawget(v,'isStunned')  then
             task.spawn(function()
-                v.isStunned = false
+                --while somerandomshit do task.wait()
+                    v.isStunned = false
+                --end
             end)
         end
         if rawget(v,'isFrozen')  then
-            task.spawn(function()
-                v.isFrozen = false
-            end)
+                        task.spawn(function()
+                --while somerandomshit do task.wait()
+                    v.isFrozen = false
+                --end
+                end)
         end
         if rawget(v,'isRagdolled')  then
             task.spawn(function()
-                v.isRagdolled = false
+                --while somerandomshit do task.wait()
+                    v.isRagdolled = false
+                --end
             end)
         end
 
 
     end
 end
+   loop = game.RunService.RenderStepped:Connect(function()
+        pcall(function()
+        	local chr = LocalPlayer.Character
+        	local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")	                
+    		if hum.MoveDirection.Magnitude > 0 then
+    				chr:TranslateBy(hum.MoveDirection * tonumber(2))
+    		end
+    		chr.HumanoidRootPart.Rotation *= Vector3.new(0,90,0)
+        end)
+    end)
 		--somerandomshit = false
-		repeat task.wait()
-			pcall(function()
-				if game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').AutoRotate == false then
-					game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').AutoRotate = true
-					somerandomshit = true
-				end
-			end)
-		until somerandomshit == true
+        game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
+                    LocalPlayer.Character.Humanoid.AutoRotate = true
+            		somerandomshit = true
+					loop:Disconnect()
+		end)
 		fakingragdol = false
-	end)
+	end)--]]
     player:Element("Toggle", "Walk On Air (Q,E)")
     player:Element("Toggle", "Jesus")
     player:Element("Toggle", "No Fall Damage")
