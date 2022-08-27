@@ -233,7 +233,7 @@ message3"
 )
 end
 if not isfile('SamuelPaste_cw/customantitags.txt') then
-	writefile('SamuelPaste_cw/customantitags.txt', "--METHOD 1 = IN MIDDLE, METHOD 2 = AFTER, METHOD 3 = INFRONT \
+	writefile('SamuelPaste_cw/customantitags.txt', "--METHOD 1 = IN MIDDLE, METHOD 2 = AFTER, METHOD 3 = INFRONT, METHOD 4 = SECOND TYPE OF ANTI TAGS \
 	['uc'] = {\
         FULLWORD = {\
             ['fuck'] = 1\
@@ -7620,6 +7620,13 @@ local CensoredTables1 = {
         },
         METHOD = 2
     }
+	['lm'] = {
+		FULLWORD = {
+			['lmao'] = 1,
+			['lmfao'] = 2,
+		},
+		METHOD = 4
+	}
 }
 function CheckIfIsInTable(Word)
     --print(Word)
@@ -7664,20 +7671,28 @@ function bypass(Word)
             if v.METHOD == 1 then
                 if Caps then
                     NewV = "<!--ireflies are y-->"..i:upper().."<!--'y and disgut'-->"
-                    --print(Word, "Capped")
                 else
                     NewV = "<!--ireflies are y-->"..i.."<!--'y and disgut'-->"
-                    --print(NewV)
-                    --print(Word, "Not Capped")
                 end
             elseif v.METHOD == 2 then
-                --print(Word,"how")
                 if Caps then
                     NewV = "<!--ireflies are y--><!--'y and disgut'-->"..i:upper()
                 else
                     NewV = "<!--ireflies are y--><!--'y and disgut'-->"..i
                 end
-            end
+            elseif v.METHOD == 3 then
+                if Caps then
+                    NewV = i:upper().."<!--ireflies are y--><!--'y and disgut'-->"
+                else
+                    NewV = i.."<!--ireflies are y--><!--'y and disgut'-->"
+                end
+            elseif v.METHOD == 4 then
+				if Caps then
+					NewV = "<!--o m g -->"..i:upper()
+				else
+					NewV = "<!--o m g -->"..i
+				end
+			end
             if not Caps and NewV then
                 ReturnWord = Word:gsub(i,NewV)
                 --print(ReturnWord)
@@ -8350,6 +8365,9 @@ task.spawn(function()
 	silent:Element('Toggle', 'silent aim')
 	silent:Element('ToggleTrans', 'Highlight target')
 	silent:Element('ToggleTrans', 'Outline highlight target')	
+	silent:Element('Dropdown', 'body part to hit', {options = {"Head","HumanoidRootPart","Torso","Left Leg","Right Leg","Left Arm","Right Arm"}})
+	silent:Element('Slider','hitchance',{min = 1,max = 100,default = 100})
+	silent:Element('Slider','hit distance',{min = 1,max = 25,default = 15})
 	task.spawn(function()
 		game.RunService.RenderStepped:Connect(function()
 			if values.main['Ranged sector']['Highlight target'].Toggle or values.main['Ranged sector']['Outline highlight target'].Toggle then
@@ -8458,9 +8476,9 @@ task.spawn(function()
 		local fakepos = character.Head.Position + Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5))
 		local args = {
 			[1] = LocalPlayer.Character:FindFirstChildOfClass("Tool"),
-			[2] = character.Head,
+			[2] = character[values.main['Ranged sector']['body part to hit'].Dropdown],
 			[3] = fakepos,
-			[4] = character.Head.CFrame:ToObjectSpace(CFrame.new(fakepos)),
+			[4] = character[values.main['Ranged sector']['body part to hit'].Dropdown].CFrame:ToObjectSpace(CFrame.new(fakepos)),
 			[5] = fakepos * Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5)),
 			[6] = tostring(arrowsshooted)
 		}
@@ -8616,10 +8634,18 @@ UIStroke.Parent = Frame
 			end
 			if ARROW then
 				if closest then
-					if (ARROW.Position - closest.Character.HumanoidRootPart.Position).Magnitude <= 15 then
-						firehit(closest.Character,ARROW)
-						ARROW = nil
-						shot = false
+					if (ARROW.Position - closest.Character.HumanoidRootPart.Position).Magnitude <= values.main['Ranged sector']['hit distance'].Slider then
+						if values.main['Ranged sector'].hitchance.Slider == 100 then
+							firehit(closest.Character,ARROW)
+							ARROW = nil
+							shot = false
+						else
+							if math.random(1,100) >= values.main['Ranged sector'].hitchance.Slider then
+								firehit(closest.Character,ARROW)
+								ARROW = nil
+								shot = false							
+							end
+						end
 					end
 				end
 			end
