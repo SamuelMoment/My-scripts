@@ -7523,7 +7523,7 @@ chat:Element('Dropdown', 'message font',{options = fonts})
 	chat:Element('Dropdown','Main no tags method', {options = {'in script','custom file'}})
 	
 	randomtable = {
-    ['uck'] = "<!--ireflies are y-->uck<!--'y and disgut'-->",
+    --['uck'] = "<!--ireflies are y-->uck<!--'y and disgut'-->",
     ['tch'] = "<!--ngo and ill dit-->tch",
     ['hit'] = "<!--ireflies are y--><!--'y and disgut'-->hit",
     ['ic'] = "<!--ireflies are y-->ic<!--'y and disgut'-->",
@@ -7619,7 +7619,7 @@ local CensoredTables1 = {
             ['sex'] = 1
         },
         METHOD = 2
-    }
+    },
 	['lm'] = {
 		FULLWORD = {
 			['lmao'] = 1,
