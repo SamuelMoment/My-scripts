@@ -8485,7 +8485,7 @@ task.spawn(function()
 	end
 
 	firehit = function(character,arrow)
-		local fakepos = character.Head.Position + Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5))
+		local fakepos = character[values.main['Ranged sector']['body part to hit'].Dropdown].Position + Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5))
 		local args = {
 			[1] = LocalPlayer.Character:FindFirstChildOfClass("Tool"),
 			[2] = character[values.main['Ranged sector']['body part to hit'].Dropdown],
