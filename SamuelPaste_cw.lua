@@ -8376,7 +8376,9 @@ task.spawn(function()
 	getgenv().silent = main:Sector("Ranged sector", 'Right')
 	silent:Element('Toggle', 'silent aim')
 	silent:Element('ToggleTrans', 'Highlight target')
-	silent:Element('ToggleTrans', 'Outline highlight target')	
+	silent:Element('ToggleTrans', 'Outline highlight target')
+	silent:Element('ToggleColor', 'Silent aim info gui',{default = {Color = Color3.new(85, 170, 255)}})
+
 	silent:Element('Dropdown', 'body part to hit', {options = {"Head","HumanoidRootPart","Torso","Left Leg","Right Leg","Left Arm","Right Arm"}})
 	silent:Element('Slider','hitchance',{min = 1,max = 100,default = 100})
 	silent:Element('Slider','hit distance',{min = 1,max = 25,default = 15})
@@ -8577,9 +8579,10 @@ UIStroke.Thickness = 2
 UIStroke.Parent = Frame
 	task.spawn(function()
 		RunService.RenderStepped:Connect(function()
-			if values.main['Ranged sector']['silent aim'].Toggle and values.main['Ranged sector']['Highlight target'].Toggle then
+			if values.main['Ranged sector']['silent aim'].Toggle and values.main['Ranged sector']['Silent aim info gui'].Toggle then
 				if game.CoreGui:FindFirstChild("Aiming real real") then
 					game.CoreGui:FindFirstChild('Aiming real real').Enabled = true
+					game.CoreGui:FindFirstChild('Aiming real real').Frame.BackgroundColor3 = values.main['Ranged sector']['Silent aim info gui'].Color
 				end
 			else
 				if game.CoreGui:FindFirstChild("Aiming real real") then
