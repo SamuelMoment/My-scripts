@@ -7050,6 +7050,10 @@ local Workspace = game:GetService('Workspace')
 local workspace = game:GetService('Workspace')
 local Camera = workspace.CurrentCamera
 local Mouse = LocalPlayer:GetMouse()
+
+
+
+----LIBRARY END---------
 for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"kick") then v.kick = function() return end end end 
 --for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999 end end 
 for i,v in pairs(getgc(true)) do
@@ -8099,7 +8103,7 @@ local combat = main:Sector('combat', 'Left')
 	end)
     task.spawn(
         function()
-            while task.wait(0.1) do
+            while values.main.combat["Kill Aura"].Toggle do
                pcall(
                     function()
                         if values.main.combat["Kill Aura"].Toggle then
