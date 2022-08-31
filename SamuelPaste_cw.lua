@@ -7937,7 +7937,7 @@ local combat = main:Sector('combat', 'Left')
     local Spins = main:Sector("Spins",'Right')
     Misc:Element("Toggle", "BHop")
     Autos:Element("Toggle", "Auto Equip")
-    Autos:Element("Toggle", "Auto Revive")
+    --Autos:Element("Toggle", "Auto Revive")
     --Autos:Element("Toggle", "Fast Respawn")
     combat:Element("Toggle", "Kill Aura")
     combat:Element("Dropdown", "Priority",{options = {'Distance','Health'}})    
@@ -8288,7 +8288,7 @@ local combat = main:Sector('combat', 'Left')
         end
     )
     --print('task.spawn #3')
-    task.spawn(function()
+    --[[task.spawn(function()
         while task.wait() do
             --pcall(function()
                 if values.main.Autos["Auto Revive"].Toggle then
@@ -8300,7 +8300,7 @@ local combat = main:Sector('combat', 'Left')
                 end
             --end)
         end
-    end)
+    end)--]]
    -- print('task.spawn #4')
     task.spawn(function()
         while task.wait() do
@@ -9503,7 +9503,7 @@ end
 			end
 		end	
 	end)
-	utility:Element('Toggle','Ignore when parkouring')
+	--utility:Element('Toggle','Ignore when parkouring')
     player:Element("Toggle", "Auto Airdrop-Claimer")
      miscsector:Element("Toggle","Velocity Fly",nil,function(state)
          if state.Toggle then
