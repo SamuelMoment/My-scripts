@@ -7970,7 +7970,7 @@ local combat = main:Sector('combat', 'Left')
 	local respawn = main:Sector('Respawn', 'Left')
 	respawn:Element('Toggle', 'Fast Respawn')
 	respawn:Element('Toggle', 'Auto spawn')
-	respawn:Element('Toggle', 'Respawn on death position')
+	--respawn:Element('Toggle', 'Respawn on death position')
 	
 	--respawn:Element('Toggle', 'Respawn when low hp')
 	--respawn:Element('Slider', 'low hp', {min = 1, max = 100, default = 30})
@@ -8290,14 +8290,15 @@ local combat = main:Sector('combat', 'Left')
     --print('task.spawn #3')
     task.spawn(function()
         while task.wait() do
-            pcall(function()
-                if values.main.combat["Auto Revive"].Toggle then
-                    if LocalPlayer.Character.Humanoid.Health <= 15 then
+            --pcall(function()
+                if values.main.Autos["Auto Revive"].Toggle then
+                    if getState:getState().down.isDowned == true then
                         events.SelfReviveStart:FireServer()
+						task.wait(.2)
                         events.SelfRevive:FireServer()
                     end
                 end
-            end)
+            --end)
         end
     end)
    -- print('task.spawn #4')
@@ -8306,20 +8307,21 @@ local combat = main:Sector('combat', 'Left')
             pcall(function()
                 if values.main.Respawn["Fast Respawn"].Toggle then
                     if LocalPlayer.Character.Humanoid.Health == 0 then
-						if values.main.Respawn['Respawn on death position'].Toggle then
-							deathpos = LocalPlayer.Character.HumanoidRootPart.CFrame
-						end
+						--if values.main.Respawn['Respawn on death position'].Toggle then
+							--deathpos = LocalPlayer.Character.HumanoidRootPart.CFrame
+						--end
 						--events.SelfDamage:FireServer(150)
 						task.wait(1)
                         events.StartFastRespawn:FireServer()
+						task.wait(.2)
                         functions.CompleteFastRespawn:FireServer()
 						if values.main.Respawn['Auto spawn'].Toggle then
 							repeat wait() until game.Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("MainMenu")
 							functions.SpawnCharacter:FireServer()
-							task.wait(1)
-							if values.main.Respawn['Respawn on death position'].Toggle and deathpos then
+							--task.wait(1)
+							--[[if values.main.Respawn['Respawn on death position'].Toggle and deathpos then
 								LocalPlayer.Character.HumanoidRootPart.CFrame = deathpos
-							end
+							end--]]
 						end
                     end
                 end
@@ -9400,11 +9402,14 @@ function NOFLY()
 	if LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
 		LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
 	end
-	LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
-    for i = 1,5 do
-        LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
-        wait(.1)
-    end
+	
+	if getState:getState().ragdoll.isRagdolled == true and LocalPlayer.Character:FindFirstChild('isFlyingCheck') then
+		LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+		for i = 1,5 do
+			LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
+			wait(.1)
+		end
+	end
 	pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
 end
 
@@ -9419,6 +9424,15 @@ function NoclipLoop()
 			end
 		end
 	end
+end
+
+
+for i,v in pairs(getgc(true)) do
+    if typeof(v) == 'table' then
+        if rawget(v,'getSessionDataRoduxStoreForPlayer') then
+            getState = v.getSessionDataRoduxStoreForPlayer(game.Players.LocalPlayer)
+        end
+    end
 end
 do
 for i,v in pairs(getgc(true)) do
@@ -9512,8 +9526,9 @@ end
 	isExecuting = false
 	RunService.RenderStepped:Connect(function()
 		if game.Players.LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid') then
-			if isExecuting == false and not LocalPlayer.Character:FindFirstChild('isFlyingCheck') and LocalPlayer.Character.Humanoid:FindFirstChild('RagdollRemoteEvent') then
+			if isExecuting == false and not LocalPlayer.Character:FindFirstChild('isFlyingCheck') and getState:getState().mainMenu.isIn == false	then
 				isExecuting = true
+				LocalPlayer.Character.Humanoid:WaitForChild('RagdollRemoteEvent')
 				if values.misc.misc2.misc["Fly"].Toggle then
 					NOFLY()
 					sFLY(false, true, true)
