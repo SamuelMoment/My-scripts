@@ -9434,10 +9434,7 @@ for i,v in pairs(getgc(true)) do
         end
         if rawget(v,'knockbackPartForce') then
 			oldknockbackPartForce = v.knockbackPartForce
-		end
-        if rawget(v,'knockbackPart') then
-			oldknockbackPart = v.knockbackPart
-        end        
+		end     
     end
 end
 
@@ -9488,19 +9485,11 @@ end
 					else
 						v.knockbackPartForce = oldknockbackPartForce
 					end
-				end
-				if rawget(v,'knockbackPart') then
-					if tbl.Toggle then
-						v.knockbackPart = function(...)
-							return
-						end
-					else
-						v.knockbackPart = oldknockbackPart
-					end
-				end        
+				end 
 			end
 		end	
 	end)
+	utility:Element('Toggle','Ignore when parkouring')
     player:Element("Toggle", "Auto Airdrop-Claimer")
      miscsector:Element("Toggle","Velocity Fly",nil,function(state)
          if state.Toggle then
