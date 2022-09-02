@@ -183,7 +183,7 @@ end
 string.split(text, from-to letter) example string.split('nig.ger, '.') will return table nig and ger
 C.GSUB(text, change what, change to what)
 string.find(text, what to find)
-
+string.sub(string,startstring,endstring), exam: string.sub('banana',1,3) - ban
 
 
 
@@ -2663,14 +2663,37 @@ do
 								local val 
 								Button.MouseButton1Down:Connect(function() 
 									Frame.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
-									val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) or 0 
+									val = (((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min) or 0 
+										if string.find(tostring(val),'.') then
+											valstring = tostring(val)
+											valtable = string.split(val,'.')
+											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
+											  valstring2 = string.sub(valtable[2],1,2)
+											  valstring = valtable[1]..'.'..valstring2
+											  val = tonumber(valstring)
+											end
+											--print(val)
+											--print(typeof(val))
+										end									
 									Value.Text = val 
-									Element.value.Slider = val 
+									Element.value.Slider = val
 									values[tabname][sectorname][tabtext][text] = Element.value 
 									callback(Element.value) 
 									moveconnection = mouse.Move:Connect(function() 
 										Frame.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
-										val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) 
+										val = (((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min) 
+										if string.find(tostring(val),'.') then
+											valstring = tostring(val)
+											valtable = string.split(val,'.')
+											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
+											  valstring2 = string.sub(valtable[2],1,2)
+											  valstring = valtable[1]..'.'..valstring2
+											  val = tonumber(valstring)
+											end
+										end
+											--print(val)
+											--print(typeof(val))
+																					
 										Value.Text = val 
 										Element.value.Slider = val 
 										values[tabname][sectorname][tabtext][text] = Element.value 
@@ -2679,14 +2702,25 @@ do
 									releaseconnection = uis.InputEnded:Connect(function(Mouse) 
 										if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then 
 											Frame.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
-											val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) 
+											val = (((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)
+										if string.find(tostring(val),'.') then
+											valstring = tostring(val)
+											valtable = string.split(val,'.')
+											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
+											  valstring2 = string.sub(valtable[2],1,2)
+											  valstring = valtable[1]..'.'..valstring2
+											  val = tonumber(valstring)
+											end
+										end
+											--print(val)
+											--pri
 											values[tabname][sectorname][tabtext][text] = Element.value 
 											callback(Element.value) 
 											moveconnection:Disconnect() 
 											releaseconnection:Disconnect() 
 										end 
-									end) 
-								end) 
+									end)
+								end)
 								elseif type == "Button" then 
 
 									tabsize = tabsize + C.UDIM2(0,0,0,24) 
@@ -4700,14 +4734,36 @@ end
 								local val 
 								Button2113132.MouseButton1Down:Connect(function() 
 									Frame123123.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
-									val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) or 0 
+									val = (((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)or 0 
+										if string.find(tostring(val),'.') then
+											valstring = tostring(val)
+											valtable = string.split(val,'.')
+											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
+											  valstring2 = string.sub(valtable[2],1,2)
+											  valstring = valtable[1]..'.'..valstring2
+											  val = tonumber(valstring)
+											end
+										end
+											--print(val)
+											--pri
 									Value123123123.Text = val 
 									Element.value.RainbowSpeed = val 
 									--values[tabname][sectorname][text] = Element.Value123123123 
 									--callback(Element.Value123123123) 
 									moveconnection = mouse.Move:Connect(function() 
 										Frame123123.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
-										val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) 
+										val = (((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)
+										if string.find(tostring(val),'.') then
+											valstring = tostring(val)
+											valtable = string.split(val,'.')
+											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
+											  valstring2 = string.sub(valtable[2],1,2)
+											  valstring = valtable[1]..'.'..valstring2
+											  val = tonumber(valstring)
+											end
+										end
+											--print(val)
+											--pri
 										Value123123123.Text = val 
 										--RainbowSpeed = val 
 										--values[tabname][sectorname][text] = Element.Value123123123 
@@ -4716,7 +4772,18 @@ end
 									releaseconnection = uis.InputEnded:Connect(function(Mouse) 
 										if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then 
 											Frame123123.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame123123.AbsolutePosition.X, 0, 175), 0, 5) 
-											val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)) 
+											val = (((tonumber(max) - tonumber(min)) / 175) * Frame123123.AbsoluteSize.X) + tonumber(min)
+										if string.find(tostring(val),'.') then
+											valstring = tostring(val)
+											valtable = string.split(val,'.')
+											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
+											  valstring2 = string.sub(valtable[2],1,2)
+											  valstring = valtable[1]..'.'..valstring2
+											  val = tonumber(valstring)
+											end
+										end
+											--print(val)
+											--pri
 											--values[tabname][sectorname][text] = Element.Value123123123 
 											--callback(Element.Value123123123) 
 											moveconnection:Disconnect() 
@@ -6416,14 +6483,43 @@ end--]]
 								local val 
 								Button.MouseButton1Down:Connect(function() 
 									Frame.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
-									val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) or 0 
+									val = (((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min) or 0 
+									
+										if string.find(tostring(val),'.') then
+											valstring = tostring(val)
+											valtable = string.split(val,'.')
+											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
+											  valstring2 = string.sub(valtable[2],1,2)
+											  valstring = valtable[1]..'.'..valstring2
+											  val = tonumber(valstring)
+											end
+											--print(val)
+											--print(typeof(val))
+										end
+										print(val)
+										print(typeof(val))			
 									Value.Text = val 
 									Element.value.Slider = val 
 									values[tabname][sectorname][text] = Element.value 
 									callback(Element.value) 
 									moveconnection = mouse.Move:Connect(function() 
 										Frame.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
-										val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) 
+										val = (((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min) 
+										
+										
+										--print(val)
+										--print(typeof(val))
+										if string.find(tostring(val),'.') then
+											valstring = tostring(val)
+											valtable = string.split(val,'.')
+											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
+											  valstring2 = string.sub(valtable[2],1,2)
+											  valstring = valtable[1]..'.'..valstring2
+											  val = tonumber(valstring)
+											end
+											--print(val)
+											--print(typeof(val))
+										end
 										Value.Text = val 
 										Element.value.Slider = val 
 										values[tabname][sectorname][text] = Element.value 
@@ -6432,7 +6528,20 @@ end--]]
 									releaseconnection = uis.InputEnded:Connect(function(Mouse) 
 										if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then 
 											Frame.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
-											val = C.FLOOR((((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)) 
+											val = (((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min)
+										if string.find(tostring(val),'.') then
+											valstring = tostring(val)
+											valtable = string.split(val,'.')
+											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
+											  valstring2 = string.sub(valtable[2],1,2)
+											  valstring = valtable[1]..'.'..valstring2
+											  val = tonumber(valstring)
+											end
+											--print(val)
+											--print(typeof(val))
+										end
+										print(val)
+										print(typeof(val))
 											values[tabname][sectorname][text] = Element.value 
 											callback(Element.value) 
 											moveconnection:Disconnect() 
@@ -7935,7 +8044,104 @@ local combat = main:Sector('combat', 'Left')
     local Autos = main:Sector("Autos", "Right")
     local Misc = main:Sector("Misc", "Right")
     local Spins = main:Sector("Spins",'Right')
-    Misc:Element("Toggle", "BHop")
+    Misc:Element("Toggle", "Auto jump")
+	
+	
+	Misc:Element('Toggle', 'bunny hop')
+
+	Misc:Element('Dropdown', 'direction', {options = {'forward', 'directional', 'directional 2'}})
+	Misc:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity', 'idk'}})
+	Misc:Element('Slider', 'speed', {min = 0, max = 200, default = 40})	
+	Misc:Element('Toggle', 'prevent launch')
+	Misc:Element('Slider', 'launch block (y velocity)', {min = 0, max = 100, default = 40})
+	
+	Misc:Element('Toggle', 'first person-like camera',{},function(tbl)
+		firstperson = game.RunService.RenderStepped:Connect(function()
+			if not LocalPlayer.Character then return end
+			if not tbl.Toggle then return firstperson:Disconnect() end
+			
+			UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter 
+			local pos = LocalPlayer.Character:FindFirstChild('HumanoidRootPart').Position
+			local camLv = workspace.CurrentCamera.CFrame.lookVector
+			local camRotation = math.atan2(-camLv.X, -camLv.Z)
+			 LocalPlayer.Character:FindFirstChild('HumanoidRootPart').CFrame = CFrame.new(LocalPlayer.Character:FindFirstChild('HumanoidRootPart').Position) * CFrame.Angles(0, camRotation, 0)
+
+		end)
+	end)
+	
+	
+	BodyVelocity = C.INST("BodyVelocity") 
+	BodyVelocity.MaxForce = C.Vec3(C.HUGE, 0, C.HUGE) 
+
+	local function YROTATION(cframe) 
+		local x, y, z = cframe:ToOrientation() 
+		return C.CF(cframe.Position) * C.CFAngles(0,y,0) 
+	end
+
+	switchtrigger = {false, nil, nil}
+	game.RunService.RenderStepped:Connect(function()
+		if not LocalPlayer.Character then return end
+		local CamCFrame = game.workspace.CurrentCamera.CFrame
+		local Root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+		BodyVelocity:Destroy()
+		BodyVelocity = C.INST('BodyVelocity')
+		BodyVelocity.MaxForce = C.Vec3(C.HUGE,0,C.HUGE)
+		if UserInputService:IsKeyDown('Space') and values.main.Misc['bunny hop'].Toggle == true then
+			local add = 0
+			if values.main.Misc['direction'].Dropdown == 'directional' or values.main.Misc['direction'].Dropdown == 'directional 2' then
+				if UserInputService:IsKeyDown("A") then add = 90 end 
+				if UserInputService:IsKeyDown("S") then add = 180 end 
+				if UserInputService:IsKeyDown("D") then add = 270 end 
+				if UserInputService:IsKeyDown("A") and UserInputService:IsKeyDown("W") then add = 45 end 
+				if UserInputService:IsKeyDown("D") and UserInputService:IsKeyDown("W") then add = 315 end 
+				if UserInputService:IsKeyDown("D") and UserInputService:IsKeyDown("S") then add = 225 end 
+				if UserInputService:IsKeyDown("A") and UserInputService:IsKeyDown("S") then add = 145 end 
+			end
+			local rot = YROTATION(CamCFrame) * C.CFAngles(0,C.RAD(add),0)
+			local bhopspeed = values.main.Misc['speed'].Slider		
+			BodyVelocity.Parent = LocalPlayer.Character['HumanoidRootPart']
+			
+                            if LocalPlayer.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
+                                LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                            end			
+			BodyVelocity.Velocity = C.Vec3(rot.LookVector.X,0,rot.LookVector.Z) * (bhopspeed * 2)
+			if add == 0 and values.main.Misc['direction'].Dropdown == 'directional' and not UserInputService:IsKeyDown('W') then
+				BodyVelocity:Destroy()
+			else
+
+
+				if values.main.Misc['type'].Dropdown == 'cframe' then
+					BodyVelocity:Destroy()
+					Root.CFrame = Root.CFrame + C.Vec3(rot.LookVector.X,0,rot.LookVector.Z) * bhopspeed/50
+				elseif values.main.Misc['type'].Dropdown == 'velocity'  then
+					BodyVelocity:Destroy()
+					Root.Velocity = C.Vec3(rot.LookVector.X * (bhopspeed * 2), Root.Velocity.y, rot.LookVector.Z * (bhopspeed * 2))
+				elseif values.main.Misc['type'].Dropdown == 'idk' then
+					BodyVelocity:Destroy()
+					spawn(function()
+						if not switchtrigger[1]  then 
+							switchtrigger[1] = true
+							wait(0.5)
+							switchtrigger[3] = Root.CFrame
+							Root.CFrame = switchtrigger[2]
+		
+							wait(0.1)
+							Root.CFrame = switchtrigger[3]
+							switchtrigger[1] = false
+						end
+					end)
+						
+					Root.CFrame = Root.CFrame + C.Vec3(rot.LookVector.X, 0, rot.LookVector.Z) * bhopspeed/50
+				end
+			end
+		end	
+		if values.main.Misc['no launch'].Toggle and values.main.Misc['no launch'].Active then 
+			if Root.Velocity.Y > values.main.Misc['launch block (y velocity)'].Slider then 
+				Root.Velocity = C.Vec3(Root.Velocity.x, 0, Root.Velocity.z)
+			end
+		end		
+	end)
+		
     Autos:Element("Toggle", "Auto Equip")
     --Autos:Element("Toggle", "Auto Revive")
     --Autos:Element("Toggle", "Fast Respawn")
@@ -8368,7 +8574,7 @@ local combat = main:Sector('combat', 'Left')
             while task.wait() do
                 pcall(
                     function()
-                        if values.main.Misc["BHop"].Toggle then
+                        if values.main.Misc["Auto jump"].Toggle then
                             if LocalPlayer.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
                                 LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
                             end
@@ -8595,7 +8801,7 @@ UIStroke.Parent = Frame
 					game.CoreGui:FindFirstChild('Aiming real real').Enabled = false
 				end			
 			end
-			PredictionV.Text = "Prediction Value: "..values.main['Ranged sector']['Prediction val'].Slider/100
+			PredictionV.Text = "Prediction Value: "..values.main['Ranged sector']['Prediction val'].Slider
 			--[[if not values.main['Ranged sector']['silent aim'].Toggle then
 				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
 			elseif getClosestToMouse() == nil then
@@ -8748,7 +8954,7 @@ end)
 				end
 			end
 		end)
-		silent:Element('Slider', 'Prediction val', {min = 1,max = 100})
+		silent:Element('Slider', 'Prediction val', {min = 0,max = 1})
 		silent:Element('Toggle', 'No recoil',{},function()
 			rangedmods:Fire()
 		end)
@@ -10148,7 +10354,7 @@ do
 
 		--Properties:
 
-		ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+		ScreenGui.Parent = game.CoreGui
 		ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 		ScreenGui.Name = 'dvd logo'
 		ScreenGui.Enabled = false
@@ -10174,6 +10380,7 @@ do
 			getgenv().XSpeed = 5
 			
 			getgenv().changecolor = false
+			getgenv().dvdmethod = 'tick'
 			
 			game:GetService('RunService').RenderStepped:Connect(function()
 				local ScreenSize = script.Parent.Parent.AbsoluteSize
@@ -10184,13 +10391,21 @@ do
 					getgenv().XSpeed = getgenv().XSpeed * -1
 					--print('X')
 					if getgenv().changecolor then
+						if dvdmethod == 'tick' then
 						script.Parent.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
+						else
+						script.Parent.ImageColor3 = Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
+						end
 					end
 				end
 				if (script.Parent.AbsolutePosition.Y >= ScreenSize.Y or script.Parent.AbsolutePosition.Y <= 0) or ((script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) >= ScreenSize.Y or (script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) <= 0) then
 					getgenv().YSpeed = getgenv().YSpeed * -1
 					if getgenv().changecolor then
+						if getgenv().dvdmethod == 'tick' then
 						script.Parent.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
+						else
+						script.Parent.ImageColor3 = Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
+						end
 					end
 				end
 			end)
@@ -10205,6 +10420,9 @@ do
 			getgenv().changecolor = tbl.Toggle
 			--ScreenGui.ImageLabel.ImageColor3 = tbl.Color
 		end)		
+		dvd:Element('Dropdown','Color change method',{options = {'tick','random'}},function(tbl)
+			getgenv().dvdmethod = tbl.Dropdown
+		end)
 		dvd:Element("Slider",'Speed',{min = 1,max = 20,default = 10},function(tbl)
 			if getgenv().YSpeed <= 0 then
 				getgenv().YSpeed = tbl.Slider * -1
