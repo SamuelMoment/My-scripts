@@ -10141,7 +10141,7 @@ do
 
 	
 	do
-		local dvd = other:Sector('DVD Logo','Left')
+		local dvd = other:Sector('DVD Logo','Right')
 		
 		local ScreenGui = Instance.new("ScreenGui")
 		local ImageLabel = Instance.new("ImageLabel")
