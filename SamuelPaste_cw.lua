@@ -10136,7 +10136,88 @@ do
 		if RadioSound then
 			RadioSound.Looped = tbl.Toggle
 		end
-	end)		
+	end)
+
+
+	
+	do
+		local dvd = other:Sector('DVD Logo','Left')
+		
+		local ScreenGui = Instance.new("ScreenGui")
+		local ImageLabel = Instance.new("ImageLabel")
+
+		--Properties:
+
+		ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+		ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+		ScreenGui.Name = 'dvd logo'
+		ScreenGui.Enabled = false
+
+		ImageLabel.Parent = ScreenGui
+		ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ImageLabel.BackgroundTransparency = 1.000
+		ImageLabel.Position = UDim2.new(0.187000006, 0, 0.270999998, 0)
+		ImageLabel.Size = UDim2.new(0, 187, 0, 83)
+		ImageLabel.Image = "rbxassetid://10789990891"
+		ImageLabel.SliceScale = 3.000
+
+		-- Scripts:
+
+		local function JVMZPQB_fake_script() -- ImageLabel.LocalScript 
+			local script = Instance.new('LocalScript', ImageLabel)
+
+			--script.Parent.Position = UDim2.new(0,math.random(10,script.Parent.Parent.AbsoluteSize.X),0,math.random(10,script.Parent.Parent.AbsoluteSize.Y))
+			
+			--print('check')
+			
+			getgenv().YSpeed = 5
+			getgenv().XSpeed = 5
+			
+			getgenv().changecolor = false
+			
+			game:GetService('RunService').RenderStepped:Connect(function()
+				local ScreenSize = script.Parent.Parent.AbsoluteSize
+				
+				script.Parent.Position += UDim2.new(0,getgenv().XSpeed,0,getgenv().YSpeed)
+				--print(script.Parent.AbsolutePosition)
+				if (script.Parent.AbsolutePosition.X >= ScreenSize.X or script.Parent.AbsolutePosition.X <= 0) or ((script.Parent.AbsolutePosition.X + script.Parent.AbsoluteSize.X) >= ScreenSize.X or (script.Parent.AbsolutePosition.X + script.Parent.AbsoluteSize.X) <= 0) then
+					getgenv().XSpeed = getgenv().XSpeed * -1
+					--print('X')
+					if getgenv().changecolor then
+						script.Parent.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
+					end
+				end
+				if (script.Parent.AbsolutePosition.Y >= ScreenSize.Y or script.Parent.AbsolutePosition.Y <= 0) or ((script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) >= ScreenSize.Y or (script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) <= 0) then
+					getgenv().YSpeed = getgenv().YSpeed * -1
+					if getgenv().changecolor then
+						script.Parent.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
+					end
+				end
+			end)
+		end
+		coroutine.wrap(JVMZPQB_fake_script)()
+		
+		dvd:Element('ToggleColor','Enable',{},function(tbl)
+			ScreenGui.Enabled = tbl.Toggle
+			ScreenGui.ImageLabel.ImageColor3 = tbl.Color
+		end)
+		dvd:Element('Toggle','Change color when screen edge touched',{},function(tbl)
+			getgenv().changecolor = tbl.Toggle
+			--ScreenGui.ImageLabel.ImageColor3 = tbl.Color
+		end)		
+		dvd:Element("Slider",'Speed',{min = 1,max = 20,default = 10},function(tbl)
+			if getgenv().YSpeed <= 0 then
+				getgenv().YSpeed = tbl.Slider * -1
+			else
+				getgenv().YSpeed = tbl.Slider
+			end
+			if getgenv().XSpeed <= 0 then
+				getgenv().XSpeed = tbl.Slider * -1
+			else
+				getgenv().XSpeed = tbl.Slider
+			end			
+		end)
+	end
 end
 
 
