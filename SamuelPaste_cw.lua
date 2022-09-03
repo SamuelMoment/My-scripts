@@ -8040,7 +8040,7 @@ function parry()
 end
 do
 local combat = main:Sector('combat', 'Left')
-  -- local combat = main:Sector("combat")
+
     local Autos = main:Sector("Autos", "Right")
     local Misc = main:Sector("Misc", "Right")
     local Spins = main:Sector("Spins",'Right')
@@ -8135,7 +8135,7 @@ local combat = main:Sector('combat', 'Left')
 				end
 			end
 		end	
-		if values.main.Misc['no launch'].Toggle and values.main.Misc['no launch'].Active then 
+		if values.main.Misc['prevent launch'].Toggle and values.main.Misc['no launch'].Active then 
 			if Root.Velocity.Y > values.main.Misc['launch block (y velocity)'].Slider then 
 				Root.Velocity = C.Vec3(Root.Velocity.x, 0, Root.Velocity.z)
 			end
@@ -8146,10 +8146,11 @@ local combat = main:Sector('combat', 'Left')
     --Autos:Element("Toggle", "Auto Revive")
     --Autos:Element("Toggle", "Fast Respawn")
     combat:Element("Toggle", "Kill Aura")
+	 --combat:Element("Toggle", "AA Aura")
     combat:Element("Dropdown", "Priority",{options = {'Distance','Health'}})    
 	combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 12, default = 12})
     combat:Element("Toggle", "Custom Kill Aura Distance")
-    combat:Element("Slider", "Custom Distance", {min = 0, max = 1000, default = 600})
+    combat:Element("Slider", "Custom Distance", {min = 0, max = 2000, default = 600})
     combat:Element("Toggle", "Teleport Behind (for kill aura)")
     combat:Element("Slider", "Teleport Distance", {min = 0, max = 5, default = 5})
     combat:Element("Toggle", "Stomp Aura")
@@ -8171,6 +8172,7 @@ local combat = main:Sector('combat', 'Left')
     Spins:Element("Toggle", "Spin")
     Spins:Element("Slider", "Spin Power", {min = 0, max = 50, default = 50})
     Autos:Element("Toggle", "Auto Parry")
+	Autos:Element('Dropdown','Auto Parry Method',{options = {'Animation','Sound'}})
     Autos:Element("Slider", "Auto Parry Distance", {min = 0, max = 25, default = 10})
     Autos:Element("Slider", "Auto Parry Chance", {min = 0, max = 100, default = 100})
 	local respawn = main:Sector('Respawn', 'Left')
@@ -8192,7 +8194,7 @@ local combat = main:Sector('combat', 'Left')
                                 for i, v in pairs(weapon_anims) do
                                     if
                                         values.main.Autos["Auto Parry"].Toggle and
-                                            anim.Animation.AnimationId == v
+                                            anim.Animation.AnimationId == v and values.main.Autos["Auto Parry Method"].Dropdown == 'Animation'
                                      then
                                         if values.main.Autos["Auto Parry Chance"].Slider >= 90 then
                                             if
@@ -8204,6 +8206,7 @@ local combat = main:Sector('combat', 'Left')
                                                     (p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
                                                 if mag < values.main.Autos["Auto Parry Distance"].Slider then
                                                     parry()
+													break
                                                 end
                                             end
                                         else
@@ -8218,6 +8221,7 @@ local combat = main:Sector('combat', 'Left')
                                                         (p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
                                                     if mag < values.main.Autos["Auto Parry Distance"].Slider then
                                                         parry()
+														break
                                                     end
                                                 end
                                             end
@@ -8243,6 +8247,39 @@ local combat = main:Sector('combat', 'Left')
             Players.PlayerAdded:Connect(added)
         end
     )
+	
+	local Sounds = {
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
+		"9",
+		"10"
+	}
+--7287
+	workspace.PlayerCharacters.DescendantAdded:Connect(function(e)
+		if (e:IsA("Sound") and e.Parent.Name == "Hitbox") and values.main.Autos["Auto Parry Method"].Dropdown == 'Sound' and values.main.Autos["Auto Parry"].Toggle then
+			task.spawn(function()
+				for i,v in pairs(Sounds) do
+					if e.Name == v and e.Parent.Parent.Parent.Parent.Name ~= LocalPlayer.Name then
+						local Character = LocalPlayer.Character
+						if (Character and Character:FindFirstChild("HumanoidRootPart")) then
+							local distance = (Character.HumanoidRootPart.Position-e.Parent.Position).Magnitude
+							if distance <= values.main.Autos["Auto Parry Distance"].Slider then 
+								parry()
+							end
+						end
+						break
+					end
+				end
+			end)
+		end
+	end)
+	
 	task.spawn(function()
 		game.RunService.RenderStepped:Connect(function()
 			pcall(function()
@@ -8309,17 +8346,19 @@ local combat = main:Sector('combat', 'Left')
 	end)
     task.spawn(
         function()
-            while values.main.combat["Kill Aura"].Toggle do
-               pcall(
+            while task.wait() do
+                pcall(
                     function()
                         if values.main.combat["Kill Aura"].Toggle then
                             local Closest
+							--wait(.4)
+							if not values.main.combat["Kill Aura"].Toggle then return end 
                             if values.main.combat["Custom Kill Aura Distance"].Toggle then
                                 Closest = GetClosest(values.main.combat["Custom Distance"].Slider,values.main.combat["Priority"].Dropdown) or nil
                             else
                                 Closest = GetClosest(values.main.combat["Kill Aura Distance"].Slider,values.main.combat["Priority"].Dropdown) or nil
                             end
-                            if Closest ~= nil and Closest.Character and Closest.Character:FindFirstChild('HumanoidRootPart') then
+                            if Closest ~= nil then
                                 if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
                                 else
                                     if values.main.combat["Teleport Behind (for kill aura)"].Toggle then
@@ -8339,46 +8378,55 @@ local combat = main:Sector('combat', 'Left')
                                     end
                                     if not Weapon then
                                     else
-										--repeat wait() until Weapon.Hitboxes:FindFirstChild('Hitbox')
-                                        for i = 1,3 do
-											if Closest.Character:FindFirstChild("SemiTransparentShield") and Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 and (not Closest.Character:FindFirstChild("SemiTransparentShield"):FindFirstChildWhichIsA('Sound')) then
-	
-											--task.wait(0.3)
-											local args1 = {
-												[1] = Weapon,
-												[2] = i
-											}
+										for i=1,3 do
+												local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
+												local rayDirection = Vector3.new(0, 0, 5)
+												local raycastParams = RaycastParams.new()
+												raycastParams.IgnoreWater = true
+												raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+												local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+												local args1 = {
+													[1] = Weapon,
+													[2] = i
+												}
 
-											events.MeleeSwing:FireServer(unpack(args1))
-										
-											events.MeleeDamage:FireServer(Weapon,Closest.Character.Head,Weapon.Hitboxes:FindFirstChild('Hitbox'),Weapon.Hitboxes:FindFirstChild('Hitbox').Position,CFrame.new(),Vector3.new(),Vector3.new())
-											wait()
+												events.MeleeSwing:FireServer(unpack(args1))
+												wait(.1)
+
+												local args = {
+													[1] = Weapon,
+													[2] = Closest.Character.Head,
+													[3] = Weapon.Hitboxes.Hitbox,
+													[4] = Closest.Character.Head.Position,
+													[5] = Closest.Character.Head.CFrame:ToObjectSpace(
+														CFrame.new(Closest.Character.Head.Position)
+													),
+													[6] = raycastResult
+												}
+												if Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
+													events.MeleeDamage:FireServer(unpack(args))
+
+													events.MeleeDamage:FireServer(unpack(args))
+												else
+													return
+												end
 											end
-										end
-										wait(.4)
-                                    end
-                                end
+									end
+								end
                             elseif Closest == nil then
                                 for i, v in pairs(Weapon:GetDescendants()) do
                                     if v:IsA "BasePart" then
-                                        v.CFrame = LocalPlayer.Character.Head.CFrame
-                                        v.Velocity = Vector3.new(1000000000,100000000000,100000000000)
+                                        v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                                        v.Velocity = Vector3.new(100000,100000,100000)
                                         v.CanCollide = false
-                                    end
-                                end
-                            end
-                        end
-                    end
-                )
-				--[[if not sucess then
-					if response ~= nil then
-						print(response)
-					end
-				end--]]
-            end
-        end
-    )
-
+									end
+								end
+							end
+						end
+					end)
+				end
+			end)
+	
     task.spawn(
         function()
             while task.wait() do
@@ -9875,6 +9923,7 @@ end
     player:Element("Toggle", "Infinite Jump")
     player:Element("Toggle", "No Jump Cooldown")
     player:Element("Toggle", "Jump Whenever")
+	player:Element("Toggle", "Anti Parry")
     miscsector:Element("Toggle", "Kill Feed Spam")
     miscsector:Element("Toggle", "Free Emotes") 
 	miscsector:Element("Toggle", "Hide Name")
@@ -10111,6 +10160,11 @@ end
              then
                 return wait(9e9)
             end
+			if self.Name == 'MeleeDamage' and values.misc.misc.player['Anti Parry'].Toggle then
+				if args[2].Parent:FindFirstChild('SemiTransparentShield') and (args[2].Parent:FindFirstChild('SemiTransparentShield').Transparency == 0 or args[2].Parent:FindFirstChild('SemiTransparentShield'):FindFirstChildWhichIsA('Sound')) then
+					return
+				end
+			end
             if
                 not checkcaller() and self.Name == "RagdollRemoteEvent" and
                     values.misc.misc.player["No Ragdoll"].Toggle and
