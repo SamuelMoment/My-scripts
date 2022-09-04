@@ -10435,7 +10435,6 @@ do
 			
 			getgenv().changecolor = false
 			getgenv().dvdmethod = 'tick'
-			
 			game:GetService('RunService').RenderStepped:Connect(function()
 				local ScreenSize = script.Parent.Parent.AbsoluteSize
 				
@@ -10452,7 +10451,7 @@ do
 						end
 					end
 				end
-				if (script.Parent.AbsolutePosition.Y >= ScreenSize.Y or script.Parent.AbsolutePosition.Y <= 0) or ((script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) >= ScreenSize.Y or (script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) <= 0) then
+				if (script.Parent.AbsolutePosition.Y >= ScreenSize.Y or script.Parent.AbsolutePosition.Y <= -35) or ((script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) >= ScreenSize.Y or (script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) <= -35) then
 					getgenv().YSpeed = getgenv().YSpeed * -1
 					if getgenv().changecolor then
 						if getgenv().dvdmethod == 'tick' then
