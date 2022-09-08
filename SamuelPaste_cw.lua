@@ -12,6 +12,8 @@ local ConfigLoad1 = Signal.new("ConfigLoad1")
 --ConfigSave1 = Signal.new("ConfigSave") 
 ConfigUpdateCfgList = Signal.new('ConfigUpdateCfgList')
 ConfigUpdateCfgList2 = Signal.new('ConfigUpdateCfgList2')
+Spawn = Signal.new('Spawn')
+Died = Signal.new('Died')
 --VisualizeSilentAngles = Signal.new('VisualizeSilentAngles')
 hitlogs = Signal.new('hitlogs')
 --MenuAccent = Signal.new('MenuAccent')
@@ -9043,7 +9045,71 @@ end)
 				--end
 			end
 		end
-
+			getgenv().shootfunc = {}
+			getgenv().reloadfunc = {}
+		silent:Element('Toggle','Auto shoot',{},function(tbl)
+				table.clear(shootfunc)
+				table.clear(reloadfunc)
+			
+			for i,v in pairs(getgc(true)) do
+				if typeof(v) == 'table' then
+					if rawget(v,'canShoot') and rawget(v,'tool') and v.tool ~= nil and v.tool.Parent ~= nil then
+						--table.foreach(v,print)
+						--print('Parent: '..v.tool.Parent.Name..', Name:'..v.tool.Name)
+						shootfunc[v.tool.Name] = function()
+							if v.tool.Parent == LocalPlayer.Character then
+								if v:getCanShoot() then
+									v:shoot()
+								end
+							end
+						end
+						--print(v.tool.Parent)
+						reloadfunc[v.tool.Name] = function()
+							v:reload()
+						end
+					end
+				end
+			end			
+			Spawn:Connect(function()
+				if not tbl.Toggle then return end
+				table.clear(shootfunc)
+				table.clear(reloadfunc)
+				repeat wait() until LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') 
+				task.wait(0.3)
+				--print('spawned')
+				for i,v in pairs(getgc(true)) do
+					if typeof(v) == 'table' then
+						if rawget(v,'canShoot') and rawget(v,'tool') and v.tool ~= nil and v.tool.Parent ~= nil then
+							--table.foreach(v,print)
+							print('Parent: '..v.tool.Parent.Name..', Name:'..v.tool.Name)
+							if v.tool.Parent == nil then
+								return
+							end
+							shootfunc[v.tool.Name] = function()
+								if v.tool.Parent == LocalPlayer.Character then
+									--print(v.tool.Parent)
+									if v:getCanShoot() then
+										v:shoot()
+									end
+								end
+							end
+							reloadfunc[v.tool.Name] = function()
+								v:reload()
+							end
+						end
+					end
+				end
+				local shootloop;shootloop = game.RunService.RenderStepped:Connect(function()
+					if not tbl.Toggle then return shootloop:Disconnect() end
+					pcall(function()
+						if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') then
+						    shootfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
+							reloadfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
+						end
+					end)
+				end)
+			end)
+		end)
 		--game.CollectionService:AddTag(game:GetService("Workspace").Map,'CAMERA_COLLISION_IGNORE_LIST')
 
 		--[[task.spawn(function()
@@ -10204,6 +10270,18 @@ end
              then
                 return newindex(self, ...)
             end
+			
+			if self.Name == 'SpawnCharacter' then
+				task.spawn(function()
+					repeat wait() until LocalPlayer.Character and LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool')
+					task.wait(0.3)
+					Spawn:Fire(LocalPlayer.Character)
+					LocalPlayer.Character.Humanoid.Died:Connect(function()
+						Died:Fire()
+					end)
+				end)
+			end
+			
 
             return newindex(self, ...)
         end
