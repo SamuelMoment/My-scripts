@@ -7338,6 +7338,8 @@ repeat wait() until ChrModels3 ~= nil
 local ChinaHat = game:GetObjects('rbxassetid://9756426202')[1]
 repeat wait() until ChinaHat ~= nil
 
+local Effects = game:GetObjects('rbxassetid://10884096598')[1]
+repeat wait() until Effects ~= nil
 	hitlogs:Connect(function(text,col,time, size, size2, size3, size4)
 		CreateHitElement(text,col, time, size, size2, size3, size4)
 	end)
@@ -10857,9 +10859,10 @@ end
 				end
 			end 
 	end
+	
 	getgenv().folder1 = Instance.new('Folder',workspace)
 	folder1.Name = 'LocalPlayerCharClone'	
-getgenv().oldcharacter = nil
+	getgenv().oldcharacter = nil
 			
 	local characters = skins:Sector('characters','Left')
 	characters:Element("Toggle", "character changer", nil, function(tbl) 
@@ -11005,6 +11008,110 @@ RunService.RenderStepped:connect(function()
 	end
 end)
 
+	local AllEffects = {'none'}
+
+	for i,v in pairs(Effects:GetChildren()) do
+		C.INSERT(AllEffects,v.Name)
+	end
+
+local WeaponEffects = skins:Sector('Custom weapon effects','Left')
+WeaponEffects:Element('Toggle','enabled',{},function(tbl)
+		if LocalPlayer.Character:FindFirstChildOfClass('Tool') and LocalPlayer.Character:FindFirstChildOfClass('Tool'):FindFirstChild('Hitboxes') then
+					for i,v in pairs(LocalPlayer.Character:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle'):GetChildren()) do
+						if v.Name == 'Effect' then
+							v:Destroy()
+						end
+					end		
+			if values.skins['Custom weapon effects'].enabled.Toggle then
+
+				if Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll) then
+			
+					effect = Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll)
+					sex1 = effect:Clone()
+
+					for i,v in pairs(sex1:GetChildren()) do
+						if v:IsA('Attachment') then
+							v.Position = Vector3.new(0,1.6,0)
+						end
+						
+						v.Parent = game.Players.LocalPlayer.Character:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle')
+						v.Name = 'Effect'
+					end		
+				end
+			end
+			elseif LocalPlayer.Backpack:FindFirstChildOfClass('Tool') and LocalPlayer.Backpack:FindFirstChildOfClass('Tool'):FindFirstChild('Hitboxes') then
+					for i,v in pairs(LocalPlayer.Backpack:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle'):GetChildren()) do
+						if v.Name == 'Effect' then
+							v:Destroy()
+						end
+					end			
+				if values.skins['Custom weapon effects'].enabled.Toggle then
+					if Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll) then
+				
+						effect = Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll)
+						sex1 = effect:Clone()
+
+						for i,v in pairs(sex1:GetChildren()) do
+							if v:IsA('Attachment') then
+								v.Position = Vector3.new(0,1.6,0)
+							end
+							
+							v.Parent = LocalPlayer.Backpack:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle')
+							v.Name = 'Effect'
+						end				
+					end
+				end
+			end
+end)
+WeaponEffects:Element('Scroll','effect',{options = AllEffects, Amount = 9},function(tbl)
+		if LocalPlayer.Character:FindFirstChildOfClass('Tool') and LocalPlayer.Character:FindFirstChildOfClass('Tool'):FindFirstChild('Hitboxes') then
+					for i,v in pairs(LocalPlayer.Character:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle'):GetChildren()) do
+						if v.Name == 'Effect' then
+							v:Destroy()
+						end
+					end		
+			if values.skins['Custom weapon effects'].enabled.Toggle then
+				if Effects:FindFirstChild(tbl.Scroll) then
+			
+					effect = Effects:FindFirstChild(tbl.Scroll)
+					sex1 = effect:Clone()
+
+					for i,v in pairs(sex1:GetChildren()) do
+						if v:IsA('Attachment') then
+							v.Position = Vector3.new(0,1.6,0)
+						end
+						
+						v.Parent = game.Players.LocalPlayer.Character:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle')
+						v.Name = 'Effect'
+					end		
+				end
+			end
+			elseif LocalPlayer.Backpack:FindFirstChildOfClass('Tool') and LocalPlayer.Backpack:FindFirstChildOfClass('Tool'):FindFirstChild('Hitboxes') then
+					for i,v in pairs(LocalPlayer.Backpack:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle'):GetChildren()) do
+						if v.Name == 'Effect' then
+							v:Destroy()
+						end
+					end
+				if values.skins['Custom weapon effects'].enabled.Toggle then
+					if Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll) then
+				
+						effect = Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll)
+						sex1 = effect:Clone()
+
+						for i,v in pairs(sex1:GetChildren()) do
+							if v:IsA('Attachment') then
+								v.Position = Vector3.new(0,1.6,0)
+							end
+							
+							v.Parent = LocalPlayer.Backpack:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle')
+							v.Name = 'Effect'
+						end				
+					end
+				end
+			end
+end)
+
+
 local boobs = skins:Sector('boobs','Right')
 boobs:Element('ToggleColor','enabled',{},function(tbl)
 	if not LocalPlayer.Character:FindFirstChild('boobsModel') then
@@ -11132,6 +11239,9 @@ end)
 				end
 			end
 			
+		------------------------------------------------------	
+			
+			
 			local torso = char.Torso    
 			Instance.new('Model',char).Name = 'boobsModel'
 			local part = Instance.new('Part',char.boobsModel)
@@ -11176,10 +11286,63 @@ end)
 			end
 			part.Color = values.skins.boobs.enabled.Color
 			part2.Color = values.skins.boobs.enabled.Color
+			
+			
+			
+		------------------------------------------------------	
+			
+			
+		if LocalPlayer.Character:FindFirstChildOfClass('Tool') and LocalPlayer.Character:FindFirstChildOfClass('Tool'):FindFirstChild('Hitboxes') then
+				for i,v in pairs(game.Players.LocalPlayer.Character:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle'):GetChildren()) do
+					if v.Name == 'Effect' then
+						v:Destroy()
+					end
+				end		
+			if values.skins['Custom weapon effects'].enabled.Toggle then
+				if Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll) then
+			
+					effect = Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll)
+					sex1 = effect:Clone()
+
+					for i,v in pairs(sex1:GetChildren()) do
+						if v:IsA('Attachment') then
+							v.Position = Vector3.new(0,1.6,0)
+						end
+						
+						v.Parent = game.Players.LocalPlayer.Character:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle')
+						v.Name = 'Effect'
+					end		
+				end
+			end
+			elseif LocalPlayer.Backpack:FindFirstChildOfClass('Tool') and LocalPlayer.Backpack:FindFirstChildOfClass('Tool'):FindFirstChild('Hitboxes') then
+					for i,v in pairs(LocalPlayer.Backpack:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle'):GetChildren()) do
+						if v.Name == 'Effect' then
+							v:Destroy()
+						end
+					end			
+				if values.skins['Custom weapon effects'].enabled.Toggle then
+					if Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll) then
+				
+						effect = Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll)
+						sex1 = effect:Clone()
+
+						for i,v in pairs(sex1:GetChildren()) do
+							if v:IsA('Attachment') then
+								v.Position = Vector3.new(0,1.6,0)
+							end
+							
+							v.Parent = LocalPlayer.Backpack:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle')
+							v.Name = 'Effect'
+						end				
+					end
+				end
+			end
+	
 	end)
 	
 	events.StartFastRespawn:FireServer()
     functions.CompleteFastRespawn:FireServer()
+	
 end
 
 
