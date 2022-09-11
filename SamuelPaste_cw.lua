@@ -8877,106 +8877,7 @@ task.spawn(function()
 	end)
 
 
-	local ARROW
-	local shot = false
-	local arrowsshooted = 0
-	local Players = game.Players
-	local mouse = LocalPlayer:GetMouse()
-	local function getClosestToMouse() -- got this from cheese bcuz im too lazy again and yes he got from devforum
-		local player, nearestDistance = nil, math.huge*9e9
-		for i,v in pairs(Players:GetPlayers()) do
-			if v ~= Players.LocalPlayer and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") then
-				local root, visible = workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
-				if visible then
-					local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(root.X, root.Y)).Magnitude
 
-					if distance < nearestDistance then
-						nearestDistance = distance
-						player = v
-					end
-				end
-			end
-		end
-		return player
-	end
-	workspace.EffectsJunk.ChildAdded:Connect(function(p)
-		task.wait() -- yields to prevent some shit lol!
-		if LocalPlayer.Character:FindFirstChildOfClass("Tool") == nil then
-			shot = false
-			return
-		end
-		local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
-		if Tool:FindFirstChild("ClientAmmo") == nil then
-			shot = false
-			return
-		end
-		if (shot and p:IsA("MeshPart") and p:FindFirstChild("Tip") ~= nil) then
-			ARROW = p
-			Instance.new("SelectionBox",p).Adornee = p
-			shot = false
-		end
-	end)
-
-	for i,v in pairs(getgc(true)) do
-		if typeof(v) == "table" and rawget(v,"shoot") then
-			local Old = v.shoot
-			v.shoot = function(tbl)
-				shot = true
-				arrowsshooted = tbl.shotIdx
-				return Old(tbl)
-			end
-		end
-		
-		if typeof(v) == "table" and rawget(v,"calculateFireDirection") then
-			old = v.calculateFireDirection
-			v.calculateFireDirection = function(p3,p4,p5,p6)
-				local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
-				if Tool:FindFirstChild("ClientAmmo") == nil then
-					return old(p3,p4,p5,p6)
-				end
-				if not values.main['Ranged sector']['silent aim'].Toggle then
-					return old(p3,p4,p5,p6)
-				end
-					if shot then
-						if not predicted then
-							return old(p3,p4,p5,p6)
-						else
-							return predicted
-						end
-					end
-				return old(p3,p4,p5,p6)
-			end
-		end
-	end
-
-	firehit = function(character,arrow)
-		local fakepos = character[values.main['Ranged sector']['body part to hit'].Dropdown].Position + Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5))
-		local args = {
-			[1] = LocalPlayer.Character:FindFirstChildOfClass("Tool"),
-			[2] = character[values.main['Ranged sector']['body part to hit'].Dropdown],
-			[3] = fakepos,
-			[4] = character[values.main['Ranged sector']['body part to hit'].Dropdown].CFrame:ToObjectSpace(CFrame.new(fakepos)),
-			[5] = fakepos * Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5)),
-			[6] = tostring(arrowsshooted)
-		}
-		game:GetService("ReplicatedStorage").Communication.Events.RangedHit:FireServer(unpack(args))
-	end
-	--local bruh = Instance.new("SelectionBox",workspace)
-	--bruh.Color3 = Color3.fromRGB(163, 61, 54)
--- dev forum
-local M = game.Players.LocalPlayer:GetMouse()
-local Cam = game.Workspace.CurrentCamera
-function WorldToScreen(Pos)
-    local point = Cam.CoordinateFrame:pointToObjectSpace(Pos)
-    local aspectRatio = M.ViewSizeX / M.ViewSizeY
-    local hfactor = math.tan(math.rad(Cam.FieldOfView) / 2)
-    local wfactor = aspectRatio*hfactor
-
-    local x = (point.x/point.z) / -wfactor
-    local y = (point.y/point.z) /  hfactor
-
-    return Vector2.new(M.ViewSizeX * (0.5 + 0.5 * x), M.ViewSizeY * (0.5 + 0.5 * y))
-end
 
 local Prediction
 local ScreenGui = Instance.new("ScreenGui")
@@ -9067,70 +8968,285 @@ UIStroke.Parent = Frame
 			end--]]
 		end)
 	end)
-	while wait() do
-		pcall(function()
-			if not LocalPlayer.Character:FindFirstChildOfClass('Tool') then
+
+	
+	
+	
+	
+	
+	
+	
+-- Simple Networking
+
+local remotes = {}
+local functions = {}
+local function checkParent(P)
+    if P.Name == "Functions" then
+        return 'RF'
+    elseif P.Name == "Events" then
+        return 'RE'
+    end
+end
+for i,v in pairs(getgc(true)) do
+    if typeof(v) == "table" and rawget(v,"Remote") then
+        local Parent = checkParent(v.Remote.Parent)
+        if Parent == "RF" then
+            functions[v.Name] = v.Remote
+        elseif Parent == "RE" then
+            remotes[v.Name] = v.Remote
+        end
+    end
+end
+
+function fireserver(name,args)
+    local Args = (args and true or false)
+    if Args then
+        if remotes[name] then
+            if typeof(args) == "table" then
+                remotes[name]:FireServer(unpack(args))
+            else
+                remotes[name]:FireServer(args)
+            end
+        end
+    else
+        if remotes[name] then
+            remotes[name]:FireServer()
+        end
+    end
+end
+
+function invokeserver(name,args)
+    local Args = (args and true or false)
+    if Args then
+        if functions[name] then
+            functions[name]:FireServer(unpack(args))
+        end
+    else
+        if functions[name] then
+            functions[name]:FireServer()
+        end
+    end
+end
+
+local Players = game.Players
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character
+local mouse = LocalPlayer:GetMouse()
+local function getClosestToMouse()
+    local player, nearestDistance = nil, math.huge*9e9
+    for i,v in pairs(Players:GetPlayers()) do
+        if v ~= Players.LocalPlayer and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") then
+            local root, visible = workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+            if visible then
+                local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(root.X, root.Y)).Magnitude
+
+                if distance < nearestDistance then
+                    nearestDistance = distance
+                    player = v
+                end
+            end
+        end
+    end
+    return player
+end
+local Arrow
+local ShotIdx
+local Predicted
+local C
+local Shot = false
+local HitGet = function(Path,Type)
+    for i,v in pairs(Path:GetChildren()) do
+        if v:IsA("Tool") then
+            local IsBow = (v:FindFirstChild("ClientAmmo") and true or v:FindFirstChild("Hitboxes") and false) 
+            if IsBow and Type == "Ranged" then
+                return v
+            elseif not IsBow and Type == "Melee" then
+                return v
+            end
+        end
+    end
+end
+local Functions = {
+    GetWeapon = function(Path,Type)
+        for i,v in pairs(Path:GetChildren()) do
+            if v:IsA("Tool") then
+                local IsBow = (v:FindFirstChild("ClientAmmo") and true or v:FindFirstChild("Hitboxes") and false) 
+                if IsBow and Type == "Ranged" then
+                    return v
+                elseif not IsBow and Type == "Melee" then
+                    return v
+                end
+            end
+        end
+    end,
+    PredictMovement = function(part,strength,timeInterval,Type)
+        if Type == "Time" then
+            return part.Position + part.Velocity * timeInterval
+        elseif Type == "Strength"then
+            return part.Velocity * (strength / 10) * (LocalPlayer.Character.Head.Position - part.Position).magnitude / 100
+        end
+    end,
+    --[[Highlight = function(object)
+        local Highlighter = Instance.new("Highlight")
+        Highlighter.FillTransparency = 1
+        Highlighter.OutlineColor = Color3.fromRGB(255,255,255)
+        Highlighter.Parent = object
+    end,--]]
+    Hit = function(Target)
+        local Fake
+        Fake = Target["Head"].Position + Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5))
+        fireserver("RangedHit",{
+            HitGet(LocalPlayer.Character,"Ranged"),
+            Target["Head"],
+            Fake,
+            Target["Head"].CFrame:ToObjectSpace(CFrame.new(Fake)),
+            Fake * Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5)),
+            tostring(ShotIdx)}
+        )
+    end
+}
+workspace.EffectsJunk.ChildAdded:Connect(function(p)
+    task.wait()
+    if LocalPlayer.Character:FindFirstChildOfClass("Tool") == nil then
+        Shot = false
+        return
+    end
+    local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+    if Tool:FindFirstChild("ClientAmmo") == nil then
+        Shot = false
+        return
+    end
+    if (Shot and p:IsA("MeshPart") and p:FindFirstChild("Tip") ~= nil) then
+        Arrow = p
+        Instance.new('Highlight',game.CoreGui).Adornee = p
+        Shot = false
+    end
+end)
+
+
+for i,v in pairs(getgc(true)) do
+    if typeof(v) == "table" and rawget(v,"shoot") then
+        local old = v.shoot
+        v.shoot = function(a)
+            Shot = true
+            ShotIdx = a.shotIdx
+            return old(a)
+        end
+    end
+    
+    if typeof(v) == "table" and rawget(v,"calculateFireDirection") then
+        old = v.calculateFireDirection
+        v.calculateFireDirection = function(a,b,c,d)
+            local Tool = Functions.GetWeapon((LocalPlayer.Character and LocalPlayer.Character),"Ranged")
+            if not Tool then
+                return old(a,b,c,d)
+            end
+            if (Shot) then
+                if not Predicted then
+                    return old(a,b,c,d)
+                else
+                    return Predicted
+                end
+            end
+            return old(a,b,c,d)
+        end
+    end
+end
+
+function GetFirePos(Tool)
+    for i,v in pairs(Tool:GetDescendants()) do
+        if (v:IsA("Attachment") and v.Name == "FirePoint") then
+            return v.WorldCFrame.Position
+        end
+    end
+end
+
+local M = game.Players.LocalPlayer:GetMouse()
+local Cam = game.Workspace.CurrentCamera
+function WorldToScreen(Pos)
+    local point = Cam.CoordinateFrame:pointToObjectSpace(Pos)
+    local aspectRatio = M.ViewSizeX / M.ViewSizeY
+    local hfactor = math.tan(math.rad(Cam.FieldOfView) / 2)
+    local wfactor = aspectRatio*hfactor
+
+    local x = (point.x/point.z) / -wfactor
+    local y = (point.y/point.z) /  hfactor
+
+    return Vector2.new(M.ViewSizeX * (0.5 + 0.5 * x), M.ViewSizeY * (0.5 + 0.5 * y))
+end
+
+game.RunService.RenderStepped:Connect(function()
+    --pcall(function()
+        local Tool = Functions.GetWeapon(LocalPlayer.Character,"Ranged")
+        local C = getClosestToMouse()
+		
+			if not Tool then
 				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
 				Aiming.Text = "Aiming At: None"
 				Position.Text = "Position: None"
+				if game.CoreGui:FindFirstChild('SilentAimTarget') then
 				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
-			return 
-		end
-			local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
-			if Tool:FindFirstChild("ClientAmmo") == nil then
-				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
-				Aiming.Text = "Aiming At: None"
-				Position.Text = "Position: None"
-				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
-				return
+				end
+				return 
 			end
+			--local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
 			if not values.main['Ranged sector']['silent aim'].Toggle then
 				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
 				Aiming.Text = "Aiming At: None"
 				Position.Text = "Position: None"
+				if game.CoreGui:FindFirstChild('SilentAimTarget') then
 				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
-				return
-			end			
-			local closest = getClosestToMouse() or nil
-			if closest  ~= nil then
-				if closest.Character and game.CoreGui:FindFirstChild('SilentAimTarget') then
-					game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = closest.Character
-					--Frame.Transparency = 0
-					Aiming.Text = "Aiming At: "..closest.Name
-					PredictionV.Text = "Prediction Value: "..values.main['Ranged sector']['Prediction val'].Slider/100
-					Prediction = closest.Character[values.main['Ranged sector']['body part to hit'].Dropdown].CFrame + (closest.Character[values.main['Ranged sector']['body part to hit'].Dropdown].Velocity * values.main['Ranged sector']['Prediction val'].Slider/100 + Vector3.new(0, .1, 0))
-					predicted = (CFrame.lookAt(Tool.Contents.Handle.FirePoint.WorldCFrame.Position, Prediction.Position)).LookVector * 30;
-					Position.Text = "Position: "..Prediction.Position.X..", "..Prediction.Y..", "..Prediction.Y
-					local Vec = WorldToScreen(Prediction.Position)
-					Frame.Position = UDim2.new(0,Vec.X,0,Vec.Y)				
 				end
-			else
+				return
+			end
+        if Tool and values.main['Ranged sector']['silent aim'].Toggle then
+		
+            local FirePos = GetFirePos(Tool)
+            if C then
+				if game.CoreGui:FindFirstChild('SilentAimTarget') then
+					game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = C.Character
+				end
+					--Frame.Transparency = 0
+					Aiming.Text = "Aiming At: "..C.Name
+					PredictionV.Text = "Prediction Value: "..values.main['Ranged sector']['Prediction val'].Slider/100
+			
+                local Predict = C.Character[values.main['Ranged sector']['body part to hit'].Dropdown].CFrame + (C.Character[values.main['Ranged sector']['body part to hit'].Dropdown].Velocity * values.main['Ranged sector']['Prediction val'].Slider/100 + Vector3.new(0, .1, 0))
+                Predicted = CFrame.new(FirePos,(typeof(Predict) == "CFrame" and Predict.Position or Predict)).LookVector * 30
+				
+					--predicted = (CFrame.lookAt(Tool.Contents.Handle.FirePoint.WorldCFrame.Position, Prediction.Position)).LookVector * 30;
+					Position.Text = "Position: "..string.split(Predict.Position.X,'.')[1]..'.'..string.split(Predict.Position.X,'.')[2]:sub(1,2)..", "..string.split(Predict.Position.Y,'.')[1]..'.'..string.split(Predict.Position.Y,'.')[2]:sub(1,2)..", "..string.split(Predict.Position.Z,'.')[1]..'.'..string.split(Predict.Position.Z,'.')[2]:sub(1,2)
+					local Vec = WorldToScreen(Predict.Position)
+					Frame.Position = UDim2.new(0,Vec.X,0,Vec.Y)				
+            else
 				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
 				Aiming.Text = "Aiming At: None"
 				Position.Text = "Position: None"
-				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
+				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil			
 			end
-			if ARROW then
-				if closest then
-					if (ARROW.Position - closest.Character.HumanoidRootPart.Position).Magnitude <= values.main['Ranged sector']['hit distance'].Slider then
+            if Arrow then
+                if C then
+                    if (Arrow.Position - C.Character.HumanoidRootPart.Position).Magnitude <= values.main['Ranged sector']['hit distance'].Slider then
 						if values.main['Ranged sector'].hitchance.Slider == 100 then
-							firehit(closest.Character,ARROW)
-							ARROW = nil
-							shot = false
+						Functions.Hit(C.Character)
+                        Shot = false
+                        Arrow = nil
 						else
 							if math.random(1,100) >= values.main['Ranged sector'].hitchance.Slider then
-								firehit(closest.Character,ARROW)
-								ARROW = nil
-								shot = false							
+						Functions.Hit(C.Character)
+                        Shot = false
+                        Arrow = nil						
 							end
-						end
-					end
-				end
-			end
-		end)
-	end
+						end                        
+						
 
-
+                        --print('yippeeee')
+                    end
+                end
+            end
+        end
+    --end)
+end)
+	
 
 
 end)
@@ -9246,6 +9362,30 @@ end)
 				--end
 			end
 		end
+		Spawn:Connect(function()
+			task.wait(0.3)
+			for i,v in pairs(getgc(true)) do
+				if typeof(v) == 'table' then
+					--if rawget(v,'shotIdx') then
+						if rawget(v,'startShooting') then
+							task.spawn(function()
+								local old = v.shoot
+								--print('found')
+								v.shoot = function(sex)
+				
+								old(sex)
+								--getgenv().shoot = function() return sex:shoot() end
+									if values.main['Ranged sector']['Auto reload'].Toggle then
+										sex:reload()
+									end
+								end
+							end)
+						end
+						
+					--end
+				end
+			end		
+		end)
 			getgenv().shootfunc = {}
 			getgenv().reloadfunc = {}
 		silent:Element('Toggle','Auto shoot',{},function(tbl)
@@ -9300,6 +9440,7 @@ end)
 						end
 					end
 				end
+			end)
 				local shootloop;shootloop = game.RunService.RenderStepped:Connect(function()
 					if not tbl.Toggle then return shootloop:Disconnect() end
 					pcall(function()
@@ -9309,7 +9450,7 @@ end)
 						end
 					end)
 				end)
-			end)
+			--end)
 		end)
 		--game.CollectionService:AddTag(game:GetService("Workspace").Map,'CAMERA_COLLISION_IGNORE_LIST')
 
