@@ -7762,16 +7762,17 @@ end
 local gui = library:New("SamuelPaste")
 local main = gui:Tab('main')
 local misc = gui:Tab('misc')
---local visuals = gui:Tab('visuals')
+local visuals = gui:Tab('visuals')
 local skins = gui:Tab('skins')
 local other = gui:Tab("other")
-print('sex2')
+
 fonts = {}
 for i,v in pairs(Enum.Font:GetEnumItems()) do
 	if v.Name ~= 'Unknown' then
 		table.insert(fonts,v.Name)
 	end
 end
+--chat
 do
 for a,b in next, getgc(true) do
     if typeof(b) == 'table' and rawget(b, 'removeRichTextTags') then
@@ -8240,6 +8241,7 @@ local edited = false
 			end
 end
 
+--main
 function parry()
     game:GetService("ReplicatedStorage").Communication.Events.Parry:FireServer()
 end
@@ -9070,6 +9072,8 @@ local HitGet = function(Path,Type)
 end
 local Functions = {
     GetWeapon = function(Path,Type)
+	if not LocalPlayer.Character then return end
+	Path = LocalPlayer.Character
         for i,v in pairs(Path:GetChildren()) do
             if v:IsA("Tool") then
                 local IsBow = (v:FindFirstChild("ClientAmmo") and true or v:FindFirstChild("Hitboxes") and false) 
@@ -9080,6 +9084,7 @@ local Functions = {
                 end
             end
         end
+		return nil
     end,
     PredictMovement = function(part,strength,timeInterval,Type)
         if Type == "Time" then
@@ -9122,6 +9127,9 @@ workspace.EffectsJunk.ChildAdded:Connect(function(p)
         Arrow = p
         Instance.new('Highlight',game.CoreGui).Adornee = p
         Shot = false
+		if createbullettracer then
+			createbullettracer(p)
+		end
     end
 end)
 
@@ -9129,7 +9137,8 @@ end)
 for i,v in pairs(getgc(true)) do
     if typeof(v) == "table" and rawget(v,"shoot") then
         local old = v.shoot
-        v.shoot = function(a)
+
+		v.shoot = function(a)
             Shot = true
             ShotIdx = a.shotIdx
             return old(a)
@@ -9137,22 +9146,25 @@ for i,v in pairs(getgc(true)) do
     end
     
     if typeof(v) == "table" and rawget(v,"calculateFireDirection") then
-        old = v.calculateFireDirection
-        v.calculateFireDirection = function(a,b,c,d)
-            local Tool = Functions.GetWeapon((LocalPlayer.Character and LocalPlayer.Character),"Ranged")
+	--do
+        
+        local old;old = v.calculateFireDirection
+v.calculateFireDirection =	function(...)
+            local Tool = Functions.GetWeapon("Ranged")
             if not Tool then
-                return old(a,b,c,d)
+                return old(...)
             end
             if (Shot) then
                 if not Predicted then
-                    return old(a,b,c,d)
+                    return old(...)
                 else
                     return Predicted
                 end
             end
-            return old(a,b,c,d)
+            return old(...)
         end
     end
+	--end
 end
 
 function GetFirePos(Tool)
@@ -9197,7 +9209,7 @@ game.RunService.RenderStepped:Connect(function()
 				Aiming.Text = "Aiming At: None"
 				Position.Text = "Position: None"
 				if game.CoreGui:FindFirstChild('SilentAimTarget') then
-				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
+					game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
 				end
 				return
 			end
@@ -9223,7 +9235,9 @@ game.RunService.RenderStepped:Connect(function()
 				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
 				Aiming.Text = "Aiming At: None"
 				Position.Text = "Position: None"
-				game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil			
+				if game.CoreGui:FindFirstChild('SilentAimTarget') then
+					game.CoreGui:FindFirstChild('SilentAimTarget').Adornee = nil
+				end			
 			end
             if Arrow then
                 if C then
@@ -9264,8 +9278,9 @@ end)
 				end		
 			end
 		end)
-		rangedmods = Signal.new('rangedmods')
-		rangedmods:Connect(function()
+		
+		-----------------------------------
+		rangedmods = function()
 			for i,v in pairs(getgc(true)) do
 				if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'displayName') then
 					if values.main['Ranged sector']['No recoil'].Toggle then
@@ -9322,75 +9337,34 @@ end)
 					end
 				end
 			end
-		end)
+		end
 		silent:Element('Slider', 'Prediction val', {min = 0,max = 1})
 		silent:Element('Toggle', 'No recoil',{},function()
-			rangedmods:Fire()
+			rangedmods()
 		end)
 		silent:Element('Toggle', 'No spread',{},function()
-			rangedmods:Fire()
+			rangedmods()
 		end)
 		silent:Element('Toggle', 'Inf range',{},function()
-			rangedmods:Fire()
+			rangedmods()
 		end)
 		silent:Element('Toggle', 'Instant charge',{},function()
-			rangedmods:Fire()
+			rangedmods()
 		end)
 		silent:Element('Toggle', 'No reload cancel',{},function()
-			rangedmods:Fire()
+			rangedmods()
 		end)
 		silent:Element('Toggle', 'Always headshot',{},function()
-			rangedmods:Fire()
+			rangedmods()
 		end)
+		-------------------------------------------------------------
 		silent:Element('Toggle', 'Auto reload')
-		for i,v in pairs(getgc(true)) do
-			if typeof(v) == 'table' then
-				--if rawget(v,'shotIdx') then
-					if rawget(v,'startShooting') then
-						task.spawn(function()
-							local old = v.shoot
-							--print('found')
-							v.shoot = function(sex)
-			
-							old(sex)
-							--getgenv().shoot = function() return sex:shoot() end
-								if values.main['Ranged sector']['Auto reload'].Toggle then
-									sex:reload()
-								end
-							end
-						end)
-					end
-					
-				--end
-			end
-		end
-		Spawn:Connect(function()
-			task.wait(0.3)
-			for i,v in pairs(getgc(true)) do
-				if typeof(v) == 'table' then
-					--if rawget(v,'shotIdx') then
-						if rawget(v,'startShooting') then
-							task.spawn(function()
-								local old = v.shoot
-								--print('found')
-								v.shoot = function(sex)
-				
-								old(sex)
-								--getgenv().shoot = function() return sex:shoot() end
-									if values.main['Ranged sector']['Auto reload'].Toggle then
-										sex:reload()
-									end
-								end
-							end)
-						end
-						
-					--end
-				end
-			end		
-		end)
+
+
 			getgenv().shootfunc = {}
 			getgenv().reloadfunc = {}
-		silent:Element('Toggle','Auto shoot',{},function(tbl)
+		silent:Element('Toggle','Auto shoot')
+		
 				table.clear(shootfunc)
 				table.clear(reloadfunc)
 			
@@ -9414,7 +9388,7 @@ end)
 				end
 			end			
 			Spawn:Connect(function()
-				if not tbl.Toggle then return end
+				--if not tbl.Toggle then return end
 				table.clear(shootfunc)
 				table.clear(reloadfunc)
 				repeat wait() until LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') 
@@ -9424,7 +9398,7 @@ end)
 					if typeof(v) == 'table' then
 						if rawget(v,'canShoot') and rawget(v,'tool') and v.tool ~= nil and v.tool.Parent ~= nil then
 							--table.foreach(v,print)
-							print('Parent: '..v.tool.Parent.Name..', Name:'..v.tool.Name)
+							--print('Parent: '..v.tool.Parent.Name..', Name:'..v.tool.Name)
 							if v.tool.Parent == nil then
 								return
 							end
@@ -9444,16 +9418,19 @@ end)
 				end
 			end)
 				local shootloop;shootloop = game.RunService.RenderStepped:Connect(function()
-					if not tbl.Toggle then return shootloop:Disconnect() end
+					if (not values.main['Ranged sector']['Auto reload'].Toggle) or (not values.main['Ranged sector']['Auto shoot'].Toggle) then return shootloop:Disconnect() end
 					pcall(function()
 						if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') then
-						    shootfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
-							reloadfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
+							if values.main['Ranged sector']['Auto shoot'].Toggle then
+								shootfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
+							end
+							if values.main['Ranged sector']['Auto reload'].Toggle then
+								reloadfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
+							end
 						end
 					end)
 				end)
-			--end)
-		end)
+				
 		--game.CollectionService:AddTag(game:GetService("Workspace").Map,'CAMERA_COLLISION_IGNORE_LIST')
 
 		--[[task.spawn(function()
@@ -9477,6 +9454,8 @@ end)
 		end)--]]
 	end
 
+
+--config tab
 do
 
 local allcfgs = {} 
@@ -10065,7 +10044,7 @@ function NoclipLoop()
 	end
 end
 
-
+--misc tab
 for i,v in pairs(getgc(true)) do
     if typeof(v) == 'table' then
         if rawget(v,'getSessionDataRoduxStoreForPlayer') then
@@ -10720,7 +10699,50 @@ end
 end
 
 
+--visuals tab
+do 
 
+local world = visuals:Sector("world", "Left") 
+world:Element('Dropdown', 'Tracers', {options = {"normal", "lightning 1", "lightning 2", "lightning 3",'lighting 4','lightning 5','lightning 6'}})
+world:Element("ToggleColor", "bullet tracers", {default = {Color = C.COL3RGB(255, 255, 255)}}) 
+local Folder = C.INST("Folder")
+	Folder.Parent = game:GetService("Workspace")
+	Folder.Name = 'beams'
+	function createbullettracer(arrow)
+		if not values.visuals.world['bullet tracers'].Toggle then return end
+		local Part = C.INST("Part")
+		Part.CanCollide = false
+		Part.CFrame = arrow.CFrame
+		Part.Size = C.Vec3(0, 0, 0)
+		Part.TopSurface = Enum.SurfaceType.Smooth
+		Part.Parent = Folder
+		Part.Transparency = 1
+		Part.Anchored = true
+
+
+
+			
+		local Object1 = C.INST("Attachment")
+		Object1.Name = "1"
+		Object1.Parent = Part
+
+		local Object2 = C.INST("Attachment")
+		Object2.Name = "2"
+		Object2.Parent = arrow
+
+		local Beam = C.INST("Beam")
+		Beam.Attachment0 = Object1
+		Beam.Attachment1 = Object2
+		Beam.LightInfluence = 1
+		Beam.Texture = values.visuals.world["Tracers"].Dropdown == "normal" and "rbxassetid://5854341017" or values.visuals.world["Tracers"].Dropdown == "lightning 1" and "rbxassetid://7151777149" or values.visuals.world["Tracers"].Dropdown == "lightning 2" and "rbxassetid://7501973572" or values.visuals.world["Tracers"].Dropdown == "lightning 3" and "rbxassetid://257173628"or values.visuals.world["Tracers"].Dropdown == "lightning 4" and "rbxassetid://6060542021"or values.visuals.world["Tracers"].Dropdown == "lightning 5" and "rbxassetid://6060542158"or values.visuals.world["Tracers"].Dropdown == "lightning 6" and "rbxassetid://6060542252"
+		Beam.Parent = Folder
+		Beam.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, values.visuals.world["bullet tracers"].Color), ColorSequenceKeypoint.new(1, values.visuals.world["bullet tracers"].Color)}
+	end
+
+end
+
+
+--skins tab
 do
 	
 	
