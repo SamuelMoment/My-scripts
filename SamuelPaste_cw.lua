@@ -10726,7 +10726,7 @@ local Folder = C.INST("Folder")
 		Object1.Name = "1"
 		Object1.Parent = Part
 
-		local Object2 = C.INST("Attachment")
+		local Object2 = Instance.new("Attachment")
 		Object2.Name = "2"
 		Object2.Parent = arrow
 
