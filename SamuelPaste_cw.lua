@@ -10730,7 +10730,7 @@ local Folder = C.INST("Folder")
 		Object2.Name = "2"
 		Object2.Parent = arrow
 
-		local Beam = C.INST("Beam")
+		local Beam = Instance.new("Beam")
 		Beam.Attachment0 = Object1
 		Beam.Attachment1 = Object2
 		Beam.LightInfluence = 1
