@@ -8185,7 +8185,7 @@ settings:Element('Slider', 'fov thickness', {min = 1, max = 10, default = 1})
 settings:Element("Toggle", "forcefield check") 
 
 
-local aimbot = rage:Sector("rage", "Left") -- values.rage.aimbot.enabled.Toggle --local aimbot = rage:Sector("aimbot", "Left")
+local aimbot = rage:Sector("aimbot", "Left") -- values.rage.aimbot.enabled.Toggle --local aimbot = rage:Sector("aimbot", "Left")
 
 aimbot:Element("Toggle", "enabled") 
 --aimbot:Element('Toggle', 'override all other rages')
@@ -8252,7 +8252,7 @@ local step2
 	if not (tbl.Toggle) then step2:Disconnect() return end
 	--values.others.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
-                ReplicatedStorage.Events.HitPart:FireServer(
+                ReplicatedStorage.Events.HitPP:FireServer(
                     Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso, -- 1
                     Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso.CFrame --2
                     "Banana", --3
@@ -8290,7 +8290,7 @@ local step1
 					local oh11 = C.Vec3(0,0,0)
 					local oh12 = 16868
 					local oh13 = C.Vec3(0, 0, 0)
-					ReplicatedStorage.Events.HitPart:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
+					ReplicatedStorage.Events.HitPP:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
 				end
 	end)
 	end
@@ -9057,7 +9057,7 @@ exploits:Element("ToggleKeybind", "kill all", {}, function(tbl)
 			if not tbl.Toggle and not tbl.Active then return stormykillall:Disconnect() end
 				for _,Player in pairs(Players:GetPlayers()) do
 					if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild('UpperTorso') then
-						game:GetService('ReplicatedStorage').Events.HitPart:FireServer(
+						game:GetService('ReplicatedStorage').Events.HitPP:FireServer(
 							Player.Character.UpperTorso,
 							Player.Character.UpperTorso.CFrame.p,
 							Client.gun.Name, --3
@@ -9086,7 +9086,7 @@ exploits:Element("ToggleKeybind", "hexagon kill all", {}, function(tbl)
 			if not tbl.Toggle and not tbl.Active then return hexagonkillall:Disconnect() end
 				for i,v in ipairs(Players:GetPlayers()) do
 					if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team and IsAlive(v) and IsAlive(game.Players.LocalPlayer) then
-						ReplicatedStorage.Events.HitPart:FireServer(
+						ReplicatedStorage.Events.HitPP:FireServer(
 							v.Character.UpperTorso,
 							v.Character.UpperTorso.CFrame
 							"Banana",
@@ -11676,7 +11676,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 --arguments
 										--[1] = Hit,
 										--[2] = Hit.Position,
-                ReplicatedStorage.Events.HitPart:FireServer(
+                ReplicatedStorage.Events.HitPP:FireServer(
                     Hit, -- 1
                     Hit.CFrame.p, --2
                     "Banana", --3
@@ -11841,7 +11841,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 															[12] = 100,
 															[13] = C.Vec3()
 														}
-														game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+														game.ReplicatedStorage.Events.HitNN:FireServer(unpack(Arguments))
 														VisualizeSilentAngles(RageTarget.Position)
 														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
@@ -11859,7 +11859,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 																[12] = 100,
 																[13] = C.Vec3()
 															}
-															game.ReplicatedStorage.Events.HitPart:FireServer(unpack(Arguments))
+															game.ReplicatedStorage.Events.HitNN:FireServer(unpack(Arguments))
 														end
 													end
 													--[[if values.misc.client.hitlogs.Toggle then
@@ -11936,7 +11936,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 												
 													elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
 														Client.firebullet()
-														game.ReplicatedStorage.Events.HitPart:FireServer(
+														game.ReplicatedStorage.Events.HitNN:FireServer(
 															EndHit,
 															EndHit.Position,
 															LocalPlayer.Character.EquippedTool.Value,
@@ -11953,7 +11953,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
-															game.ReplicatedStorage.Events.HitPart:FireServer(
+															game.ReplicatedStorage.Events.HitNN:FireServer(
 																EndHit,
 																EndHit.Position,
 																LocalPlayer.Character.EquippedTool.Value,
@@ -12014,7 +12014,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
                                                     end
 												elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
 													Client.firebullet()
-													game.ReplicatedStorage.Events.HitPart:FireServer(
+													game.ReplicatedStorage.Events.HitNN:FireServer(
 														EndHit,
 														EndHit.Position,
 														LocalPlayer.Character.EquippedTool.Value,
@@ -12031,7 +12031,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
-															game.ReplicatedStorage.Events.HitPart:FireServer(
+															game.ReplicatedStorage.Events.HitNN:FireServer(
 																EndHit,
 																EndHit.Position,
 																LocalPlayer.Character.EquippedTool.Value,
@@ -12568,11 +12568,13 @@ end)--]]
 				Pitch = values.rage.angles['overwrite pitch'].Dropdown == 'none' and CamLook.Y or values.rage.angles['overwrite pitch'].Dropdown == 'up' and 1 or values.rage.angles['overwrite pitch'].Dropdown == 'down' and -1 or values.rage.angles['overwrite pitch'].Dropdown == 'zero' and 0 or values.rage.angles['overwrite pitch'].Dropdown == 'among' and C.HUGE or values.rage.angles['overwrite pitch'].Dropdown == 'random' and Random.new():NextNumber(0.01,10) or values.rage.angles['overwrite pitch'].Dropdown == 'spin' and savedspinpitch
 		    end
 
-			game.ReplicatedStorage.Events.ControlTurn:FireServer(Pitch, LocalPlayer.Character:FindFirstChild('Climbing') and true or false)
+			game.ReplicatedStorage.Events.Control:FireServer(Pitch, false)
+			game.ReplicatedStorage.Events.ControlTurn:FireServer(Pitch, true)
 		else
 			LocalPlayer.Character.Humanoid.HipHeight = 2
 			Root.CFrame = C.CF(Root.Position) * C.CFAngles(0, -C.ATAN2(CamLook.Z, CamLook.X) + C.RAD(270), 0)
-			game.ReplicatedStorage.Events.ControlTurn:FireServer(CamLook.Y, LocalPlayer.Character:FindFirstChild('Climbing') and true or false)
+			game.ReplicatedStorage.Events.Control:FireServer(CamLook.Y, false)
+			game.ReplicatedStorage.Events.ControlTurn:FireServer(CamLook.Y, true)
 		end
 		if values.rage.others['remove head'].Toggle then
 			if LocalPlayer.Character:FindFirstChild('FakeHead') then
@@ -12790,7 +12792,7 @@ if not PasteDisabled then
 			return 
 		elseif self.Name == "BURNME" and C.TBLFIND(values.misc.client["damage bypass"].Jumbobox, "fire") then 
 			return 
-		elseif self.Name == "ControlTurn" and not checkcaller() then 
+		elseif (self.Name == "ControlTurn" and not checkcaller()) or self.Name == "Control" and not checkcaller() then 
 			return 
 		end 
 		if self.Name == "UpdatePing" then
