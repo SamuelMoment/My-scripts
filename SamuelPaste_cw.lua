@@ -8503,8 +8503,13 @@ local combat = main:Sector('combat', 'Left')
 							end
 						end
 					end
+
 					if not Weapon then
 					else
+					--[[if getgenv().Weapon1 == nil or getgenv().Weapon1.Parent == nil then
+						getgenv().Weapon1 = Weapon:Clone()
+						Weapon = Weapon1
+					end			--]]			
 						if values.main.combat["Custom Kill Aura Distance"].Toggle then
 							for i, v in pairs(Weapon:GetDescendants()) do
 								if v:IsA "BasePart" then
@@ -8551,11 +8556,46 @@ local combat = main:Sector('combat', 'Left')
 			end)
 		end)
 	end)
-    task.spawn(
+--[[wrap = function(real) --we pass a real object, and it will spit out a fake copy
+	if type(real) == "userdata" then --this is all we should worry about for now
+		local fake = newproxy(true)
+		local meta = getmetatable(fake)
+
+		meta.__index = function(s,k)
+			--when we get things from the fake object, they should also be fake objects
+			return wrap(real[k]) --that's why this recursion is essential
+		end
+
+		meta.__newindex = function(s,k,v)
+			--allowing us to set values
+			real[k] = v
+		end
+
+		meta.__tostring = function(s)
+			--the more it behaves like the real object, the better
+			return tostring(real)
+		end
+
+		--meta.__etc...
+
+		--you can implement as many of these as necessary
+		--when you're done, return the new fake object
+		return fake
+	--elseif...
+	else
+		--remember that everything we get from the object will be passed through this function
+		--that includes non-userdatas, such as strings, tables, functions and more
+		--some of these things we will eventually need handlers for, and some we won't
+		--if this else block is ever reached though, we can just return the object without doing anything
+		return real
+	end
+end	
+--]] 
+ task.spawn(
         function()
             while task.wait() do
-                pcall(
-                    function()
+              pcall(
+                  function()
                         if values.main.combat["Kill Aura"].Toggle then
                             local Closest
 							--wait(.4)
@@ -8584,7 +8624,7 @@ local combat = main:Sector('combat', 'Left')
                                         end
                                     end
                                     if not Weapon then
-                                    else
+                                    else								
 										for i=1,3 do
 												local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
 												local rayDirection = Vector3.new(0, 0, 5)
@@ -8693,7 +8733,6 @@ local combat = main:Sector('combat', 'Left')
                                             raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
                                             local raycastResult =
                                                 workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-												
                                             local args = {
                                                 [1] = Weapon,
                                                 [2] = Closest.Character.Head,
@@ -10287,7 +10326,7 @@ end
     player:Element("Toggle", "Infinite Jump")
     player:Element("Toggle", "No Jump Cooldown")
     player:Element("Toggle", "Jump Whenever")
-	player:Element("Toggle", "Anti Parry")
+
     miscsector:Element("Toggle", "Kill Feed Spam")
     miscsector:Element("Toggle", "Free Emotes") 
 	miscsector:Element("Toggle", "Hide Name")
@@ -10524,11 +10563,6 @@ end
              then
                 return wait(9e9)
             end
-			if self.Name == 'MeleeDamage' and values.misc.misc.player['Anti Parry'].Toggle then
-				if whataretheargs[2].Parent:FindFirstChild('SemiTransparentShield') and (not whataretheargs[2].Parent:FindFirstChild('SemiTransparentShield').Transparency == tonumber(1)) then
-					return
-				end
-			end
             if
                 not checkcaller() and self.Name == "RagdollRemoteEvent" and
                     values.misc.misc.player["No Ragdoll"].Toggle and
