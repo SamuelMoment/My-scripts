@@ -4136,7 +4136,7 @@ end
 							elseif type == "ToggleColor" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
 								Element.value = {Rainbow = false, RainbowSpeed = 3, Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), SetColor} 
-
+								--print(Element.value.Color,text)
 								local Toggle = C.INST("Frame") 
 								local Button = C.INST("TextButton") 
 								local Color = C.INST("Frame") 
@@ -4200,7 +4200,7 @@ end
 								ColorP.Name = "ColorP" 
 								ColorP.Parent = Button 
 								ColorP.AnchorPoint = C.Vec2(1, 0) 
-								ColorP.BackgroundColor3 = C.COL3RGB(255, 0, 0) 
+								ColorP.BackgroundColor3 = Element.value.Color
 								ColorP.BorderColor3 = C.COL3RGB(18, 18, 16) 
 								ColorP.Position = C.UDIM2(0, 270, 0.5, -4) 
 								ColorP.Size = C.UDIM2(0, 18, 0, 8) 
@@ -4895,6 +4895,7 @@ end
 								ColorV = 1-(C.CLAMP(ColorDrag.AbsolutePosition.Y-Colorpick.AbsolutePosition.Y, 0, Colorpick.AbsoluteSize.Y)/Colorpick.AbsoluteSize.Y) 
 
 								if data.default and data.default.Color ~= nil then 
+									Element.value.Color = data.default.Color
 									ColorH, ColorS, ColorV = data.default.Color:ToHSV() 
 
 									ColorH = C.CLAMP(ColorH,0,1) 
@@ -4905,8 +4906,10 @@ end
 
 									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
-
+									
+									
 									values[tabname][sectorname][text] = data.default.Color 
+									--print(data.default.Color,Element.value.Color,text)
 								elseif Element.value.Color ~= nil then
 									ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
 
@@ -4921,6 +4924,7 @@ end
 
 									values[tabname][sectorname][text] = Element.value.Color 
 								end
+								
 
 								local mouse = LocalPlayer:GetMouse() 
 								game:GetService("UserInputService").InputBegan:Connect(function(input) 
@@ -4990,9 +4994,26 @@ end
 								if data.default then 
 									update() 
 								end 
+								--print(data.default.Color ~= nil and deta.default.Color or ' ',Element.value.Color,text)
+
 								values[tabname][sectorname][text] = Element.value 
-					
-								
+								--print(Element.value.Color,text)
+								if data.default and data.default.Color ~= nil then
+												Element.value.Color = data.default.Color
+												ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
+
+												ColorH = C.CLAMP(ColorH,0,1) 
+												ColorS = C.CLAMP(ColorS,0,1) 
+												ColorV = C.CLAMP(ColorV,0,1) 
+												ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+												Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+
+												ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+												Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+												values[tabname][sectorname][text] = Element.value 
+												Element.value.Color = C.COL3HSV(ColorH, ColorS, ColorV) 
+												callback(Element.value) 								
+								end
 								function Element:SetValue(value) 
 									Element.value = value 
 									local duplicate = C.COL3(value.Color.R, value.Color.G, value.Color.B) 
@@ -7896,7 +7917,7 @@ local CensoredTables1 = {
         FULLWORD = {
             ['fuck'] = 1
         },
-        METHOD = 2
+        METHOD = 1
     },
     ['gg'] = {
         FULLWORD = {
@@ -7955,7 +7976,32 @@ local CensoredTables1 = {
 			['lmfao'] = 2,
 		},
 		METHOD = 4
-	}
+	},
+	['fu'] = {
+	   FULLWORD = {
+	       ['stfu'] = 1
+	   
+	   },
+	   METHOD = 4
+	},
+	['nis'] = {
+	    FULLWORD = {
+	     ['penis'] = 1  
+	    },
+	    METHOD = 4
+	  },
+	['ys'] = {
+	    FULLWORD = {
+	     ['kys'] = 1  
+	    },
+	    METHOD = 4
+	  },
+	['tch'] = {
+	    FULLWORD = {
+	     ['bitch'] = 1  
+	    },
+	    METHOD = 4
+	  }  
 }
 function CheckIfIsInTable(Word)
     --print(Word)
@@ -9850,6 +9896,7 @@ addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, 
 						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
 						--game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
+						if not game:GetService('CoreGui')['electric boogalo']:FindFirstChild('Tabs') then return end
 					for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Tabs:GetDescendants()) do
 						if v:IsA('Frame') and v.BackgroundColor3 == oldUiColor and v.Name ~= 'Color' and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
 								v.BackgroundColor3 = MainUIColor
@@ -10736,43 +10783,123 @@ end
 --visuals tab
 do 
 
-local world = visuals:Sector("world", "Left") 
-world:Element('Dropdown', 'Tracers', {options = {"normal", "lightning 1", "lightning 2", "lightning 3",'lighting 4','lightning 5','lightning 6'}})
-world:Element("ToggleColor", "bullet tracers", {default = {Color = C.COL3RGB(255, 255, 255)}}) 
-local Folder = C.INST("Folder")
-	Folder.Parent = game:GetService("Workspace")
-	Folder.Name = 'beams'
-	function createbullettracer(arrow)
-		if not values.visuals.world['bullet tracers'].Toggle then return end
-		local Part = C.INST("Part")
-		Part.CanCollide = false
-		Part.CFrame = arrow.CFrame
-		Part.Size = C.Vec3(0, 0, 0)
-		Part.TopSurface = Enum.SurfaceType.Smooth
-		Part.Parent = Folder
-		Part.Transparency = 1
-		Part.Anchored = true
+
+	local world = visuals:Sector("world", "Left") 
+	--BT
+	do
+		world:Element('Dropdown', 'Tracers', {options = {"normal", "lightning 1", "lightning 2", "lightning 3",'lighting 4','lightning 5','lightning 6'}})
+		world:Element("ToggleColor", "bullet tracers", {default = {Color = C.COL3RGB(255, 255, 255)}}) 
+		local Folder = C.INST("Folder")
+		Folder.Parent = game:GetService("Workspace")
+		Folder.Name = 'beams'
+		function createbullettracer(arrow)
+			if not values.visuals.world['bullet tracers'].Toggle then return end
+			local Part = C.INST("Part")
+			Part.CanCollide = false
+			Part.CFrame = arrow.CFrame
+			Part.Size = C.Vec3(0, 0, 0)
+			Part.TopSurface = Enum.SurfaceType.Smooth
+			Part.Parent = Folder
+			Part.Transparency = 1
+			Part.Anchored = true
 
 
 
-			
-		local Object1 = C.INST("Attachment")
-		Object1.Name = "1"
-		Object1.Parent = Part
+				
+			local Object1 = C.INST("Attachment")
+			Object1.Name = "1"
+			Object1.Parent = Part
 
-		local Object2 = C.INST("Attachment")
-		Object2.Name = "2"
-		Object2.Parent = arrow
+			local Object2 = C.INST("Attachment")
+			Object2.Name = "2"
+			Object2.Parent = arrow
 
-		local Beam = C.INST("Beam")
-		Beam.Attachment0 = Object1
-		Beam.Attachment1 = Object2
-		Beam.LightInfluence = 1
-		Beam.Texture = values.visuals.world["Tracers"].Dropdown == "normal" and "rbxassetid://5854341017" or values.visuals.world["Tracers"].Dropdown == "lightning 1" and "rbxassetid://7151777149" or values.visuals.world["Tracers"].Dropdown == "lightning 2" and "rbxassetid://7501973572" or values.visuals.world["Tracers"].Dropdown == "lightning 3" and "rbxassetid://257173628"or values.visuals.world["Tracers"].Dropdown == "lightning 4" and "rbxassetid://6060542021"or values.visuals.world["Tracers"].Dropdown == "lightning 5" and "rbxassetid://6060542158"or values.visuals.world["Tracers"].Dropdown == "lightning 6" and "rbxassetid://6060542252"
-		Beam.Parent = Folder
-		Beam.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, values.visuals.world["bullet tracers"].Color), ColorSequenceKeypoint.new(1, values.visuals.world["bullet tracers"].Color)}
+			local Beam = C.INST("Beam")
+			Beam.Attachment0 = Object1
+			Beam.Attachment1 = Object2
+			Beam.LightInfluence = 1
+			Beam.Texture = values.visuals.world["Tracers"].Dropdown == "normal" and "rbxassetid://5854341017" or values.visuals.world["Tracers"].Dropdown == "lightning 1" and "rbxassetid://7151777149" or values.visuals.world["Tracers"].Dropdown == "lightning 2" and "rbxassetid://7501973572" or values.visuals.world["Tracers"].Dropdown == "lightning 3" and "rbxassetid://257173628"or values.visuals.world["Tracers"].Dropdown == "lightning 4" and "rbxassetid://6060542021"or values.visuals.world["Tracers"].Dropdown == "lightning 5" and "rbxassetid://6060542158"or values.visuals.world["Tracers"].Dropdown == "lightning 6" and "rbxassetid://6060542252"
+			Beam.Parent = Folder
+			Beam.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, values.visuals.world["bullet tracers"].Color), ColorSequenceKeypoint.new(1, values.visuals.world["bullet tracers"].Color)}
+		end
 	end
-
+	---------------
+	
+	
+	local effects = visuals:Sector('effects','Right')
+	--Kill screen
+	do
+	
+	
+		effects:Element('ToggleTrans','Kill screen')
+		effects:Element('Dropdown','Kill screen type',{options = {'Color','Image','Both'}})
+		effects:Element('TextBox', 'Image',{placeholder = 'ID or path',NoLimit = true})
+		effects:Element('Dropdown','Image type',{options = {'Roblox ID','workspace image'}})
+		effects:Element('Slider','Delay disappearing',{min = 0.1,max = 2, default = 1.5})
+		effects:Element('Slider','Speed disappearing',{min = 0.1,max = 1, default = 0.5})
+		
+		effects:Element('Slider','Image size(X)',{min = 1,max = game.CoreGui:FindFirstChildOfClass('ScreenGui').AbsoluteSize.X,default = 1})
+		effects:Element('Slider','Image size(Y)',{min = 1,max = game.CoreGui:FindFirstChildOfClass('ScreenGui').AbsoluteSize.Y+36,default = 1})
+		
+		effects:Element('Slider','Image Transparency', {min = 0,max = 1})
+		
+		killeffect = function()		
+			if not values.visuals.effects['Kill screen'].Toggle then return end
+			scren = Instance.new('ScreenGui',game.CoreGui)
+			scren.IgnoreGuiInset = true
+			if values.visuals.effects['Kill screen type'].Dropdown == 'Image' or values.visuals.effects['Kill screen type'].Dropdown == 'Both' then
+				frem = Instance.new("ImageLabel",scren)
+				frem.BackgroundTransparency = 1
+				frem.ImageTransparency = values.visuals.effects['Image Transparency'].Slider
+				frem.Position = UDim2.new(0.5,0,0.5,0)
+				frem.AnchorPoint = Vector2.new(0.5,0.5)
+				frem.Size = UDim2.new(0.5,values.visuals.effects['Image size(X)'].Slider,0.5,values.visuals.effects['Image size(Y)'].Slider)
+				frem.BorderSizePixel = 0
+				if values.visuals.effects['Image type'] == 'workspace image' then
+					getAsset = getsynasset or getcustomasset
+					
+					frem.Image = getAsset(values.visuals.effects['Image'].Text)
+				else
+					frem.Image = 'rbxassetid://'..values.visuals.effects['Image'].Text
+				end
+				repeat wait() until frem:IsLoaded()
+			end
+			if values.visuals.effects['Kill screen type'].Dropdown == 'Color' or values.visuals.effects['Kill screen type'].Dropdown == 'Both' then
+				frem2 = Instance.new('Frame',scren)
+				frem2.BackgroundTransparency = values.visuals.effects['Kill screen'].Transparency
+				frem2.Size = UDim2.new(1,0,1,0)
+				frem2.BorderSizePixel = 0
+				frem2.BackgroundColor3 = values.visuals.effects['Kill screen'].Color
+				
+				task.delay(values.visuals.effects['Delay disappearing'].Slider,function()
+					if frem ~= nil then
+						library:Tween(frem, TweenInfo.new(values.visuals.effects['Speed disappearing'].Slider, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 1}) 
+					end
+					if frem2 ~= nil then
+						library:Tween(frem2, TweenInfo.new(values.visuals.effects['Speed disappearing'].Slider, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {BackgroundTransparency = 1}) 
+					end
+					
+					if frem ~= nil then	
+						task.spawn(function()
+							repeat wait() until frem.ImageTransparency == 1
+							frem:Destroy()
+						end)
+					end
+					if frem2 ~= nil then
+						task.spawn(function()
+							repeat wait() until frem2.BackgroundTransparency == 1
+							frem2:Destroy()
+						end)
+					end
+					repeat wait() until not scren:FindFirstChildOfClass('Frame')
+					scren:Destroy()
+				end)
+			end
+		end
+		effects:Element('Button','Test',{},killeffect)
+		killsaysignal:Connect(killeffect)
+		--Kill screen Kill screen type (Color,Image), Image Image type(Roblox ID workspace image)
+	end
 end
 
 
