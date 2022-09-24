@@ -3033,7 +3033,7 @@ do
 											callback(Element.value) 
 										end) 
 										Button.MouseEnter:Connect(function() 
-											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(255, 255, 255)}) 
+											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
 										end) 
 										Button.MouseLeave:Connect(function() 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(200, 200, 200)}) 
@@ -3127,7 +3127,7 @@ do
 														end 
 													end 
 
-													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
+													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
 
 													Element.value.Scroll[joell] = v1
 
@@ -3136,7 +3136,7 @@ do
 												end) 
 												Button.MouseEnter:Connect(function() 
 													if Element.value.Scroll[joell] ~= v1 then 
-														library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
+														library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
 													end 
 												end) 
 												Button.MouseLeave:Connect(function() 
@@ -7433,6 +7433,58 @@ local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(sel
     end
   return oldnamecall(self, unpack(args))
 end)
+
+if syn then
+	local fw = require(game.ReplicatedStorage.Framework.Nevermore);
+	syn_context_set(2)
+	local acc = fw("AntiCheatHandlerClient")
+	syn_context_set(7)
+	hookfunction(acc.createNotification, function() return end)
+	local hook
+	hook = hookmetamethod(game, "__namecall", function(self, ...)
+	   if getnamecallmethod() == "FireServer" and self.Name == "LogKick" then
+		   return wait(9e9)
+	   end
+	   if getcallingscript() == "AntiCheatHandler" and getnamecallmethod() == "Destroy" then
+		   return wait(9e9)
+	   end
+	   if getnamecallmethod() == "Kick" and not checkcaller() then
+		   return wait(9e9)
+	   end
+	   
+	   return hook(self, ...)
+	end)
+	nhk = hookfunction(Instance.new, function(...)
+	   if getcallingscript() == "AntiCheatHandler" then
+		   return wait(9e9) end
+	   return nhk(...)
+	end)
+	lolz = hookfunction(task.spawn, function(...)
+	   if getcallingscript() == "AntiCheatHandler" then return wait(9e9) end
+	   if getcallingscript() == "AntiCheatHandlerClient" then return wait(9e9) end
+	   return lolz(...)
+	end)
+	syn_context_set(2)
+	local acc = fw("Flag")
+	syn_context_set(7)
+
+	hookfunction(acc.setFlags, function() return end)
+	hookfunction(acc.addFlags, function() return end)
+	hookfunction(acc.getIsMaxed, function() return end)
+	hookfunction(acc.getFlags, function() return end)
+	syn_context_set(1)
+
+	hookfunc(string.format, function()
+	   if getcallingscript() == "AntiCheatHandler" then
+		   return
+	   end
+	end)
+	hookfunc(fw("AntiCheatHandler").punish, function()
+	   return;
+	end)
+	syn_context_set(7)
+end
+
 	getgenv().rangedvalues = {}
 for i,v in pairs(getgc(true)) do
 	if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'minSpread') then
@@ -10208,6 +10260,28 @@ end
 		end	
 	end)
 	--utility:Element('Toggle','Ignore when parkouring')
+for i,v in pairs(getgc(true)) do
+	if typeof(v) == 'table' then
+		if rawget(v,'displayName') and v.displayName == 'C4' then
+			oldPreThrow = v.preThrowDuration
+		end
+	end
+end
+	utility:Element('Toggle','C4 instant throw',{},function(tbl)
+		--if tbl.Toggle then
+			for i,v in pairs(getgc(true)) do
+				if typeof(v) == 'table' then
+					if rawget(v,'displayName') and v.displayName == 'C4' then
+						if tbl.Toggle then
+						v.preThrowDuration = 0
+						else
+						v.preThrowDuration = oldPreThrow
+						end
+					end
+				end
+			end
+		--end
+	end)
     player:Element("Toggle", "Auto Airdrop-Claimer")
      miscsector:Element("Toggle","Velocity Fly",nil,function(state)
          if state.Toggle then
@@ -10781,6 +10855,7 @@ end
 
 
 --visuals tab
+
 do 
 
 
