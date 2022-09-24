@@ -7388,8 +7388,8 @@ local Mouse = LocalPlayer:GetMouse()
 
 
 ----LIBRARY END---------
-for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"kick") then v.kick = function() return end end end 
 --for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999 end end 
+	getgenv().rangedvalues = {}
 for i,v in pairs(getgc(true)) do
    if typeof(v) == 'table' and rawget(v, 'getIsBodyMoverCreatedByGame') then
 		v.getIsBodyMoverCreatedByGame = function(...)
@@ -7408,8 +7408,6 @@ for i,v in pairs(getgc(true)) do
    if typeof(v) == "table" and rawget(v,"Remote") then
        v.Remote.Name = v.Name
    end
-end
-for i,v in pairs(getgc(true)) do
     if typeof(v) == 'table' then
         if rawget(v,'antiSpeed') then
             v.antiSpeed = {}
@@ -7417,13 +7415,52 @@ for i,v in pairs(getgc(true)) do
             v.antiInfJump = {}
             --print('sex')
         end
-    end
+    end 
+	if type(v) == 'table' and rawget(v,'cancelReload') then
+		task.spawn(function()
+			oldReload = v.cancelReload
+			game.RunService.RenderStepped:Connect(function()
+				pcall(function()
+					if values.main['Ranged sector']['No reload cancel'].Toggle then
+						v.cancelReload = function(...)
+							return
+						end
+					else
+						v.cancelReload = oldReload
+					end
+				end)
+			end)
+		end)
+	end	
+	if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'minSpread') then
+
+			pcall(function()
+				table.clear(rangedvalues[string.lower(v.displayName)])
+			end)
+			rangedvalues[string.lower(v.displayName)] = {
+		['minSpread'] = v.minSpread,
+		['maxSpread'] = v.maxSpread,
+		['recoilXMin'] = v.recoilXMin,
+		['recoilXMax'] = v.recoilXMax,
+		['recoilYMin'] = v.recoilYMin,
+		['recoilYMax'] = v.recoilYMax,
+		['recoilZMin'] = v.recoilZMin,	
+		['recoilZMax'] = v.recoilZMax,
+		['startShootingAfterCharge'] = v.startShootingAfterCharge,
+		['chargeOnDuration'] = v.chargeOnDuration,
+		['chargeOffDuration'] = v.chargeOffDuration,
+		['gravity'] = v.gravity,
+		['maxDistance'] = v.maxDistance,
+			}
+
+	end	
 end
+
 local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(self, ...)
   local args = {...}
   local method = getnamecallmethod();
  
-  if (method == "Kick" or method == "kick") and self == game.Players.LocalPlayer then
+  if ((method == "Kick" or method == "kick") and self == game.Players.LocalPlayer) or self.Name == 'LocKick' then
       return;
   end
     if self.Name == 'RangedHit' then
@@ -7435,25 +7472,12 @@ local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(sel
 end)
 
 if syn then
+
 	local fw = require(game.ReplicatedStorage.Framework.Nevermore);
 	syn_context_set(2)
 	local acc = fw("AntiCheatHandlerClient")
 	syn_context_set(7)
-	hookfunction(acc.createNotification, function() return end)
-	local hook
-	hook = hookmetamethod(game, "__namecall", function(self, ...)
-	   if getnamecallmethod() == "FireServer" and self.Name == "LogKick" then
-		   return wait(9e9)
-	   end
-	   if getcallingscript() == "AntiCheatHandler" and getnamecallmethod() == "Destroy" then
-		   return wait(9e9)
-	   end
-	   if getnamecallmethod() == "Kick" and not checkcaller() then
-		   return wait(9e9)
-	   end
-	   
-	   return hook(self, ...)
-	end)
+	
 	nhk = hookfunction(Instance.new, function(...)
 	   if getcallingscript() == "AntiCheatHandler" then
 		   return wait(9e9) end
@@ -7473,82 +7497,21 @@ if syn then
 	hookfunction(acc.getIsMaxed, function() return end)
 	hookfunction(acc.getFlags, function() return end)
 	syn_context_set(1)
-
-	hookfunc(string.format, function()
-	   if getcallingscript() == "AntiCheatHandler" then
-		   return
-	   end
-	end)
 	hookfunc(fw("AntiCheatHandler").punish, function()
 	   return;
 	end)
 	syn_context_set(7)
 end
 
-	getgenv().rangedvalues = {}
-for i,v in pairs(getgc(true)) do
-	if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'minSpread') then
---[[local function shallowCopy(original)
-	local copy = {}
-	for key, value in pairs(original) do
-		copy[key] = value
-	end
-	return copy
-end		
-			pcall(function()
-				table.clear(rangedvalues[string.lower(v.displayName)])
-			end)--]]
-			rangedvalues[string.lower(v.displayName)] = {
-		['minSpread'] = v.minSpread,
-		['maxSpread'] = v.maxSpread,
-		['recoilXMin'] = v.recoilXMin,
-		['recoilXMax'] = v.recoilXMax,
-		['recoilYMin'] = v.recoilYMin,
-		['recoilYMax'] = v.recoilYMax,
-		['recoilZMin'] = v.recoilZMin,	
-		['recoilZMax'] = v.recoilZMax,
-		['startShootingAfterCharge'] = v.startShootingAfterCharge,
-		['chargeOnDuration'] = v.chargeOnDuration,
-		['chargeOffDuration'] = v.chargeOffDuration,
-		['gravity'] = v.gravity,
-		['maxDistance'] = v.maxDistance,
-			}
-			--rangedvalues[string.lower(v.displayName)] = shallowCopy(v)
-			--table.freeze(rangedvalues[string.lower(v.displayName)])
-			--shit didnt work properly fuck u whoever reads that
-		--print(rangedvalues[string.lower(v.displayName)].displayName)
-	end
-end
 
 
-for i,v in pairs(getgc(true)) do
-	if type(v) == 'table' and rawget(v,'cancelReload') then
-		task.spawn(function()
-			oldReload = v.cancelReload
-			game.RunService.RenderStepped:Connect(function()
-				pcall(function()
-					if values.main['Ranged sector']['No reload cancel'].Toggle then
-						v.cancelReload = function(...)
-							return
-						end
-					else
-						v.cancelReload = oldReload
-					end
-				end)
-			end)
-		end)
-	end
-end
---local Players = game:GetService("Players")
---local LocalPlayer = Players.LocalPlayer
---local Mouse = LocalPlayer:GetMouse()
+
 local flyKeyDown
 local flyKeyUp
 local events = game:GetService("ReplicatedStorage").Communication.Events
 local functions = game:GetService("ReplicatedStorage").Communication.Functions
 
---functions.SpawnCharacter:FireServer()
---wait(0.5)
+
 for i = 1,10 do -- inf jump bypass
     events.StartFastRespawn:FireServer()
     functions.CompleteFastRespawn:FireServer()
@@ -7567,10 +7530,10 @@ end
 FLYING = false
 iyflyspeed = 1
 vehicleflyspeed = 1
---local Players = game:GetService("Players")
---local LocalPlayer = Players.LocalPlayer
 
-local function GetClosest(Distance,arg2)
+
+local function GetClosest(Distance,Priority,IgnoreTarget)
+	if IgnoreTarget == nil then IgnoreTarget = false end
     local Character = LocalPlayer.Character
     local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPart")
     if not (Character or HumanoidRootPart) then return end
@@ -7583,7 +7546,7 @@ local function GetClosest(Distance,arg2)
         if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 then
             local TargetHRP = v.Character.HumanoidRootPart
             local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
-            if arg2 == 'Health' then
+            if Priority == 'Health' then
                if mag < TargetDistance and v.Character.Humanoid.Health < TargetHealth then
                    TargetHealth = v.Character.Humanoid.Health
                    Target = v
@@ -7594,7 +7557,7 @@ local function GetClosest(Distance,arg2)
                     Target = v
                 end
             end
-			if values.main.combat['Target player'].Toggle and v.Name == values.main.combat['Target'].Scroll then
+			if values.main.combat['Target player'].Toggle and v.Name == values.main.combat['Target'].Scroll and not IgnoreTarget then
 				return v
 			end
         end
@@ -7602,28 +7565,7 @@ local function GetClosest(Distance,arg2)
 
     return Target
 end
---[[local function GetClosest(Distance)
-    local Character = LocalPlayer.Character
-    local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPart")
-    if not (Character or HumanoidRootPart) then return end
 
-    local TargetDistance = Distance
-    local Target
-
-    for i,v in ipairs(Players:GetPlayers()) do
-        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
-            local TargetHRP = v.Character.HumanoidRootPart
-            local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
-            if mag < TargetDistance then
-                TargetDistance = mag
-                Target = v
-            end
-        end
-    end
-
-    return Target
-end
---]]
  function sFLY(vfly,ragdoll,platform)
      if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
      local T = LocalPlayer.Character.HumanoidRootPart
@@ -10282,6 +10224,10 @@ end
 			end
 		--end
 	end)
+	--utility:Element('Toggle','Redirect throwable grenades to closest player')
+	--utility:Element('Toggle','Increase force of grenades')
+	utility:Element('Slider','Distance',{min = 1,max = 500,default = 100})
+	--values.misc.misc.utility['Redirect throwable grenades to closest player']
     player:Element("Toggle", "Auto Airdrop-Claimer")
      miscsector:Element("Toggle","Velocity Fly",nil,function(state)
          if state.Toggle then
@@ -10335,7 +10281,7 @@ end
     end)
 
 
-for i,v in pairs(getgc(true)) do
+--[[for i,v in pairs(getgc(true)) do
     if typeof(v) == 'table' then
         if rawget(v,'RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE') then
             old = v.RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE 
@@ -10367,9 +10313,9 @@ for i,v in pairs(getgc(true)) do
         end
     end
 end
---game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false)
+
 local fakingragdol = false
-	--[[miscsector:Element('Button','Fake ragdoll',{},function()
+miscsector:Element('Button','Fake ragdoll',{},function()
 		fakingragdol = true
 		LocalPlayer = game.Players.LocalPlayer
 --game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false)
@@ -10451,27 +10397,11 @@ end
     miscsector:Element("Toggle", "Kill Feed Spam")
     miscsector:Element("Toggle", "Free Emotes") 
 	miscsector:Element("Toggle", "Hide Name")
-	miscsector:Element('Button', 'Horizontal body (permanent)',{}, function()
+	miscsector:Element('Toggle', 'Horizontal body',{}, function()
 		task.spawn(function()
-			local events = game:GetService("ReplicatedStorage").Communication.Events
-			local functions = game:GetService("ReplicatedStorage").Communication.Functions
-			for i,v in pairs(getgc(true)) do
-				if typeof(v) == "table" and rawget(v,"Remote") then
-					v.Remote.Name = v.Name
-				end
-			end
-			local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(self, ...)
-				local args = {...}
-				local method = getnamecallmethod();
-			  
-				if (method == "Kick" or method == "kick") and self == game.Players.LocalPlayer then
-					return;
-				end
-			  
-				return oldnamecall(self, unpack(args))
-			end)
 			while wait() do
 			for i = 1,15 do
+			if not tbl.Toggle then break end
 			local g = CFrame.new(Vector3.new(math.huge*9e9,math.huge*9e9,math.huge*9e9),Vector3.new(math.huge*9e9,math.huge*9e9,math.huge*9e9),Vector3.new(math.huge*9e9,math.huge*9e9,math.huge*9e9))
 			local args = {
 				[1] = {
@@ -10485,6 +10415,7 @@ end
 
 			game:GetService("ReplicatedStorage").Communication.Events.ReplicateBodyRotation:FireServer(unpack(args))
 			end
+			if not tbl.Toggle then break end
 			end
 		end)
 	end)
@@ -10553,7 +10484,7 @@ end
 	local mt = getrawmetatable(game)
 	setreadonly(mt, false)
 	local old = mt.__newindex	
-	mt.__newindex = newcclosure(function(o, k, v)
+	old = hookmetamethod(game,'__newindex',function(o, k, v)
 	    if values.misc.misc.player["Walk Speed"].Toggle and (k == 'WalkSpeed') then
             v = values.misc.misc.player["Speed"].Slider
         end
@@ -10664,81 +10595,7 @@ end
             end
         end
     )
-    local newindex
 
-
-    local newindex
-
-    newindex =
-        hookmetamethod(
-        game,
-        "__namecall",
-        function(self, ...)
-            local howcalledomg = getnamecallmethod()
-            local whataretheargs = {...}
-
-            if
-                not checkcaller() and self.Name == "GotHitRE" and
-                    values.misc.misc.utility["No Utility Damage (expect bombs)"].Toggle and
-                    howcalledomg == "FireServer"
-             then
-                return wait(9e9)
-            end
-            if
-                not checkcaller() and self.Name == "RagdollRemoteEvent" and
-                    values.misc.misc.player["No Ragdoll"].Toggle and
-                    howcalledomg == "FireServer"
-             then
-                return wait(9e9)
-            end
-            if
-                not checkcaller() and self.Name == "StartFallDamage" or
-                    self.Name == "TakeFallDamage" and values.misc.misc.player["No Fall Damage"].Toggle and
-                        howcalledomg == "FireServer"
-             then
-                return wait(9e9)
-            end
-            if
-                not checkcaller() and self.Name == "UpdateIsCrouching" and values.misc.misc2.misc["Hide Name"].Toggle and
-                    howcalledomg == "FireServer"
-             then
-                return
-            elseif
-                not checkcaller() and self.Name == "UpdateIsCrouching" and
-                    not values.misc.misc2.misc["Hide Name"].Toggle
-             then
-                return newindex(self, ...)
-            end
-
-            if
-                not checkcaller() and self.Name == "UpdateIsParkouring" and
-                    values.misc.misc.player["Walk On Air (Q,E)"].Toggle and
-                    howcalledomg == "FireServer"
-             then
-                return
-            elseif
-                not checkcaller() and self.Name == "UpdateIsParkouring" and
-                    not values.misc.misc.player["Walk On Air (Q,E)"].Toggle and
-                    howcalledomg == "FireServer"
-             then
-                return newindex(self, ...)
-            end
-			
-			if self.Name == 'SpawnCharacter' then
-				task.spawn(function()
-					repeat wait() until LocalPlayer.Character and LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool')
-					task.wait(0.3)
-					Spawn:Fire(LocalPlayer.Character)
-					LocalPlayer.Character.Humanoid.Died:Connect(function()
-						Died:Fire()
-					end)
-				end)
-			end
-			
-
-            return newindex(self, ...)
-        end
-    )
 
     for i, v in pairs(getgc(true)) do
         if type(v) == "table" and rawget(v, "AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then
@@ -10853,6 +10710,95 @@ end
     end
 end
 
+    local oldNamecall
+getgenv().debug = false
+getgenv().pos = Vector3.new(0,0,0)
+    oldNamecall =
+        hookmetamethod(
+        game,
+        "__namecall",
+        function(self, ...)
+            local howcalledomg = getnamecallmethod()
+            local args = {...}
+
+            if
+                not checkcaller() and self.Name == "GotHitRE" and
+                    values.misc.misc.utility["No Utility Damage (expect bombs)"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return wait(9e9)
+            end
+            if
+                not checkcaller() and self.Name == "RagdollRemoteEvent" and
+                    values.misc.misc.player["No Ragdoll"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return wait(9e9)
+            end
+            if
+                not checkcaller() and self.Name == "StartFallDamage" or
+                    self.Name == "TakeFallDamage" and values.misc.misc.player["No Fall Damage"].Toggle and
+                        howcalledomg == "FireServer"
+             then
+                return wait(9e9)
+            end
+            if
+                not checkcaller() and self.Name == "UpdateIsCrouching" and values.misc.misc2.misc["Hide Name"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return
+            elseif
+                not checkcaller() and self.Name == "UpdateIsCrouching" and
+                    not values.misc.misc2.misc["Hide Name"].Toggle
+             then
+                return oldNamecall(self, unpack(args))
+            end
+
+            if	not checkcaller() and self.Name == "UpdateIsParkouring" and values.misc.misc.player["Walk On Air (Q,E)"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return
+            elseif
+                not checkcaller() and self.Name == "UpdateIsParkouring" and
+                    not values.misc.misc.player["Walk On Air (Q,E)"].Toggle and
+                    howcalledomg == "FireServer"
+             then
+                return oldNamecall(self, unpack(args))
+            end
+			
+			if self.Name == 'SpawnCharacter' then
+				task.spawn(function()
+					repeat wait() until LocalPlayer.Character and LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool')
+					task.wait(0.3)
+					Spawn:Fire(LocalPlayer.Character)
+					LocalPlayer.Character.Humanoid.Died:Connect(function()
+						Died:Fire()
+					end)
+				end)
+			end
+			
+			--[[if self.Name == 'ReplicateThrowable' then
+
+				if values.misc.misc.utility['Redirect throwable grenades to closest player'].Toggle then
+					Closest = GetClosest(values.misc.misc.utility.Distance.Slider,'Distance',true) or nil
+					
+					if not Closest == nil then
+						if not getgenv().debug then
+						args[2] = Closest.Character.Head.Position
+						else
+						args[2] = getgenv().pos
+						end
+					end
+				end
+				if values.misc.misc.utility['Increase force of grenades'].Toggle then
+					args[3] = Vector3.new(math.huge,math.huge,math.huge)
+				end
+			end--]]	
+			
+
+            return oldNamecall(self, unpack(args))
+        end
+    )
 
 --visuals tab
 
