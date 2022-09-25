@@ -10197,9 +10197,9 @@ do
 			end
 		--end
 	end)
-	--[[utility:Element('Toggle','Redirect throwable grenades to closest player')
+	utility:Element('Toggle','Redirect throwable grenades to closest player')
 	utility:Element('Toggle','Increase force of grenades')
-	utility:Element('Slider','Distance',{min = 1,max = 500,default = 100})--]]
+	utility:Element('Slider','Distance',{min = 1,max = 500,default = 100})
 	
 	--values.misc.misc.utility['Redirect throwable grenades to closest player']
 	player:Element("Toggle", "Auto Airdrop-Claimer")
@@ -11418,7 +11418,12 @@ end
 		end)
 		fakingragdol = false
 	end)--]]			
-				
+			
+game.RunService.RenderStepped:Connect(function()
+	if values.misc.misc.utility['Redirect throwable grenades to closest player'].Toggle then
+	ClosestC4 = GetClosest(values.misc.misc.utility.Distance.Slider,'Distance',true) or nil
+	end
+end)			
 				
 local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(self, ...)
   local args = {...}
@@ -11463,24 +11468,21 @@ local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(sel
 		end)
 	end
 			
-	--[[if self.Name == 'ReplicateThrowable' then
+	if self.Name == 'ReplicateThrowable' then
 
 		if values.misc.misc.utility['Redirect throwable grenades to closest player'].Toggle then
-			Closest = GetClosest(values.misc.misc.utility.Distance.Slider,'Distance',true) or nil
-			print(Closest,Closest.Character,Closest.Character.Head.Position)
-			
-			print('--------------')
-			print(args[2])
-			if Closest ~= nil then
-				args[2] = Closest.Character.Head.CFrame.Position
+			--Closest = GetClosest(values.misc.misc.utility.Distance.Slider,'Distance',true) or nil
+
+			if ClosestC4 ~= nil then
+				args[2] = C4Closest
 			end
-			print(args[2])
+			--print(args[2])
 		end
 		if values.misc.misc.utility['Increase force of grenades'].Toggle then
 			args[3] = Vector3.new(math.huge,math.huge,math.huge)
 		end
 		return oldnamecall(self, unpack(args))
-	end	--]]
+	end
   return oldnamecall(self, unpack(args))
 end)
 
