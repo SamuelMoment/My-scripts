@@ -7390,109 +7390,117 @@ local Mouse = LocalPlayer:GetMouse()
 ----LIBRARY END---------
 --for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999 end end 
 	getgenv().rangedvalues = {}
+local SavedValues = {}
 for i,v in pairs(getgc(true)) do
-   if typeof(v) == 'table' and rawget(v, 'getIsBodyMoverCreatedByGame') then
-		v.getIsBodyMoverCreatedByGame = function(...)
-			return true
+	if typeof(v) == 'table'  then
+		if rawget(v,"getIsBodyMoverCreatedByGame") then
+			v.getIsBodyMoverCreatedByGame = function(...)
+				return true
+			end
 		end
-   end
-   if typeof(v) == 'table' and rawget(v, 'kick') then
-		v.kick = function() return wait(9e9) end
-   end
-   if typeof(v) == 'table' and rawget(v, 'randomDelayKick') then
-		v.randomDelayKick = function() return wait(9e9) end
-   end
-   if typeof(v) == 'table' and rawget(v, 'connectCharacter') then
-		v.connectCharacter = function(gg) return wait(9e9) end
-   end
-   if typeof(v) == "table" and rawget(v,"Remote") then
-	   v.Remote.Name = v.Name
-   end
-	if typeof(v) == 'table' then
+		if rawget(v, 'kick') then
+			v.kick = function() return wait(9e9) end
+		end
+		if rawget(v, 'randomDelayKick') then
+			v.randomDelayKick = function() return wait(9e9) end
+		end
+		if rawget(v, 'connectCharacter') then
+			v.connectCharacter = function(gg) return wait(9e9) end
+		end
+		if rawget(v,"Remote")  then
+			v.Remote.Name = v.Name
+		end
 		if rawget(v,'antiSpeed') then
 			v.antiSpeed = {}
 			v.antiBodyMover = {}
 			v.antiInfJump = {}
 			--print('sex')
 		end
-	end 
-	if type(v) == 'table' and rawget(v,'cancelReload') then
-		task.spawn(function()
-			oldReload = v.cancelReload
-			RunService.RenderStepped:Connect(function()
-				pcall(function()
-					if values.main['Ranged sector']['No reload cancel'].Toggle then
-						v.cancelReload = function(...)
-							return
+		if rawget(v,'cancelReload') then
+			task.spawn(function()
+				SavedValues['oldReload'] = v.cancelReload
+				RunService.RenderStepped:Connect(function()
+					pcall(function()
+						if values.main['Ranged sector']['No reload cancel'].Toggle then
+							v.cancelReload = function(...)
+								return
+							end
+						else
+							v.cancelReload = SavedValues['oldReload']
 						end
-					else
-						v.cancelReload = oldReload
-					end
+					end)
 				end)
 			end)
-		end)
-	end	
-	if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'minSpread') then
-
+		end
+		if rawget(v,'maxSpread') and rawget(v,'minSpread') then
 			pcall(function()
 				table.clear(rangedvalues[string.lower(v.displayName)])
 			end)
 			rangedvalues[string.lower(v.displayName)] = {
-		['minSpread'] = v.minSpread,
-		['maxSpread'] = v.maxSpread,
-		['recoilXMin'] = v.recoilXMin,
-		['recoilXMax'] = v.recoilXMax,
-		['recoilYMin'] = v.recoilYMin,
-		['recoilYMax'] = v.recoilYMax,
-		['recoilZMin'] = v.recoilZMin,	
-		['recoilZMax'] = v.recoilZMax,
-		['startShootingAfterCharge'] = v.startShootingAfterCharge,
-		['chargeOnDuration'] = v.chargeOnDuration,
-		['chargeOffDuration'] = v.chargeOffDuration,
-		['gravity'] = v.gravity,
-		['maxDistance'] = v.maxDistance,
+				['minSpread'] = v.minSpread,
+				['maxSpread'] = v.maxSpread,
+				['recoilXMin'] = v.recoilXMin,
+				['recoilXMax'] = v.recoilXMax,
+				['recoilYMin'] = v.recoilYMin,
+				['recoilYMax'] = v.recoilYMax,
+				['recoilZMin'] = v.recoilZMin,	
+				['recoilZMax'] = v.recoilZMax,
+				['startShootingAfterCharge'] = v.startShootingAfterCharge,
+				['chargeOnDuration'] = v.chargeOnDuration,
+				['chargeOffDuration'] = v.chargeOffDuration,
+				['gravity'] = v.gravity,
+				['maxDistance'] = v.maxDistance
 			}
-
-	end
-	if typeof(v) == 'table' then
+		end
 		if rawget(v,'removeKillFeedIdx') and rawget(v,'render') then
 			--print('found')
-			oldrender = v.render
+			SavedValues['oldrender'] = v.render
 			v.render = function(sex1)
 				if sex1.props.killfeedItemInfo.playerThatKilled == LocalPlayer and sex1.props.killfeedItemInfo.playerThatDied ~= LocalPlayer then
 					killsaysignal:Fire()
 				end
-				return oldrender(sex1)
+				return SavedValues['oldrender'](sex1)
 			end
 		end
-	end	
-	if typeof(v) == 'table' and rawget(v, 'removeRichTextTags') then
-		replaceclosure(rawget(v, 'removeRichTextTags'), function(a)
-			return a
-		end)
-	end
-	if typeof(v) == 'table' then
-		if rawget(v,'getSessionDataRoduxStoreForPlayer') then
-			getState = v.getSessionDataRoduxStoreForPlayer(game.Players.LocalPlayer)
+		if rawget(v, 'removeRichTextTags') then
+			replaceclosure(rawget(v, 'removeRichTextTags'), function(a)
+				return a
+			end)
 		end
-	end
-	if typeof(v) == 'table' and rawget(v,'knockbackCharacterPartAngular') then
-		oldknockbackCharacterPartAngular = v.knockbackCharacterPartAngular
-	end
-	if typeof(v) == 'table' then 
+		if rawget(v,'getSessionDataRoduxStoreForPlayer') then
+			SavedValues['getState'] = v.getSessionDataRoduxStoreForPlayer(game.Players.LocalPlayer)
+			
+		end
+		if rawget(v,'knockbackCharacterPartAngular') then
+			SavedValues['oldknockbackCharacterPartAngular'] = v.knockbackCharacterPartAngular
+			
+		end
 		if rawget(v,'knockbackCharacterPart') then
-			oldknockbackCharacterPart = v.knockbackCharacterPart
+			SavedValues["oldknockbackCharacterPart"] = v.knockbackCharacterPart
+			
 		end
 		if rawget(v,'knockbackPartAngular') then
-			oldknockbackPartAngular = v.knockbackPartAngular
+			SavedValues["oldknockbackPartAngular"] = v.knockbackPartAngular
+			
 		end
 		if rawget(v,'knockbackPartForce') then
-			oldknockbackPartForce = v.knockbackPartForce
-		end	 
-	end
-	if typeof(v) == 'table' then
-		if rawget(v,'displayName') and v.displayName == 'C4' then
-			oldPreThrow = v.preThrowDuration
+			SavedValues["oldknockbackPartForcer"] = v.knockbackPartForce
+			
+		end
+		if rawget(v,'displayName') then
+			if v.displayName == 'C4' then
+				SavedValues["oldC4"] = v.preThrowDuration
+			elseif v.displayName == 'Ghost Potion' then
+				SavedValues['oldGhostTime'] = v.useTime
+			elseif v.displayName == 'Bear Trap' then
+				SavedValues['oldBear'] = v.useTime
+			elseif v.displayName == 'Molotov' then
+				SavedValues['oldMolotov'] = v.preThrowDuration
+			elseif v.displayName == 'Frag Grenade' then
+				SavedValues['oldGrenade'] = v.preThrowDuration
+			elseif v.displayName == 'Smoke Grenade' then
+				SavedValues['oldSmoke'] = v.preThrowDuration
+			end
 		end
 	end	
 end
@@ -7559,6 +7567,7 @@ vehicleflyspeed = 1
 
 getgenv().GetClosest = function(Distance,Priority,IgnoreTarget)
 	if IgnoreTarget == nil then IgnoreTarget = false end
+	if Priority == nil then Priority = 'Dis' end
 	local Character = LocalPlayer.Character
 	local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPart")
 	if not (Character or HumanoidRootPart) then return end
@@ -8334,7 +8343,7 @@ local combat = main:Sector('combat', 'Left')
 	switchtrigger = {false, nil, nil}
 		
 	Autos:Element("Toggle", "Auto Equip")
-	--Autos:Element("Toggle", "Auto Revive")
+	Autos:Element("Toggle", "Auto Revive")
 	--Autos:Element("Toggle", "Fast Respawn")
 	combat:Element("Toggle", "Kill Aura")
 	 --combat:Element("Toggle", "AA Aura")
@@ -8766,19 +8775,6 @@ end
 		end)
 	end)
 	--print('task.spawn #3')
-	--[[task.spawn(function()
-		while task.wait() do
-			--pcall(function()
-				if values.main.Autos["Auto Revive"].Toggle then
-					if getState:getState().down.isDowned == true then
-						events.SelfReviveStart:FireServer()
-						task.wait(.2)
-						events.SelfRevive:FireServer()
-					end
-				end
-			--end)
-		end
-	end)--]]
    -- print('task.spawn #4')
 	task.spawn(function()
 		while task.wait() do
@@ -9054,7 +9050,7 @@ end
 				end
 			end)
 				local shootloop;shootloop = RunService.RenderStepped:Connect(function()
-					if (not values.main['Ranged sector']['Auto reload'].Toggle) or (not values.main['Ranged sector']['Auto shoot'].Toggle) then return shootloop:Disconnect() end
+					if (not values.main['Ranged sector']['Auto reload'].Toggle) or (not values.main['Ranged sector']['Auto shoot'].Toggle) then return end
 					pcall(function()
 						if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') then
 							if values.main['Ranged sector']['Auto shoot'].Toggle then
@@ -9658,7 +9654,7 @@ function NOFLY()
 		LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
 	end
 	
-	if getState:getState().ragdoll.isRagdolled == true and LocalPlayer.Character:FindFirstChild('isFlyingCheck') then
+	if SavedValues['getState']:getState().ragdoll.isRagdolled == true and LocalPlayer.Character:FindFirstChild('isFlyingCheck') then
 		LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
 		for i = 1,5 do
 			LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
@@ -9687,6 +9683,8 @@ do
 	local misc1 = misc:MSector("misc", "Right")
 	local misc2 = misc:MSector("misc2", "Right")
 	local miscsector = misc2:Tab("misc")
+	local instants = misc2:Tab('instants')
+	
 	local player = misc1:Tab("player")
 	local utility = misc1:Tab("utility")
 	miscsector:Element("Button", "No Identity fling", nil, function()
@@ -9701,7 +9699,7 @@ do
 						return
 					end
 				else
-					v.knockbackCharacterPartAngular = oldknockbackCharacterPartAngular
+					v.knockbackCharacterPartAngular = SavedValues['oldknockbackCharacterPartAngular']
 				end
 			end
 			if typeof(v) == 'table' then 
@@ -9711,7 +9709,7 @@ do
 							return
 						end
 					else
-						v.knockbackCharacterPart = oldknockbackCharacterPart
+						v.knockbackCharacterPart = SavedValues["oldknockbackCharacterPart"]
 					end
 				end
 				if rawget(v,'knockbackPartAngular') then
@@ -9720,7 +9718,7 @@ do
 							return
 						end
 					else
-						v.knockbackPartAngular = oldknockbackCharacterPartAngular
+						v.knockbackPartAngular = SavedValues['oldknockbackPartAngular']
 					end
 				end
 				if rawget(v,'knockbackPartForce') then
@@ -9729,34 +9727,85 @@ do
 							return
 						end
 					else
-						v.knockbackPartForce = oldknockbackPartForce
+						v.knockbackPartForce = SavedValues["oldknockbackPartForcer"]
 					end
 				end 
 			end
 		end	
 	end)
 	--utility:Element('Toggle','Ignore when parkouring')
-	utility:Element('Toggle','C4 instant throw',{},function(tbl)
-		--if tbl.Toggle then
-			for i,v in pairs(getgc(true)) do
-				if typeof(v) == 'table' then
-					if rawget(v,'displayName') and v.displayName == 'C4' then
-						if tbl.Toggle then
-						v.preThrowDuration = 0
-						else
-						v.preThrowDuration = oldPreThrow
-						end
-					end
-				end
-			end
-		--end
-	end)
 	utility:Element('Toggle','Redirect throwable grenades to closest player')
 	utility:Element('Toggle','Increase force of grenades')
 	utility:Element('Slider','Distance',{min = 1,max = 500,default = 100})
 	
+	instants:Element('Toggle','Instant ghost potion',{},function(tbl)
+		for i,v in pairs(getgc(true)) do
+			if typeof(v) == 'table' then
+				if rawget(v,'displayName') and v.displayName == 'Ghost Potion'  then
+					if tbl.Toggle then
+						v.useTime = 0.01
+					else
+						v.useTime = SavedValues['oldGhostTime']
+					end
+				end
+			end
+		end	
+	end)
+	instants:Element('Toggle','Instant bear trap',{},function(tbl)
+		for i,v in pairs(getgc(true)) do
+			if typeof(v) == 'table' then
+				if rawget(v,'displayName') and v.displayName == 'Bear Trap'  then
+					if tbl.Toggle then
+						v.useTime = 0.01
+					else
+						v.useTime = SavedValues['oldBear']
+					end
+				end
+			end
+		end	
+	end)	
+	instants:Element('Toggle','Instant c4 throw',{},function(tbl)
+		for i,v in pairs(getgc(true)) do
+			if typeof(v) == 'table' then
+				if rawget(v,'displayName') and v.displayName == 'C4' then
+					if tbl.Toggle then
+						v.preThrowDuration = 0.01
+					else
+						v.preThrowDuration = SavedValues["oldC4"]
+					end
+				end
+			end
+		end
+	end)
+	instants:Element('Toggle','Instant grenades throw',{},function(tbl)
+		for i,v in pairs(getgc(true)) do
+			if typeof(v) == 'table' then
+				if rawget(v,'displayName') then
+					if v.displayName == 'Molotov' then
+						if tbl.Toggle then
+							v.preThrowDuration = 0.01
+						else
+							v.preThrowDuration = SavedValues["oldMolotov"]
+						end
+					elseif v.displayName == 'Frag Grenade' then
+						if tbl.Toggle then
+							v.preThrowDuration = 0.01
+						else
+							v.preThrowDuration = SavedValues["oldGrenade"]
+						end
+					elseif v.displayName == 'Smoke Grenade' then
+						if tbl.Toggle then
+							v.preThrowDuration = 0.01
+						else
+							v.preThrowDuration = SavedValues['oldSmoke']
+						end
+					end
+				end
+			end
+		end
+	end)
 	--values.misc.misc.utility['Redirect throwable grenades to closest player']
-	player:Element("Toggle", "Auto Airdrop-Claimer")
+	 player:Element("Toggle", "Auto Airdrop-Claimer")
 	 miscsector:Element("Toggle","Velocity Fly",nil,function(state)
 		 if state.Toggle then
 			 NOFLY()
@@ -9778,7 +9827,7 @@ do
 	isExecuting = false
 	RunService.RenderStepped:Connect(function()
 		if game.Players.LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid') then
-			if isExecuting == false and not LocalPlayer.Character:FindFirstChild('isFlyingCheck') and getState:getState().mainMenu.isIn == false	then
+			if isExecuting == false and not LocalPlayer.Character:FindFirstChild('isFlyingCheck') and SavedValues['getState']:getState().mainMenu.isIn == false	then
 				isExecuting = true
 				LocalPlayer.Character.Humanoid:WaitForChild('RagdollRemoteEvent')
 				if values.misc.misc2.misc["Fly"].Toggle then
@@ -10062,7 +10111,7 @@ end
 			end
 		end)
 		
-		if game:GetService("Workspace").Airdrops:FindFirstChildWhichIsA('Model') then
+		if game:GetService("Workspace").Airdrops:FindFirstChildWhichIsA('Model') and values.misc.misc.player['Auto Airdrop-Claimer'].Toggle then
 			if game:GetService("Workspace").Airdrops:FindFirstChildWhichIsA('Model'):FindFirstChild('Crate') and game:GetService("Workspace").Airdrops:FindFirstChildWhichIsA('Model'):FindFirstChild('Crate'):FindFirstChild('Hitbox') and game:GetService("Workspace").Airdrops:FindFirstChildWhichIsA('Model'):FindFirstChild('Crate'):FindFirstChild('Hitbox'):FindFirstChild('ProximityPrompt') then
 				
 				--LocalPlayer.Character.HumanoidRootPart.Anchored = true
@@ -10133,8 +10182,17 @@ end
 				if Root.Velocity.Y > values.main.Misc['launch block (y velocity)'].Slider then 
 					Root.Velocity = C.Vec3(Root.Velocity.x, 0, Root.Velocity.z)
 				end
-			end	
+			end			
 		end)
+			pcall(function()
+				if values.main.Autos["Auto Revive"].Toggle then
+					if SavedValues['getState']:getState().down.isDowned == true then
+						events.SelfReviveStart:FireServer()
+						task.wait(.2)
+						events.SelfRevive:FireServer()
+					end
+				end
+			end)		
 	end)
 
 
@@ -10657,7 +10715,7 @@ end
 	
 	function ChangeCharacter(NewCharacter)
 		if not LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') then return end
-		if getState:getState().mainMenu.Isin == true then return end
+		if SavedValues['getState']:getState().mainMenu.Isin == true then return end
 		if not NewCharacter then return end
 		--print('asqwqeq')
 
@@ -11408,7 +11466,7 @@ end
 			
 RunService.RenderStepped:Connect(function()
 	if values.misc.misc.utility['Redirect throwable grenades to closest player'].Toggle then
-	ClosestC4 = GetClosest(values.misc.misc.utility.Distance.Slider,'Distance',true) or nil
+		ClosestC4 = GetClosest(values.misc.misc.utility.Distance.Slider,'Distance',true) or nil
 	end
 end)			
 				
