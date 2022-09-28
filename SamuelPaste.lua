@@ -352,6 +352,7 @@ function library:SaveConfig1(cfg)
 	writefile(cfglocation..cfg.."", game:GetService("HttpService"):JSONEncode(copy)) 
 end 
 local ovascreengui = nil
+local ovascreengui = nil
 			function library:New(name) 
 				local menu = {} 
 				local Lunar = C.INST("ScreenGui") 
@@ -4221,7 +4222,7 @@ end
 											if CopyColorsType == 'RGB' then
 												setclipboard(''..l..','..m..','..a) -- o
 											elseif CopyColorsType == 'HEX' then
-												setclipboard(toHex(C.COL3RGB(l,m,a)))
+												setclipboard(C.COL3RGB(l,m,a):ToHex())
 											elseif CopyColorsType == 'HSV' then 
 												local H,S,V = C.COL3(l,m,a):ToHSV() --hsl, cmyk
 												setclipboard(''..H..','..S..','..V)
@@ -4465,7 +4466,7 @@ end
 								TextLabel35.BorderColor3 = C.COL3RGB(27, 42, 53) 
 								TextLabel35.Size = C.UDIM2(1, 0, 1, 0) 
 								TextLabel35.Font = Enum.Font.Gotham 
-								TextLabel35.Text = 'Paste colors (RGB only)' 
+								TextLabel35.Text = 'Paste colors' 
 								TextLabel35.TextColor3 = C.COL3RGB(200, 200, 200) 
 								TextLabel35.TextSize = 11.000
 								TextLabel35.ZIndex = 4
@@ -4478,52 +4479,52 @@ end
 									library:Tween(TextLabel35, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 									local clipboard = getclipboard()
 									local colors = string.split(clipboard, ',')
-									local IsAColorTable = {'false','false','false'}
 									local IsAColor = false
-									if #colors == 3 then
-										for i = 1, #colors do
-											if tonumber(colors[i]) then
-												IsAColorTable[i] = 'true'
-											end
-										end
-										if IsAColorTable[1] == 'true' and IsAColorTable[2] == 'true' and IsAColorTable[3] == 'true' then
-											IsAColor = true
-										end
-									else
-										IsAColor = false
+									local WhatKindOfColor = ''
+									if pcall(function() return C.COL3HEX(clipboard:gsub('#','')) end) then
+										IsAColor = true
+										WhatKindOfColor = 'HEX'
+									elseif #colors == 3 and (tonumber(colors[1]) and tonumber(colors[1]) <= 256 and tonumber(colors[1]) >= -1) and (tonumber(colors[2]) and tonumber(colors[2]) <= 256 and tonumber(colors[2]) >= -1) and (tonumber(colors[3]) and tonumber(colors[3]) <= 256 and tonumber(colors[3]) >= -1) then
+										IsAColor = true
+										WhatKindOfColor = 'RGB'
 									end
+									
 									
 									if IsAColor then
 										local retarded, lmao = pcall(function()
+											if WhatKindOfColor == 'RGB' then
 												Element.value.Color = C.COL3RGB(colors[1],colors[2],colors[3])
-												ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
+											elseif WhatKindOfColor == 'HEX' then
+												Element.value.Color = C.COL3HEX(tostring(clipboard:gsub('#','')))
+											end
+											ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
 
-												ColorH = C.CLAMP(ColorH,0,1) 
-												ColorS = C.CLAMP(ColorS,0,1) 
-												ColorV = C.CLAMP(ColorV,0,1) 
-												ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
-												Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
-
-												ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
-												Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
-												values[tabname][sectorname][text] = Element.value 
-												Element.value.Color = C.COL3HSV(ColorH, ColorS, ColorV) 
-												callback(Element.value) 
+											ColorH = C.CLAMP(ColorH,0,1) 
+											ColorS = C.CLAMP(ColorS,0,1) 
+											ColorV = C.CLAMP(ColorV,0,1) 
+											ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+											Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+											
+											ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+											Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+											values[tabname][sectorname][text] = Element.value 
+											Element.value.Color = C.COL3HSV(ColorH, ColorS, ColorV) 
+											callback(Element.value) 
 										end)
 											if retarded then
 												TextLabel35.Text = 'Success!'
 												wait(1.5)
-												TextLabel35.Text = 'Paste colors (RGB only)'
+												TextLabel35.Text = 'Paste colors'
 											else
 												TextLabel35.Text = 'Error!'
 												wait(1.5)
-												TextLabel35.Text = 'Paste colors (RGB only)'
+												TextLabel35.Text = 'Paste colors'
 												print(lmao)
 											end
 									else
 										TextLabel35.Text = 'Not a color'
 										wait(1.5)
-										TextLabel35.Text = "Paste colors (RGB only)"
+										TextLabel35.Text = "Paste colors"
 									end
 								end)
 								Button_325.MouseEnter:Connect(function() 
@@ -5104,32 +5105,32 @@ end
 								TextLabel5.TextSize = 11.000
 								TextLabel5.ZIndex = 3
 
-CopyColorsType = 'RGB'
+							CopyColorsType = 'RGB'
 								Button_25.MouseButton1Down:Connect(function() 
 									TextLabel5.TextColor3 = MainUIColor 
 									library:Tween(TextLabel5, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 								local retarded, lmao = pcall(function()
 								local l,m,a = C.FLOOR((Element.value.Color.R*255)+0.5),C.FLOOR((Element.value.Color.G*255)+0.5),C.FLOOR((Element.value.Color.B*255)+0.5)
 									if CopyColorsType == 'RGB' then
-									setclipboard(''..l..','..m..','..a) -- o
+										setclipboard(''..l..','..m..','..a) -- o
 									elseif CopyColorsType == 'HEX' then
-									setclipboard(toHex(C.COL3RGB(l,m,a)))
+										setclipboard(C.COL3RGB(l,m,a):ToHex())
 									elseif CopyColorsType == 'HSV' then 
-									local H,S,V = C.COL3(l,m,a):ToHSV() --hsl, cmyk
-									setclipboard(''..H..','..S..','..V)
-									end
+										local H,S,V = C.COL3(l,m,a):ToHSV() --hsl, cmyk
+										setclipboard(''..H..','..S..','..V)
+										end
 									end)
 									if retarded then
 									TextLabel5.Text = 'Success!'
 									wait(1.5)
 									TextLabel5.Text = 'Copy colors'
 									else
-																		TextLabel5.Text = 'Error!'
-									wait(1.5)
-									TextLabel5.Text = 'Copy colors'
-									print(lmao)
-									print(Element.value.Color)
-									print(Element.value.Color.value)
+										TextLabel5.Text = 'Error!'
+										wait(1.5)
+										TextLabel5.Text = 'Copy colors'
+										print(lmao)
+										print(Element.value.Color)
+										print(Element.value.Color.value)
 									end
 								end) 
 								Button_25.MouseEnter:Connect(function() 
@@ -5353,7 +5354,7 @@ CopyColorsType = 'RGB'
 								TextLabel35.BorderColor3 = C.COL3RGB(27, 42, 53) 
 								TextLabel35.Size = C.UDIM2(1, 0, 1, 0) 
 								TextLabel35.Font = Enum.Font.Gotham 
-								TextLabel35.Text = 'Paste colors (RGB only)' 
+								TextLabel35.Text = 'Paste colors' 
 								TextLabel35.TextColor3 = C.COL3RGB(200, 200, 200) 
 								TextLabel35.TextSize = 11.000
 								TextLabel35.ZIndex = 4
@@ -5366,37 +5367,37 @@ CopyColorsType = 'RGB'
 									library:Tween(TextLabel35, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 									local clipboard = getclipboard()
 									local colors = string.split(clipboard, ',')
-									local IsAColorTable = {'false','false','false'}
 									local IsAColor = false
-									if #colors == 3 then
-										for i = 1, #colors do
-											if tonumber(colors[i]) then
-												IsAColorTable[i] = 'true'
-											end
-										end
-										if IsAColorTable[1] == 'true' and IsAColorTable[2] == 'true' and IsAColorTable[3] == 'true' then
-											IsAColor = true
-										end
-									else
-										IsAColor = false
+									local WhatKindOfColor = ''
+									if pcall(function() return C.COL3HSV(clipboard:gsub('#','')) end) then
+										IsAColor = true
+										WhatKindOfColor = 'HEX'
+									elseif #colors == 3 and (tonumber(colors[1]) and tonumber(colors[1]) <= 256 and tonumber(colors[1]) >= -1) and (tonumber(colors[2]) and tonumber(colors[2]) <= 256 and tonumber(colors[2]) >= -1) and (tonumber(colors[3]) and tonumber(colors[3]) <= 256 and tonumber(colors[3]) >= -1) then
+										IsAColor = true
+										WhatKindOfColor = 'RGB'
 									end
+									
 									
 									if IsAColor then
 										local retarded, lmao = pcall(function()
+											if WhatKindOfColor == 'RGB' then
 												Element.value.Color = C.COL3RGB(colors[1],colors[2],colors[3])
-												ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
+											elseif WhatKindOfColor == 'HEX' then
+												Element.value.Color = C.COL3HEX(clipboard:gsub('#',''))
+											end
+											ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
 
-												ColorH = C.CLAMP(ColorH,0,1) 
-												ColorS = C.CLAMP(ColorS,0,1) 
-												ColorV = C.CLAMP(ColorV,0,1) 
-												ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
-												Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
-
-												ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
-												Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
-												values[tabname][sectorname][text] = Element.value 
-												Element.value.Color = C.COL3HSV(ColorH, ColorS, ColorV) 
-												callback(Element.value) 
+											ColorH = C.CLAMP(ColorH,0,1) 
+											ColorS = C.CLAMP(ColorS,0,1) 
+											ColorV = C.CLAMP(ColorV,0,1) 
+											ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+											Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+											
+											ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+											Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+											values[tabname][sectorname][text] = Element.value 
+											Element.value.Color = C.COL3HSV(ColorH, ColorS, ColorV) 
+											callback(Element.value) 
 										end)
 											if retarded then
 												TextLabel35.Text = 'Success!'

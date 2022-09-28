@@ -43,6 +43,7 @@ local C = {
 
 ['COL3RGB'] = Color3.fromRGB, 
 ['COL3HSV'] = Color3.fromHSV, 
+['COL3HEX'] = Color3.fromHex,
 
 ['CLAMP'] = math.clamp, 
 
@@ -50,7 +51,7 @@ local C = {
 ['FLOOR'] = math.floor, 
 ['ACOS'] = math.acos, 
 
-['math.random'] = math.random, 
+['RANDOM'] = math.random, 
 ['ATAN2'] = math.atan2, 
 
 ['HUGE'] = math.huge, 
@@ -143,34 +144,6 @@ end
 
 
 local bordercolorlist = {}
-
-function toInteger(color)
-	return C.FLOOR(color.r*255)*256^2+C.FLOOR(color.g*255)*256+C.FLOOR(color.b*255)
-end
-
-function toHex(color)
-	local int = toInteger(color)
-	
-	local current = int
-	local final = ""
-	
-	local hexChar = {
-		"A", "B", "C", "D", "E", "F"
-	}
-	
-	repeat local remainder = current % 16
-		local char = tostring(remainder)
-		
-		if remainder >= 10 then
-			char = hexChar[1 + remainder - 10]
-		end
-		
-		current = C.FLOOR(current/16)
-		final = final..char
-	until current <= 0
-	
-	return "#"..string.reverse(final)
-end
 
 function findtextrandom(text)
 	if text:find(' @r ') then 
@@ -1314,7 +1287,7 @@ do
 												if C.TBLFIND(Element.value.Jumbobox, v) then 
 													for i,a in pairs(Element.value.Jumbobox) do 
 														if a == v then 
-															TBLREMOVE(Element.value.Jumbobox, i) 
+															C.TBLREMOVE(Element.value.Jumbobox, i) 
 														end 
 													end 
 													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
@@ -3644,7 +3617,7 @@ ConfigUpdateCfgList:Fire()
 											if C.TBLFIND(Element.value.Jumbobox, v) then 
 												for i,a in pairs(Element.value.Jumbobox) do 
 													if a == v then 
-														TBLREMOVE(Element.value.Jumbobox, i) 
+														C.TBLREMOVE(Element.value.Jumbobox, i) 
 													end 
 												end 
 												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
@@ -4269,7 +4242,7 @@ end
 											if CopyColorsType == 'RGB' then
 												setclipboard(''..l..','..m..','..a) -- o
 											elseif CopyColorsType == 'HEX' then
-												setclipboard(toHex(C.COL3RGB(l,m,a)))
+												setclipboard(C.COL3RGB(l,m,a):ToHex())
 											elseif CopyColorsType == 'HSV' then 
 												local H,S,V = C.COL3(l,m,a):ToHSV() --hsl, cmyk
 												setclipboard(''..H..','..S..','..V)
@@ -4513,7 +4486,7 @@ end
 								TextLabel35.BorderColor3 = C.COL3RGB(27, 42, 53) 
 								TextLabel35.Size = C.UDIM2(1, 0, 1, 0) 
 								TextLabel35.Font = Enum.Font.Gotham 
-								TextLabel35.Text = 'Paste colors (RGB only)' 
+								TextLabel35.Text = 'Paste colors' 
 								TextLabel35.TextColor3 = C.COL3RGB(200, 200, 200) 
 								TextLabel35.TextSize = 11.000
 								TextLabel35.ZIndex = 4
@@ -4526,52 +4499,52 @@ end
 									library:Tween(TextLabel35, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 									local clipboard = getclipboard()
 									local colors = string.split(clipboard, ',')
-									local IsAColorTable = {'false','false','false'}
 									local IsAColor = false
-									if #colors == 3 then
-										for i = 1, #colors do
-											if tonumber(colors[i]) then
-												IsAColorTable[i] = 'true'
-											end
-										end
-										if IsAColorTable[1] == 'true' and IsAColorTable[2] == 'true' and IsAColorTable[3] == 'true' then
-											IsAColor = true
-										end
-									else
-										IsAColor = false
+									local WhatKindOfColor = ''
+									if pcall(function() return C.COL3HEX(clipboard:gsub('#','')) end) then
+										IsAColor = true
+										WhatKindOfColor = 'HEX'
+									elseif #colors == 3 and (tonumber(colors[1]) and tonumber(colors[1]) <= 256 and tonumber(colors[1]) >= -1) and (tonumber(colors[2]) and tonumber(colors[2]) <= 256 and tonumber(colors[2]) >= -1) and (tonumber(colors[3]) and tonumber(colors[3]) <= 256 and tonumber(colors[3]) >= -1) then
+										IsAColor = true
+										WhatKindOfColor = 'RGB'
 									end
+									
 									
 									if IsAColor then
 										local retarded, lmao = pcall(function()
+											if WhatKindOfColor == 'RGB' then
 												Element.value.Color = C.COL3RGB(colors[1],colors[2],colors[3])
-												ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
+											elseif WhatKindOfColor == 'HEX' then
+												Element.value.Color = C.COL3HEX(tostring(clipboard:gsub('#','')))
+											end
+											ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
 
-												ColorH = C.CLAMP(ColorH,0,1) 
-												ColorS = C.CLAMP(ColorS,0,1) 
-												ColorV = C.CLAMP(ColorV,0,1) 
-												ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
-												Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
-
-												ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
-												Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
-												values[tabname][sectorname][text] = Element.value 
-												Element.value.Color = C.COL3HSV(ColorH, ColorS, ColorV) 
-												callback(Element.value) 
+											ColorH = C.CLAMP(ColorH,0,1) 
+											ColorS = C.CLAMP(ColorS,0,1) 
+											ColorV = C.CLAMP(ColorV,0,1) 
+											ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+											Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+											
+											ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+											Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+											values[tabname][sectorname][text] = Element.value 
+											Element.value.Color = C.COL3HSV(ColorH, ColorS, ColorV) 
+											callback(Element.value) 
 										end)
 											if retarded then
 												TextLabel35.Text = 'Success!'
 												wait(1.5)
-												TextLabel35.Text = 'Paste colors (RGB only)'
+												TextLabel35.Text = 'Paste colors'
 											else
 												TextLabel35.Text = 'Error!'
 												wait(1.5)
-												TextLabel35.Text = 'Paste colors (RGB only)'
+												TextLabel35.Text = 'Paste colors'
 												print(lmao)
 											end
 									else
 										TextLabel35.Text = 'Not a color'
 										wait(1.5)
-										TextLabel35.Text = "Paste colors (RGB only)"
+										TextLabel35.Text = "Paste colors"
 									end
 								end)
 								Button_325.MouseEnter:Connect(function() 
@@ -5152,32 +5125,32 @@ end
 								TextLabel5.TextSize = 11.000
 								TextLabel5.ZIndex = 3
 
-CopyColorsType = 'RGB'
+							CopyColorsType = 'RGB'
 								Button_25.MouseButton1Down:Connect(function() 
 									TextLabel5.TextColor3 = MainUIColor 
 									library:Tween(TextLabel5, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 								local retarded, lmao = pcall(function()
 								local l,m,a = C.FLOOR((Element.value.Color.R*255)+0.5),C.FLOOR((Element.value.Color.G*255)+0.5),C.FLOOR((Element.value.Color.B*255)+0.5)
 									if CopyColorsType == 'RGB' then
-									setclipboard(''..l..','..m..','..a) -- o
+										setclipboard(''..l..','..m..','..a) -- o
 									elseif CopyColorsType == 'HEX' then
-									setclipboard(toHex(C.COL3RGB(l,m,a)))
+										setclipboard(C.COL3RGB(l,m,a):ToHex())
 									elseif CopyColorsType == 'HSV' then 
-									local H,S,V = C.COL3(l,m,a):ToHSV() --hsl, cmyk
-									setclipboard(''..H..','..S..','..V)
-									end
+										local H,S,V = C.COL3(l,m,a):ToHSV() --hsl, cmyk
+										setclipboard(''..H..','..S..','..V)
+										end
 									end)
 									if retarded then
 									TextLabel5.Text = 'Success!'
 									wait(1.5)
 									TextLabel5.Text = 'Copy colors'
 									else
-																		TextLabel5.Text = 'Error!'
-									wait(1.5)
-									TextLabel5.Text = 'Copy colors'
-									print(lmao)
-									print(Element.value.Color)
-									print(Element.value.Color.value)
+										TextLabel5.Text = 'Error!'
+										wait(1.5)
+										TextLabel5.Text = 'Copy colors'
+										print(lmao)
+										print(Element.value.Color)
+										print(Element.value.Color.value)
 									end
 								end) 
 								Button_25.MouseEnter:Connect(function() 
@@ -5401,7 +5374,7 @@ CopyColorsType = 'RGB'
 								TextLabel35.BorderColor3 = C.COL3RGB(27, 42, 53) 
 								TextLabel35.Size = C.UDIM2(1, 0, 1, 0) 
 								TextLabel35.Font = Enum.Font.Gotham 
-								TextLabel35.Text = 'Paste colors (RGB only)' 
+								TextLabel35.Text = 'Paste colors' 
 								TextLabel35.TextColor3 = C.COL3RGB(200, 200, 200) 
 								TextLabel35.TextSize = 11.000
 								TextLabel35.ZIndex = 4
@@ -5414,37 +5387,37 @@ CopyColorsType = 'RGB'
 									library:Tween(TextLabel35, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 									local clipboard = getclipboard()
 									local colors = string.split(clipboard, ',')
-									local IsAColorTable = {'false','false','false'}
 									local IsAColor = false
-									if #colors == 3 then
-										for i = 1, #colors do
-											if tonumber(colors[i]) then
-												IsAColorTable[i] = 'true'
-											end
-										end
-										if IsAColorTable[1] == 'true' and IsAColorTable[2] == 'true' and IsAColorTable[3] == 'true' then
-											IsAColor = true
-										end
-									else
-										IsAColor = false
+									local WhatKindOfColor = ''
+									if pcall(function() return C.COL3HSV(clipboard:gsub('#','')) end) then
+										IsAColor = true
+										WhatKindOfColor = 'HEX'
+									elseif #colors == 3 and (tonumber(colors[1]) and tonumber(colors[1]) <= 256 and tonumber(colors[1]) >= -1) and (tonumber(colors[2]) and tonumber(colors[2]) <= 256 and tonumber(colors[2]) >= -1) and (tonumber(colors[3]) and tonumber(colors[3]) <= 256 and tonumber(colors[3]) >= -1) then
+										IsAColor = true
+										WhatKindOfColor = 'RGB'
 									end
+									
 									
 									if IsAColor then
 										local retarded, lmao = pcall(function()
+											if WhatKindOfColor == 'RGB' then
 												Element.value.Color = C.COL3RGB(colors[1],colors[2],colors[3])
-												ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
+											elseif WhatKindOfColor == 'HEX' then
+												Element.value.Color = C.COL3HEX(clipboard:gsub('#',''))
+											end
+											ColorH, ColorS, ColorV = Element.value.Color:ToHSV() 
 
-												ColorH = C.CLAMP(ColorH,0,1) 
-												ColorS = C.CLAMP(ColorS,0,1) 
-												ColorV = C.CLAMP(ColorV,0,1) 
-												ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
-												Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
-
-												ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
-												Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
-												values[tabname][sectorname][text] = Element.value 
-												Element.value.Color = C.COL3HSV(ColorH, ColorS, ColorV) 
-												callback(Element.value) 
+											ColorH = C.CLAMP(ColorH,0,1) 
+											ColorS = C.CLAMP(ColorS,0,1) 
+											ColorV = C.CLAMP(ColorV,0,1) 
+											ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
+											Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
+											
+											ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+											Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
+											values[tabname][sectorname][text] = Element.value 
+											Element.value.Color = C.COL3HSV(ColorH, ColorS, ColorV) 
+											callback(Element.value) 
 										end)
 											if retarded then
 												TextLabel35.Text = 'Success!'
@@ -7421,7 +7394,7 @@ for i,v in pairs(getgc(true)) do
 				SavedValues['oldReload'] = v.cancelReload
 				RunService.RenderStepped:Connect(function()
 					pcall(function()
-						if values.main['Ranged sector']['No reload cancel'].Toggle then
+						if values.rage['Ranged sector']['No reload cancel'].Toggle then
 							v.cancelReload = function(...)
 								return
 							end
@@ -7591,7 +7564,7 @@ getgenv().GetClosest = function(Distance,Priority,IgnoreTarget)
 					Target = v
 				end
 			end
-			if values.main.combat['Target player'].Toggle and v.Name == values.main.combat['Target'].Scroll and not IgnoreTarget then
+			if values.rage.combat['Target player'].Toggle and v.Name == values.rage.combat['Target'].Scroll and not IgnoreTarget then
 				return v
 			end
 		end
@@ -7856,7 +7829,8 @@ invisfling = function()
 end
 
 local gui = library:New("SamuelPaste")
-local main = gui:Tab('main')
+local main = gui:Tab('rage')
+--local legit = gui:Tab("legit")
 local misc = gui:Tab('misc')
 local visuals = gui:Tab('visuals')
 local skins = gui:Tab('skins')
@@ -8073,7 +8047,7 @@ do
 	}
 	function CheckIfIsInTable(Word)
 		--print(Word)
-		if values.main.chat['Main no tags method'].Dropdown == 'in script' then
+		if values.rage.chat['Main no tags method'].Dropdown == 'in script' then
 			CensoredTables = CensoredTables1
 		else
 			loadstring('CensoredTables = { '..readfile('SamuelPaste_cw/customantitags.txt')..'}')
@@ -8096,7 +8070,7 @@ do
 		local Caps = false
 		local Method
 		
-		if values.main.chat['Main no tags method'].Dropdown == 'in script' then
+		if values.rage.chat['Main no tags method'].Dropdown == 'in script' then
 			CensoredTables = CensoredTables1
 		else
 			loadstring('CensoredTables = { '..readfile('SamuelPaste_cw/customantitags.txt')..'}')
@@ -8175,20 +8149,20 @@ do
 		end)
 		killsaysignal = Signal.new('killsaysignal')
 		killsaysignal:Connect(function()
-			if values.main.chat["kill say"].Toggle then 
-				if values.main.chat["kill say type"].Dropdown == "default" then
+			if values.rage.chat["kill say"].Toggle then 
+				if values.rage.chat["kill say type"].Dropdown == "message" then
 					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-						values.main.chat["message"].Text ~= "" 
-						and values.main.chat["message"].Text or "L bro cant win the pasted script"
+						values.rage.chat["message"].Text ~= "" 
+						and values.rage.chat["message"].Text or "L bro cant win the pasted script"
 					)
-				elseif values.main.chat['kill say type'].Dropdown == 'random' then
+				elseif values.rage.chat['kill say type'].Dropdown == 'random' then
 				game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
 					chatmessages_pasteed[math.random(#chatmessages_pasteed)]
 				)
 				else
 					
 					local messages = readfile('SamuelPaste/customkillsay.txt'):split('\n', '')
-					if values.main.chat['custom file type'].Dropdown == 'random' then
+					if values.rage.chat['custom file type'].Dropdown == 'random' then
 						game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
 							messages[math.random(#messages)]
 						)	
@@ -8196,7 +8170,7 @@ do
 						game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
 							messages[customtypemessagesnumber]
 						)
-						customtypemessagesnumber = customtypemessagesnumber + 1
+						customtypemessagesnumber += 1
 						if customtypemessagesnumber == (#messages + 1) then
 						customtypemessagesnumber = 1
 						end
@@ -8204,49 +8178,19 @@ do
 				end
 			end
 		end)
-		
-	function toInteger(color)
-		return C.FLOOR(color.r*255)*256^2+C.FLOOR(color.g*255)*256+C.FLOOR(color.b*255)
-	end
-
-	function toHex(color)
-		local int = toInteger(color)
-		
-		local current = int
-		local final = ""
-		
-		local hexChar = {
-			"A", "B", "C", "D", "E", "F"
-		}
-		
-		repeat local remainder = current % 16
-			local char = tostring(remainder)
-			
-			if remainder >= 10 then
-				char = hexChar[1 + remainder - 10]
-			end
-			
-			current = C.FLOOR(current/16)
-			final = final..char
-		until current <= 0
-		if string.len(final) == 4 then
-			final = final..'00'
-		end
-		return "#"..string.reverse(final)
-	end
-
+	
 	local edited = false
 	--local oldIncomingMessage = game:GetService("TextChatService").OnIncomingMessage
 	game:GetService("TextChatService").OnIncomingMessage = function(L)
 		if L.TextSource and L.TextSource.UserId == game.Players.LocalPlayer.UserId then
-			if values.main.chat['No tags'].Toggle then
-				if values.main.chat['No tags method'].Dropdown == '1' then
+			if values.rage.chat['No tags'].Toggle then
+				if values.rage.chat['No tags method'].Dropdown == '1' then
 					if L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then 
 						for i,v in next, randomtable do
 							L.Text =  L.Text:gsub(i,v)
 						end
 					end
-				elseif values.main.chat['No tags method'].Dropdown == '2' then
+				elseif values.rage.chat['No tags method'].Dropdown == '2' then
 					if fire == false and L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then 
 						fire = true
 						message = L.Text:split('')
@@ -8265,25 +8209,25 @@ do
 					end
 				end
 			end					
-			if edited == false and (values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle) then 
+			if edited == false and (values.rage.chat['custom text color'].Toggle or values.rage.chat['custom message size'].Toggle or values.rage.chat['custom font'].Toggle) then 
 				text = L.Text
-				if values.main.chat['custom text color'].Toggle or values.main.chat['custom message size'].Toggle or values.main.chat['custom font'].Toggle then
+				if values.rage.chat['custom text color'].Toggle or values.rage.chat['custom message size'].Toggle or values.rage.chat['custom font'].Toggle then
 					customText = 0
 					--L.Text = '<font '
 					
 					L.Text = ''
 					text2 = ''
-					if values.main.chat['custom text color'].Toggle then
-						text2 = '<font color = '..'\"'..toHex(values.main.chat['custom text color'].Color)..'\">'
+					if values.rage.chat['custom text color'].Toggle then
+						text2 = '<font color = '..'\"'..values.rage.chat['custom text color'].Color:ToHex()..'\">'
 						
 						customText += 1
 					end
-					if values.main.chat['custom message size'].Toggle then
-						text2 = text2..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
+					if values.rage.chat['custom message size'].Toggle then
+						text2 = text2..'<font size = '..'\"'..values.rage.chat.size.Slider..'\">'
 						customText += 1
 					end
-					if values.main.chat['custom font'].Toggle then
-						text2 = text2..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
+					if values.rage.chat['custom font'].Toggle then
+						text2 = text2..'<font face = '..'\"'..values.rage.chat['message font'].Dropdown..'\">'
 						customText += 1
 					end
 					L.Text = text2..text..(string.rep('</font>', customText))
@@ -8368,7 +8312,7 @@ local combat = main:Sector('combat', 'Left')
 	end--]]
 	combat:Element('lmao2','Target',{options = loopkillplr})
 	combat:Element('Toggle','Target player')
-	--values.main.combat['Target player'].Toggle
+	--values.rage.combat['Target player'].Toggle
 	Spins:Element("Toggle", "Spin")
 	Spins:Element("Slider", "Spin Power", {min = 0, max = 50, default = 50})
 	Autos:Element("Toggle", "Auto Parry")
@@ -8393,10 +8337,10 @@ local combat = main:Sector('combat', 'Left')
 							function(anim)
 								for i, v in pairs(weapon_anims) do
 									if
-										values.main.Autos["Auto Parry"].Toggle and
-											anim.Animation.AnimationId == v and values.main.Autos["Auto Parry Method"].Dropdown == 'Animation'
+										values.rage.Autos["Auto Parry"].Toggle and
+											anim.Animation.AnimationId == v and values.rage.Autos["Auto Parry Method"].Dropdown == 'Animation'
 									 then
-										if values.main.Autos["Auto Parry Chance"].Slider >= 90 then
+										if values.rage.Autos["Auto Parry Chance"].Slider >= 90 then
 											if
 												(LocalPlayer.Character ~= nil and
 													LocalPlayer.Character:FindFirstChild("Head") ~= nil and
@@ -8404,14 +8348,14 @@ local combat = main:Sector('combat', 'Left')
 											 then
 												local mag =
 													(p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
-												if mag < values.main.Autos["Auto Parry Distance"].Slider then
+												if mag < values.rage.Autos["Auto Parry Distance"].Slider then
 													parry()
 													break
 												end
 											end
 										else
 											local chance = math.random(1, 90)
-											if chance >= values.main.Autos["Auto Parry Chance"].Slider then
+											if chance >= values.rage.Autos["Auto Parry Chance"].Slider then
 												if
 													(LocalPlayer.Character ~= nil and
 														LocalPlayer.Character:FindFirstChild("Head") ~= nil and
@@ -8419,7 +8363,7 @@ local combat = main:Sector('combat', 'Left')
 												 then
 													local mag =
 														(p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
-													if mag < values.main.Autos["Auto Parry Distance"].Slider then
+													if mag < values.rage.Autos["Auto Parry Distance"].Slider then
 														parry()
 														break
 													end
@@ -8462,14 +8406,14 @@ local combat = main:Sector('combat', 'Left')
 	}
 --7287
 	workspace.PlayerCharacters.DescendantAdded:Connect(function(e)
-		if (e:IsA("Sound") and e.Parent.Name == "Hitbox") and values.main.Autos["Auto Parry Method"].Dropdown == 'Sound' and values.main.Autos["Auto Parry"].Toggle then
+		if (e:IsA("Sound") and e.Parent.Name == "Hitbox") and values.rage.Autos["Auto Parry Method"].Dropdown == 'Sound' and values.rage.Autos["Auto Parry"].Toggle then
 			task.spawn(function()
 				for i,v in pairs(Sounds) do
 					if e.Name == v and e.Parent.Parent.Parent.Parent.Name ~= LocalPlayer.Name then
 						local Character = LocalPlayer.Character
 						if (Character and Character:FindFirstChild("HumanoidRootPart")) then
 							local distance = (Character.HumanoidRootPart.Position-e.Parent.Position).Magnitude
-							if distance <= values.main.Autos["Auto Parry Distance"].Slider then 
+							if distance <= values.rage.Autos["Auto Parry Distance"].Slider then 
 								parry()
 							end
 						end
@@ -8484,8 +8428,8 @@ local combat = main:Sector('combat', 'Left')
 		RunService.RenderStepped:Connect(function()
 			pcall(function()
 				local Closest
-				if values.main.combat["Custom Kill Aura Distance"].Toggle then
-					Closest = GetClosest(values.main.combat["Custom Distance"].Slider,values.main.combat["Priority"].Dropdown) or nil
+				if values.rage.combat["Custom Kill Aura Distance"].Toggle then
+					Closest = GetClosest(values.rage.combat["Custom Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
 				end
 				if Closest ~= nil and Closest.Character and Closest.Character:FindFirstChild('HumanoidRootPart') then	
 					local Weapon
@@ -8503,7 +8447,7 @@ local combat = main:Sector('combat', 'Left')
 						getgenv().Weapon1 = Weapon:Clone()
 						Weapon = Weapon1
 					end			--]]			
-						if values.main.combat["Custom Kill Aura Distance"].Toggle then
+						if values.rage.combat["Custom Kill Aura Distance"].Toggle then
 							for i, v in pairs(Weapon:GetDescendants()) do
 								if v:IsA "BasePart" then
 									v.CFrame = Closest.Character.Head.CFrame
@@ -8589,23 +8533,23 @@ end
 			while task.wait() do
 			  pcall(
 				  function()
-						if values.main.combat["Kill Aura"].Toggle then
+						if values.rage.combat["Kill Aura"].Toggle then
 							local Closest
 							--wait(.4)
-							if not values.main.combat["Kill Aura"].Toggle then return end 
-							if values.main.combat["Custom Kill Aura Distance"].Toggle then
-								Closest = GetClosest(values.main.combat["Custom Distance"].Slider,values.main.combat["Priority"].Dropdown) or nil
+							if not values.rage.combat["Kill Aura"].Toggle then return end 
+							if values.rage.combat["Custom Kill Aura Distance"].Toggle then
+								Closest = GetClosest(values.rage.combat["Custom Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
 							else
-								Closest = GetClosest(values.main.combat["Kill Aura Distance"].Slider,values.main.combat["Priority"].Dropdown) or nil
+								Closest = GetClosest(values.rage.combat["Kill Aura Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
 							end
 							if Closest ~= nil then
 								if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
 								else
-									if values.main.combat["Teleport Behind (for kill aura)"].Toggle then
-										if not values.main.combat["Custom Kill Aura Distance"].Toggle then
+									if values.rage.combat["Teleport Behind (for kill aura)"].Toggle then
+										if not values.rage.combat["Custom Kill Aura Distance"].Toggle then
 											LocalPlayer.Character.HumanoidRootPart.CFrame =
 												Closest.Character.HumanoidRootPart.CFrame *
-												CFrame.new(0, 0, values.main.combat["Teleport Distance"].Slider)
+												CFrame.new(0, 0, values.rage.combat["Teleport Distance"].Slider)
 										end
 									end
 									local Weapon
@@ -8672,12 +8616,12 @@ end
 			while task.wait() do
 				pcall(
 					function()
-						if values.main.combat["Stomp Aura"].Toggle then
+						if values.rage.combat["Stomp Aura"].Toggle then
 							local Closest
-							if values.main.combat["Custom Stomp Aura Distance"].Toggle then
-								Closest = GetClosest(values.main.combat["Custom Stomp Distance"].Slider,values.main.combat["Stomp aura priority"].Dropdown)
+							if values.rage.combat["Custom Stomp Aura Distance"].Toggle then
+								Closest = GetClosest(values.rage.combat["Custom Stomp Distance"].Slider,values.rage.combat["Stomp aura priority"].Dropdown)
 							else
-								Closest = GetClosest(values.main.combat["Stomp Aura Distance"].Slider,values.main.combat["Stomp aura priority"].Dropdown)
+								Closest = GetClosest(values.rage.combat["Stomp Aura Distance"].Slider,values.rage.combat["Stomp aura priority"].Dropdown)
 							end
 							if Closest then
 								if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
@@ -8686,7 +8630,7 @@ end
 									if not Weapon then
 									else
 										if Closest.Character.Humanoid.Health <= 15 then
-											if values.main.combat["Custom Stomp Aura Distance"].Toggle then
+											if values.rage.combat["Custom Stomp Aura Distance"].Toggle then
 												for i, v in pairs(Weapon:GetDescendants()) do
 													if v:IsA "BasePart" then
 														v.CFrame = Closest.Character.HumanoidRootPart.CFrame
@@ -8765,7 +8709,7 @@ end
 				for i, v in pairs(LocalPlayer.Backpack:GetChildren()) do
 					if v:IsA("Tool") then
 						if v:FindFirstChild("Hitboxes") ~= nil then
-							if values.main.Autos["Auto Equip"].Toggle then
+							if values.rage.Autos["Auto Equip"].Toggle then
 								v.Parent = LocalPlayer.Character
 							end
 						end
@@ -8779,9 +8723,9 @@ end
 	task.spawn(function()
 		while task.wait() do
 			pcall(function()
-				if values.main.Respawn["Fast Respawn"].Toggle then
+				if values.rage.Respawn["Fast Respawn"].Toggle then
 					if LocalPlayer.Character.Humanoid.Health == 0 then
-						--if values.main.Respawn['Respawn on death position'].Toggle then
+						--if values.rage.Respawn['Respawn on death position'].Toggle then
 							--deathpos = LocalPlayer.Character.HumanoidRootPart.CFrame
 						--end
 						--events.SelfDamage:FireServer(150)
@@ -8789,11 +8733,11 @@ end
 						events.StartFastRespawn:FireServer()
 						task.wait(.2)
 						functions.CompleteFastRespawn:FireServer()
-						if values.main.Respawn['Auto spawn'].Toggle then
+						if values.rage.Respawn['Auto spawn'].Toggle then
 							repeat wait() until game.Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("MainMenu")
 							functions.SpawnCharacter:FireServer()
 							--task.wait(1)
-							--[[if values.main.Respawn['Respawn on death position'].Toggle and deathpos then
+							--[[if values.rage.Respawn['Respawn on death position'].Toggle and deathpos then
 								LocalPlayer.Character.HumanoidRootPart.CFrame = deathpos
 							end--]]
 						end
@@ -8808,7 +8752,7 @@ end
 			while task.wait() do
 				pcall(
 					function() -- originally from outliers old source but i removed it and wrote a new one it kinda looks like the same but its a different one
-						if values.main.Spins["Spin"].Toggle then
+						if values.rage.Spins["Spin"].Toggle then
 							if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") == nil then
 								local Spin = Instance.new("BodyAngularVelocity")
 								Spin.Name = "spin"
@@ -8823,7 +8767,7 @@ end
 							else
 								if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("spin") ~= nil then
 									LocalPlayer.Character.HumanoidRootPart.spin.AngularVelocity =
-										Vector3.new(0, values.main.Spins["Spin Power"].Slider, 0)
+										Vector3.new(0, values.rage.Spins["Spin Power"].Slider, 0)
 								end
 							end
 						else
@@ -8842,7 +8786,7 @@ end
 			while task.wait() do
 				pcall(
 					function()
-						if values.main.Misc["Auto jump"].Toggle then
+						if values.rage.Misc["Auto jump"].Toggle then
 							if LocalPlayer.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
 								LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 							end
@@ -8869,15 +8813,15 @@ end
 		RunService.Heartbeat:Connect(function()
 		
 			pcall(function()
-				Fov.Visible = values.main['Ranged sector']['draw fov'].Toggle
+				Fov.Visible = values.rage['Ranged sector']['draw fov'].Toggle
 
-				Fov.Transparency = 1-values.main['Ranged sector']['draw fov'].Transparency
+				Fov.Transparency = 1-values.rage['Ranged sector']['draw fov'].Transparency
 			
-				Fov.Color =  values.main['Ranged sector']['draw fov'].Color
+				Fov.Color =  values.rage['Ranged sector']['draw fov'].Color
 				Fov.Position = C.Vec2(Mouse.X,Mouse.Y+36)
-				Fov.Radius = values.main['Ranged sector']['field of view'].Slider
-				Fov.Thickness = values.main['Ranged sector']['fov thickness'].Slider
-				Fov.Filled = values.main['Ranged sector']['filled fov'].Toggle
+				Fov.Radius = values.rage['Ranged sector']['field of view'].Slider
+				Fov.Thickness = values.rage['Ranged sector']['fov thickness'].Slider
+				Fov.Filled = values.rage['Ranged sector']['filled fov'].Toggle
 			end)		
 			
 		end)
@@ -8892,35 +8836,35 @@ end
 	silent:Element('Slider','hit distance',{min = 1,max = 25,default = 15})
 	task.spawn(function()
 		RunService.Heartbeat:Connect(function()
-			if values.main['Ranged sector']['Highlight target'].Toggle or values.main['Ranged sector']['Outline highlight target'].Toggle then
+			if values.rage['Ranged sector']['Highlight target'].Toggle or values.rage['Ranged sector']['Outline highlight target'].Toggle then
 				if not game.CoreGui:FindFirstChild('SilentAimTarget') then
 					local highlight = C.INST('Highlight',game.CoreGui)
 					highlight.Name = 'SilentAimTarget'
-					if values.main['Ranged sector']['Highlight target'].Toggle then
-						highlight.FillColor = values.main['Ranged sector']['Highlight target'].Color
-						highlight.FillTransparency = values.main['Ranged sector']['Highlight target'].Transparency
+					if values.rage['Ranged sector']['Highlight target'].Toggle then
+						highlight.FillColor = values.rage['Ranged sector']['Highlight target'].Color
+						highlight.FillTransparency = values.rage['Ranged sector']['Highlight target'].Transparency
 					else
 						highlight.FillTransparency = 1
 					end
 					
-					if values.main['Ranged sector']['Outline highlight target'].Toggle then
-						highlight.OutlineColor = values.main['Ranged sector']['Outline highlight target'].Color
-						highlight.OutlineTransparency = values.main['Ranged sector']['Outline highlight target'].Transparency
+					if values.rage['Ranged sector']['Outline highlight target'].Toggle then
+						highlight.OutlineColor = values.rage['Ranged sector']['Outline highlight target'].Color
+						highlight.OutlineTransparency = values.rage['Ranged sector']['Outline highlight target'].Transparency
 					else
 						highlight.OutlineTransparency = 1
 					end
 				elseif game.CoreGui:FindFirstChild('SilentAimTarget') then
 					highlight = game.CoreGui:FindFirstChild('SilentAimTarget')
 					--highlight.Name = 'SilentAimTarget'
-					if values.main['Ranged sector']['Highlight target'].Toggle then
-					highlight.FillColor = values.main['Ranged sector']['Highlight target'].Color
-					highlight.FillTransparency = values.main['Ranged sector']['Highlight target'].Transparency
+					if values.rage['Ranged sector']['Highlight target'].Toggle then
+					highlight.FillColor = values.rage['Ranged sector']['Highlight target'].Color
+					highlight.FillTransparency = values.rage['Ranged sector']['Highlight target'].Transparency
 					else
 					highlight.FillTransparency = 1
 					end
-					if values.main['Ranged sector']['Outline highlight target'].Toggle then
-						highlight.OutlineColor = values.main['Ranged sector']['Outline highlight target'].Color
-						highlight.OutlineTransparency = values.main['Ranged sector']['Outline highlight target'].Transparency
+					if values.rage['Ranged sector']['Outline highlight target'].Toggle then
+						highlight.OutlineColor = values.rage['Ranged sector']['Outline highlight target'].Color
+						highlight.OutlineTransparency = values.rage['Ranged sector']['Outline highlight target'].Transparency
 					else
 						highlight.OutlineTransparency = 1
 					end			
@@ -8933,7 +8877,7 @@ end
 		silent:Element('Toggle', 'Wallbang')
 		task.spawn(function()
 			while RunService.Heartbeat:Wait() do 
-				if values.main['Ranged sector'].Wallbang.Toggle then
+				if values.rage['Ranged sector'].Wallbang.Toggle then
 					game.CollectionService:AddTag(game:GetService("Workspace").Map,'RANGED_CASTER_IGNORE_LIST')	
 					game.CollectionService:AddTag(game:GetService("Workspace").Terrain,'RANGED_CASTER_IGNORE_LIST')						
 				else
@@ -8947,7 +8891,7 @@ end
 		rangedmods = function()
 			for i,v in pairs(getgc(true)) do
 				if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'displayName') then
-					if values.main['Ranged sector']['No recoil'].Toggle then
+					if values.rage['Ranged sector']['No recoil'].Toggle then
 						--print('-------------------------------')
 						
 						
@@ -8976,21 +8920,21 @@ end
 						v.recoilZMax = rangedvalues[string.lower(v.displayName)]['recoilZMax']
 						v.recoilXMax = rangedvalues[string.lower(v.displayName)]['recoilXMax']		
 					end
-					if values.main['Ranged sector']['No spread'].Toggle then
+					if values.rage['Ranged sector']['No spread'].Toggle then
 						v.minSpread = 0
 						v.maxSpread = 0
 					else
 						v.minSpread = rangedvalues[string.lower(v.displayName)]['minSpread']
 						v.maxSpread = rangedvalues[string.lower(v.displayName)]['maxSpread']
 					end
-					if values.main['Ranged sector']['Inf range'].Toggle then
+					if values.rage['Ranged sector']['Inf range'].Toggle then
 						v.gravity = Vector3.new(0,0,0)
 						v.maxDistance = 99999
 					else
 						v.gravity = rangedvalues[string.lower(v.displayName)]['gravity']
 						v.maxDistance = rangedvalues[string.lower(v.displayName)]['maxDistance']			
 					end
-					if values.main['Ranged sector']['Instant charge'].Toggle then
+					if values.rage['Ranged sector']['Instant charge'].Toggle then
 						v.startShootingAfterCharge = true
 						v.chargeOnDuration = 0
 						v.chargeOffDuration = 0
@@ -9079,13 +9023,13 @@ end
 				end
 			end)
 				local shootloop;shootloop = RunService.Heartbeat:Connect(function()
-					if (not values.main['Ranged sector']['Auto reload'].Toggle) or (not values.main['Ranged sector']['Auto shoot'].Toggle) then return end
+					if (not values.rage['Ranged sector']['Auto reload'].Toggle) or (not values.rage['Ranged sector']['Auto shoot'].Toggle) then return end
 					pcall(function()
 						if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') then
-							if values.main['Ranged sector']['Auto shoot'].Toggle then
+							if values.rage['Ranged sector']['Auto shoot'].Toggle then
 								shootfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
 							end
-							if values.main['Ranged sector']['Auto reload'].Toggle then
+							if values.rage['Ranged sector']['Auto reload'].Toggle then
 								reloadfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
 							end
 						end
@@ -10159,9 +10103,9 @@ end
 			BodyVelocity:Destroy()
 			BodyVelocity = C.INST('BodyVelocity')
 			BodyVelocity.MaxForce = C.Vec3(C.HUGE,0,C.HUGE)
-			if UserInputService:IsKeyDown('Space') and values.main.Misc['bunny hop'].Toggle == true then
+			if UserInputService:IsKeyDown('Space') and values.rage.Misc['bunny hop'].Toggle == true then
 				local add = 0
-				if values.main.Misc['direction'].Dropdown == 'directional' or values.main.Misc['direction'].Dropdown == 'directional 2' then
+				if values.rage.Misc['direction'].Dropdown == 'directional' or values.rage.Misc['direction'].Dropdown == 'directional 2' then
 					if UserInputService:IsKeyDown("A") then add = 90 end 
 					if UserInputService:IsKeyDown("S") then add = 180 end 
 					if UserInputService:IsKeyDown("D") then add = 270 end 
@@ -10171,7 +10115,7 @@ end
 					if UserInputService:IsKeyDown("A") and UserInputService:IsKeyDown("S") then add = 145 end 
 				end
 				local rot = YROTATION(CamCFrame) * C.CFAngles(0,C.RAD(add),0)
-				local bhopspeed = values.main.Misc['speed'].Slider		
+				local bhopspeed = values.rage.Misc['speed'].Slider		
 				BodyVelocity.Parent = LocalPlayer.Character['HumanoidRootPart']
 				
 				if LocalPlayer.Character.Humanoid.FloorMaterial ~= Enum.Material.Air then
@@ -10179,16 +10123,16 @@ end
 				end
 				
 				BodyVelocity.Velocity = C.Vec3(rot.LookVector.X,0,rot.LookVector.Z) * (bhopspeed * 2)
-				if add == 0 and values.main.Misc['direction'].Dropdown == 'directional' and not UserInputService:IsKeyDown('W') then
+				if add == 0 and values.rage.Misc['direction'].Dropdown == 'directional' and not UserInputService:IsKeyDown('W') then
 					BodyVelocity:Destroy()
 				else
-					if values.main.Misc['type'].Dropdown == 'cframe' then
+					if values.rage.Misc['type'].Dropdown == 'cframe' then
 						BodyVelocity:Destroy()
 						Root.CFrame = Root.CFrame + C.Vec3(rot.LookVector.X,0,rot.LookVector.Z) * bhopspeed/50
-					elseif values.main.Misc['type'].Dropdown == 'velocity'  then
+					elseif values.rage.Misc['type'].Dropdown == 'velocity'  then
 						BodyVelocity:Destroy()
 						Root.Velocity = C.Vec3(rot.LookVector.X * (bhopspeed * 2), Root.Velocity.y, rot.LookVector.Z * (bhopspeed * 2))
-					elseif values.main.Misc['type'].Dropdown == 'idk' then
+					elseif values.rage.Misc['type'].Dropdown == 'idk' then
 						BodyVelocity:Destroy()
 						spawn(function()
 							if not switchtrigger[1]  then 
@@ -10207,14 +10151,14 @@ end
 					end
 				end
 			end	
-			if values.main.Misc['prevent launch'].Toggle and values.main.Misc['no launch'].Active then 
-				if Root.Velocity.Y > values.main.Misc['launch block (y velocity)'].Slider then 
+			if values.rage.Misc['prevent launch'].Toggle and values.rage.Misc['no launch'].Active then 
+				if Root.Velocity.Y > values.rage.Misc['launch block (y velocity)'].Slider then 
 					Root.Velocity = C.Vec3(Root.Velocity.x, 0, Root.Velocity.z)
 				end
 			end			
 		end)
 			pcall(function()
-				if values.main.Autos["Auto Revive"].Toggle then
+				if values.rage.Autos["Auto Revive"].Toggle then
 					if SavedValues['getState']:getState().down.isDowned == true then
 						events.SelfReviveStart:FireServer()
 						task.wait(.2)
@@ -10292,18 +10236,18 @@ UIStroke.Thickness = 2
 UIStroke.Parent = Frame
 	task.spawn(function()
 		RunService.Heartbeat:Connect(function()
-			if values.main['Ranged sector']['silent aim'].Toggle and values.main['Ranged sector']['Silent aim info gui'].Toggle then
+			if values.rage['Ranged sector']['silent aim'].Toggle and values.rage['Ranged sector']['Silent aim info gui'].Toggle then
 				if game.CoreGui:FindFirstChild("Aiming real real") then
 					game.CoreGui:FindFirstChild('Aiming real real').Enabled = true
-					game.CoreGui:FindFirstChild('Aiming real real').Frame.BackgroundColor3 = values.main['Ranged sector']['Silent aim info gui'].Color
+					game.CoreGui:FindFirstChild('Aiming real real').Frame.BackgroundColor3 = values.rage['Ranged sector']['Silent aim info gui'].Color
 				end
 			else
 				if game.CoreGui:FindFirstChild("Aiming real real") then
 					game.CoreGui:FindFirstChild('Aiming real real').Enabled = false
 				end			
 			end
-			PredictionV.Text = "Prediction Value: "..values.main['Ranged sector']['Prediction val'].Slider
-			--[[if not values.main['Ranged sector']['silent aim'].Toggle then
+			PredictionV.Text = "Prediction Value: "..values.rage['Ranged sector']['Prediction val'].Slider
+			--[[if not values.rage['Ranged sector']['silent aim'].Toggle then
 				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
 			elseif getClosestToMouse() == nil then
 				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
@@ -10379,7 +10323,7 @@ UIStroke.Parent = Frame
 
 	local mouse = LocalPlayer:GetMouse()
 	local function getClosestToMouse()
-		local player, nearestDistance = nil, values.main['Ranged sector']['field of view'].Slider
+		local player, nearestDistance = nil, values.rage['Ranged sector']['field of view'].Slider
 		for i,v in pairs(Players:GetPlayers()) do
 			if v ~= Players.LocalPlayer and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") then
 				local root, visible = workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
@@ -10534,7 +10478,7 @@ UIStroke.Parent = Frame
 			return 
 		end
 				--local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
-		if not values.main['Ranged sector']['silent aim'].Toggle then
+		if not values.rage['Ranged sector']['silent aim'].Toggle then
 			Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
 			Aiming.Text = "Aiming At: None"
 			Position.Text = "Position: None"
@@ -10543,7 +10487,7 @@ UIStroke.Parent = Frame
 			end
 			return
 		end
-		if Tool and values.main['Ranged sector']['silent aim'].Toggle then
+		if Tool and values.rage['Ranged sector']['silent aim'].Toggle then
 			
 			local FirePos = GetFirePos(Tool)
 			if C then
@@ -10552,9 +10496,9 @@ UIStroke.Parent = Frame
 				end
 						--Frame.Transparency = 0
 					Aiming.Text = "Aiming At: "..C.Name
-					PredictionV.Text = "Prediction Value: "..values.main['Ranged sector']['Prediction val'].Slider/100
+					PredictionV.Text = "Prediction Value: "..values.rage['Ranged sector']['Prediction val'].Slider/100
 				
-				local Predict = C.Character[values.main['Ranged sector']['body part to hit'].Dropdown].CFrame + (C.Character[values.main['Ranged sector']['body part to hit'].Dropdown].Velocity * values.main['Ranged sector']['Prediction val'].Slider/100 + Vector3.new(0, .1, 0))
+				local Predict = C.Character[values.rage['Ranged sector']['body part to hit'].Dropdown].CFrame + (C.Character[values.rage['Ranged sector']['body part to hit'].Dropdown].Velocity * values.rage['Ranged sector']['Prediction val'].Slider/100 + Vector3.new(0, .1, 0))
 				Predicted = CFrame.new(FirePos,(typeof(Predict) == "CFrame" and Predict.Position or Predict)).LookVector * 30
 					
 						--predicted = (CFrame.lookAt(Tool.Contents.Handle.FirePoint.WorldCFrame.Position, Prediction.Position)).LookVector * 30;
@@ -10571,13 +10515,13 @@ UIStroke.Parent = Frame
 			end
 			if Arrow then
 				if C then
-					if (Arrow.Position - C.Character.HumanoidRootPart.Position).Magnitude <= values.main['Ranged sector']['hit distance'].Slider then
-						if values.main['Ranged sector'].hitchance.Slider == 100 then
+					if (Arrow.Position - C.Character.HumanoidRootPart.Position).Magnitude <= values.rage['Ranged sector']['hit distance'].Slider then
+						if values.rage['Ranged sector'].hitchance.Slider == 100 then
 						Functions.Hit(C.Character)
 						Shot = false
 						Arrow = nil
 						else
-							if math.random(1,100) >= values.main['Ranged sector'].hitchance.Slider then
+							if math.random(1,100) >= values.rage['Ranged sector'].hitchance.Slider then
 								Functions.Hit(C.Character)
 								Shot = false
 								Arrow = nil						
@@ -11800,47 +11744,47 @@ end
 
 
 ------------------------old code------------
-			--or values.main.chat['custom tag'].Toggle or values.main.chat['custom nickname'].Toggle) then
+			--or values.rage.chat['custom tag'].Toggle or values.rage.chat['custom nickname'].Toggle) then
 				--[[oldPrefixText = L.PrefixText
 				customTag = ""
-				if values.main.chat['custom tag'].Toggle then
+				if values.rage.chat['custom tag'].Toggle then
 					customTagFont = 1
 					customTag = ''
 					customTag = string.gsub(customTag, '<font color = #01a2ff>', '')
 					--print(customtTag)
 					
-					customTag = customTag..'<font color = '..'\"'..toHex(values.main.chat['custom tag'].Color)..'\">'
+					customTag = customTag..'<font color = '..'\"'..toHex(values.rage.chat['custom tag'].Color)..'\">'
 					--print(L.PrefixText)
 					
-					if values.main.chat['custom message size'].Toggle then
-			customTag = customTag..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
+					if values.rage.chat['custom message size'].Toggle then
+			customTag = customTag..'<font size = '..'\"'..values.rage.chat.size.Slider..'\">'
 						customTagFont += 1
 						--print(L.PrefixText)
 					end
-					if values.main.chat['custom font'].Toggle then
-						customTag = customTag..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
+					if values.rage.chat['custom font'].Toggle then
+						customTag = customTag..'<font face = '..'\"'..values.rage.chat['message font'].Dropdown..'\">'
 						customTagFont += 1
 						--print(L.PrefixText)
 					end
 					--print(L.PrefixText)
 		
-					customTag = customTag..'['..values.main.chat.tag.Text..']'..(string.rep('</font>',customTagFont))
+					customTag = customTag..'['..values.rage.chat.tag.Text..']'..(string.rep('</font>',customTagFont))
 					--print(customtTag)
 				end
-				if values.main.chat['custom nickname'].Toggle then
+				if values.rage.chat['custom nickname'].Toggle then
 					customNickname = 1	
 					--print(L.PrefixText)
-					L.PrefixText = customTag..'<font color = '..'\"'..toHex(values.main.chat['custom nickname'].Color)..'\">'
+					L.PrefixText = customTag..'<font color = '..'\"'..toHex(values.rage.chat['custom nickname'].Color)..'\">'
 					
-					if values.main.chat['custom message size'].Toggle then
-						L.PrefixText = L.PrefixText..'<font size = '..'\"'..values.main.chat.size.Slider..'\">'
+					if values.rage.chat['custom message size'].Toggle then
+						L.PrefixText = L.PrefixText..'<font size = '..'\"'..values.rage.chat.size.Slider..'\">'
 						customNickname += 1	
 					end
-					if values.main.chat['custom font'].Toggle then
-						L.PrefixText = L.PrefixText..'<font face = '..'\"'..values.main.chat['message font'].Dropdown..'\">'
+					if values.rage.chat['custom font'].Toggle then
+						L.PrefixText = L.PrefixText..'<font face = '..'\"'..values.rage.chat['message font'].Dropdown..'\">'
 						customNickname += 1	
 					end
-					L.PrefixText = L.PrefixText..values.main.chat.nickname.Text..(string.rep('</font>', customNickname))	
+					L.PrefixText = L.PrefixText..values.rage.chat.nickname.Text..(string.rep('</font>', customNickname))	
 					--print(L.PrefixText)			
 				else
 					L.PrefixText = customTag..L.PrefixText
@@ -11963,7 +11907,7 @@ local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(sel
 	  return;
   end
 	if self.Name == 'RangedHit' then
-		if values.main['Ranged sector']['Always headshot'].Toggle then
+		if values.rage['Ranged sector']['Always headshot'].Toggle then
 			args[2] = args[2].Parent.Head
 		end
 	end
