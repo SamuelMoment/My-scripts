@@ -2639,17 +2639,10 @@ do
 								Button.MouseButton1Down:Connect(function() 
 									Frame.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
 									val = (((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min) or 0 
-										if string.find(tostring(val),'.') then
-											valstring = tostring(val)
-											valtable = string.split(val,'.')
-											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
-											  valstring2 = string.sub(valtable[2],1,2)
-											  valstring = valtable[1]..'.'..valstring2
-											  val = tonumber(valstring)
-											end
-											--print(val)
-											--print(typeof(val))
-										end									
+									val *= 100
+									val = math.floor(val)
+									val = val / 100
+									
 									Value.Text = val 
 									Element.value.Slider = val
 									values[tabname][sectorname][tabtext][text] = Element.value 
@@ -3122,7 +3115,9 @@ do
 										end
 										updatescroll(joe2)
 										Element.value.UpdateValue[v] = updatescroll
-
+										print(Element.value.UpdateValue)
+										table.foreach(Element.value.UpdateValue,print)
+										print('---------------')
 										first = false 
 									end 
 								end 
@@ -3174,8 +3169,10 @@ do
 									end 
 								end) 
 
-								function Element:SetValue(tbl) 
+								function Element:SetValue(tbl)
+									oldElement = Element.value.UpdateValue
 									Element.value = tbl 
+									Element.value['UpdateValue'] = oldElement
 									abcd.Text = tbl.Dropdown 
 									values[tabname][sectorname][text] = Element.value 
 									for i,v in pairs(Dropdown:GetChildren()) do 
@@ -6667,19 +6664,10 @@ end)
 									Frame.Size = C.UDIM2(0, C.CLAMP(mouse.X - Frame.AbsolutePosition.X, 0, 175), 0, 5) 
 									val = (((tonumber(max) - tonumber(min)) / 175) * Frame.AbsoluteSize.X) + tonumber(min) or 0 
 									
-										if string.find(tostring(val),'.') then
-											valstring = tostring(val)
-											valtable = string.split(val,'.')
-											if #valtable ~= 0 and typeof(valtable[1]) == 'string' and typeof(valtable[2]) == 'string'  then
-											  valstring2 = string.sub(valtable[2],1,2)
-											  valstring = valtable[1]..'.'..valstring2
-											  val = tonumber(valstring)
-											end
-											--print(val)
-											--print(typeof(val))
-										end
-										print(val)
-										print(typeof(val))			
+									--local value = 0.984375
+									val *= 100
+									val = math.floor(val)
+									val = val / 100		
 									Value.Text = val 
 									Element.value.Slider = val 
 									values[tabname][sectorname][text] = Element.value 
@@ -7564,7 +7552,7 @@ getgenv().GetClosest = function(Distance,Priority,IgnoreTarget)
 					Target = v
 				end
 			end
-			if values.rage.combat['Target player'].Toggle and v.Name == values.rage.combat['Target'].Scroll and not IgnoreTarget then
+			if values.rage.combat['Target player'].Toggle and v.Name == values.rage.combat['Target'].Scroll and not IgnoreTarget and v.Backpack:FindFirstChildWhichIsA('Tool') then
 				return v
 			end
 		end
@@ -8291,10 +8279,18 @@ local combat = main:Sector('combat', 'Left')
 	--Autos:Element("Toggle", "Fast Respawn")
 	combat:Element("Toggle", "Kill Aura")
 	 --combat:Element("Toggle", "AA Aura")
-	combat:Element("Dropdown", "Priority",{options = {'Distance','Health'}})	
+	combat:Element("Dropdown", "Priority",{options = {'Distance','Health'}})
 	combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 12, default = 12})
 	combat:Element("Toggle", "Custom Kill Aura Distance")
 	combat:Element("Slider", "Custom Distance", {min = 0, max = 2000, default = 600})
+	
+	combat:Element('Toggle','Visualize target',{default = {Color = Color3.fromRGB(255, 255, 255)}})
+	combat:Element("ToggleColor", "Box",{default = {Color = Color3.fromRGB(255, 255, 255)}})
+	combat:Element("ToggleColor", "Name",{default = {Color = Color3.fromRGB(255, 255, 255)}})
+	combat:Element("ToggleColor", "Health",{default = {Color = Color3.fromRGB(0, 255, 0)}})
+	combat:Element('ToggleColor','Health Text',{default = {Color = Color3.fromRGB(255,255,255)}})
+	combat:Element("ToggleColor", "Indicators",{default = {Color = Color3.fromRGB(255, 255, 255)}})
+	
 	combat:Element("Toggle", "Teleport Behind (for kill aura)")
 	combat:Element("Slider", "Teleport Distance", {min = 0, max = 5, default = 5})
 	combat:Element("Toggle", "Stomp Aura")
@@ -9787,6 +9783,23 @@ do
 			 NOFLY()
 		 end
 	 end)
+		local function keydown(key)
+			return game:GetService("UserInputService"):IsKeyDown(key)
+		end 
+	miscsector:Element('Toggle','Velocity fly 2',nil,function(tbl)
+		g = game.RunService.Heartbeat:Connect(function()
+			if not tbl.Toggle then return g:Disconnect() end
+			if not LocalPlayer.Character then return end
+				local move = game.Players.LocalPlayer.Character.Humanoid.MoveDirection * 16 * 4
+				if keydown(Enum.KeyCode.Space) then
+					game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity = Vector3.new(0,55,0) + move
+				elseif keydown(Enum.KeyCode.C) then
+					game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity = Vector3.new(0,-55,0) + move
+				else
+					game.Players.LocalPlayer.Character.Humanoid.RootPart.Velocity = Vector3.new(0,2,0) + move
+				end
+		end)	 
+	 end)
 	miscsector:Element("Toggle", "Fly",nil,function(state)
 		if values.misc.misc2.misc["Fly"].Toggle then
 			NOFLY()
@@ -9846,7 +9859,7 @@ do
 	miscsector:Element("Toggle", "Kill Feed Spam")
 	miscsector:Element("Toggle", "Free Emotes") 
 	miscsector:Element("Toggle", "Hide Name")
-	miscsector:Element('Toggle', 'Horizontal body',{}, function()
+	miscsector:Element('Toggle', 'Horizontal body',{}, function(tbl)
 		task.spawn(function()
 			while wait() do
 				for i = 1,15 do
@@ -10502,7 +10515,7 @@ UIStroke.Parent = Frame
 				Predicted = CFrame.new(FirePos,(typeof(Predict) == "CFrame" and Predict.Position or Predict)).LookVector * 30
 					
 						--predicted = (CFrame.lookAt(Tool.Contents.Handle.FirePoint.WorldCFrame.Position, Prediction.Position)).LookVector * 30;
-					Position.Text = "Position: "..string.split(Predict.Position.X,'.')[1]..'.'..string.split(Predict.Position.X,'.')[2]:sub(1,2)..", "..string.split(Predict.Position.Y,'.')[1]..'.'..string.split(Predict.Position.Y,'.')[2]:sub(1,2)..", "..string.split(Predict.Position.Z,'.')[1]..'.'..string.split(Predict.Position.Z,'.')[2]:sub(1,2)
+					Position.Text = "Position: "..(math.floor(Predict.Position.X*100)/100)..", "..(math.floor(Predict.Position.X*100)/100)..", "..(math.floor(Predict.Position.X*100)/100)
 					local Vec = WorldToScreen(Predict.Position)
 					Frame.Position = UDim2.new(0,Vec.X,0,Vec.Y)				
 			else
@@ -10546,6 +10559,7 @@ do
 		Playere:Element("ToggleColor", "Box",{default = {Color = Color3.fromRGB(255, 255, 255)}})
 		Playere:Element("ToggleColor", "Name",{default = {Color = Color3.fromRGB(255, 255, 255)}})
 		Playere:Element("ToggleColor", "Health",{default = {Color = Color3.fromRGB(0, 255, 0)}})
+		Playere:Element('ToggleColor','Health Text',{default = {Color = Color3.fromRGB(255,255,255)}})
 		Playere:Element("ToggleColor", "Indicators",{default = {Color = Color3.fromRGB(255, 255, 255)}})
 		Playere:Element("Jumbobox", "Types", {options = {"Tool", "Distance"}})
 		Playere:Element("Dropdown", "Font", {options = {"Plex", "Monospace", "System", "UI"}}) 
@@ -10573,6 +10587,11 @@ do
 						else
 							highlight.OutlineTransparency = 1
 						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
 						chams[v.Name] = highlight
 					end
 				elseif v.Character and v ~= LocalPlayer then
@@ -10592,6 +10611,11 @@ do
 						else
 							highlight.OutlineTransparency = 1
 						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
 					else
 						chams[v.Name]:Destroy()
 						chams[v.Name] = nil
@@ -10617,6 +10641,11 @@ do
 						else
 							highlight.OutlineTransparency = 1
 						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end					
 						chams[v.Name] = highlight
 					end
 				elseif v.Character and v ~= LocalPlayer then
@@ -10635,6 +10664,11 @@ do
 						else
 							highlight.OutlineTransparency = 1
 						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
 					else
 						chams[v.Name]:Destroy()
 						chams[v.Name] = nil
@@ -10642,7 +10676,61 @@ do
 				end
 			end
 		end)
-		
+		Playere:Element('Toggle','Visible only',{},function(tbl)
+			for i,v in pairs(Players:GetPlayers()) do
+				--v.CharacterAdded:Connect(function()
+					if (not chams[v.Name]) and v.Character and v ~= LocalPlayer then
+						if values.visuals.players['Outline chams'].Toggle or values.visuals.players['Chams'].Toggle then
+							local highlight = Instance.new('Highlight',highlightfolder)
+							highlight.Adornee = v.Character
+							if values.visuals.players['Chams'].Toggle then
+								highlight.FillColor = values.visuals.players['Chams'].Color
+								highlight.FillTransparency = values.visuals.players['Chams'].Transparency
+							else
+								highlight.FillTransparency = 1
+							end
+							if values.visuals.players['Outline chams'].Toggle then
+								highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+								highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+							else
+								highlight.OutlineTransparency = 1
+							end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end							
+							chams[v.Name] = highlight
+						end
+					elseif v.Character and v ~= LocalPlayer then
+						if values.visuals.players['Outline chams'].Toggle or values.visuals.players['Chams'].Toggle then
+							local highlight = chams[v.Name]
+							highlight.Adornee = v.Character
+							if values.visuals.players['Chams'].Toggle then
+								highlight.FillColor = values.visuals.players['Chams'].Color
+								highlight.FillTransparency = values.visuals.players['Chams'].Transparency
+							else
+								highlight.FillTransparency = 1
+							end
+							if values.visuals.players['Outline chams'].Toggle then
+								highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+								highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+							else
+								highlight.OutlineTransparency = 1
+							end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end
+						else
+							chams[v.Name]:Destroy()
+							chams[v.Name] = nil
+						end
+					end
+				--end)		
+			end		
+		end)
 		Players.PlayerAdded:Connect(function(v)
 		
 		--for i,v in pairs(Players:GetPlayers()) do
@@ -10663,6 +10751,11 @@ do
 						else
 							highlight.OutlineTransparency = 1
 						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
 						chams[v.Name] = highlight
 					end
 				elseif v.Character and v ~= LocalPlayer then
@@ -10681,6 +10774,11 @@ do
 						else
 							highlight.OutlineTransparency = 1
 						end
+						if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end							
 					else
 						chams[v.Name]:Destroy()
 						chams[v.Name] = nil
@@ -10715,6 +10813,11 @@ do
 						else
 							highlight.OutlineTransparency = 1
 						end
+						if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end	
 						chams[v.Name] = highlight
 					end
 				elseif v.Character and v ~= LocalPlayer then
@@ -10733,6 +10836,11 @@ do
 						else
 							highlight.OutlineTransparency = 1
 						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
 					else
 						chams[v.Name]:Destroy()
 						chams[v.Name] = nil
@@ -10794,7 +10902,8 @@ do
 				BoxOutline = New("Square", true, "BoxOutline"),
 				Box = New("Square", nil, "Box"),
 				HealthOutline = New("Line", true, "HealthOutline"),
-				Health = New("Line", nil, "Health")
+				Health = New("Line", nil, "Health"),
+				HealthText = New('Text',nil,'HealthText')
 			}
 		end
 	end
@@ -10833,7 +10942,7 @@ local ESPLoop =
                 Drawing.Visible = false
             end
 
-            if not values.visuals.players.Enabled.Toggle or not values.visuals.players["Enabled"].Active then
+            if (not values.visuals.players.Enabled.Toggle or not values.visuals.players["Enabled"].Active) then
                 continue
             end
             local Character = Player.Character
@@ -10846,7 +10955,7 @@ local ESPLoop =
 
             local DistanceFromCharacter = (Camera.CFrame.Position - RootPart.Position).Magnitude
             if values.visuals.players["Max Distance"].Slider < DistanceFromCharacter then
-                continue
+				continue
             end
 
             local Pos, OnScreen = Camera:WorldToViewportPoint(RootPart.Position)
@@ -10915,8 +11024,7 @@ local ESPLoop =
                     end
                 end
             else
-                local VisualTable = values.visuals.players
-
+				local VisualTable = values.visuals.players
                 local Size =
                     (Camera:WorldToViewportPoint(RootPart.Position - Vector3.new(0, 3, 0)).Y -
                     Camera:WorldToViewportPoint(RootPart.Position + Vector3.new(0, 2.6, 0)).Y) /
@@ -10930,6 +11038,7 @@ local ESPLoop =
                 local Box = PlayerDrawing.Box
                 local BoxOutline = PlayerDrawing.BoxOutline
                 local Health = PlayerDrawing.Health
+				local HealthText = PlayerDrawing.HealthText
                 local HealthOutline = PlayerDrawing.HealthOutline
 
                 if VisualTable.Box.Toggle then
@@ -10952,6 +11061,18 @@ local ESPLoop =
                     HealthOutline.From = Vector2.new(Health.From.X, BoxPos.Y + BoxSize.Y + 1)
                     HealthOutline.To = Vector2.new(Health.From.X, (Health.From.Y - 1 * BoxSize.Y) - 1)
                     HealthOutline.Visible = true
+									
+
+--math.floor(value*100)/100
+					if VisualTable['Health Text'].Toggle then
+						HealthText.Text = tostring(math.floor(Humanoid.Health*100)/100)
+						
+						HealthText.Position = Vector2.new(Health.To.X, Health.To.Y-5) -- 0 up - 1366 down
+						HealthText.Size = VisualTable['Size'].Slider
+						HealthText.Font = Drawing.Fonts[VisualTable['Font'].Dropdown]
+						HealthText.Visible = true
+						HealthText.Color = VisualTable['Health Text'].Color
+					end
                 end
 
                 if VisualTable.Name.Toggle then
@@ -10992,6 +11113,125 @@ local ESPLoop =
                 end
             end
         end
+		
+		
+		
+		
+		if values.rage.combat['Visualize target'].Toggle and ClosestKillaura ~= nil and game.Players[ClosestKillaura.Name] ~= nil  then
+			local Player = game.Players[ClosestKillaura.Name]
+			local PlayerDrawing = PlayerDrawings[Player]
+            if not PlayerDrawing then
+                return
+            end
+
+            for _, Drawing in pairs(PlayerDrawing) do
+                Drawing.Visible = false
+            end
+
+
+            local Character = Player.Character
+            local RootPart, Humanoid =
+                Character and Character:FindFirstChild("HumanoidRootPart"),
+                Character and Character:FindFirstChildOfClass("Humanoid")
+            if not Character or not RootPart or not Humanoid then
+                return
+            end
+
+            local DistanceFromCharacter = (Camera.CFrame.Position - RootPart.Position).Magnitude
+
+            local Pos, OnScreen = Camera:WorldToViewportPoint(RootPart.Position)
+            if OnScreen then
+			--values.visuals.players
+				local VisualTable = values.visuals.players
+                local Size =
+                    (Camera:WorldToViewportPoint(RootPart.Position - Vector3.new(0, 3, 0)).Y -
+                    Camera:WorldToViewportPoint(RootPart.Position + Vector3.new(0, 2.6, 0)).Y) /
+                    2
+                local BoxSize = Vector2.new(math.floor(Size * 1.5), math.floor(Size * 1.9))
+                local BoxPos = Vector2.new(math.floor(Pos.X - Size * 1.5 / 2), math.floor(Pos.Y - Size * 1.6 / 2))
+
+                local Name = PlayerDrawing.Name
+                local Tool = PlayerDrawing.Tool
+                local Distance = PlayerDrawing.Distance
+                local Box = PlayerDrawing.Box
+                local BoxOutline = PlayerDrawing.BoxOutline
+                local Health = PlayerDrawing.Health
+				local HealthText = PlayerDrawing.HealthText
+                local HealthOutline = PlayerDrawing.HealthOutline
+
+                if VisualTable.Box.Toggle then
+                    Box.Size = BoxSize
+                    Box.Position = BoxPos
+                    Box.Visible = true
+                    Box.Color = (values.rage.combat['Box'].Toggle and values.rage.combat['Box'].Color or VisualTable['Box'].Color)
+                    BoxOutline.Size = BoxSize
+                    BoxOutline.Position = BoxPos
+                    BoxOutline.Visible = true
+                end
+
+                if VisualTable.Health.Toggle then
+                    Health.From = Vector2.new((BoxPos.X - 5), BoxPos.Y + BoxSize.Y)
+                    Health.To =
+                        Vector2.new(Health.From.X, Health.From.Y - (Humanoid.Health / Humanoid.MaxHealth) * BoxSize.Y)
+                    Health.Color = (values.rage.combat['Health'].Toggle and values.rage.combat['Health'].Color or VisualTable['Health'].Color)
+                    Health.Visible = true
+
+                    HealthOutline.From = Vector2.new(Health.From.X, BoxPos.Y + BoxSize.Y + 1)
+                    HealthOutline.To = Vector2.new(Health.From.X, (Health.From.Y - 1 * BoxSize.Y) - 1)
+                    HealthOutline.Visible = true
+									
+
+--math.floor(value*100)/100
+					if VisualTable['Health Text'].Toggle then
+						HealthText.Text = tostring(math.floor(Humanoid.Health*100)/100)
+						
+						HealthText.Position = Vector2.new(Health.To.X, Health.To.Y-5) -- 0 up - 1366 down
+						HealthText.Size = VisualTable['Size'].Slider
+						HealthText.Font = Drawing.Fonts[VisualTable['Font'].Dropdown]
+						HealthText.Visible = true
+						HealthText.Color = (values.rage.combat['Health Text'].Toggle and values.rage.combat['Health Text'].Color or VisualTable['Health Text'].Color)
+					end
+                end
+
+                if VisualTable.Name.Toggle then
+                    Name.Text = Player.Name
+                    Name.Position = Vector2.new(BoxSize.X / 2 + BoxPos.X, BoxPos.Y - 16)
+                    Name.Color =(values.rage.combat['Name'].Toggle and values.rage.combat['Name'].Color or VisualTable['Name'].Color)
+                    Name.Font = Drawing.Fonts[VisualTable['Font'].Dropdown]
+                    Name.Visible = true
+					Name.Size = VisualTable['Size'].Slider
+                end
+
+                if VisualTable.Indicators.Toggle then
+                    local BottomOffset = BoxSize.Y + BoxPos.Y + 1
+                    if table.find(VisualTable.Types.Jumbobox, "Tool") then
+                        local Equipped =
+                            Player.Character:FindFirstChildOfClass("Tool") and
+                            Player.Character:FindFirstChildOfClass("Tool").Name or
+                            "None"
+                        Equipped = Equipped
+                        Tool.Text = Equipped
+                        Tool.Position = Vector2.new(BoxSize.X / 2 + BoxPos.X, BottomOffset)
+                        Tool.Color = (values.rage.combat['Indicators'].Toggle and values.rage.combat['Indicators'].Color or VisualTable['Indicators'].Color)
+                        Tool.Font = Drawing.Fonts[VisualTable['Font'].Dropdown]
+                        Tool.Visible = true
+						Tool.Size = VisualTable['Size'].Slider
+                        BottomOffset = BottomOffset + 15
+                    end
+                    if table.find(VisualTable.Types.Jumbobox, "Distance") then
+                        Distance.Text = math.floor(DistanceFromCharacter) .. "m"
+                        Distance.Position = Vector2.new(BoxSize.X / 2 + BoxPos.X, BottomOffset)
+                        Distance.Color = (values.rage.combat['Indicators'].Toggle and values.rage.combat['Indicators'].Color or VisualTable['Indicators'].Color)
+                        Distance.Font = Drawing.Fonts[VisualTable['Font'].Dropdown]
+                        Distance.Visible = true
+						Distance.Size = VisualTable['Size'].Slider
+
+                        BottomOffset = BottomOffset + 15
+                    end
+                end
+            end
+		end
+--i want to kill myself			
     end
 )
 
@@ -11896,6 +12136,24 @@ end
 RunService.RenderStepped:Connect(function()
 	if values.misc.misc.utility['Redirect throwable grenades to closest player'].Toggle then
 		ClosestC4 = GetClosest(values.misc.misc.utility.Distance.Slider,'Distance',true) or nil
+	end
+	if values.rage.combat['Kill Aura'].Toggle and values.rage.combat['Visualize target'].Toggle then
+					local Weapon
+					for i, v in pairs(LocalPlayer.Character:GetChildren()) do
+						if v:IsA("Tool") then
+							if v:FindFirstChild("Hitboxes") ~= nil then
+								Weapon = v
+							end
+						end
+					end	
+		if values.rage.combat["Custom Kill Aura Distance"].Toggle and Weapon ~= nil then
+			ClosestKillaura = GetClosest(values.rage.combat["Custom Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
+
+		elseif Weapon ~= nil then
+			ClosestKillaura = GetClosest(values.rage.combat["Kill Aura Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
+		end	
+	else
+		ClosestKillaura = nil
 	end
 end)			
 				
