@@ -6720,7 +6720,7 @@ end)
 									end) 
 								end) 
 							elseif type == "Button2" then 
-								errorCode = (data.errorCode or 'Error!')
+								errorCode = (data.errorCode ~= nil and data.errorCode or 'Error!')
 								Section.Size = Section.Size + C.UDIM2(0,0,0,24) 
 								local Button = C.INST("Frame") 
 								local Button_2 = C.INST("TextButton") 
@@ -10548,7 +10548,20 @@ UIStroke.Parent = Frame
 end)
 
 --visuals tab
+	local function ValidateSong(songID) 
+		if not songID or not tonumber(songID) then return false end
 
+		local success, result = pcall(function()
+			return game.MarketplaceService:GetProductInfo(songID)
+		end)
+
+		if success and result and result.AssetTypeId == 3 then
+			return true
+		else
+			return false
+		end
+	end
+	
 do
 		--local players = visuals:Sector("players",'Right')
 
@@ -11279,6 +11292,114 @@ local ESPLoop =
 	end
 	---------------
 	
+	do
+	--hit rbxassetid://160432334 kill rbxassetid://2868331684 nuke rbxassetid://3237286675 
+		local uncomplicatedfunction = function(s,path,tbl)
+			if tbl.Toggle then
+				if values.visuals.sounds[s..' sound type'].Dropdown == 'Roblox ID' then
+					if ValidateSong(values.visuals.sounds[''..s..' sound'].Text) == true then
+						if s == 'kill' then
+							path.PlaybackSpeed = 1
+						end
+							path.Volume = values.visuals.sounds[''..s..' volume'].Slider
+							path.SoundId = 'rbxassetid://'..values.visuals.sounds[''..s..' sound'].Text
+						--end
+					else return error('Wrong id or path!') end
+				elseif values.visuals.sounds[s..' sound type'].Dropdown == "skeet" or values.visuals.sounds[s..' sound type'].Dropdown == "neverlose" or values.visuals.sounds[s..' sound type'].Dropdown == "rust" or values.visuals.sounds[s..' sound type'].Dropdown == "bag" or values.visuals.sounds[s..' sound type'].Dropdown == "baimware" or values.visuals.sounds[s..' sound type'].Dropdown == "osu" or values.visuals.sounds[s..' sound type'].Dropdown == "Tf2" or values.visuals.sounds[s..' sound type'].Dropdown == "Tf2 pan" or values.visuals.sounds[s..' sound type'].Dropdown  == "M55solix" or values.visuals.sounds[s..' sound type'].Dropdown == "Slap" or values.visuals.sounds[s..' sound type'].Dropdown  == "1" or values.visuals.sounds[s..' sound type'].Dropdown == "Minecraft" or values.visuals.sounds[s..' sound type'].Dropdown == "jojo" or values.visuals.sounds[s..' sound type'].Dropdown == "vibe" or values.visuals.sounds[s..' sound type'].Dropdown == "supersmash" or values.visuals.sounds[s..' sound type'].Dropdown == "epic" or values.visuals.sounds[s..' sound type'].Dropdown == "retro" or values.visuals.sounds[s..' sound type'].Dropdown == "quek" or values.visuals.sounds[s..' sound type'].Dropdown == "SEMI" then
+						if s == 'kill' then
+							path.PlaybackSpeed = 1
+						end					
+						path.Volume = values.visuals.sounds[''..s..' volume'].Slider						
+					path.SoundId = values.visuals.sounds[s..' sound type'].Dropdown == "skeet" and "rbxassetid://5447626464" or values.visuals.sounds[s..' sound type'].Dropdown == "neverlose" and "rbxassetid://5043539486" or values.visuals.sounds[s..' sound type'].Dropdown == "rust" and "rbxassetid://5043539486" or values.visuals.sounds[s..' sound type'].Dropdown == "bag" and "rbxassetid://364942410" or values.visuals.sounds[s..' sound type'].Dropdown == "baimware" and "rbxassetid://6607339542" or values.visuals.sounds[s..' sound type'].Dropdown == "osu" and "rbxassetid://7149919358" or values.visuals.sounds[s..' sound type'].Dropdown == "Tf2" and "rbxassetid://296102734" or values.visuals.sounds[s..' sound type'].Dropdown == "Tf2 pan" and "rbxassetid://3431749479" or values.visuals.sounds[s..' sound type'].Dropdown  == "M55solix" and "rbxassetid://364942410" or values.visuals.sounds[s..' sound type'].Dropdown == "Slap" and "rbxassetid://4888372697" or values.visuals.sounds[s..' sound type'].Dropdown  == "1" and "rbxassetid://7349055654" or values.visuals.sounds[s..' sound type'].Dropdown == "Minecraft" and "rbxassetid://7273736372" or values.visuals.sounds[s..' sound type'].Dropdown == "jojo" and "rbxassetid://6787514780" or values.visuals.sounds[s..' sound type'].Dropdown == "vibe" and "rbxassetid://1848288500" or values.visuals.sounds[s..' sound type'].Dropdown == "supersmash" and "rbxassetid://2039907664" or values.visuals.sounds[s..' sound type'].Dropdown == "epic" and "rbxassetid://7344303740" or values.visuals.sounds[s..' sound type'].Dropdown == "retro" and "rbxassetid://3466984142" or values.visuals.sounds[s..' sound type'].Dropdown == "quek" and "rbxassetid://4868633804" or values.visuals.sounds[s..' sound type'].Dropdown == "SEMI" and "rbxassetid://7791675603" 
+				else
+					getAsset = getsynasset or getcustomasset
+					if not isfile(values.other.Radio.music.Text) then
+						return error('Wrong id or path!')
+					end
+						if s == 'kill' then
+							path.PlaybackSpeed = 1
+						end					
+						path.Volume = values.visuals.sounds[''..s..' volume'].Slider
+						path.SoundId = getAsset(values.visuals.sounds[''..s..' sound'].Text)					
+				end
+			else
+				if s == 'kill' then
+					path.PlaybackSpeed = 1.25
+					path.Volume = 0.2
+					path.SoundId = 'rbxassetid://2868331684'
+				elseif s == 'hit' then
+					path.Volume = 0.2
+					path.SoundId = 'rbxassetid://160432334'
+				elseif s == 'nuke' then
+					path.Volume = 1
+					path.SoundId = 'rbxassetid://3237286675'
+				end
+			end
+		end
+		local sounds = visuals:Sector('sounds','Right')
+
+		--values.visuals.sounds
+
+		sounds:Element('Toggle','Custom kill sound',{},function(tbl)
+			uncomplicatedfunction('kill',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.KillSound,tbl)
+		end)
+
+		sounds:Element('TextBox','kill sound',{placeholder = 'rbx id or workspace path'},function()
+			uncomplicatedfunction('kill',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.KillSound,values.visuals.sounds['Custom kill sound'])		
+		end)
+		sounds:Element('Dropdown','kill sound type',{options = {'Roblox ID','workspace path',"skeet", "neverlose", "rust", "bag", "baimware", "osu", "Tf2", "Tf2 pan", "M55solix", "Slap", "1", "Minecraft", "jojo", "vibe", "supersmash", "epic", "retro", "quek", "SEMI"}},function()
+			uncomplicatedfunction('kill',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.KillSound,values.visuals.sounds['Custom kill sound'])		
+		end)
+		sounds:Element('Slider','kill volume',{min = 0,max = 2,default = 0.2},function()
+			uncomplicatedfunction('kill',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.KillSound,values.visuals.sounds['Custom kill sound'])		
+		end)
+		sounds:Element('Button','test kill sound',{},function()
+			game:GetService("ReplicatedStorage").Shared.Assets.Sounds.KillSound:Play()
+		end)
+		--values.visuals.sounds
+
+		sounds:Element('Toggle','Custom hit sound',{},function(tbl)
+			uncomplicatedfunction('hit',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.HitmarkerSound,tbl)
+		end)
+		sounds:Element('TextBox','hit sound',{placeholder = 'rbx id or workspace path'},function()
+			uncomplicatedfunction('hit',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.HitmarkerSound,values.visuals.sounds['Custom hit sound'])		
+		end)
+		sounds:Element('Dropdown','hit sound type',{options = {'Roblox ID','workspace path'}},function()
+			uncomplicatedfunction('hit',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.HitmarkerSound,values.visuals.sounds['Custom hit sound'])		
+		end)
+		sounds:Element('Slider','hit volume',{min = 0,max = 2,default = 0.2},function()
+			uncomplicatedfunction('hit',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.HitmarkerSound,values.visuals.sounds['Custom hit sound'])		
+		end)
+		sounds:Element('Button','test hit sound',{},function()
+			game:GetService("ReplicatedStorage").Shared.Assets.Sounds.HitmarkerSound:Play()
+		end)
+		--values.visuals.sounds
+
+		sounds:Element('Toggle','custom nuke sound',{},function(tbl)
+			uncomplicatedfunction('nuke',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.NukeAlarmSound,tbl)
+		end)
+		sounds:Element('Toggle','nuke looped',{default = {Toggle = true}},function(tbl)
+			if tbl.Toggle then
+				game:GetService("ReplicatedStorage").Shared.Assets.Sounds.NukeAlarmSound.Looped	= true
+			else
+				game:GetService("ReplicatedStorage").Shared.Assets.Sounds.NukeAlarmSound.Looped = false
+			end
+		end)
+		sounds:Element('TextBox','Custom nuke sound',{placeholder = 'rbx id or workspace path'},function()
+			uncomplicatedfunction('nuke',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.NukeAlarmSound,values.visuals.sounds['Custom nuke sound'])		
+		end)
+		sounds:Element('Dropdown','nuke sound type',{options = {'Roblox ID','workspace path'}})
+		
+		sounds:Element('Button','test nuke sound',{},function()
+			game:GetService("ReplicatedStorage").Shared.Assets.Sounds.NukeAlarmSound:Play()
+		end)
+		sounds:Element('Slider','nuke volume',{min = 0,max = 2,default = 1},function()
+			uncomplicatedfunction('nuke',game:GetService("ReplicatedStorage").Shared.Assets.Sounds.NukeAlarmSound,values.visuals.sounds['Custom nuke sound'])		
+		end)
+		sounds:Element('Button','stop nuke sound(when looped)',{},function()
+			game:GetService("ReplicatedStorage").Shared.Assets.Sounds.NukeAlarmSound:Stop()
+		end)		
+	end
 	
 	local effects = visuals:Sector('effects','Right')
 	--Kill screen
@@ -12225,19 +12346,6 @@ do
 	local radio = other:Sector('Radio','Left')
 	radio:Element('TextBox', 'music',{placeholder = 'ID or path',NoLimit = true})
 	radio:Element('Dropdown','type',{options = {'Roblox ID','workspace mp3'}})
-	local function ValidateSong(songID) 
-		if not songID or not tonumber(songID) then return false end
-
-		local success, result = pcall(function()
-			return game.MarketplaceService:GetProductInfo(songID)
-		end)
-
-		if success and result and result.AssetTypeId == 3 then
-			return true
-		else
-			return false
-		end
-	end
 	radio:Element('Slider','Volume', {min = 0,max = 10}, function(tbl)
 		if getgenv().RadioSound then
 			RadioSound.Volume = tbl.Slider/10
