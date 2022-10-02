@@ -1,8 +1,4 @@
 if game.CoreGui:FindFirstChild("electric boogalo") then return error('script is already executed or you executed another script')end
---getgenv().PasteDisabled = false
-local wait = task.wait -- small test
-getgenv().values = {} --blahwrlqwrqwr
-local library = {tabs = {}}
 
 BeforeLoad = tick()
 
@@ -109,8 +105,7 @@ function textboxtriggers(text)
 	return findtextrandom(text)
 end
 
-local txt = game:GetService("TextService") 
-function library:Tween(...) game:GetService("TweenService"):Create(...):Play() end 
+local txt = game:GetService("TextService")
 --local cfglocation = "pastedstormy/pastedstormycfgs/"
  
 --makefolder("pastedstormy") 
@@ -233,7 +228,7 @@ local function deepCopy(original)
 end 
 
 local library,ovascreengui,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2 = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/library"))()
-
+library:setcfglocation(cfglocation)
 
 Spawn = Signal.new('Spawn')
 Died = Signal.new('Died')
