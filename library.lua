@@ -1,7 +1,7 @@
 local Players = game:GetService("Players") 
 local LocalPlayer = Players.LocalPlayer 
 local library = {tabs = {}}
-
+getgenv().values = {}
 local MainUIColor = Color3.fromRGB(255,20,147)
 
 local HttpService = game:GetService('HttpService')
