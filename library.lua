@@ -7174,7 +7174,7 @@ elseif type == "Button" then
 		Lunar.Parent = game.CoreGui 
 		return menu 
 	end
-	function library:setcfgocation(cfg)
+	function library:setcfglocation(cfg)
 		cfglocation = cfg
 	end
 	return library,ovascreengui,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2
