@@ -336,7 +336,7 @@ function library:SaveConfig1(cfg)
 end 
 
 local ovascreengui = nil
-			function library:New(name) 
+			function library.New(name) 
 				local menu = {} 
 				local Lunar = C.INST("ScreenGui") 
 				local Menu = C.INST("ImageLabel")
