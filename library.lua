@@ -893,7 +893,7 @@ do
 				local first = true 
 				local currenttab 
 
-				function menu:Tab(text) 
+				function menu.Tab(text) 
 					local tabname 
 					tabname = text 
 					local Tab = {} 
