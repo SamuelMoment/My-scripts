@@ -331,7 +331,7 @@ function library:SaveConfig1(cfg)
 	writefile(cfglocation..cfg.."", game:GetService("HttpService"):JSONEncode(copy)) 
 end 
 
-local ovascreengui = nil
+
 			function library.New(name) 
 				local menu = {} 
 				local Lunar = C.INST("ScreenGui") 
@@ -7155,4 +7155,4 @@ elseif type == "Button" then
 	library['setcfglocation'] = function(cfg)
 		cfglocation = cfg
 	end
-	return library,ovascreengui,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2
+	return library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2
