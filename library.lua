@@ -1,6 +1,6 @@
 local Players = game:GetService("Players") 
 local LocalPlayer = Players.LocalPlayer 
-
+local library = {tabs = {}}
 
 local MainUIColor = Color3.fromRGB(255,20,147)
 
@@ -214,6 +214,7 @@ end
 
 getgenv().loopkillplr = {}
 local txt = game:GetService("TextService") 
+
 function library:Tween(...) game:GetService("TweenService"):Create(...):Play() end 
 getclipboard = function()
 repeat wait() until iswindowactive()
