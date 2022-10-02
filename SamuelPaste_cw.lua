@@ -228,7 +228,7 @@ local function deepCopy(original)
 end 
 
 local library,ovascreengui,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2 = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/library.lua"))()
-library:setcfglocation(cfglocation)
+library.setcfglocation(cfglocation)
 
 Spawn = Signal.new('Spawn')
 Died = Signal.new('Died')
@@ -836,13 +836,13 @@ invisfling = function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.RootJoint.Part0 = nil
 end
 
-local gui = library:New("SamuelPaste")
-local main = gui:Tab('rage')
+local gui = library.New("SamuelPaste")
+local main = gui.Tab('rage')
 --local legit = gui:Tab("legit")
-local misc = gui:Tab('misc')
-local visuals = gui:Tab('visuals')
-local skins = gui:Tab('skins')
-local other = gui:Tab("other")
+local misc = gui.Tab('misc')
+local visuals = gui.Tab('visuals')
+local skins = gui.Tab('skins')
+local other = gui.Tab("other")
 
 fonts = {}
 for i,v in pairs(Enum.Font:GetEnumItems()) do
