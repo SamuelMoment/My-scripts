@@ -876,8 +876,9 @@ do
 				local first = true 
 				local currenttab 
 
-				function menu.Tab(tabname) 
-
+				function menu.Tab(text) 
+					local tabname 
+					tabname = text 
 					local Tab = {} 
 					values[tabname] = {} 
 
@@ -887,7 +888,7 @@ do
 					TextButton.BackgroundTransparency = 1.000
 					TextButton.Size = C.UDIM2(0, 83, 0, 23)
 					TextButton.Font = Enum.Font.Ubuntu
-					TextButton.Text = tabname
+					TextButton.Text = text
 					TextButton.TextColor3 = C.COL3RGB(255, 255, 255)
 					TextButton.TextSize = 12.000
 					TextButton.TextStrokeTransparency = 0.000
@@ -945,13 +946,13 @@ do
 
 					if first then 
 						TextButton.TextColor3 = C.COL3RGB(255, 255, 255) 
-						currenttab = tabname 
+						currenttab = text 
 						TabGui.Visible = true 
 						first = false 
 					end 
 
 					TextButton.MouseButton1Down:Connect(function() 
-						if currenttab ~= tabname then 
+						if currenttab ~= text then 
 							for i,v in pairs(TabButtons:GetChildren()) do 
 								if v:IsA("TextButton") then 
 									library:Tween(v, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
@@ -963,7 +964,7 @@ do
 							end 
 							library:Tween(TextButton, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)})
 							library:Tween(TextButton.Gard, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.000})
-							currenttab = tabname 
+							currenttab = text 
 							TabGui.Visible = true 
 						end 
 					end) 
