@@ -5551,4 +5551,4 @@ task.spawn(function()
 		end;
 	end;
 end)
-CreateHitElement("Script loaded in "..(math.floor(tick() - BeforeLoad*100)/100).." seconds!",MainUIColor,5, 200, 22)
+CreateHitElement("Script loaded in "..(math.floor((tick() - BeforeLoad)*100)/100).." seconds!",MainUIColor,5, 200, 22)
