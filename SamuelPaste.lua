@@ -8573,7 +8573,8 @@ local step2
 	if not (tbl.Toggle) then step2:Disconnect() return end
 	--values.others.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
-                ReplicatedStorage.Events.HitNN:FireServer(
+                if ReplicatedStorage.Events:FindFirstChild('HitNN') then
+				ReplicatedStorage.Events.HitNN:FireServer(
                     Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso, -- 1
                     Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso.CFrame --2
                     "Banana", --3
@@ -8588,6 +8589,24 @@ local step2
                     100,
                     C.Vec3()
                 )
+				else
+				
+				ReplicatedStorage.Events.HitPart:FireServer(
+                    Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso, -- 1
+                    Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso.CFrame --2
+                    "Banana", --3
+                    100, -- Range --4
+                    game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
+                    C.Vec3(), -- Start Position --6
+                    C.Vec3(),
+                    100, -- Damage Modifier
+                    false,
+                    false,
+                    C.Vec3(),
+                    100,
+                    C.Vec3()
+                )				
+				end
 				end
 	end)
 	end
@@ -8611,7 +8630,11 @@ local step1
 					local oh11 = C.Vec3(0,0,0)
 					local oh12 = 16868
 					local oh13 = C.Vec3(0, 0, 0)
+					if ReplicatedStorage.Events:FindFirstChild('HitNN') then
 					ReplicatedStorage.Events.HitNN:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
+					else
+					ReplicatedStorage.Events.HitPart:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
+					end
 				end
 	end)
 	end
@@ -9363,6 +9386,7 @@ exploits:Element("ToggleKeybind", "kill all", {}, function(tbl)
 			if not tbl.Toggle and not tbl.Active then return stormykillall:Disconnect() end
 				for _,Player in pairs(Players:GetPlayers()) do
 					if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild('UpperTorso') then
+						if game:GetService('ReplicatedStorage').Events:FindFirstChild('HitNN') then
 						game:GetService('ReplicatedStorage').Events.HitNN:FireServer(
 							Player.Character.UpperTorso,
 							Player.Character.UpperTorso.CFrame.p,
@@ -9378,6 +9402,23 @@ exploits:Element("ToggleKeybind", "kill all", {}, function(tbl)
 							100,
 							C.Vec3()
 						)
+						else
+						game:GetService('ReplicatedStorage').Events.Hitpart:FireServer(
+							Player.Character.UpperTorso,
+							Player.Character.UpperTorso.CFrame.p,
+							Client.gun.Name, --3
+							100000000000000, -- Range --4
+							game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
+							C.Vec3(), -- Start Position --6
+							C.Vec3(),
+							1000, -- Damage Modifier
+							false,
+							true,
+							C.Vec3(),
+							100,
+							C.Vec3()
+						)						
+						end
 				end
 			end
 		end)
@@ -9392,6 +9433,7 @@ exploits:Element("ToggleKeybind", "hexagon kill all", {}, function(tbl)
 			if not tbl.Toggle and not tbl.Active then return hexagonkillall:Disconnect() end
 				for i,v in ipairs(Players:GetPlayers()) do
 					if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team and IsAlive(v) and IsAlive(game.Players.LocalPlayer) then
+						if ReplicatedStorage.Events:FindFirstChild('HitNN') then
 						ReplicatedStorage.Events.HitNN:FireServer(
 							v.Character.UpperTorso,
 							v.Character.UpperTorso.CFrame
@@ -9407,6 +9449,7 @@ exploits:Element("ToggleKeybind", "hexagon kill all", {}, function(tbl)
 							100,
 							C.Vec3()
 						)
+						end
 					end
 				end
 		end)
