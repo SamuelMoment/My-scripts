@@ -26,7 +26,7 @@ local makeDraggable = function(frame)
 							dragInput = input 
 						end 
 					end) 
-					game:GetService('UserInputService').InputChanged:Connect(function(input) 
+					game:GetService('UserInputService').InputChanged:Connect(function(input) -- sex
 						if input == dragInput and dragging then 
 							update(input) 
 						end 
