@@ -34,7 +34,6 @@ local makeDraggable = function(frame)
 end
 
 
-
 local ScreenGui = Instance.new("ScreenGui")
 local Background = Instance.new("ScrollingFrame")
 local Background2 = Instance.new("Frame")
