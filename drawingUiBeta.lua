@@ -79,6 +79,7 @@ function library:New(scriptName)
     Tabs = {}
     CurrentTab = nil
     function menu:Tab(tabName)
+        local tabName = tabName
         local textlabel1 = drawing:new('Text')
         textlabel1.Parent = s1
         textlabel1.Outline = true
@@ -90,11 +91,18 @@ function library:New(scriptName)
         textlabel1.Font = Drawing.Fonts.Plex
         TabOffset = TabOffset + textlabel1.TextBounds.X
         
+        local frame = drawing:new('Square')
+        frame.Parent = s1
+        frame.Transparency = 0
+        frame.Position = Vector2.new(TabOffset,5) - Vector2.new(textlabel1.Size+30,0)
+        frame.ZIndex = 1
+        frame.Size = textlabel1.TextBounds
+        
         Right = drawing:new('Square')
         Right.Size = Vector2.new(500,550)
         Right.Thickness = 1
         Right.Transparency = 0
-        Right.Visible = true
+        Right.Visible = false
         Right.Filled = true
         Right.Color = Color3.fromRGB(30,30,30)
         Right.ZIndex = 1    
@@ -107,7 +115,7 @@ function library:New(scriptName)
         Left.Size = Vector2.new(500,550)
         Left.Thickness = 1
         Left.Transparency = 1
-        Left.Visible = true
+        Left.Visible = false
         Left.Filled = true
         Left.Color = Color3.fromRGB(30,30,30)
         Left.ZIndex = 1    
@@ -115,12 +123,28 @@ function library:New(scriptName)
         Left.Size = Vector2.new(235,515)
         Left.Position = Vector2.new(250,30)
         
-        Tabs[tabName] = {['Right'] = Right,['Left'] = Left}
+        Tabs[tabName] = {['Right'] = Right,['Left'] = Left,['Sectors'] = {}}
         
         if CurrentTab == nil then
             CurrentTab = tabName
+            Left.Visible = true
+            Right.Visible = true
         end
-        
+        frame.MouseButton1Down:Connect(function()
+            
+            if CurrentTab == tabName then return end
+            for i,v in pairs(Tabs[CurrentTab]) do
+                v.Visible = false
+            end
+            Tabs[tabName].Right.Visible = true
+            Tabs[tabName].Left.Visible = true
+            for i,v in pairs(Tabs[tabName]['Sectors']) do
+                if typeof(v) == 'table' then
+                    v.Visible = true
+                end
+            end            
+            CurrentTab = tabName
+        end)
         local Tab = {}
         --local SectorRightOffset = 5
         Tabs[tabName]['LastRightSector'] = nil
@@ -136,6 +160,7 @@ function library:New(scriptName)
             Sector.Color = Color3.fromRGB(35,35,35)
             Sector.ZIndex = 2    
             Sector.Parent = Tabs[tabName][Side]
+            table.insert(Tabs[tabName]['Sectors'],Sector)
             Sector.Size = Vector2.new(235,10)
             if Side == 'Right' then
                 if Tabs[tabName]['LastRightSector'] == nil then
@@ -176,6 +201,7 @@ function library:New(scriptName)
 end
 local s = library:New('SEX')
 a = s:Tab('SAMEUL')
+a2 = s:Tab('Sam2')
 a:Sector('a','Right')
 a:Sector('a2','Right')
 a:Sector('a3','Right')
@@ -183,3 +209,10 @@ a:Sector('a3','Right')
 a:Sector('a','Left')
 a:Sector('a2','Left')
 a:Sector('a3','Left')
+a:Sector('a4','Left')
+a:Sector('a5','Left')
+a:Sector('a6','Left')
+
+a2:Sector('b','Left')
+a2:Sector('b2','Left')
+a2:Sector('b3','Left')
