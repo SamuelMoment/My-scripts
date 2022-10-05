@@ -964,7 +964,7 @@ local s1 = 2.5949095
 local p = 0.3
 local p1 = 0.45
 
-local Tween = {}
+getgenv().Tween = {}
 Tween.__index = Tween
 
 local EasingStyle = {
@@ -1243,5 +1243,3 @@ end
 function Tween:Cancel()
     self._cancelled = true
 end
-
-return Tween
