@@ -23,7 +23,7 @@ getgenv().drawing = {} do
 
     local ENABLE_TRACEBACK = false
 
-    local Signal = {}
+    getgenv().Signal = {}
     Signal.__index = Signal
     Signal.ClassName = "Signal"
 
