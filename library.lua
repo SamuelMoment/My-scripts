@@ -6652,8 +6652,6 @@ end)
 											--print(val)
 											--print(typeof(val))
 										end
-										print(val)
-										print(typeof(val))
 											values[tabname][sectorname][text] = Element.value 
 											callback(Element.value) 
 											moveconnection:Disconnect() 

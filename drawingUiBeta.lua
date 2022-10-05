@@ -38,6 +38,19 @@ local makeDraggable = function(frame)
 					end)
 	end)
 end
+
+local utility = {}
+utility['outline'] = function(draw,color,type)
+    local outline = drawing:new(type)
+    outline.Parent = draw
+    outline.Size = UDim2.new(1, 2, 1, 2)
+    outline.ZIndex = draw.ZIndex-1
+    outline.Filled = false
+    outline.Position = UDim2.new(0, -1, 0, -1)
+    outline.Color = color
+    outline.Filled = false
+end
+
 local library = {}
 function library:New(scriptName)
     local menu = {}   
@@ -123,7 +136,7 @@ function library:New(scriptName)
         Left.Size = Vector2.new(235,515)
         Left.Position = Vector2.new(250,30)
         
-        Tabs[tabName] = {['Right'] = Right,['Left'] = Left,['Sectors'] = {}}
+        Tabs[tabName] = {['Right'] = Right,['Left'] = Left,['RightSectors'] = {},['LeftSectors'] = {}}
         
         if CurrentTab == nil then
             CurrentTab = tabName
@@ -138,11 +151,16 @@ function library:New(scriptName)
             end
             Tabs[tabName].Right.Visible = true
             Tabs[tabName].Left.Visible = true
-            for i,v in pairs(Tabs[tabName]['Sectors']) do
+            for i,v in pairs(Tabs[tabName]['RightSectors']) do
                 if typeof(v) == 'table' then
                     v.Visible = true
                 end
-            end            
+            end  
+            for i,v in pairs(Tabs[tabName]['LeftSectors']) do
+                if typeof(v) == 'table' then
+                    v.Visible = true
+                end
+            end             
             CurrentTab = tabName
         end)
         local Tab = {}
@@ -160,25 +178,34 @@ function library:New(scriptName)
             Sector.Color = Color3.fromRGB(35,35,35)
             Sector.ZIndex = 2    
             Sector.Parent = Tabs[tabName][Side]
-            table.insert(Tabs[tabName]['Sectors'],Sector)
-            Sector.Size = Vector2.new(235,10)
-            if Side == 'Right' then
-                if Tabs[tabName]['LastRightSector'] == nil then
-                    Sector.Position = Vector2.new(0,5)
-                    Tabs[tabName]['LastRightSector'] = Sector
-                else
-                    Sector.Position = Vector2.new(0,Tabs[tabName]['LastRightSector'].Size.Y + Tabs[tabName]['LastRightSector'].Position.Y + 10)
-                    Tabs[tabName]['LastRightSector'] = Sector
+            UpdateSectors = function(currentSector,Side)
+                if Side == 'Right' then
+                    local offset = Vector2.new(0,5)
+                    for i,v in pairs(Tabs[tabName]['RightSectors']) do
+                        if v ~= currentSector then
+                            offset += Vector2.new(0,v.Size.Y+10)
+                        end
+                    end
+                    if not table.find(Tabs[tabName]['RightSectors'],currentSector) then
+                    table.insert(Tabs[tabName]['RightSectors'],currentSector)
+                    end
+                    currentSector.Position = offset
+                elseif Side == 'Left' then
+                    local offset = Vector2.new(0,5)
+                    for i,v in pairs(Tabs[tabName]['LeftSectors']) do
+                        if v ~= currentSector then
+                        offset += Vector2.new(0,v.Size.Y+10)
+                        end
+                    end
+                    if not table.find(Tabs[tabName]['LeftSectors'],currentSector) then
+                    table.insert(Tabs[tabName]['LeftSectors'],currentSector)
+                    end
+                    currentSector.Position = offset
                 end
-            elseif Side == 'Left' then
-                if Tabs[tabName]['LastLeftSector'] == nil then
-                    Sector.Position = Vector2.new(0,5)
-                    Tabs[tabName]['LastLeftSector'] = Sector
-                else
-                    Sector.Position = Vector2.new(0,Tabs[tabName]['LastLeftSector'].Size.Y + Tabs[tabName]['LastLeftSector'].Position.Y + 10)
-                    Tabs[tabName]['LastLeftSector'] = Sector
-                end                
             end
+            UpdateSectors(Sector,Side)
+            Sector.Size = Vector2.new(235,10)
+
             local SectorName = drawing:new('Text')
             SectorName.Parent = Sector
             SectorName.Outline = true
@@ -190,7 +217,28 @@ function library:New(scriptName)
             SectorName.Font = Drawing.Fonts.Plex
             
             function SectorFuncs:Element(Type,text,data,callback)
+                if data == nil then data = {} end
+                if callback == nil then callback = function() end end
                 
+                if Type == 'Button' then
+                    local button = drawing:new('Square')
+                    button.Parent = Sector
+                    button.Size = Vector2.new(150,5)
+                    button.ZIndex = 3
+                    button.Position = Vector2.new(45,15)
+                    button.Color = Color3.fromRGB(30,30,30)
+                    Sector.Size += Vector2.new(0,button.Position.Y+button.Size.Y+5)
+                    utility.outline(button,Color3.fromRGB(50,50,50),'Square')
+                    
+                    local text1 = drawing:new('Text')
+                    text1.Parent = button
+                    text1.Size = 13
+                    text1.Font = Drawing.Fonts.Plex
+                    text1.Position = Vector2.new(62.5,-5)
+                    text1.Text = text
+                    text1.ZIndex = 3
+                    text1.Color = Color3.fromRGB(200,200,200)
+                end
             end
             return SectorFuncs
         end
@@ -202,17 +250,6 @@ end
 local s = library:New('SEX')
 a = s:Tab('SAMEUL')
 a2 = s:Tab('Sam2')
-a:Sector('a','Right')
-a:Sector('a2','Right')
-a:Sector('a3','Right')
 
-a:Sector('a','Left')
-a:Sector('a2','Left')
-a:Sector('a3','Left')
-a:Sector('a4','Left')
-a:Sector('a5','Left')
-a:Sector('a6','Left')
-
-a2:Sector('b','Left')
-a2:Sector('b2','Left')
-a2:Sector('b3','Left')
+test = a:Sector('a','Right')
+test:Element('Button','test')
