@@ -964,7 +964,7 @@ local s1 = 2.5949095
 local p = 0.3
 local p1 = 0.45
 
-getgenv().Tween = {}
+local Tween = {}
 Tween.__index = Tween
 
 local EasingStyle = {
