@@ -947,115 +947,301 @@ getgenv().drawing = {} do
 
         return mt
     end
-	local LerpCIELUV
-	--
-	do -- CIELUV color space lerping
-		-- Combines two colors in CIELUV space.
-		-- function<function<Color3 result>(float t)>(Color3 fromColor, Color3 toColor)
 
-		-- https://www.w3.org/Graphics/Color/srgb
-		
-		local clamp = math.clamp
-		local C3 = Color3.new
-		local black = C3(0, 0, 0)
-
-		-- Convert from linear RGB to scaled CIELUV
-		local function RgbToLuv13(c)
-			local r, g, b = c.r, c.g, c.b
-			-- Apply inverse gamma correction
-			r = r < 0.0404482362771076 and r/12.92 or 0.87941546140213*(r + 0.055)^2.4
-			g = g < 0.0404482362771076 and g/12.92 or 0.87941546140213*(g + 0.055)^2.4
-			b = b < 0.0404482362771076 and b/12.92 or 0.87941546140213*(b + 0.055)^2.4
-			-- sRGB->XYZ->CIELUV
-			local y = 0.2125862307855956*r + 0.71517030370341085*g + 0.0722004986433362*b
-			local z = 3.6590806972265883*r + 11.4426895800574232*g + 4.1149915024264843*b
-			local l = y > 0.008856451679035631 and 116*y^(1/3) - 16 or 903.296296296296*y
-			if z > 1e-15 then
-				local x = 0.9257063972951867*r - 0.8333736323779866*g - 0.09209820666085898*b
-				return l, l*x/z, l*(9*y/z - 0.46832)
-			else
-				return l, -0.19783*l, -0.46832*l
-			end
-		end
-
-		function LerpCIELUV(c0, c1)
-			local l0, u0, v0 = RgbToLuv13(c0)
-			local l1, u1, v1 = RgbToLuv13(c1)
-
-			return function(t)
-				-- Interpolate
-				local l = (1 - t)*l0 + t*l1
-				if l < 0.0197955 then
-					return black
-				end
-				local u = ((1 - t)*u0 + t*u1)/l + 0.19783
-				local v = ((1 - t)*v0 + t*v1)/l + 0.46832
-
-				-- CIELUV->XYZ
-				local y = (l + 16)/116
-				y = y > 0.206896551724137931 and y*y*y or 0.12841854934601665*y - 0.01771290335807126
-				local x = y*u/v
-				local z = y*((3 - 0.75*u)/v - 5)
-
-				-- XYZ->linear sRGB
-				local r =  7.2914074*x - 1.5372080*y - 0.4986286*z
-				local g = -2.1800940*x + 1.8757561*y + 0.0415175*z
-				local b =  0.1253477*x - 0.2040211*y + 1.0569959*z
-
-				-- Adjust for the lowest out-of-bounds component
-				if r < 0 and r < g and r < b then
-					r, g, b = 0, g - r, b - r
-				elseif g < 0 and g < b then
-					r, g, b = r - g, 0, b - g
-				elseif b < 0 then
-					r, g, b = r - b, g - b, 0
-				end
-
-				return C3(
-					-- Apply gamma correction and clamp the result
-					clamp(r < 3.1306684425e-3 and 12.92*r or 1.055*r^(1/2.4) - 0.055, 0, 1),
-					clamp(g < 3.1306684425e-3 and 12.92*g or 1.055*g^(1/2.4) - 0.055, 0, 1),
-					clamp(b < 3.1306684425e-3 and 12.92*b or 1.055*b^(1/2.4) - 0.055, 0, 1)
-				)
-			end
-		end
-	end
-	-- // Variables
-	local TweenService = game:GetService("TweenService")
-	local RunService = game:GetService("RunService")
-	local GuiService = game:GetService("GuiService")
-	local Workspace = game:GetService("Workspace")
-	--
-	-- // Functions
-	function drawing:Tween(Render, RenderInfo, RenderTo)
-		local Start = {}
-		local CurrentTime = 0
-		--
-		local Connection
-		--
-		for Index, Value in pairs(RenderTo) do
-			Start[Index] = Render[Index]
-			RenderTo[Index] = (typeof(Value) == "Color3" and LerpCIELUV(Start[Index], Value) or (Value - Start[Index]))
-		end
-		--
-		Connection = RunService.RenderStepped:Connect(function(Delta)
-			if CurrentTime < RenderInfo.Time then
-				CurrentTime = CurrentTime + Delta
-				--
-				local TweenedValue = TweenService:GetValue((CurrentTime / RenderInfo.Time), RenderInfo.EasingStyle, RenderInfo.EasingDirection)
-				--
-				for Index, Value in pairs(RenderTo) do
-					if typeof(Value) == "number" then
-						Render[Index] = (Value * TweenedValue) + Start[Index]
-					elseif typeof(Value) == "Vector2" then
-						Render[Index] = Vector2.new((Value.X * TweenedValue) + Start[Index].X, (Value.Y * TweenedValue) + Start[Index].Y)
-					elseif typeof(Value) == "function" then
-						Render[Index] = Value(TweenedValue)
-					end
-				end
-			else
-				Connection:Disconnect()
-			end
-		end)
-	end
 end
+
+local render = game:GetService("RunService").RenderStepped
+local sqrt, sin, pi, halfpi, doublepi = math.sqrt, math.sin, math.pi, math.pi / 2, math.pi * 2
+local next = next
+local type = type
+local setmetatable = setmetatable
+local wait, spawn = task.wait, task.spawn
+
+-- random variables for easing styles idk
+local s = 1.70158
+local s1 = 2.5949095
+
+local p = 0.3
+local p1 = 0.45
+
+getgenv().Tween = {}
+Tween.__index = Tween
+
+local EasingStyle = {
+    [Enum.EasingStyle.Linear] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return delta
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return delta
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            return delta
+        end
+    },
+
+    [Enum.EasingStyle.Cubic] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return delta^3
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return (delta - 1)^3 + 1
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            if delta <= 0.5 then
+                return (4 * delta)^3
+            else
+                return (4 * (delta - 1))^3 + 1
+            end
+        end
+    },
+
+    [Enum.EasingStyle.Quad] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return delta^2
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return -(delta - 1)^2 + 1
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            if delta <= 0.5 then
+                return (2 * delta)^2
+            else
+                return (-2 * (delta - 1))^2 + 1
+            end
+        end
+    },
+
+    [Enum.EasingStyle.Quart] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return delta^4
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return -(delta - 1)^4 + 1
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            if delta <= 0.5 then
+                return (8 * delta)^4
+            else
+                return (-8 * (delta - 1))^4 + 1
+            end
+        end
+    },
+
+    [Enum.EasingStyle.Quint] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return delta^5
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return (delta - 1)^5 + 1
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            if delta <= 0.5 then
+                return (16 * delta)^5
+            else
+                return (16 * (delta - 1))^5 + 1
+            end
+        end
+    },
+
+    [Enum.EasingStyle.Sine] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return sin(halfpi * delta - halfpi)
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return sin(halfpi * delta)
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            return 0.5 * sin(pi * delta - pi / 2) + 0.5
+        end
+    },
+
+    [Enum.EasingStyle.Exponential] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return 2^(10 * delta - 10) - 0.001
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return 1.001 * -2^(-10 * delta) + 1
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            if delta <= 0.5 then
+                return 0.5 * 2^(20 * delta - 10) - 0.0005
+            else
+                return 0.50025 * -2^(-20 * delta + 10) + 1
+            end
+        end
+    },
+
+    [Enum.EasingStyle.Back] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return delta^2 * (delta * (s + 1) - s)
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return (delta - 1)^2 * ((delta - 1) * (s + 1) + s) + 1
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            if delta <= 0.5 then
+                return (2 * delta * delta) * ((2 * delta) * (s1 + 1) - s1)
+            else
+                return 0.5 * ((delta * 2) - 2)^2 * ((delta * 2 - 2) * (s1 + 1) + s1) + 1
+            end
+        end
+    },
+
+    [Enum.EasingStyle.Bounce] = {
+        [Enum.EasingDirection.In] = function(delta)
+            if delta <= 0.25 / 2.75 then
+                return -7.5625 * (1 - delta - 2.625 / 2.75)^2 + 0.015625
+            elseif delta <= 0.75 / 2.75 then
+                return -7.5625 * (1 - delta - 2.25 / 2.75)^2 + 0.0625
+            elseif delta <= 1.75 / 2.75 then
+                return -7.5625 * (1 - delta - 1.5 / 2.75)^2 + 0.25
+            else
+                return 1 - 7.5625 * (1 - delta)^2
+            end
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            if delta <= 1 / 2.75 then
+                return 7.5625 * (delta * delta)
+            elseif delta <= 2 / 2.75 then
+                return 7.5625 * (delta - 1.5 / 2.75)^2 + 0.75
+            elseif delta <= 2.5 / 2.75 then
+                return 7.5625 * (delta - 2.25 / 2.75)^2 + 0.9375
+            else
+                return 7.5625 * (delta - 2.625 / 2.75)^2 + 0.984375
+            end
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            if delta <= 0.125 / 2.75 then
+                return 0.5 * (-7.5625 * (1 - delta * 2 - 2.625 / 2.75)^2 + 0.015625)
+            elseif delta <= 0.375 / 2.75 then
+                return 0.5 * (-7.5625 * (1 - delta * 2 - 2.25 / 2.75)^2 + 0.0625)
+            elseif delta <= 0.875 / 2.75 then
+                return 0.5 * (-7.5625 * (1 - delta * 2 - 1.5 / 2.75)^2 + 0.25)
+            elseif delta <= 0.5 then
+                return 0.5 * (1 - 7.5625 * (1 - delta * 2)^2)
+            elseif delta <= 1.875 / 2.75 then
+                return 0.5 + 3.78125 * (2 * delta - 1)^2
+            elseif delta <= 2.375 / 2.75 then
+                return 3.78125 * (2 * delta - 4.25 / 2.75)^2 + 0.875
+            elseif delta <= 2.625 / 2.75 then
+                return 3.78125 * (2 * delta - 5 / 2.75)^2 + 0.96875
+            else
+                return 3.78125 * (2 * delta - 5.375 / 2.75)^2 + 0.9921875
+            end
+        end
+    },
+
+    [Enum.EasingStyle.Elastic] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return -2^(10 * (delta - 1)) * sin(doublepi * (delta - 1 - p / 4) / p)
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return 2^(-10 * delta) * sin(doublepi * (delta - p / 4) / p) + 1
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            if delta <= 0.5 then
+                return -0.5 * 2^(20 * delta - 10) * sin(doublepi * (delta * 2 - 1.1125) / p1)
+            else
+                return 0.5 * 2^(-20 * delta + 10) * sin(doublepi * (delta * 2 - 1.1125) / p1) + 1
+            end
+        end
+    },
+
+    [Enum.EasingStyle.Circular] = {
+        [Enum.EasingDirection.In] = function(delta)
+            return -sqrt(1 - delta^2) + 1
+        end,
+
+        [Enum.EasingDirection.Out] = function(delta)
+            return sqrt(-(delta - 1)^2 + 1)
+        end,
+
+        [Enum.EasingDirection.InOut] = function(delta)
+            if delta <= 0.5 then
+                return -sqrt(-delta^2 + 0.25) + 0.5
+            else
+                return sqrt(-(delta - 1)^2 + 0.25) + 0.5
+            end
+        end
+    }
+}
+
+local function lerp(value1, value2, alpha)
+    if type(value1) == "number" then
+        return value1 + ((value2 - value1) * alpha)
+    end
+        
+    return value1:lerp(value2, alpha)
+end
+
+function Tween.new(object, info, properties)
+    return setmetatable({
+        Completed = Signal.new(),
+        _object = object,
+        _time = info.Time,
+        _easing = EasingStyle[info.EasingStyle][info.EasingDirection],
+        _properties = properties
+    }, Tween)
+end
+
+function Tween:Play()
+    -- Loop through every property to edit
+    for property, value in next, self._properties do
+        local start_value = self._object[property]
+
+        spawn(function()
+            local elapsed = 0
+            while elapsed <= self._time and not self._cancelled do            
+                local delta = elapsed / self._time
+
+                -- Do the chosen EasingStyle's math
+                local alpha = self._easing(delta)
+
+                spawn(function()
+                    self._object[property] = lerp(start_value, value, alpha)
+                end)
+
+                elapsed += render:Wait()
+            end
+            
+            if not self._cancelled then
+                self._object[property] = value
+            end
+        end)
+    end
+
+    spawn(function()
+        wait(self._time)
+
+        if not self._cancelled then
+            self.Completed:Fire()
+        end
+    end)
+end
+
+function Tween:Cancel()
+    self._cancelled = true
+end
+
+return Tween
