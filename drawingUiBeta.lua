@@ -72,7 +72,7 @@ function utility.rgba(r, g, b, alpha)
     local old = mt.__index
     
     mt.__index = newcclosure(function(self, key)
-        if key:lower() == "a" then
+        if key:lower() == "transparency" or key:lower() == 'a' then
             return alpha
         end
         
@@ -88,6 +88,7 @@ local library = {}
 local MainUIColor = Color3.fromRGB(255,20,147)
 local decode = (syn and syn.crypt.base64.decode) or (crypt and crypt.base64decode) or base64_decode
 local gradient = decode("iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABuSURBVChTxY9BDoAgDASLGD2ReOYNPsR/+BAfroI7hibe9OYmky2wbUPIOdsXdc1f9WMwppQm+SDGBnUvomAQBH49qzhFEag25869ElzaIXDhD4JGbyoEVxUedN8FKwnfmwhucgKICc+pNB1mZhdCdhsa2ky0FAAAAABJRU5ErkJggg==")
+
 function library:New(scriptName)
     local menu = {}   
     getgenv().s = drawing:new('Square')
@@ -352,7 +353,7 @@ function library:New(scriptName)
                             color.Color = Color3.fromRGB(46,46,46)
                         end                        
                     end
-                elseif Type == "ToggleColor" then
+                elseif Type == "ToggleColor" or Type == 'ToggleTrans' then
                     Values = {Toggle = data.Toggle ~= nil and data.Toggle or data.default and data.default.Toggle and data.default.Toggle or false,Color}
                     local holder = drawing:new('Square')
                     holder.Parent = Sector
@@ -403,37 +404,30 @@ function library:New(scriptName)
                         else
                             color.Color = Color3.fromRGB(46,46,46)
                         end                        
-                    end      
-    default = Color3.fromRGB(0,255,0)
-    Flag = 'Test'
+                    end
+        
+        default = (data.default and data.default.Color and data.default.Color or Color3.new(255,0,0))
+        if Type == 'ToggleTrans' then
+            defaultalpha = (data.default and data.default.Transparency and data.default.Transparency or 1)
+        end
     local icon = utility.create("Square", {
         Filled = true,
         Thickness = 0,
         Color = default,
         Parent = color,
-        Transparency = defaultalpha,
-        Size = UDim2.new(0, 18, 0, 10),
-        Position = Vector2.new(100,0),
+        Transparency = (Type == 'ToggleTrans' and defaultalpha or 1),
+        Size = Vec2(15,13),
+        Position = Vector2.new(150,0),
         ZIndex = 8
     })
-
+ if Type == 'ToggleTrans' then
     local alphaicon = utility.create("Image", {
         Size = UDim2.new(1, 0, 1, 0),
         ZIndex = 9,
         Parent = icon,
         Data = decode("iVBORw0KGgoAAAANSUhEUgAAABIAAAAKBAMAAABLZROSAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAGUExURb+/v////5nD/3QAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAVSURBVBjTY2AQhEIkliAWSLY6QQYAknwC7Za+1vYAAAAASUVORK5CYII=")
     })
-
-
-
-    utility.create("Image", {
-        Size = UDim2.new(1, 0, 1, 0),
-        Transparency = 0.5,
-        ZIndex = 10,
-        Parent = icon,
-        Data = gradient
-    })
-
+end
     local window = 
     utility.create(
         "Square", 
@@ -441,7 +435,7 @@ function library:New(scriptName)
         Filled = true,
         Thickness = 0,
         Parent = icon,
-        Size = UDim2.new(0, 192, 0, 158),
+        Size = UDim2.new(0, 192, 0, 160),
         Visible = false,
         Position = Vector2.new(50,10),
         ZIndex = 11
@@ -449,20 +443,14 @@ function library:New(scriptName)
 
  table.insert(pickers, window)
 
-    utility.create("Image", {
-        Size = UDim2.new(1, 0, 1, 0),
-        Transparency = 0.5,
-        ZIndex = 12,
-        Parent = window,
-        Data = library.gradient
-    })
+
 
     local saturation = utility.create("Square", {
         Filled = true,
         Thickness = 0,
         Parent = window,
         Color = default,
-        Size = UDim2.new(0, 164, 0, 110),
+        Size = UDim2.new(0, (Type == 'ToggleTrans' and 164 or 180), 0, 110),
         Position = UDim2.new(0, 6, 0, 6),
         ZIndex = 14
     })
@@ -510,9 +498,28 @@ function library:New(scriptName)
         Size = UDim2.new(0, 1, 1, 0),
         ZIndex = 16
     })
-
+   --[[ local holdText = utility.create('Square',{
+        Filled = true,
+        Thickness = 0,
+        Size = UDim2.new(1, -12, 0, 14),
+        Position = UDim2.new(0, 6, 0, 139),
+        ZIndex = 14,
+        Parent = window,
+        Color = Color3.fromRGB(10,10,10)
+    })
+    
+    
+    local text = utility.create('Text', {
+        Parent = holdText,
+        Position = UDim2.new(0.3,0,0,0),
+        Size = 13,
+        Font = Drawing.Fonts.Plex,
+        ZIndex = 17,
+        Text = string.format("%s, %s, %s", math.floor(default.R * 255), math.floor(default.G * 255), math.floor(default.B * 255)),
+        Color = Color3.fromRGB(255,255,255)
+    })--]]
  
-
+if Type == 'ToggleTrans' then
     local alphaframe = utility.create("Square", {
         Filled = true,
         Thickness = 0,
@@ -539,23 +546,15 @@ function library:New(scriptName)
         Size = UDim2.new(1, 0, 0, 1),
         ZIndex = 16
     })
-
-    local rgbinput = utility.create("Square", {
+end
+   local rgbinput = utility.create("Square", {
         Filled = true,
         Thickness = 0,
-        Size = UDim2.new(1, -12, 0, 14),
-        Position = UDim2.new(0, 6, 0, 139),
-        ZIndex = 14,
+        Size = Vec2(100,15),
+        Color = Color3.fromRGB(15,15,15),
+        Position = UDim2.new(0.5, -50, 0, 140),
+        ZIndex = 18,
         Parent = window
-    })
-
-
-    utility.create("Image", {
-        Size = UDim2.new(1, 0, 1, 0),
-        Transparency = 0.5,
-        ZIndex = 15,
-        Parent = rgbinput,
-        Data = library.gradient
     })
 
     local text = utility.create("Text", {
@@ -564,41 +563,12 @@ function library:New(scriptName)
         Size = 13,
         Position = UDim2.new(0.5, 0, 0, 0),
         Center = true,
-        ZIndex = 16,
+        ZIndex = 19,
         Outline = true,
+        Color = Color3.fromRGB(255,255,255),
         Parent = rgbinput
     })
-
-    local placeholdertext = utility.create("Text", {
-        Text = "R, G, B",
-        Font = Drawing.Fonts.Plex,
-        Size = 13,
-        Position = UDim2.new(0.5, 0, 0, 0),
-        Center = true,
-        ZIndex = 16,
-        Visible = false,
-        Outline = true,
-        Parent = rgbinput
-    })
-
-    local mouseover = false
-
-    rgbinput.MouseEnter:Connect(function()
-        mouseover = true
-    end)
-
-    rgbinput.MouseLeave:Connect(function()
-        mouseover = false
-    end)
-
-    rgbinput.MouseButton1Down:Connect(function()
-        rgbinput.Color = utility.changecolor(library.theme["Object Background"], 6)
-    end)
-
-    rgbinput.MouseButton1Up:Connect(function()
-        rgbinput.Color = mouseover and utility.changecolor(library.theme["Object Background"], 3) or library.theme["Object Background"]
-    end)
-
+    
     local hue, sat, val = default:ToHSV()
     local hsv = default:ToHSV()
     local alpha = defaultalpha
@@ -614,29 +584,33 @@ function library:New(scriptName)
         end
 
         local oldcolor = hsv
-        local oldalpha = alpha
+        if Type == 'ToggleTrans' then
+            local oldalpha = alpha
+        end
 
         hue, sat, val = color:ToHSV()
+         if Type == 'ToggleTrans' then
         alpha = a or 1
+        end
         hsv = Color3.fromHSV(hue, sat, val)
 
-        if hsv ~= oldcolor or alpha ~= oldalpha then
+        if hsv ~= oldcolor or (Type == 'ToggleTrans' and alpha ~= oldalpha or true)then
             icon.Color = hsv
+             if Type == 'ToggleTrans' then
             alphaicon.Transparency = 1 - alpha
             alphaframe.Color = hsv
-
+            end
             if not nopos then
                 saturationpicker.Position = UDim2.new(0, (math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 2)), 0, (math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 2)))
                 huepicker.Position = UDim2.new(0, math.clamp(hue * hueframe.AbsoluteSize.X, 0, hueframe.AbsoluteSize.X - 2), 0, 0)
+                 if Type == 'ToggleTrans' then
                 alphapicker.Position = UDim2.new(0, 0, 0, math.clamp((1 - alpha) * alphaframe.AbsoluteSize.Y, 0, alphaframe.AbsoluteSize.Y - 2))
+               end
                 saturation.Color = hsv
             end
 
             text.Text = string.format("%s, %s, %s", math.round(hsv.R * 255), math.round(hsv.G * 255), math.round(hsv.B * 255))
 
-            if flag then 
-                library.flags[flag] = utility.rgba(hsv.r * 255, hsv.g * 255, hsv.b * 255, alpha)
-            end
 
             callback(utility.rgba(hsv.r * 255, hsv.g * 255, hsv.b * 255, alpha))
         end
@@ -725,7 +699,7 @@ function library:New(scriptName)
     end)
 
     local slidingalpha = false
-
+if Type == 'ToggleTrans' then
     local function updatealpha(input)
         local sizeY = 1 - math.clamp(((input.Position.Y - alphaframe.AbsolutePosition.Y) + 36) / alphaframe.AbsoluteSize.Y, 0, 1)
         local posY = math.clamp(((input.Position.Y - alphaframe.AbsolutePosition.Y) / alphaframe.AbsoluteSize.Y) * alphaframe.AbsoluteSize.Y + 36, 0, alphaframe.AbsoluteSize.Y - 2)
@@ -747,7 +721,7 @@ function library:New(scriptName)
             slidingalpha = false
         end
     end)
-
+end
   game.UserInputService.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement then
             if slidingalpha then
