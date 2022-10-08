@@ -4440,56 +4440,58 @@ local ESPLoop =
 		
 		killeffect = function()		
 			if not values.visuals.effects['Kill screen'].Toggle then return end
-			scren = Instance.new('ScreenGui',game.CoreGui)
-			scren.IgnoreGuiInset = true
-			if values.visuals.effects['Kill screen type'].Dropdown == 'Image' or values.visuals.effects['Kill screen type'].Dropdown == 'Both' then
-				frem = Instance.new("ImageLabel",scren)
-				frem.BackgroundTransparency = 1
-				frem.ImageTransparency = values.visuals.effects['Image Transparency'].Slider
-				frem.Position = UDim2.new(0.5,0,0.5,0)
-				frem.AnchorPoint = Vector2.new(0.5,0.5)
-				frem.Size = UDim2.new(0.5,values.visuals.effects['Image size(X)'].Slider,0.5,values.visuals.effects['Image size(Y)'].Slider)
-				frem.BorderSizePixel = 0
-				if values.visuals.effects['Image type'] == 'workspace image' then
-					getAsset = getsynasset or getcustomasset
-					
-					frem.Image = getAsset(values.visuals.effects['Image'].Text)
-				else
-					frem.Image = 'rbxassetid://'..values.visuals.effects['Image'].Text
+			task.spawn(function()
+				scren = Instance.new('ScreenGui',game.CoreGui)
+				scren.IgnoreGuiInset = true
+				if values.visuals.effects['Kill screen type'].Dropdown == 'Image' or values.visuals.effects['Kill screen type'].Dropdown == 'Both' then
+					frem = Instance.new("ImageLabel",scren)
+					frem.BackgroundTransparency = 1
+					frem.ImageTransparency = values.visuals.effects['Image Transparency'].Slider
+					frem.Position = UDim2.new(0.5,0,0.5,0)
+					frem.AnchorPoint = Vector2.new(0.5,0.5)
+					frem.Size = UDim2.new(0.5,values.visuals.effects['Image size(X)'].Slider,0.5,values.visuals.effects['Image size(Y)'].Slider)
+					frem.BorderSizePixel = 0
+					if values.visuals.effects['Image type'] == 'workspace image' then
+						getAsset = getsynasset or getcustomasset
+						
+						frem.Image = getAsset(values.visuals.effects['Image'].Text)
+					else
+						frem.Image = 'rbxassetid://'..values.visuals.effects['Image'].Text
+					end
+					repeat wait() until frem:IsLoaded()
 				end
-				repeat wait() until frem:IsLoaded()
-			end
-			if values.visuals.effects['Kill screen type'].Dropdown == 'Color' or values.visuals.effects['Kill screen type'].Dropdown == 'Both' then
-				frem2 = Instance.new('Frame',scren)
-				frem2.BackgroundTransparency = values.visuals.effects['Kill screen'].Transparency
-				frem2.Size = UDim2.new(1,0,1,0)
-				frem2.BorderSizePixel = 0
-				frem2.BackgroundColor3 = values.visuals.effects['Kill screen'].Color
-				
-				task.delay(values.visuals.effects['Delay disappearing'].Slider,function()
-					if frem ~= nil then
-						library:Tween(frem, TweenInfo.new(values.visuals.effects['Speed disappearing'].Slider, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 1}) 
-					end
-					if frem2 ~= nil then
-						library:Tween(frem2, TweenInfo.new(values.visuals.effects['Speed disappearing'].Slider, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {BackgroundTransparency = 1}) 
-					end
+				if values.visuals.effects['Kill screen type'].Dropdown == 'Color' or values.visuals.effects['Kill screen type'].Dropdown == 'Both' then
+					frem2 = Instance.new('Frame',scren)
+					frem2.BackgroundTransparency = values.visuals.effects['Kill screen'].Transparency
+					frem2.Size = UDim2.new(1,0,1,0)
+					frem2.BorderSizePixel = 0
+					frem2.BackgroundColor3 = values.visuals.effects['Kill screen'].Color
 					
-					if frem ~= nil then	
-						task.spawn(function()
-							repeat wait() until frem.ImageTransparency == 1
-							frem:Destroy()
-						end)
-					end
-					if frem2 ~= nil then
-						task.spawn(function()
-							repeat wait() until frem2.BackgroundTransparency == 1
-							frem2:Destroy()
-						end)
-					end
-					repeat wait() until not scren:FindFirstChildOfClass('Frame')
-					scren:Destroy()
-				end)
-			end
+					task.delay(values.visuals.effects['Delay disappearing'].Slider,function()
+						if frem ~= nil then
+							library:Tween(frem, TweenInfo.new(values.visuals.effects['Speed disappearing'].Slider, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {ImageTransparency = 1}) 
+						end
+						if frem2 ~= nil then
+							library:Tween(frem2, TweenInfo.new(values.visuals.effects['Speed disappearing'].Slider, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {BackgroundTransparency = 1}) 
+						end
+						
+						if frem ~= nil then	
+							task.spawn(function()
+								repeat wait() until frem.ImageTransparency == 1
+								frem:Destroy()
+							end)
+						end
+						if frem2 ~= nil then
+							task.spawn(function()
+								repeat wait() until frem2.BackgroundTransparency == 1
+								frem2:Destroy()
+							end)
+						end
+						repeat wait() until not scren:FindFirstChildOfClass('Frame')
+						scren:Destroy()
+					end)
+				end
+			end)
 		end
 		effects:Element('Button','Test',{},killeffect)
 		killsaysignal:Connect(killeffect)
