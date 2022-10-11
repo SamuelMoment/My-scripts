@@ -2909,15 +2909,24 @@ do
 	
 	local old;old = hookmetamethod(game,'__newindex',function(o, k, v)
 		if values.misc.misc.player["Walk Speed"].Toggle and (k == 'WalkSpeed') then
-			v = values.misc.misc.player["Speed"].Slider
+			return
 		end
 				
 		if values.misc.misc.player["Jump Power"].Toggle and (k == 'JumpPower') then
-			v = values.misc.misc.player["Power"].Slider
+			return
 		end
 		return old(o, k, v)
 	end)		
-	
+	local old1;old1 = hookmetamethod(game,'__index',function(o, k)
+		if values.misc.misc.player["Walk Speed"].Toggle and (o == 'WalkSpeed') then
+			return values.misc.misc.player["Speed"].Slider
+		end
+				
+		if values.misc.misc.player["Jump Power"].Toggle and (o == 'JumpPower') then
+			return values.misc.misc.player["Power"].Slider
+		end
+		return old1(o, k)
+	end)	
 	UserInputService.InputBegan:Connect(function(k,j)
 		if j then return end
 		if k.KeyCode ==  Enum.KeyCode.Space then
