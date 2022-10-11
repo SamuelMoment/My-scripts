@@ -88,6 +88,131 @@ function utility.rgba(r, g, b, alpha)
     
     return rgb
 end
+local allowedcharacters = {}
+local shiftcharacters = {
+    ["1"] = "!",
+    ["2"] = "@",
+    ["3"] = "#",
+    ["4"] = "$",
+    ["5"] = "%",
+    ["6"] = "^",
+    ["7"] = "&",
+    ["8"] = "*",
+    ["9"] = "(",
+    ["0"] = ")",
+    ["-"] = "_",
+    ["="] = "+",
+    ["["] = "{",
+    ["\\"] = "|",
+    [";"] = ":",
+    ["'"] = "\"",
+    [","] = "<",
+    ["."] = ">",
+    ["/"] = "?",
+    ["`"] = "~"
+}
+
+for i = 32, 126 do
+    table.insert(allowedcharacters, utf8.char(i))
+end
+
+function utility.createbox(box, text, callback, finishedcallback)
+    box.MouseButton1Click:Connect(function()
+        game.ContextActionService:BindActionAtPriority("disablekeyboard", function() return Enum.ContextActionResult.Sink end, false, 3000, Enum.UserInputType.Keyboard)
+        
+        local connection
+        local backspaceconnection
+
+        local keyqueue = 0
+
+        if not connection then
+            connection = game.UserInputService.InputBegan:Connect(function(input)
+                if not box then connection:Disconnect() game.ContextActionService:UnbindAction("disablekeyboard") return end
+                if input.UserInputType == Enum.UserInputType.Keyboard then
+                    if input.KeyCode ~= Enum.KeyCode.Backspace then
+                        local str = game.UserInputService:GetStringForKeyCode(input.KeyCode)
+
+                        if table.find(allowedcharacters, str) then
+                            keyqueue = keyqueue + 1
+                            local currentqueue = keyqueue
+                            
+                            if not game.UserInputService:IsKeyDown(Enum.KeyCode.RightShift) and not game.UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+                                text.Text = text.Text .. str:lower()
+                                callback(text.Text)
+
+                                local ended = false
+
+                                coroutine.wrap(function()
+                                    task.wait(0.5)
+
+                                    while game.UserInputService:IsKeyDown(input.KeyCode) and currentqueue == keyqueue  do
+                                        text.Text = text.Text .. str:lower()
+                                        callback(text.Text)
+            
+                                        task.wait(0.02)
+                                    end
+                                end)()
+                            else
+                                text.Text = text.Text .. (shiftcharacters[str] or str:upper())
+                                callback(text.Text)
+
+                                coroutine.wrap(function()
+                                    task.wait(0.5)
+                                    
+                                    while game.UserInputService:IsKeyDown(input.KeyCode) and currentqueue == keyqueue  do
+                                        text.Text = text.Text .. (shiftcharacters[str] or str:upper())
+                                        callback(text.Text)
+            
+                                        task.wait(0.02)
+                                    end
+                                end)()
+                            end
+                        end
+                    end
+
+                    if input.KeyCode == Enum.KeyCode.Return then
+                        game.ContextActionService:UnbindAction("disablekeyboard")
+                       backspaceconnection:Disconnect()
+                        connection:Disconnect()
+                        finishedcallback(text.Text)
+                    end
+                elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    game.ContextActionService:UnbindAction("disablekeyboard")
+                    backspaceconnection:Disconnect()
+                    connection:Disconnect()
+                    finishedcallback(text.Text)
+                end
+            end)
+
+            local backspacequeue = 0
+
+            backspaceconnection = game.UserInputService.InputBegan:Connect(function(input)
+                if not box then backspaceconnection:Disconnect();game.ContextActionService:UnbindAction("disablekeyboard") return end
+                if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Backspace then
+                    backspacequeue = backspacequeue + 1
+                    
+                    text.Text = text.Text:sub(1, -2)
+                    callback(text.Text)
+
+                    local currentqueue = backspacequeue
+
+                    coroutine.wrap(function()
+                        task.wait(0.5)
+
+                        if backspacequeue == currentqueue then
+                            while game.UserInputService:IsKeyDown(Enum.KeyCode.Backspace) do
+                                text.Text = text.Text:sub(1, -2)
+                                callback(text.Text)
+
+                                task.wait(0.02)
+                            end
+                        end
+                    end)()
+                end
+            end)
+        end
+    end)
+end
 
 local library = {}
 local MainUIColor = Color3.fromRGB(255,20,147)
@@ -558,13 +683,17 @@ function library:New(scriptName)
                       
                     end
                 
+                    local hue, sat, val = default:ToHSV()
+                    local hsv = default:ToHSV()
+                    local alpha = defaultalpha
+                    local oldcolor = hsv
                    local rgbinput = utility.create("Square", {
                         Filled = true,
                         Thickness = 0,
                         Size = Vec2(100,15),
                         Color = Color3.fromRGB(15,15,15),
                         Position = UDim2.new(0.5, -50, 0, 140),
-                        ZIndex = 18,
+                        ZIndex = 12,
                         Parent = window
                     })
                 
@@ -574,17 +703,24 @@ function library:New(scriptName)
                         Size = 13,
                         Position = UDim2.new(0.5, 0, 0, 0),
                         Center = true,
-                        ZIndex = 19,
+                        ZIndex = 13,
                         Outline = true,
                         Color = Color3.fromRGB(255,255,255),
                         Parent = rgbinput
                     })
-                    
-                    local hue, sat, val = default:ToHSV()
-                    local hsv = default:ToHSV()
-                    local alpha = defaultalpha
-                    local oldcolor = hsv
-                
+     local placeholdertext = utility.create("Text", {
+        Text = "R, G, B",
+        Font = Drawing.Fonts.Plex,
+        Size = 13,
+        Position = UDim2.new(0.5, 0, 0, 0),
+        Center = true,
+        Color = Color3.fromRGB(100,100,100),
+        --Theme = "Disabled Text",
+        ZIndex = 16,
+        Visible = false,
+        Outline = true,
+        Parent = rgbinput
+    })                      
                 
                     local function set(color, a, nopos)
                         if type(color) == "table" then
@@ -663,7 +799,31 @@ function library:New(scriptName)
                         end
                 
                     set(default, defaultalpha)
-                
+        utility.createbox(rgbinput,text,function(str)       
+        if str == "" then
+            text.Visible = false
+            placeholdertext.Visible = true
+        else
+            placeholdertext.Visible = false
+            text.Visible = true
+        end
+    end, function(str)
+        --local _, amount = str:gsub(", ", "")
+
+        if #str:split(",") == 3 then
+            local values = str:split(",")
+            for i,v in pairs(values) do
+                v = string.gsub(v,' ','')
+            end
+            local r, g, b = math.clamp(values[1]:gsub("%D+", ""), 0, 255), math.clamp(values[2]:gsub("%D+", ""), 0, 255), math.clamp(values[3]:gsub("%D+", ""), 0, 255)
+
+            set(Color3.fromRGB(r, g, b), alpha or defaultalpha)
+        else
+            placeholdertext.Visible = false
+            text.Visible = true
+            text.Text = string.format("%s, %s, %s", math.round(hsv.R * 255), math.round(hsv.G * 255), math.round(hsv.B * 255))
+        end
+    end)                
                     local defhue, _, _ = default:ToHSV()
                 
                     local curhuesizey = defhue
@@ -761,7 +921,7 @@ function library:New(scriptName)
                     local holder = utility.create('Square',{
                         Parent = Sector,
                         ZIndex = 4,
-                        Position = Vector2.new(35,offset),
+                        Position = Vector2.new(35,offset+10),
                         Filled = true,
                         Thickness = 0,
                         Size = Vector2.new(170,10),
@@ -771,7 +931,7 @@ function library:New(scriptName)
                     local Slider = utility.create('Square',{
                         Parent = Sector,
                         ZIndex = 3,
-                        Position = Vector2.new(35,offset),
+                        Position = Vector2.new(35,offset+10),
                         Filled = true,
                         Thickness = 0,
                         Size = Vector2.new(170,10),
@@ -780,13 +940,23 @@ function library:New(scriptName)
                     slider2 = utility.create('Square',{
                         Parent = Sector,
                         ZIndex = 2,
-                        Position = Vector2.new(33,offset-2),
+                        Position = Vector2.new(33,offset+8),
                         Filled = true,
                         Thickness = 0,
                         Size = Vec2(174,14),
                         Color = Color3.fromRGB(30,30,30)
                     })
-                   
+
+                    utility.create('Text',{
+                        Parent = holder,
+                        ZIndex = 4,
+                        Position = UDim2.new(0,0,0,-15),
+                        Font = Drawing.Fonts.Plex,
+                        Text = text,
+                        Size = 13,
+                        Color = Color3.fromRGB(200,200,200)
+                    })
+
                     offset = Slider.Position.Y + Slider.Size.Y + 10
                     Sector.Size = Vector2.new(Sector.Size.X,offset)               
                     UpdateSectors(Sector,Side)  
@@ -801,7 +971,7 @@ function library:New(scriptName)
                         Size = Vec2(10,10),
                         Transparency = 0
                     })
-                    local text = utility.create('Text',{
+                    local text1 = utility.create('Text',{
                         Parent = textholder,
                         ZIndex = 4,
                         Position = UDim2.new(0.5,-13,0,-2),
@@ -818,34 +988,36 @@ function library:New(scriptName)
 								
 								local min,max,default = data.min or 0, data.max or 100, data.default or 0
 								
-								text.Text = tostring(default)
+								text1.Text = tostring(default)
 								if min > 0 then 
 									a = ((default - min)) / (max-min) 
 								else 
 									a = (default-min)/(max-min) 
 								end 
-								text.Text = tostring(default)
+								text1.Text = tostring(default)
 								Slider.Size = UDim2.new(a,0,1,0)  
 
 								holder.MouseButton1Down:Connect(function() 
 									Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 170), 0, 10) 
 									val = math.floor(((((tonumber(max) - tonumber(min)) / 170) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100 
-									text.Text = tostring(val)
+									text1.Text = tostring(val)
 									moveconnection = mouse.Move:Connect(function() 
 										Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 170), 0, 10) 
-									val = math.floor(((((tonumber(max) - tonumber(min)) / 170) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100									text.Text = tostring(val)
+									val = math.floor(((((tonumber(max) - tonumber(min)) / 170) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100									
+									text1.Text = tostring(val)
 									end) 
 									releaseconnection = uis.InputEnded:Connect(function(Mouse) 
 										if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then 
 											Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 170), 0, 10) 
 									val = math.floor(((((tonumber(max) - tonumber(min)) / 170) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100
-									text.Text = tostring(val)
+									text1.Text = tostring(val)
 											callback() 
 											moveconnection:Disconnect() 
 											releaseconnection:Disconnect() 
 										end 
 									end) 
 								end)
+							
                 end
             end
             return SectorFuncs
