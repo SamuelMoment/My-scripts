@@ -1152,9 +1152,9 @@ do
 		chat:Element("Dropdown", "kill say type", {options = {"message", "random", "custom file"}})
 		chat:Element('Dropdown', 'custom file type', {options = {'1,2,3 etc.', 'random'}})
 		chat:Element("TextBox", "message", {placeholder = "message"})
-		chat:Element('Button','Clean chat',{}, function()
+		--[[chat:Element('Button','Clean chat',{}, function()
 		game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\na")
-		end)
+		end)--]]
 		killsaysignal = Signal.new('killsaysignal')
 		killsaysignal:Connect(function()
 			if values.rage.chat["kill say"].Toggle then 
