@@ -1579,38 +1579,38 @@ end
 									if not Weapon then
 									else								
 										for i=1,3 do
-												local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
-												local rayDirection = Vector3.new(0, 0, 5)
-												local raycastParams = RaycastParams.new()
-												raycastParams.IgnoreWater = true
-												raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-												local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-												local args1 = {
-													[1] = Weapon,
-													[2] = i
-												}
+											local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
+											local rayDirection = Vector3.new(0, 0, 5)
+											local raycastParams = RaycastParams.new()
+											raycastParams.IgnoreWater = true
+											raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+											local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+											local args1 = {
+												[1] = Weapon,
+												[2] = i
+											}
 
-												events.MeleeSwing:FireServer(unpack(args1))
-												wait(.1)
+											events.MeleeSwing:FireServer(unpack(args1))
+											wait(.1)
 
-												local args = {
-													[1] = Weapon,
-													[2] = Closest.Character.Head,
-													[3] = Weapon.Hitboxes.Hitbox,
-													[4] = Closest.Character.Head.Position,
-													[5] = Closest.Character.Head.CFrame:ToObjectSpace(
-														CFrame.new(Closest.Character.Head.Position)
-													),
-													[6] = raycastResult
-												}
-												if Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
-													events.MeleeDamage:FireServer(unpack(args))
+											local args = {
+												[1] = Weapon,
+												[2] = Closest.Character.Head,
+												[3] = Weapon.Hitboxes.Hitbox,
+												[4] = Closest.Character.Head.Position,
+												[5] = Closest.Character.Head.CFrame:ToObjectSpace(
+													CFrame.new(Closest.Character.Head.Position)
+												),
+												[6] = raycastResult
+											}
+											if Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
+												events.MeleeDamage:FireServer(unpack(args))
 
-													events.MeleeDamage:FireServer(unpack(args))
-												else
-													return
-												end
+												events.MeleeDamage:FireServer(unpack(args))
+											else
+												return
 											end
+										end
 									end
 								end
 							elseif Closest == nil then
@@ -3184,7 +3184,7 @@ end
 					end
 				end
 			end	
-			if values.rage.Misc['prevent launch'].Toggle and values.rage.Misc['no launch'].Active then 
+			if values.rage.Misc['prevent launch'].Toggle and values.rage.Misc['prevent launch'].Active then 
 				if Root.Velocity.Y > values.rage.Misc['launch block (y velocity)'].Slider then 
 					Root.Velocity = C.Vec3(Root.Velocity.x, 0, Root.Velocity.z)
 				end
