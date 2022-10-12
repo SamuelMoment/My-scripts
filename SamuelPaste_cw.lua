@@ -546,7 +546,7 @@ FLYING = false
 iyflyspeed = 1
 vehicleflyspeed = 1
 
-getgenv().GetClosest = function(Distance,Priority,IgnoreTarget)
+local GetClosest = function(Distance,Priority,IgnoreTarget)
 	if IgnoreTarget == nil then IgnoreTarget = false end
 	if Priority == nil then Priority = 'Dis' end
 	local Character = LocalPlayer.Character
@@ -558,7 +558,7 @@ getgenv().GetClosest = function(Distance,Priority,IgnoreTarget)
 	local Target
 
 	for i,v in ipairs(Players:GetPlayers()) do
-		if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 then
+		if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 and (v.Backpack:FindFirstChildWhichIsA('Tool') or v.Character:FindFirstChildWhichIsA('Tool')) then
 			local TargetHRP = v.Character.HumanoidRootPart
 			local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
 			if Priority == 'Health' then
@@ -572,7 +572,7 @@ getgenv().GetClosest = function(Distance,Priority,IgnoreTarget)
 					Target = v
 				end
 			end
-			if values.rage.combat['Target player'].Toggle and v.Name == values.rage.combat['Target'].Scroll and not IgnoreTarget and v.Backpack:FindFirstChildWhichIsA('Tool') then
+			if values.rage.combat['Target player'].Toggle and v.Name == values.rage.combat['Target'].Scroll and not IgnoreTarget and (v.Backpack:FindFirstChildWhichIsA('Tool') or v.Character:FindFirstChildWhichIsA('Tool')) then
 				return v
 			end
 		end
@@ -720,8 +720,6 @@ function sFLY(vfly, ragdoll, platform)
 		end
 	)
 	FLY()
-	local somethingidk = C.INST("BoolValue", LocalPlayer.Character)
-	somethingidk.Name = "isFlyingCheck"
 end
 
 
@@ -1302,7 +1300,7 @@ local combat = main:Sector('combat', 'Left')
 	combat:Element("Dropdown", "Priority",{options = {'Distance','Health'}})
 	combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 12, default = 12})
 	combat:Element("Toggle", "Custom Kill Aura Distance")
-	combat:Element("Slider", "Custom Distance", {min = 0, max = 2000, default = 600})
+	combat:Element("Slider", "Custom Distance", {min = 0, max = 10000, default = 600})
 	
 	combat:Element('Toggle','Visualize target',{default = {Color = Color3.fromRGB(255, 255, 255)}})
 	combat:Element("ToggleColor", "Box",{default = {Color = Color3.fromRGB(255, 255, 255)}})
@@ -2643,7 +2641,7 @@ function NOFLY()
 		LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
 	end
 	
-	if SavedValues['getState']:getState().ragdoll.isRagdolled == true and LocalPlayer.Character:FindFirstChild('isFlyingCheck') then
+	if SavedValues['getState']:getState().ragdoll.isRagdolled == true then
 		LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
 		for i = 1,5 do
 			LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
@@ -2679,6 +2677,32 @@ do
 	miscsector:Element("Button", "No Identity fling", nil, function()
 		invisfling()
 	end)
+	miscsector:Element('Button','Teleport up',{},function()
+		if LocalPlayer.Character and (LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') or LocalPlayer.Character:FindFirstChildWhichIsA('Tool')) and LocalPlayer.Character:FindFirstChild('HumanoidRootPart') then
+			--LocalPlayer.Character.HumanoidRootPart.Anchored = true
+			LocalPlayer.Character.HumanoidRootPart.Position += Vector3.new(0,values.misc.misc2.misc['Distance'].Slider,0)
+		end
+	end)
+	miscsector:Element('Button','Teleport down',{},function()
+		if LocalPlayer.Character and (LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') or LocalPlayer.Character:FindFirstChildWhichIsA('Tool')) and LocalPlayer.Character:FindFirstChild('HumanoidRootPart') then
+			--LocalPlayer.Character.HumanoidRootPart.Anchored = true
+			LocalPlayer.Character.HumanoidRootPart.Position -= Vector3.new(0,values.misc.misc2.misc['Distance'].Slider,0)
+		end
+	end)
+	miscsector:Element('Slider','Distance',{min = 100,max = 10000,default = 6000})
+	miscsector:Element('Button','Anchor hrp',{},function()
+		if LocalPlayer.Character and (LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') or LocalPlayer.Character:FindFirstChildWhichIsA('Tool')) and LocalPlayer.Character:FindFirstChild('HumanoidRootPart') then
+			LocalPlayer.Character.HumanoidRootPart.Anchored = true
+			--LocalPlayer.Character.HumanoidRootPart.Position += Vector3.new(0,values.misc.misc2.misc['Distance'].Slider,0)
+		end
+	end)
+	miscsector:Element('Button','Unanchor hrp',{},function()
+		if LocalPlayer.Character and (LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') or LocalPlayer.Character:FindFirstChildWhichIsA('Tool')) and LocalPlayer.Character:FindFirstChild('HumanoidRootPart') then
+			LocalPlayer.Character.HumanoidRootPart.Anchored = false
+			--LocalPlayer.Character.HumanoidRootPart.Position -= Vector3.new(0,values.misc.misc2.misc['Distance'].Slider,0)
+		end
+	end)	
+	
 	utility:Element("Toggle", "No Utility Damage (expect bombs)")
 	utility:Element('Toggle', 'No knockback', {}, function(tbl)
 		for i,v in pairs(getgc(true)) do
@@ -2724,8 +2748,8 @@ do
 	end)
 	--utility:Element('Toggle','Ignore when parkouring')
 	utility:Element('Toggle','Redirect throwable grenades to closest player')
-	utility:Element('Toggle','Increase force of grenades')
 	utility:Element('Slider','Distance',{min = 1,max = 500,default = 100})
+	utility:Element('Toggle','Increase force of grenades')
 	
 	instants:Element('Toggle','Instant ghost potion',{},function(tbl)
 		for i,v in pairs(getgc(true)) do
@@ -2830,12 +2854,8 @@ do
 			--LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
 		end
 	end)
-	isExecuting = false
-	RunService.Heartbeat:Connect(function()
-		if game.Players.LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid') then
-			if isExecuting == false and not LocalPlayer.Character:FindFirstChild('isFlyingCheck') and SavedValues['getState']:getState().mainMenu.isIn == false	then
-				isExecuting = true
-				LocalPlayer.Character.Humanoid:WaitForChild('RagdollRemoteEvent')
+
+	Spawn:Connect(function()
 				if values.misc.misc2.misc["Fly"].Toggle then
 					NOFLY()
 					sFLY(false, true, true)
@@ -2850,10 +2870,6 @@ do
 				else
 					NOFLY()
 				end
-				task.wait(0.2)
-				isExecuting = false
-			end
-		end
 	end)
 	miscsector:Element("Toggle", "Noclip",nil,function(state)
 		if values.misc.misc2.misc["Noclip"].Toggle then
