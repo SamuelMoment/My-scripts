@@ -1257,10 +1257,7 @@ local combat = main:Sector('combat', 'Left')
 	local Misc = main:Sector("Misc", "Right")
 	local Spins = main:Sector("Spins",'Right')
 	Misc:Element("Toggle", "Auto jump")
-	
-	
 	Misc:Element('Toggle', 'bunny hop')
-
 	Misc:Element('Dropdown', 'direction', {options = {'forward', 'directional', 'directional 2'}})
 	Misc:Element('Dropdown', 'type', {options = {'gyro', 'cframe', 'velocity', 'idk'}})
 	Misc:Element('Slider', 'speed', {min = 0, max = 200, default = 40})	
@@ -2909,7 +2906,9 @@ do
 	player:Element("Toggle", "Infinite Jump")
 	player:Element("Toggle", "No Jump Cooldown")
 	player:Element("Toggle", "Jump Whenever")
-
+	player:Element('Toggle', 'Prevent parry')
+	player:Element('Dropdown','Prevent parry type',{options = {'Skip damage','Unequip'}})
+	
 	miscsector:Element("Toggle", "Kill Feed Spam")
 	miscsector:Element("Toggle", "Free Emotes") 
 	miscsector:Element("Toggle", "Hide Name")
@@ -5400,6 +5399,13 @@ local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(sel
 			args[3] = Vector3.new(math.huge,math.huge,math.huge)
 		end
 		return oldnamecall(self, unpack(args))
+	end
+	if self.Name == 'MeleeDamage' and values.misc.misc.player['Prevent parry'].Toggle and (args[2].Parent:FindFirstChild("SemiTransparentShield").Transparency == 0 or args[2].Parent:FindFirstChild("SemiTransparentShield"):FindFirstChildWhichIsA("Sound")) then
+		if values.misc.misc.player['Prevent parry type'].Dropdown == 'Skip damage' then
+			return
+		else
+			args[1].Parent = LocalPlayer.Backpack
+		end
 	end
   return oldnamecall(self, unpack(args))
 end)
