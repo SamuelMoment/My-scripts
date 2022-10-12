@@ -6578,7 +6578,7 @@ Players.PlayerRemoving:Connect(function(plr)
 	end
 	if values[tabname][sectorname][SomeRandomValue] ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle then
 		if values[tabname][sectorname][text].Scroll == plr.Name then
-			CreateHitElement("The person you were targetting has left the server.",MainUIColor,5, 250, 22)
+			CreateHitElement("The person you were targetting has left the server.",MainUIColor,7.5, 250, 22)
 		end
 	end
 	updatescroll2()

@@ -227,12 +227,12 @@ local function deepCopy(original)
 	return copy 
 end 
 
-local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2 = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/library.lua"))()
+local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/library.lua"))()
 library.setcfglocation(cfglocation)
 
 Spawn = Signal.new('Spawn')
 Died = Signal.new('Died')
-hitlogs = Signal.new('hitlogs')
+--hitlogs = Signal.new('hitlogs')
 	local MX_ONHIT = C.INST("ScreenGui")
 	do
 	local OnHitFrame = C.INST("Frame")
@@ -1324,8 +1324,27 @@ local combat = main:Sector('combat', 'Left')
 	if #randomtableidk == 0 then
 		C.INSERT(randomtableidk, 'none')
 	end--]]
-	combat:Element('lmao2','Target',{options = loopkillplr})
 	combat:Element('Toggle','Target player')
+	local loop123
+	combat:Element('lmao2','Target',{options = loopkillplr,Toggle = 'Target player'},function(tbl)
+		pcall(function()
+			loop123:Disconnect()
+		end)
+		loop123 = RunService.Heartbeat:Connect(function()
+			if not game.Players:FindFirstChild(tbl.Scroll) then return loop123:Disconnect() end
+			values.rage.combat['Alive: '].stringchange('Alive: '..(game.Players[tbl.Scroll] and game.Players[tbl.Scroll].Character and (game.Players[tbl.Scroll].Backpack:FindFirstChildWhichIsA('Tool') or game.Players[tbl.Scroll].Character:FindFirstChildWhichIsA('Tool')) and 'true' or 'false'))
+			values.rage.combat['Score: '].stringchange('Score: '..tostring(game.Players[tbl.Scroll].leaderstats.Score.Value))
+			values.rage.combat['Level: '].stringchange('Level: '..tostring(game.Players[tbl.Scroll].leaderstats.Level.Value))
+			values.rage.combat['Account age: '].stringchange('Account age: '..tostring(game.Players[tbl.Scroll].AccountAge))
+			values.rage.combat['Display nickname: '].stringchange('Display nickname: '..tostring(game.Players[tbl.Scroll].DisplayName))
+		end)
+	end)
+	
+	combat:Element('Label','Alive: ')
+	combat:Element('Label','Score: ')
+	combat:Element('Label','Level: ')
+	combat:Element('Label','Account age: ')
+	combat:Element('Label','Display nickname: ')
 	--values.rage.combat['Target player'].Toggle
 	Spins:Element("Toggle", "Spin")
 	Spins:Element("Slider", "Spin Power", {min = 0, max = 50, default = 50})
@@ -1340,8 +1359,7 @@ local combat = main:Sector('combat', 'Left')
 	
 	--respawn:Element('Toggle', 'Respawn when low hp')
 	--respawn:Element('Slider', 'low hp', {min = 1, max = 100, default = 30})
-	task.spawn( -- MODIFIED AUTO PARRY (from v3rm thanks to https://v3rmillion.net/showthread.php?tid=1129784)
-		-- i did some coding tho its kinda different because it doesnt check for animations but it gets all animations
+	task.spawn(
 		function()
 			function added(p)
 				function balls(c)
@@ -1357,11 +1375,11 @@ local combat = main:Sector('combat', 'Left')
 										if values.rage.Autos["Auto Parry Chance"].Slider >= 90 then
 											if
 												(LocalPlayer.Character ~= nil and
-													LocalPlayer.Character:FindFirstChild("Head") ~= nil and
-													p.Character:FindFirstChild("Head") ~= nil)
+													LocalPlayer.Character:FindFirstChild("HumanoidRootPart") ~= nil and
+													p.Character:FindFirstChild("HumanoidRootPart") ~= nil)
 											 then
 												local mag =
-													(p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
+													(p.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
 												if mag < values.rage.Autos["Auto Parry Distance"].Slider then
 													parry()
 													break
@@ -1372,11 +1390,11 @@ local combat = main:Sector('combat', 'Left')
 											if chance >= values.rage.Autos["Auto Parry Chance"].Slider then
 												if
 													(LocalPlayer.Character ~= nil and
-														LocalPlayer.Character:FindFirstChild("Head") ~= nil and
-														p.Character:FindFirstChild("Head") ~= nil)
+														LocalPlayer.Character:FindFirstChild("HumanoidRootPart") ~= nil and
+														p.Character:FindFirstChild("HumanoidRootPart") ~= nil)
 												 then
 													local mag =
-														(p.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
+														(p.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
 													if mag < values.rage.Autos["Auto Parry Distance"].Slider then
 														parry()
 														break
@@ -2925,11 +2943,11 @@ do
 	
 	local old;old = hookmetamethod(game,'__newindex',function(o, k, v)
 		if values.misc.misc.player["Walk Speed"].Toggle and (k == 'WalkSpeed') then
-			return
+			return old(o,k,values.misc.misc.player["Speed"].Slider)
 		end
 				
 		if values.misc.misc.player["Jump Power"].Toggle and (k == 'JumpPower') then
-			return
+			return old(o,k,values.misc.misc.player["Power"].Slider)
 		end
 		return old(o, k, v)
 	end)		
