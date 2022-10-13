@@ -49,7 +49,7 @@ Background.Parent = ScreenGui
 Background.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 Background.BorderSizePixel = 0
 Background.Size = UDim2.new(0, 430, 0, 140)
-Background.Position = UDim2.new(0.5, Background.Size.X.Offset/2, 0.5, Background.Size.Y.Offset/2)
+Background.Position = UDim2.new(0.5, -Background.Size.X.Offset/2, 0.5, -Background.Size.Y.Offset/2)
 Background.ScrollBarThickness = 0
 Background.CanvasSize = UDim2.new(0,0,0,0)
 makeDraggable(Background)
@@ -141,7 +141,7 @@ Background.Parent = Loader
 Background.Active = true
 Background.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 Background.Size = UDim2.new(0, XSize, 0, 140)
-Background.Position = UDim2.new(0.5, Background.Size.X.Offset/2, 0.5, Background.Size.Y.Offset/2)
+Background.Position = UDim2.new(0.5, -Background.Size.X.Offset/2, 0.5, -Background.Size.Y.Offset/2)
 Background.ScrollBarThickness = 0
 Background.CanvasSize = UDim2.new(0,0,0,0)
 Background.BorderSizePixel = 0
