@@ -1778,7 +1778,7 @@ end
                 end
             end
         end--]]
-		if values.other['Debug stuff'] and values.other['Debug stuff']['Debug mode'] and values.other['Debug stuff']['Debug mode'].Toggle and name ~= 'ping' then
+		if values.other['Debug stuff'] and values.other['Debug stuff']['Debug mode'] and values.other['Debug stuff']['Debug mode'].Toggle and name ~= 'ping' and name ~= 'repupdate' then
 			debugging(name,...)
 		end
         return oldsend(self, name, ...)
