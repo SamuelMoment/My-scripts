@@ -2291,7 +2291,9 @@ local addons = misc:Sector("addons", "Left")
 						getgenv().MainUIColor = tbl.Color
 						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
+						if game.CoreGui:FindFirstChild('fl indicator') then
 						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
+						end
 						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
 							if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
 								v.BackgroundColor3 = MainUIColor
@@ -2319,7 +2321,9 @@ local addons = misc:Sector("addons", "Left")
 						getgenv().MainUIColor = Color3.fromRGB(255,20,147)
 						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
+						if game.CoreGui:FindFirstChild('fl indicator') then
 						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
+						end
 						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
 							if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
 								v.BackgroundColor3 = MainUIColor
