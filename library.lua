@@ -3777,7 +3777,8 @@ ConfigUpdateCfgList:Fire()
 								Color.Position = C.UDIM2(0, 15, 0.5, -5) 
 								Color.Size = C.UDIM2(0, 8, 0, 8) 
 								local binding = false 
-								TextLabel.Parent = Button 
+								TextLabel.Parent = Button
+								TextLabel.Name = 'CheckerINeed'
 								TextLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								TextLabel.BackgroundTransparency = 1.000 
 								TextLabel.Position = C.UDIM2(0, 32, 0, -1) 
