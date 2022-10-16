@@ -1739,8 +1739,8 @@ function debugging(name,...)
             s12312331 = game:GetService("HttpService"):JSONEncode(v)..','
         elseif typeof(v) == 'Vector2' then
 			s12312331 = 'Vector2.new('..v.X..','..v.Y..')'..','
-		elseif v ~= nil then
-			s12312331 = v
+		else
+			s12312331 = (v == nil and 'nil' or v)
 		end
         stuff = stuff..s12312331
     end
