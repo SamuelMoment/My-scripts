@@ -7520,31 +7520,33 @@ local function UpdateWeapon(obj)
 	obj.Reflectance = values.visuals.effects["reflectance"].Slider/10
 	obj.Transparency = values.visuals.effects["weapon chams"].Transparency
 end 
-local Skins = ReplicatedStorage.Skins 
-local function MapSkin(Gun, Skin, CustomSkin) 
-	if CustomSkin ~= nil then 
-		for _,Data in pairs(CustomSkin) do 
-			local Obj = Camera.Arms:FindFirstChild(Data.Name) 
-			if Obj ~= nil and Obj.Transparency ~= 1 then 
-				Obj.TextureId = Data.Value 
-			end 
-		end 
-	else 
-		local SkinData = Skins:FindFirstChild(Gun):FindFirstChild(Skin) 
-		if not SkinData:FindFirstChild("Animated") then 
-			for _,Data in pairs(SkinData:GetChildren()) do 
+if game.GameId ~= 3681951220 then
+	local Skins = ReplicatedStorage.Skins 
+	local function MapSkin(Gun, Skin, CustomSkin) 
+		if CustomSkin ~= nil then 
+			for _,Data in pairs(CustomSkin) do 
 				local Obj = Camera.Arms:FindFirstChild(Data.Name) 
 				if Obj ~= nil and Obj.Transparency ~= 1 then 
-					if Obj:FindFirstChild("Mesh") then 
-						Obj.Mesh.TextureId = v.Value 
-					elseif not Obj:FindFirstChild("Mesh") then 
-						Obj.TextureID = Data.Value 
+					Obj.TextureId = Data.Value 
+				end 
+			end 
+		else 
+			local SkinData = Skins:FindFirstChild(Gun):FindFirstChild(Skin) 
+			if not SkinData:FindFirstChild("Animated") then 
+				for _,Data in pairs(SkinData:GetChildren()) do 
+					local Obj = Camera.Arms:FindFirstChild(Data.Name) 
+					if Obj ~= nil and Obj.Transparency ~= 1 then 
+						if Obj:FindFirstChild("Mesh") then 
+							Obj.Mesh.TextureId = v.Value 
+						elseif not Obj:FindFirstChild("Mesh") then 
+							Obj.TextureID = Data.Value 
+						end 
 					end 
 				end 
 			end 
 		end 
 	end 
-end 
+end
 local function ChangeCharacter(NewCharacter) 
 	for _,Part in pairs (LocalPlayer.Character:GetChildren()) do 
 		if Part:IsA("Accessory") then 
@@ -7728,7 +7730,7 @@ end
 local skins = { 
 	{["Weapon"] = "AWP", ["SkinName"] = "Bot", ["Skin"] = {["Scope"] = "6572594838", ["Handle"] = "6572594077"}} 
 } 
-
+if game.GameId ~= 3681951220 then
 for _,skin in pairs (skins) do 
 	local Folder = C.INST("Folder") 
 	Folder.Name = skin["SkinName"] 
@@ -7760,7 +7762,7 @@ for i,v in ipairs(AllWeapons) do
 	end 
 end 
 
-
+end
 
 makefolder("SamuelPaste/lua") 
 
@@ -7812,11 +7814,12 @@ knife:Element('Dropdown', "effects", {options = EffectsNames, Amount = 5})
 local glove = skins:Sector('glove', 'Left')
 glove:Element('Toggle', 'glove changer')
 glove:Element('ScrollDrop', 'model', {options = AllGloves, Amount = 9})
+if game.GameId ~= 3681951220 then
 local skin = skins:Sector('skins', 'Right')
 skin:Element('Toggle', 'skin changer')
 skin:Element('ScrollDrop', 'skin', {options = AllSkins, Amount = 15, alphabet = true})
 
-
+end
 
 local custom = skins:Sector('custom models', 'Left')
 
@@ -11714,7 +11717,6 @@ do
 	end
 	Players.PlayerAdded:Connect(utility.add)
 	Players.PlayerRemoving:Connect(function(plr)
-		wait()
 		if objects[plr] then
 			for i,v in pairs(objects[plr]) do
 				for i2,v2 in pairs(v) do
@@ -11977,6 +11979,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 --arguments
 										--[1] = Hit,
 										--[2] = Hit.Position,
+				if ReplicatedStorage.Events:FindFirstChild('HitNN') then
                 ReplicatedStorage.Events.HitNN:FireServer(
                     Hit, -- 1
                     Hit.CFrame.p, --2
@@ -11992,6 +11995,23 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
                     100,
                     C.Vec3()
                 )
+				else
+                ReplicatedStorage.Events.HitPart:FireServer(
+                    Hit, -- 1
+                    Hit.CFrame.p, --2
+                    "Banana", --3
+                    100000000000000, -- Range --4
+                    game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
+                    C.Vec3(), -- Start Position --6
+                    C.Vec3(), -- end position
+                    100000, -- Damage Modifier
+                    false,
+                    true,
+                    C.Vec3(),
+                    100,
+                    C.Vec3()
+                )				
+				end
 								end
 							else
 								local Ignore = {unpack(Collision)}
@@ -13803,7 +13823,7 @@ Camera.ChildAdded:Connect(function(obj)
 	end
 
 		local gunname = Client.gun ~= 'none' and values.skins.knife['knife changer'].Toggle and Client.gun:FindFirstChild('Melee') and values.skins.knife.model.Scroll or Client.gun ~= 'none' and Client.gun.Name
-	if values.skins.skins['skin changer'].Toggle and gunname ~= nil and Skins:FindFirstChild(gunname) then
+	if game.GameId ~= 3681951220 and values.skins.skins['skin changer'].Toggle and gunname ~= nil and Skins:FindFirstChild(gunname) then
 		if values.skins.skins.skin.Scroll[gunname] ~= 'Inventory' then
 			MapSkin(gunname, values.skins.skins.skin.Scroll[gunname])
 		end
@@ -14240,14 +14260,6 @@ for _,Player in pairs(Players:GetPlayers()) do
 end
 
 Players.PlayerAdded:Connect(function(Player)
-	Player:GetPropertyChangedSignal("Team"):Connect(function(new)
-		wait()
-		if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
-			for _2,Obj in pairs(Player.Character:GetDescendants()) do
-
-			end
-		end
-	end)
     Player.CharacterAdded:Connect(function(Character)
         Character.ChildAdded:Connect(function(obj)
             wait(1)
