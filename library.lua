@@ -4995,9 +4995,9 @@ end
 
 								Button.MouseButton1Down:Connect(function() 
 									Element.value.Toggle = not Element.value.Toggle 
-									update() 
 									values[tabname][sectorname][text] = Element.value 
-									callback(Element.value) 
+									callback(Element.value) 									
+									update() 
 								end) 
 								if data.default then 
 									update() 
@@ -5033,11 +5033,10 @@ end
 									ColorDrag.Position = C.UDIM2(1-ColorS,0,1-ColorV,0) 
 									Colorpick.ImageColor3 = C.COL3HSV(ColorH, 1, 1) 
 									ColorP.BackgroundColor3 = C.COL3HSV(ColorH, ColorS, ColorV) 
+									callback(value) 
 									update() 
 									update123()
 									Huedrag.Position = C.UDIM2(0, 0, 1-ColorH, -1) 
-
-									callback(value) 
 								end
 							elseif type == "ToggleTrans" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
