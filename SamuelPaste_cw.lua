@@ -5187,7 +5187,7 @@ end
 		fakingragdol = false
 	end)--]]			
 			
-RunService.RenderStepped:Connect(function()
+RunService.Heartbeat:Connect(function()
 	if values.misc.misc.utility['Redirect throwable grenades to closest player'].Toggle then
 		ClosestC4 = GetClosest(values.misc.misc.utility.Distance.Slider,'Distance',true) or nil
 	end
@@ -5200,12 +5200,15 @@ RunService.RenderStepped:Connect(function()
 							end
 						end
 					end	
-		if values.rage.combat["Custom Kill Aura Distance"].Toggle and Weapon ~= nil then
-			ClosestKillaura = GetClosest(values.rage.combat["Custom Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
-
-		elseif Weapon ~= nil then
-			ClosestKillaura = GetClosest(values.rage.combat["Kill Aura Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
-		end	
+		if Weapon ~= nil then
+			if values.rage.combat["Custom Kill Aura Distance"].Toggle and Weapon ~= nil then
+				ClosestKillaura = GetClosest(values.rage.combat["Custom Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
+			else
+				ClosestKillaura = GetClosest(values.rage.combat["Kill Aura Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
+			end
+		else
+			ClosestKillaura = nil
+		end
 	else
 		ClosestKillaura = nil
 	end
