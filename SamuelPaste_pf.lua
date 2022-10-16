@@ -2136,92 +2136,66 @@ debug:Element('Toggle','Debug mode')
 
 
 local addons = misc:Sector("addons", "Left") 
-addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
+				addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
 					if tbl.Toggle then
-						local oldUiColor = MainUIColor --Colorpick, ColorDrag, HueFrameGradient, Huepick, Huedrag
-						MainUIColor = tbl.Color
-						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
-							if v:IsA('Frame') and v.BackgroundColor3 == oldUiColor and v.Name ~= 'Color' and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
-								v.BackgroundColor3 = MainUIColor
-							end
-							if v:IsA('UIGradient') and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
-								v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
-							end
-							if v:IsA('ScrollingFrame') then --and v.Name == 'Drop' and v.Parent.Name == 'Button'
-								v.ScrollBarImageColor3 = MainUIColor
-							end
-							--[[if v.Name == 'Frame' and v.Parent.Name == 'Scroll' then 
-								v.ScrollBarImageColor3 = MainUIColor
-							end--]]
-							if v:IsA("UIGradient") and v.Parent.Name == 'Color' or v.Parent.Name == 'Background' then
-								v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainUIColor), ColorSequenceKeypoint.new(1, MainUIColor)}
-							end
-							if v:IsA('Frame') and v.Name == 'Color' and v.Parent.Name == 'Button' and v.BackgroundColor3 == oldUiColor then
-								v.BackgroundColor3 = MainUIColor
-							end
-							if v:IsA('Frame') and v.Name == 'Frame' and v.Parent.Name == 'Scroll' then 
-								v.ScrollBarImageColor3 = MainUIColor
-							end
-						end
-						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = tbl.Color
-						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = tbl.Color
-						--game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = tbl.Color
-						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
-							if v:IsA("TextButton") then
-								v.Gard.BackgroundColor3 = tbl.Color
-							end
-						end
-						for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
-							if v:IsA("Frame") then
-								v.Grad.BackgroundColor3 = tbl.Color
-							end
-						end
-						
-						
-						
-					else
-						
-						
-						
-						oldUiColor = tbl.Color
-						MainUIColor = C.COL3RGB(255,20,147)
+						oldColor = MainUIColor
+						getgenv().MainUIColor = tbl.Color
 						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
 						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
-						--game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
-					for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
-						if v:IsA('Frame') and v.BackgroundColor3 == oldUiColor and v.Name ~= 'Color' and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
+						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
+						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
+							if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
 								v.BackgroundColor3 = MainUIColor
-							end
-							if v:IsA('UIGradient') and v.Name ~= 'Colorpick' and v.Name ~= 'ColorDrag' and v.Name ~= 'HueFrameGradient' and v.Name ~= 'Huepick' and v.Name ~= 'Huedrag' then
+							elseif v:IsA('ScrollingFrame') and v.Parent.Name == 'Scroll' then
+								v.ScrollBarImageColor3 = MainUIColor
+							elseif v:IsA('UIGradient') and v.Name ~= 'HueFrameGradient' then
 								v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
+							elseif v:IsA('TextLabel') and v.TextColor3 == oldColor and (v.Name ~= 'CheckerINeed' and v.Name ~= 'SectionText') then
+								v.TextColor3 = MainUIColor
 							end
-							if v:IsA('ScrollingFrame') then --and v.Name == 'Drop' and v.Parent.Name == 'Button'
-								v.ScrollBarImageColor3 = MainUIColor
-							end
-							--[[if v.Name == 'Frame' and v.Parent.Name == 'Scroll' then 
-								v.ScrollBarImageColor3 = MainUIColor
-							end--]]
-							if v:IsA("UIGradient") and v.Parent.Name == 'Color' or v.Parent.Name == 'Background' then
-								v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainUIColor), ColorSequenceKeypoint.new(1, MainUIColor)}
-							end
-							if v:IsA('Frame') and v.Name == 'Color' and v.Parent.Name == 'Button' and v.BackgroundColor3 == oldUiColor then
-								v.BackgroundColor3 = MainUIColor
-							end
-							if v:IsA('Frame') and v.Name == 'Frame' and v.Parent.Name == 'Scroll' then 
-								v.ScrollBarImageColor3 = MainUIColor
-							end
-					end
+						end
 					  
 						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
 							if v:IsA("TextButton") then
-								v.Gard.BackgroundColor3 = C.COL3RGB(MainUIColor)
+								v.Gard.BackgroundColor3 = MainUIColor
 							end
 						end	
 						for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
 							if v:IsA("Frame") then
-								v.Grad.BackgroundColor3 = C.COL3RGB(MainUIColor)
+								v.Grad.BackgroundColor3 = MainUIColor
 							end
 						end
+					else
+						oldColor = MainUIColor
+						getgenv().MainUIColor = Color3.fromRGB(255,20,147)
+						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
+						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
+						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
+						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
+							if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
+								v.BackgroundColor3 = MainUIColor
+							elseif v:IsA('ScrollingFrame') and v.Parent.Name == 'Scroll' then
+								v.ScrollBarImageColor3 = MainUIColor
+							elseif v:IsA('UIGradient') and v.Name ~= 'HueFrameGradient' then
+								v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
+							elseif v:IsA('TextLabel') and v.TextColor3 == oldColor and (v.Name ~= 'CheckerINeed' and v.Name ~= 'SectionText') then
+								v.TextColor3 = MainUIColor
+							elseif v:IsA('Frame') and v.Name == 'Toggle' then
+								v.BackgroundColor3 = MainUIColor
+							end
+						end
+					  
+						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
+							if v:IsA("TextButton") then
+								v.Gard.BackgroundColor3 = MainUIColor
+							end
+						end	
+						for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
+							if v:IsA("Frame") then
+								v.Grad.BackgroundColor3 = MainUIColor
+							end
+						end
+						
 					end
 				end)
 
