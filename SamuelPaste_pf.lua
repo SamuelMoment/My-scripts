@@ -1728,27 +1728,331 @@ other:Element('Slider','Hitbox extender modifier', {min = 0, max = 5})
         return {Closest = Closest, OnScreen = OnScreen, Part = AimPart, InFOV = inFOV}
     end
 
+local defaultSettings = {
+	pretty = false;
+	robloxFullName = false;
+	robloxProperFullName = true;
+	robloxClassName = true;
+	tabs = false;
+	semicolons = false;
+	spaces = 3;
+	sortKeys = true;
+}
+
+-- lua keywords
+local keywords = {["and"]=true, ["break"]=true, ["do"]=true, ["else"]=true,
+["elseif"]=true, ["end"]=true, ["false"]=true, ["for"]=true, ["function"]=true,
+["if"]=true, ["in"]=true, ["local"]=true, ["nil"]=true, ["not"]=true, ["or"]=true,
+["repeat"]=true, ["return"]=true, ["then"]=true, ["true"]=true, ["until"]=true, ["while"]=true}
+
+local function isLuaIdentifier(str)
+	if type(str) ~= "string" then return false end
+	-- must be nonempty
+	if str:len() == 0 then return false end
+	-- can only contain a-z, A-Z, 0-9 and underscore
+	if str:find("[^%d%a_]") then return false end
+	-- cannot begin with digit
+	if tonumber(str:sub(1, 1)) then return false end
+	-- cannot be keyword
+	if keywords[str] then return false end
+	return true
+end
+
+-- works like Instance:GetFullName(), but invalid Lua identifiers are fixed (e.g. workspace["The Dude"].Humanoid)
+local function properFullName(object, usePeriod)
+	if object == nil or object == game then return "" end
+	
+	local s = object.Name
+	local usePeriod = true
+	if not isLuaIdentifier(s) then
+		s = ("[%q]"):format(s)
+		usePeriod = false
+	end
+	
+	if not object.Parent or object.Parent == game then
+		return s
+	else
+		return properFullName(object.Parent) .. (usePeriod and "." or "") .. s 
+	end
+end
+
+local depth = 0
+local shown
+local INDENT
+local reprSettings
+local function DebugCheck(s,s2)
+
+local success,err = pcall(function() return s[s2] end)
+
+return success
+
+end
+local function DebugRepr(value, reprSettings)
+	reprSettings = reprSettings or defaultSettings
+	INDENT = (" "):rep(reprSettings.spaces or defaultSettings.spaces)
+	if reprSettings.tabs then
+		INDENT = "\t"
+	end
+	
+	local v = value --args[1]
+	local tabs = INDENT:rep(depth)
+	
+	if depth == 0 then
+		shown = {}
+	end
+	if type(v) == "string" then
+		return ("%q"):format(v)
+	elseif type(v) == "number" then
+		if v == math.huge then return "math.huge" end
+		if v == -math.huge then return "-math.huge" end
+		return tonumber(v)
+	elseif type(v) == "boolean" then
+		return tostring(v)
+	elseif type(v) == "nil" then
+		return "nil"
+	elseif type(v) == "table" and type(v.__tostring) == "function" then
+		return tostring(v.__tostring(v))
+	elseif type(v) == "table" and getmetatable(v) and type(getmetatable(v).__tostring) == "function" then
+		return tostring(getmetatable(v).__tostring(v))
+	elseif type(v) == "table" then
+		if shown[v] then return "{CYCLIC}" end
+		shown[v] = true
+		local str = "{" .. (reprSettings.pretty and ("\n" .. INDENT .. tabs) or "")
+		local isArray = true
+		for k, v in pairs(v) do
+			if type(k) ~= "number" then
+				isArray = false
+				break
+			end
+		end
+		if isArray then
+			for i = 1, #v do
+				if i ~= 1 then
+					str = str .. (reprSettings.semicolons and ";" or ",") .. (reprSettings.pretty and ("\n" .. INDENT .. tabs) or " ")
+				end
+				depth = depth + 1
+				str = str .. DebugRepr(v[i], reprSettings)
+				depth = depth - 1
+			end
+		else
+			local keyOrder = {}
+			local keyValueStrings = {}
+			for k, v in pairs(v) do
+				depth = depth + 1
+				local kStr = isLuaIdentifier(k) and k or ("[" .. DebugRepr(k, reprSettings) .. "]")
+				local vStr = DebugRepr(v, reprSettings)
+				--[[str = str .. ("%s = %s"):format(
+					isLuaIdentifier(k) and k or ("[" .. DebugRepr(k, reprSettings) .. "]"),
+					DebugRepr(v, reprSettings)
+				)]]
+				table.insert(keyOrder, kStr)
+				keyValueStrings[kStr] = vStr
+				depth = depth - 1
+			end
+			if reprSettings.sortKeys then table.sort(keyOrder) end
+			local first = true
+			for _, kStr in pairs(keyOrder) do
+				if not first then
+					str = str .. (reprSettings.semicolons and ";" or ",") .. (reprSettings.pretty and ("\n" .. INDENT .. tabs) or " ")
+				end
+				str = str .. ("%s = %s"):format(kStr, keyValueStrings[kStr])
+				first = false
+			end
+		end
+		shown[v] = false
+		if reprSettings.pretty then
+			str = str .. "\n" .. tabs
+		end
+		str = str .. "}"
+		return str
+	elseif typeof then
+		-- Check Roblox types
+		if typeof(v) == "Instance" then
+			return  (reprSettings.robloxFullName
+				and (reprSettings.robloxProperFullName and properFullName(v) or v:GetFullName())
+			 or v.Name) .. (reprSettings.robloxClassName and ((" (%s)"):format(v.ClassName)) or "")
+		elseif typeof(v) == "Axes" then
+			local s = {}
+			if v.X then table.insert(s, DebugRepr(Enum.Axis.X, reprSettings)) end
+			if v.Y then table.insert(s, DebugRepr(Enum.Axis.Y, reprSettings)) end
+			if v.Z then table.insert(s, DebugRepr(Enum.Axis.Z, reprSettings)) end
+			return ("Axes.new(%s)"):format(table.concat(s, ", "))
+		elseif typeof(v) == "BrickColor" then
+			return ("BrickColor.new(%q)"):format(v.Name)
+		elseif typeof(v) == "CFrame" then
+			return ("CFrame.new(%s)"):format(table.concat({v:GetComponents()}, ", "))
+		elseif typeof(v) == "Color3" then
+			return ("Color3.new(%d, %d, %d)"):format(v.r, v.g, v.b)
+		elseif typeof(v) == "ColorSequence" then
+			if #v.Keypoints > 2 then
+				return ("ColorSequence.new(%s)"):format(DebugRepr(v.Keypoints, reprSettings))
+			else
+				if v.Keypoints[1].Value == v.Keypoints[2].Value then
+					return ("ColorSequence.new(%s)"):format(DebugRepr(v.Keypoints[1].Value, reprSettings))
+				else
+					return ("ColorSequence.new(%s, %s)"):format(
+						DebugRepr(v.Keypoints[1].Value, reprSettings),
+						DebugRepr(v.Keypoints[2].Value, reprSettings)
+					)
+				end
+			end
+		elseif typeof(v) == "ColorSequenceKeypoint" then
+			return ("ColorSequenceKeypoint.new(%d, %s)"):format(v.Time, DebugRepr(v.Value, reprSettings))
+		elseif typeof(v) == "DockWidgetPluginGuiInfo" then
+			return ("DockWidgetPluginGuiInfo.new(%s, %s, %s, %s, %s, %s, %s)"):format(
+				DebugRepr(v.InitialDockState, reprSettings),
+				DebugRepr(v.InitialEnabled, reprSettings),
+				DebugRepr(v.InitialEnabledShouldOverrideRestore, reprSettings),
+				DebugRepr(v.FloatingXSize, reprSettings),
+				DebugRepr(v.FloatingYSize, reprSettings),
+				DebugRepr(v.MinWidth, reprSettings),
+				DebugRepr(v.MinHeight, reprSettings)
+			)
+		elseif typeof(v) == "Enums" then
+			return "Enums"
+		elseif typeof(v) == "Enum" then
+			return ("Enum.%s"):format(tostring(v))
+		elseif typeof(v) == "EnumItem" then
+			return ("Enum.%s.%s"):format(tostring(v.EnumType), v.Name)
+		elseif typeof(v) == "Faces" then
+			local s = {}
+			for _, enumItem in pairs(Enum.NormalId:GetEnumItems()) do
+				if v[enumItem.Name] then
+					table.insert(s, DebugRepr(enumItem, reprSettings))
+				end
+			end
+			return ("Faces.new(%s)"):format(table.concat(s, ", "))
+		elseif typeof(v) == "NumberRange" then
+			if v.Min == v.Max then
+				return ("NumberRange.new(%d)"):format(v.Min)
+			else
+				return ("NumberRange.new(%d, %d)"):format(v.Min, v.Max)
+			end
+		elseif typeof(v) == "NumberSequence" then
+			if #v.Keypoints > 2 then
+				return ("NumberSequence.new(%s)"):format(DebugRepr(v.Keypoints, reprSettings))
+			else
+				if v.Keypoints[1].Value == v.Keypoints[2].Value then
+					return ("NumberSequence.new(%d)"):format(v.Keypoints[1].Value)
+				else
+					return ("NumberSequence.new(%d, %d)"):format(v.Keypoints[1].Value, v.Keypoints[2].Value)
+				end
+			end
+		elseif typeof(v) == "NumberSequenceKeypoint" then
+			if v.Envelope ~= 0 then
+				return ("NumberSequenceKeypoint.new(%d, %d, %d)"):format(v.Time, v.Value, v.Envelope)
+			else
+				return ("NumberSequenceKeypoint.new(%d, %d)"):format(v.Time, v.Value)
+			end
+		elseif typeof(v) == "PathWaypoint" then
+			return ("PathWaypoint.new(%s, %s)"):format(
+				DebugRepr(v.Position, reprSettings),
+				DebugRepr(v.Action, reprSettings)
+			)
+		elseif typeof(v) == "PhysicalProperties" then
+			return ("PhysicalProperties.new(%d, %d, %d, %d, %d)"):format(
+				v.Density, v.Friction, v.Elasticity, v.FrictionWeight, v.ElasticityWeight
+			)
+		elseif typeof(v) == "Random" then
+			return "<Random>"
+		elseif typeof(v) == "Ray" then
+			return ("Ray.new(%s, %s)"):format(
+				DebugRepr(v.Origin, reprSettings),
+				DebugRepr(v.Direction, reprSettings)
+			)
+		elseif typeof(v) == "RBXScriptConnection" then
+			return "<RBXScriptConnection>"
+		elseif typeof(v) == "RBXScriptSignal" then
+			return "<RBXScriptSignal>"
+		elseif typeof(v) == "Rect" then
+			return ("Rect.new(%d, %d, %d, %d)"):format(
+				v.Min.X, v.Min.Y, v.Max.X, v.Max.Y
+			)
+		elseif typeof(v) == "Region3" then
+			local min = v.CFrame.p + v.Size * -.5
+			local max = v.CFrame.p + v.Size * .5
+			return ("Region3.new(%s, %s)"):format(
+				DebugRepr(min, reprSettings),
+				DebugRepr(max, reprSettings)
+			)
+		elseif typeof(v) == "Region3int16" then
+			return ("Region3int16.new(%s, %s)"):format(
+				DebugRepr(v.Min, reprSettings),
+				DebugRepr(v.Max, reprSettings)
+			)
+		elseif typeof(v) == "TweenInfo" then
+			return ("TweenInfo.new(%d, %s, %s, %d, %s, %d)"):format(
+				v.Time, DebugRepr(v.EasingStyle, reprSettings), DebugRepr(v.EasingDirection, reprSettings),
+				v.RepeatCount, DebugRepr(v.Reverses, reprSettings), v.DelayTime
+			)
+		elseif typeof(v) == "UDim" then
+			return ("UDim.new(%d, %d)"):format(
+				v.Scale, v.Offset
+			)
+		elseif typeof(v) == "UDim2" then
+			return ("UDim2.new(%d, %d, %d, %d)"):format(
+				v.X.Scale, v.X.Offset, v.Y.Scale, v.Y.Offset
+			)
+		elseif typeof(v) == "Vector2" then
+			return ("Vector2.new(%d, %d"):format(v.X, v.Y)
+		elseif typeof(v) == "Vector2int16" then
+			return ("Vector2int16.new(%d, %d)"):format(v.X, v.Y)
+		elseif typeof(v) == "Vector3" then
+			return ("Vector3.new(%d, %d, %d)"):format(v.X, v.Y, v.Z)
+		elseif typeof(v) == "Vector3int16" then
+			return ("Vector3int16.new(%d, %d, %d)"):format(v.X, v.Y, v.Z)
+		else
+			return "<Roblox:" .. typeof(v) .. ">"
+		end
+	else
+		return "<" .. type(v) .. ">"
+	end
+end
+
+--values.other['Debug stuff']['Blacklist signals'].Jumbobox values.other['Debug stuff']['Logging type'].Dropdown (File,Console)
 function debugging(name,...)
-    stuff = ''
+    if table.find(values.other['Debug stuff']['Blacklist signals'].Jumbobox,name) then return end
+	stuff = ''
     local args = {...}
     for i,v in pairs(args) do
         s12312331 = ''
         if typeof(v) == 'Vector3' then
-            s12312331 = 'Vector3.new('..v.X..','..v.Y..','..v.Z..')'..','
+            s12312331 = 'Vector3.new('..v.X..','..v.Y..','..v.Z..')'..(i == #args and '' or ',')
         elseif typeof(v) == 'table' then
-            s12312331 = game:GetService("HttpService"):JSONEncode(v)..','
+            s12312331 = 'table: '..DebugRepr(v)..(i == #args and '' or ',')
         elseif typeof(v) == 'Vector2' then
 			s12312331 = 'Vector2.new('..v.X..','..v.Y..')'..','
+		elseif typeof(v) == 'boolean' then
+			s12312331 = v and 'true' or 'false'..(i == #args and '' or ',')
+		elseif typeof(v) == 'Instance' then
+			local tbl = {
+				Name = v.Name,
+				Parent = v.Parent.Name,
+				Position = (DebugCheck(v,'Position') == true and v.Position or 'nil'),
+				CFrame = (DebugCheck(v,'CFrame') == true and v.CFrame or 'nil'),
+				ClassName = v.ClassName,
+			}
+			s12312331 = 'instance: '..DebugRepr(tbl)..(i == #args and '' or ',')
+		elseif typeof(v) == 'string' then
+			s12312331 = tostring(v)..(i == #args and '' or ',')
+		elseif typeof(v) == 'number' then
+			s12312331 = tostring(v)..(i == #args and '' or ',')
 		else
-			s12312331 = (v == nil and 'nil' or v)
+			s12312331 = "Unidentified, type of argument: "..typeof(v)
 		end
         stuff = stuff..s12312331
     end
-    if not isfile('DebugOutput.txt') then
-		writefile('DebugOutput.txt',(os.date('%x %X')..' '..name..' '..stuff..'\n'))
-    else
-		appendfile('DebugOutput.txt',(os.date('%x %X')..' '..name..' '..stuff..'\n'))
-    end
+	--values.other['Debug stuff']['Blacklist signals'].Jumbobox values.other['Debug stuff']['Logging type'].Dropdown (File,Console)
+    if table.find(values.other['Debug stuff']['Logging type'].Jumbobox,'File') then
+		if not isfile('DebugOutput.txt') then
+			writefile('DebugOutput.txt',('['..os.date('%x %X')..'] '..name..' '..stuff..'\n'))
+		else
+			appendfile('DebugOutput.txt',('['..os.date('%x %X')..'] '..name..' '..stuff..'\n'))
+		end
+	end
+	if table.find(values.other['Debug stuff']['Logging type'].Jumbobox,'Console') then
+		rconsoleprint(('['..os.date('%X')..'] '..name..' '..stuff..'\n'))
+	end
 end
 
     local oldsend = client.network.send
@@ -1778,7 +2082,7 @@ end
                 end
             end
         end--]]
-		if values.other['Debug stuff'] and values.other['Debug stuff']['Debug mode'] and values.other['Debug stuff']['Debug mode'].Toggle and name ~= 'ping' and name ~= 'repupdate' then
+		if values.other['Debug stuff'] and values.other['Debug stuff']['Debug mode'] and values.other['Debug stuff']['Debug mode'].Toggle and name ~= 'ping' and name ~= 'repupdate' and name ~= 'perfdump' then
 			debugging(name,...)
 		end
         return oldsend(self, name, ...)
@@ -1838,10 +2142,9 @@ end
                             Dist = Distance
                             oldsend(client.network, "equip", 3)
 							oldsend(client.network, "stab")
-							task.wait(0.2)-- thx iray for telling me this
-							table.foreach(client.replication.bodyparts[v],print)
-                            client.network:send("knifehit", client.replication.getplayerhit(client.replication.bodyparts[v].head), client.replication.bodyparts[v].head.Name)
-                            client.network:send("equip", equipped) 
+							task.wait(0.2)
+                            oldsend(client.network,"knifehit", v, 'Torso')
+                            oldsend(client.network,"equip", equipped) 
                         end
                     end
                 end
@@ -2123,10 +2426,13 @@ end
 
 local debug = other123123:Sector('Debug stuff','Right')
 debug:Element('Toggle','Debug mode')
+local words = {
+	'suppressionassist','equip','stance','sprint','aim','newbullets','updatesight','bullethit','stab','knifehit'
+}
+debug:Element('Jumbobox','Blacklist signals',{options = words})
+debug:Element('Jumbobox','Logging type',{options = {'File','Console'}})
 
-
-
-
+--values.other['Debug stuff']['Blacklist signals'].Jumbobox values.other['Debug stuff']['Logging type'].Dropdown (File,Console)
 
 
 

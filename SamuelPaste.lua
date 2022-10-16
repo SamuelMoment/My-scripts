@@ -2914,9 +2914,9 @@ effects:Element("Jumbobox", "removals", {options = {"scope", "scope lines", "fla
 end) 
 effects:Element("Toggle", "force crosshair") 
 effects:Element("ToggleColor", "world color", {default = {Color = C.COL3RGB(255,255,255)}}, function(val) 
-	if val.Toggle then 
+	if val.Toggle and Camera:FindFirstChild('ColorCorrection') then 
 		Camera.ColorCorrection.TintColor = val.Color 
-	else 
+	elseif Camera:FindFirstChild('ColorCorrection') then
 		Camera.ColorCorrection.TintColor = C.COL3RGB(255,255,255) 
 	end 
 end) 
@@ -6064,7 +6064,7 @@ end)--]]
 		end
 	end
 	
-	if workspace:FindFirstChild('Map') and Client.gun ~= 'none' and Client.gun.Name ~= 'C4' then
+	if workspace:FindFirstChild('Map') and Client.gun and Client.gun ~= 'none' and Client.gun.Name ~= 'C4' then
 	if values.misc.movement['height change'].Toggle then 
 		pcall(function() LocalPlayer.Character.Humanoid.HipHeight = 2 * (values.misc.movement['height amount'].Slider/5) end)
 	else 
@@ -6284,7 +6284,7 @@ if not PasteDisabled then
 			args[1] = FakeAnim 
 		end 
 	end 
-	if method == "FireServer" and self.Name == "HitPart" then 
+	if method == "FireServer" and (self.Name == "HitPart" or self.Name == 'HitNN') then 
 		if values.rage.aimbot["force hit"].Toggle then 
 			args[1] = RageTarget 
 			args[2] = RageTarget.Position 
@@ -6390,6 +6390,14 @@ if not PasteDisabled then
 				end
 			end
 		end
+			spawn(function()
+				if values.visuals.world["bullet tracers"].Toggle then
+					createbullettracer(LocalPlayer.Character.UpperTorso.Position, args[2])	
+				end
+				if values.misc.client.hitlogs.Toggle and (Players:GetPlayerFromCharacter(args[1].Parent) or args[1] == RageTarget) then --(values.rage.exploits['kill all'].Toggle ~= true) and (values.rage.exploits['hexagon kill all'].Toggle ~= true)
+					hitlogs:Fire(" Hit "..args[1].Parent.Name.." in the "..args[1].Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 280, 22)
+				end
+			end)		
 		--[[
 		1. args[1] is a part
 		2. args[1] contains in a model
@@ -6400,17 +6408,6 @@ if not PasteDisabled then
 				args[2] = args[1].Position
 		end--]]
 	end 
-		if method == "FireServer" and (self.Name == "HitPart" or self.Name == 'HitNN') and tick() - lasthittick > 0.05 then
-			lasthittick = tick()
-			spawn(function()
-				if values.visuals.world["bullet tracers"].Toggle then
-					createbullettracer(LocalPlayer.Character.UpperTorso.Position, args[2])	
-				end
-				if (Players:GetPlayerFromCharacter(args[1].Parent) and values.misc.client.hitlogs.Toggle) or (args[1] == RageTarget and values.misc.client.hitlogs.Toggle) then --(values.rage.exploits['kill all'].Toggle ~= true) and (values.rage.exploits['hexagon kill all'].Toggle ~= true)
-					hitlogs:Fire(" Hit "..args[1].Parent.Name.." in the "..args[1].Name.."  ",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 280, 22)
-				end
-			end)
-		end
 	end
 	return oldNamecall(self, unpack(args)) 
 end 	
