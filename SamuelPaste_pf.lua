@@ -1686,7 +1686,7 @@ weapons:Element('Slider','Reload speed modifier', {min = 0, max = 1000, default 
 local other = misc:Sector('Client', 'Right')
 
 other:Element('Toggle', 'Knife aura')
-other:Element('Slider', 'Distance', {min = 1, max = 50})
+other:Element('Slider', 'Distance', {min = 1, max = 30})
 other:Element('Toggle', 'Held only')
 
 other:Element('Toggle','Custom walkspeed')
