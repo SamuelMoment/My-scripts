@@ -3,8 +3,10 @@ local LocalPlayer = Players.LocalPlayer
 local library = {tabs = {}}
 getgenv().values = {}
 
-local MainUIColor = Color3.fromRGB(255,20,147)
-
+getgenv().MainUIColor = Color3.fromRGB(255,20,147)
+function getMainColor()
+	return MainUIColor
+end
 
 local C = {
 ['Vec2'] = Vector2.new,
@@ -567,7 +569,7 @@ do
 
 			Color.Name = "Color"
 			Color.Parent = Spectators
-			Color.BackgroundColor3 = MainUIColor
+			Color.BackgroundColor3 = getMainColor()
 			Color.BorderSizePixel = 0
 			Color.Size = C.UDIM2(1, 0, 0, 2)
 			Color.ZIndex = 2
@@ -674,7 +676,7 @@ do
 
 		Grad.Name = "Grad"
 		Grad.Parent = Frame
-		Grad.BackgroundColor3 = MainUIColor
+		Grad.BackgroundColor3 = getMainColor()
 		Grad.BorderSizePixel = 0
 		Grad.Position = UDim2.new(0, 1, 0, -1)
 		Grad.Size = UDim2.new(0, 60, 0, 2)
@@ -985,7 +987,7 @@ do
 					local Gard = C.INST("Frame")
 					Gard.Name = "Gard"
 					Gard.Parent = TextButton
-					Gard.BackgroundColor3 = MainUIColor
+					Gard.BackgroundColor3 = getMainColor()
 					Gard.BorderSizePixel = 0
 					Gard.Position = C.UDIM2(0, 0, 1, 0)
 					Gard.Size = C.UDIM2(0, 83, 0, 1)
@@ -1237,7 +1239,7 @@ do
 									Drop.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
 									Drop.AutomaticCanvasSize = "Y" 
 									Drop.ZIndex = 5 
-									Drop.ScrollBarImageColor3 = MainUIColor 
+									Drop.ScrollBarImageColor3 = getMainColor() 
 
 									UIListLayout.Parent = Drop 
 									UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
@@ -1329,7 +1331,7 @@ do
 													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 												else 
 													C.INSERT(Element.value.Jumbobox, v) 
-													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 												end 
 												updatetext() 
 
@@ -1338,7 +1340,7 @@ do
 											end) 
 											Button.MouseEnter:Connect(function() 
 												if not C.TBLFIND(Element.value.Jumbobox, v) then 
-													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 												end 
 											end) 
 											Button.MouseLeave:Connect(function() 
@@ -1462,7 +1464,7 @@ do
 
 									local function update() 
 										if Element.value.Toggle then 
-											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
 											keybindremove(text, Element.value.Key) 
@@ -1757,7 +1759,7 @@ do
 									Color.Name = "Color" 
 									Color.Parent = Button 
 									
-									Color.BackgroundColor3 = MainUIColor 
+									Color.BackgroundColor3 = getMainColor() 
 									
 									Color.BackgroundColor3 = C.COL3RGB(46, 46, 46)
 									Color.BorderColor3 = C.COL3RGB(18, 18, 16) 
@@ -1777,7 +1779,7 @@ do
 
 									local function update() 
 										if Element.value.Toggle then 
-											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
 											keybindremove(text, Element.value.Key) 
@@ -1848,7 +1850,7 @@ do
 
 									local function update() 
 										if Element.value.Toggle then 
-											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
 											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = C.COL3RGB(46, 46, 46)}) 
@@ -2114,7 +2116,7 @@ do
 
 									local function update() 
 										if Element.value.Toggle then 
-											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
 											tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = C.COL3RGB(46, 46, 46)}) 
@@ -2448,7 +2450,7 @@ do
 									Drop.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
 									Drop.AutomaticCanvasSize = "Y" 
 									Drop.ZIndex = 5 
-									Drop.ScrollBarImageColor3 = MainUIColor 
+									Drop.ScrollBarImageColor3 = getMainColor() 
 
 									UIListLayout.Parent = Drop 
 									UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
@@ -2504,7 +2506,7 @@ do
 												Drop.CanvasPosition = C.Vec2(0,0) 
 											end) 
 											Button.MouseEnter:Connect(function() 
-												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  MainUIColor}) 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  getMainColor()}) 
 											end) 
 											Button.MouseLeave:Connect(function() 
 												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(200, 200, 200)}) 
@@ -2626,7 +2628,7 @@ do
 								Frame.BorderSizePixel = 0 
 								Frame.Size = C.UDIM2(0.5, 0, 1, 0) 
 								
-								UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
+								UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, getMainColor()), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
 								
 								
 								UIGradient.Rotation = 90
@@ -2765,7 +2767,7 @@ do
 									end 
 
 									Button_2.MouseButton1Down:Connect(function() 
-										TextLabel.TextColor3 = MainUIColor 
+										TextLabel.TextColor3 = getMainColor() 
 										library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 										local lmfaooo, lol = pcall(function()
 										callback(TextLabel, TextLabel.Text)
@@ -2966,7 +2968,7 @@ do
 								Drop.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
 								Drop.AutomaticCanvasSize = "Y" 
 								Drop.ZIndex = 5 
-								Drop.ScrollBarImageColor3 = MainUIColor 
+								Drop.ScrollBarImageColor3 = getMainColor() 
 								function MenuAccent(color)
 									Drop.ScrollBarImageColor3 = color
 								end
@@ -3035,7 +3037,7 @@ do
 											callback(Element.value) 
 										end) 
 										Button.MouseEnter:Connect(function() 
-											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 										end) 
 										Button.MouseLeave:Connect(function() 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(200, 200, 200)}) 
@@ -3071,7 +3073,7 @@ do
 										Frame.ScrollBarThickness = 4 
 										Frame.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
 										Frame.AutomaticCanvasSize = "Y" 
-										Frame.ScrollBarImageColor3 = MainUIColor 
+										Frame.ScrollBarImageColor3 = getMainColor() 
 								function MenuAccent(color)
 									Frame.ScrollBarImageColor3 = color
 								end
@@ -3118,7 +3120,7 @@ do
 												
 												if joll then 
 													joll = false 
-													TextLabel.TextColor3 = MainUIColor
+													TextLabel.TextColor3 = getMainColor()
 												end 
 
 												Button.MouseButton1Down:Connect(function() 
@@ -3129,7 +3131,7 @@ do
 														end 
 													end 
 
-													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+													library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 
 													Element.value.Scroll[joell] = v1
 
@@ -3138,7 +3140,7 @@ do
 												end) 
 												Button.MouseEnter:Connect(function() 
 													if Element.value.Scroll[joell] ~= v1 then 
-														library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+														library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 													end 
 												end) 
 												Button.MouseLeave:Connect(function() 
@@ -3222,7 +3224,7 @@ do
 												if bad:IsA("TextButton") then 
 													bad.TextLabel.TextColor3 = C.COL3RGB(200, 200, 200) 
 													if bad.Name == Element.value.Scroll[v.Name] then 
-														bad.TextLabel.TextColor3 = MainUIColor 
+														bad.TextLabel.TextColor3 = getMainColor() 
 														function MenuAccent(color)
 															bad.TextLabel.TextColor3 = color
 														end
@@ -3274,7 +3276,7 @@ do
 								Frame.ScrollBarThickness = 4 
 								Frame.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
 								Frame.AutomaticCanvasSize = "Y" 
-								Frame.ScrollBarImageColor3 = MainUIColor 
+								Frame.ScrollBarImageColor3 = getMainColor() 
 														function MenuAccent(color)
 															Frame.ScrollBarImageColor3 = color
 														end
@@ -3311,9 +3313,9 @@ do
 									TextLabel.TextSize = 11.000
 									TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
 									if first then first = false 
-										TextLabel.TextColor3 = MainUIColor
+										TextLabel.TextColor3 = getMainColor()
 										function MenuAccent(color)
-											TextLabel.TextColor3 = MainUIColor
+											TextLabel.TextColor3 = getMainColor()
 										end								
 									end 
 
@@ -3325,7 +3327,7 @@ do
 											end 
 										end 
 
-										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 
 										Element.value.Scroll = v 
 
@@ -3334,7 +3336,7 @@ do
 									end) 
 									Button.MouseEnter:Connect(function() 
 										if Element.value.Scroll ~= v then 
-											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 										end 
 									end) 
 									Button.MouseLeave:Connect(function() 
@@ -3407,7 +3409,7 @@ do
 								Frame.ScrollBarThickness = 4 
 								Frame.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
 								Frame.AutomaticCanvasSize = "Y" 
-								Frame.ScrollBarImageColor3 = MainUIColor 
+								Frame.ScrollBarImageColor3 = getMainColor() 
 function MenuAccent(color)
 Frame.ScrollBarImageColor3 = color
 end
@@ -3445,7 +3447,7 @@ ConfigUpdateCfgList:Connect(function()
 									TextLabel.TextSize = 11.000
 									TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
 									if first then first = false 
-										TextLabel.TextColor3 = MainUIColor 
+										TextLabel.TextColor3 = getMainColor() 
 --[[function MenuAccent(color)
 TextLabel.TextColor3 = color
 end--]]
@@ -3462,7 +3464,7 @@ end)
 											end 
 										end 
 
-										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 
 										Element.value.Scroll = v 
 
@@ -3471,7 +3473,7 @@ end)
 									end) 
 									Button.MouseEnter:Connect(function() 
 										if Element.value.Scroll ~= v then 
-											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 										end 
 									end) 
 									Button.MouseLeave:Connect(function() 
@@ -3563,7 +3565,7 @@ ConfigUpdateCfgList:Fire()
 									Drop.CanvasSize = Drop.CanvasSize + C.UDIM2(0, 0, 0, 17) 
 								end 
 								Drop.ZIndex = 5 
-								Drop.ScrollBarImageColor3 = MainUIColor 
+								Drop.ScrollBarImageColor3 = getMainColor() 
 
 								UIListLayout.Parent = Drop 
 								UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
@@ -3656,7 +3658,7 @@ ConfigUpdateCfgList:Fire()
 												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 											else 
 												C.INSERT(Element.value.Jumbobox, v) 
-												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 											end 
 											updatetext() 
 
@@ -3665,7 +3667,7 @@ ConfigUpdateCfgList:Fire()
 										end) 
 										Button.MouseEnter:Connect(function() 
 											if not C.TBLFIND(Element.value.Jumbobox, v) then 
-												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 											end 
 										end) 
 										Button.MouseLeave:Connect(function() 
@@ -3682,7 +3684,7 @@ ConfigUpdateCfgList:Fire()
 									for i,v in pairs(Drop:GetChildren()) do 
 										if v.Name ~= "UIListLayout" then 
 											if C.TBLFIND(val.Jumbobox, v.Name) then 
-												v.TextLabel.TextColor3 = MainUIColor 
+												v.TextLabel.TextColor3 = getMainColor() 
 											else 
 												v.TextLabel.TextColor3 = C.COL3RGB(200, 200, 200) 
 											end 
@@ -3787,7 +3789,7 @@ ConfigUpdateCfgList:Fire()
 
 								local function update() 
 									if Element.value.Toggle then 
-										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 									else 
 										keybindremove(text, Element.value.Key) 
@@ -4092,7 +4094,7 @@ ConfigUpdateCfgList:Fire()
 								Color.Name = "Color" 
 								Color.Parent = Button 
 								
-								Color.BackgroundColor3 = MainUIColor
+								Color.BackgroundColor3 = getMainColor()
 	function MenuAccent(color)
 Color.BackgroundColor3 = color
 end						
@@ -4114,7 +4116,7 @@ end
 
 								local function update() 
 									if Element.value.Toggle then 
-										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 									else 
 										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = C.COL3RGB(46, 46, 46)}) 
@@ -4184,7 +4186,7 @@ end
 
 								local function update() 
 									if Element.value.Toggle then 
-										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 									else 
 										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = C.COL3RGB(46, 46, 46)}) 
@@ -4266,7 +4268,7 @@ end
 								TextLabel5.ZIndex = 4
 								CopyColorsType = "RGB"
 								Button_25.MouseButton1Down:Connect(function() 
-										TextLabel5.TextColor3 = MainUIColor 
+										TextLabel5.TextColor3 = getMainColor() 
 										library:Tween(TextLabel5, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 										local retarded, lmao = pcall(function()
 									
@@ -4372,7 +4374,7 @@ end
 									Drop.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
 									Drop.AutomaticCanvasSize = "Y" 
 									Drop.ZIndex = 5 
-									Drop.ScrollBarImageColor3 = MainUIColor 
+									Drop.ScrollBarImageColor3 = getMainColor() 
 
 									UIListLayout.Parent = Drop 
 									UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
@@ -4427,7 +4429,7 @@ end
 												Drop.CanvasPosition = C.Vec2(0,0) 
 											end) 
 											Button.MouseEnter:Connect(function() 
-												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  MainUIColor}) 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  getMainColor()}) 
 											end) 
 											Button.MouseLeave:Connect(function() 
 												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(200, 200, 200)}) 
@@ -4528,7 +4530,7 @@ end
 
 									
 								Button_325.MouseButton1Down:Connect(function() 
-									TextLabel35.TextColor3 = MainUIColor 
+									TextLabel35.TextColor3 = getMainColor() 
 									library:Tween(TextLabel35, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 									local clipboard = getclipboard()
 									local colors = string.split(clipboard, ',')
@@ -4620,7 +4622,7 @@ end
 									Color123.Name = "Color123" 
 									Color123.Parent = Button123
 									
-									Color123.BackgroundColor3 = MainUIColor 
+									Color123.BackgroundColor3 = getMainColor() 
 									
 									Color123.BackgroundColor3 = C.COL3RGB(46, 46, 46)
 									Color123.BorderColor3 = C.COL3RGB(18, 18, 16) 
@@ -4642,7 +4644,7 @@ end
 
 									local function update123() 
 										if Element.value.Rainbow then 
-											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
 											--keybindremove(text, Element.value.Key) 
@@ -4728,7 +4730,7 @@ end
 								Frame123123.Size = C.UDIM2(0.5, 0, 1, 0) 
 								Frame123123.ZIndex = 4
 								
-								UIGradient123123.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
+								UIGradient123123.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, getMainColor()), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
 								
 								
 								UIGradient123123.Rotation = 90
@@ -5082,7 +5084,7 @@ end
 
 								local function update() 
 									if Element.value.Toggle then 
-										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 									else 
 										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = C.COL3RGB(46, 46, 46)}) 
@@ -5160,7 +5162,7 @@ end
 
 							CopyColorsType = 'RGB'
 								Button_25.MouseButton1Down:Connect(function() 
-									TextLabel5.TextColor3 = MainUIColor 
+									TextLabel5.TextColor3 = getMainColor() 
 									library:Tween(TextLabel5, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 								local retarded, lmao = pcall(function()
 								local l,m,a = C.FLOOR((Element.value.Color.R*255)+0.5),C.FLOOR((Element.value.Color.G*255)+0.5),C.FLOOR((Element.value.Color.B*255)+0.5)
@@ -5257,7 +5259,7 @@ end
 									Drop.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
 									Drop.AutomaticCanvasSize = "Y" 
 									Drop.ZIndex = 5 
-									Drop.ScrollBarImageColor3 = MainUIColor 
+									Drop.ScrollBarImageColor3 = getMainColor() 
 
 									UIListLayout.Parent = Drop 
 									UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
@@ -5312,7 +5314,7 @@ end
 												Drop.CanvasPosition = C.Vec2(0,0) 
 											end) 
 											Button.MouseEnter:Connect(function() 
-												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  MainUIColor}) 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  getMainColor()}) 
 											end) 
 											Button.MouseLeave:Connect(function() 
 												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(200, 200, 200)}) 
@@ -5416,7 +5418,7 @@ end
 
 									
 								Button_325.MouseButton1Down:Connect(function() 
-									TextLabel35.TextColor3 = MainUIColor 
+									TextLabel35.TextColor3 = getMainColor() 
 									library:Tween(TextLabel35, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 									local clipboard = getclipboard()
 									local colors = string.split(clipboard, ',')
@@ -5509,7 +5511,7 @@ end
 									Color123.Name = "Color123" 
 									Color123.Parent = Button123
 									
-									Color123.BackgroundColor3 = MainUIColor 
+									Color123.BackgroundColor3 = getMainColor() 
 									
 									Color123.BackgroundColor3 = C.COL3RGB(46, 46, 46)
 									Color123.BorderColor3 = C.COL3RGB(18, 18, 16) 
@@ -5531,7 +5533,7 @@ end
 
 									local function update123() 
 										if Element.value.Rainbow then 
-											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+											tween123 = library:Tween(Color123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 											library:Tween(TextLabel123, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 										else 
 											--keybindremove(text, Element.value.Key) 
@@ -5616,7 +5618,7 @@ end
 								Frame123123.Size = C.UDIM2(0.5, 0, 1, 0) 
 								Frame123123.ZIndex = 3
 								
-								UIGradient123123.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
+								UIGradient123123.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, getMainColor()), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
 								
 								
 								UIGradient123123.Rotation = 90
@@ -5906,7 +5908,7 @@ end
 								end) 
 								if data.default then 
 									if Element.value.Toggle then 
-										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = MainUIColor}) 
+										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = getMainColor()}) 
 										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 									else 
 										tween = library:Tween(Color, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = C.COL3RGB(46, 46, 46)}) 
@@ -6070,7 +6072,7 @@ end
 								Drop.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
 								Drop.AutomaticCanvasSize = "Y" 
 								Drop.ZIndex = 5 
-								Drop.ScrollBarImageColor3 = MainUIColor 
+								Drop.ScrollBarImageColor3 = getMainColor() 
 
 								UIListLayout.Parent = Drop 
 								UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
@@ -6124,7 +6126,7 @@ end
 											Drop.CanvasPosition = C.Vec2(0,0) 
 										end) 
 										Button.MouseEnter:Connect(function() 
-											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  MainUIColor}) 
+											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  getMainColor()}) 
 										end) 
 										Button.MouseLeave:Connect(function() 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(200, 200, 200)}) 
@@ -6251,7 +6253,7 @@ end
 								Drop.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
 								Drop.AutomaticCanvasSize = "Y" 
 								Drop.ZIndex = 5 
-								Drop.ScrollBarImageColor3 = MainUIColor 
+								Drop.ScrollBarImageColor3 = getMainColor() 
 
 								UIListLayout.Parent = Drop 
 								UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
@@ -6306,7 +6308,7 @@ end
 											Drop.CanvasPosition = C.Vec2(0,0) 
 										end) 
 										Button.MouseEnter:Connect(function() 
-											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  MainUIColor}) 
+											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  getMainColor()}) 
 										end) 
 										Button.MouseLeave:Connect(function() 
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 =  C.COL3RGB(200, 200, 200)}) 
@@ -6478,7 +6480,7 @@ end--]]
 								Frame.ScrollBarThickness = 4 
 								Frame.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
 								Frame.AutomaticCanvasSize = "Y" 
-								Frame.ScrollBarImageColor3 = MainUIColor 
+								Frame.ScrollBarImageColor3 = getMainColor() 
 														function MenuAccent(color)
 															Frame.ScrollBarImageColor3 = color
 														end
@@ -6517,9 +6519,9 @@ end--]]
 										TextLabel.TextSize = 11.000
 										TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
 										if first then first = false 
-											TextLabel.TextColor3 = MainUIColor
+											TextLabel.TextColor3 = getMainColor()
 											function MenuAccent(color)
-												TextLabel.TextColor3 = MainUIColor
+												TextLabel.TextColor3 = getMainColor()
 											end								
 										end 
 
@@ -6531,7 +6533,7 @@ end--]]
 												end 
 											end 
 
-											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 
 											Element.value.Scroll = v 
 
@@ -6540,7 +6542,7 @@ end--]]
 										end) 
 										Button.MouseEnter:Connect(function() 
 											if Element.value.Scroll ~= v then 
-												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = MainUIColor}) 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
 											end 
 										end) 
 										Button.MouseLeave:Connect(function() 
@@ -6578,7 +6580,7 @@ Players.PlayerRemoving:Connect(function(plr)
 	end
 	if values[tabname][sectorname][SomeRandomValue] ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle then
 		if values[tabname][sectorname][text].Scroll == plr.Name then
-			CreateHitElement("The person you were targetting has left the server.",MainUIColor,7.5, 250, 22)
+			CreateHitElement("The person you were targetting has left the server.",getMainColor(),7.5, 250, 22)
 		end
 	end
 	updatescroll2()
@@ -6658,7 +6660,7 @@ end)
 								Frame.BorderSizePixel = 0 
 								Frame.Size = C.UDIM2(0.5, 0, 1, 0) 
 								
-								UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
+								UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, getMainColor()), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
 								
 								
 								UIGradient.Rotation = 90
@@ -6803,7 +6805,7 @@ end)
 								
 								local pressedButton = false
 								Button_2.MouseButton1Down:Connect(function() 
-									TextLabel.TextColor3 = MainUIColor 
+									TextLabel.TextColor3 = getMainColor() 
 									library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 									if TextLabel.Text ~= 'Are you sure?' then
 										TextLabel.Text = 'Are you sure?'
@@ -6878,7 +6880,7 @@ elseif type == "Button" then
 								
 								
 								Button_2.MouseButton1Down:Connect(function() 
-									TextLabel.TextColor3 = MainUIColor 
+									TextLabel.TextColor3 = getMainColor() 
 									library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 										local lmfaooo, lol = pcall(function()
 											callback()
@@ -6947,7 +6949,7 @@ elseif type == "Button" then
 								end 
 
 								Button_2.MouseButton1Down:Connect(function() 
-									TextLabel.TextColor3 = MainUIColor 
+									TextLabel.TextColor3 = getMainColor() 
 									library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 										local lmfaooo, lol = pcall(function()
 										callback()
