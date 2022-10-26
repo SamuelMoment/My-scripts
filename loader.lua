@@ -175,6 +175,8 @@ Game.Text = "Game detected: "
 		Game.Text = "Game detected: Combat Warriors"
 	elseif game.GameId == 3698756756 or game.GameId == 10053187005 or game.GameId == 3311740703 or game.GameId == 1190826589 or game.GameId == 3681951220 then
 		Game.Text = "Game detected: Counter Blox"
+	elseif game.GameId == 873703865 then
+		Game.Text = "Game detected: Westbound"
 	else
 		Game.Text = 'Game detected: Unsupported game'
 	end
@@ -493,6 +495,8 @@ Button_2.MouseButton1Down:Connect(function()
 		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/SamuelPaste_cw.lua'))()
 	elseif game.GameId == 3698756756 or game.GameId == 10053187005 or game.GameId == 3311740703 or game.GameId == 1190826589 or game.GameId == 3681951220 then
 		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/SamuelPaste.lua'))()
+	elseif game.GameId == 873703865 then
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/SamuelPaste_wb.lua'))()
 	end	
 end) 
 Button_2.MouseEnter:Connect(function() 
