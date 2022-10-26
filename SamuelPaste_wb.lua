@@ -1,4 +1,5 @@
 if game.CoreGui:FindFirstChild("electric boogalo") then return error('script is already executed or you executed another script')end
+local BeforeLoad = tick()
 
 local location = 'SamuelPaste_wb/'
 local cfglocation = location.."cfgs/"
@@ -770,7 +771,565 @@ do
 end
 --[[ VISUALS ]]--
 do
+		local Playere = visuals:Sector("players",'Left')
+		Playere:Element("ToggleKeybind", "Enabled")
+		Playere:Element("Slider", "Max Distance",{min = 250, max = 10000, default = 10000})
+		Playere:Element("ToggleColor", "Box",{default = {Color = Color3.fromRGB(255, 255, 255)}})
+		Playere:Element("ToggleColor", "Name",{default = {Color = Color3.fromRGB(255, 255, 255)}})
+		Playere:Element("ToggleColor", "Health",{default = {Color = Color3.fromRGB(0, 255, 0)}})
+		Playere:Element('ToggleColor','Health Text',{default = {Color = Color3.fromRGB(255,255,255)}})
+		Playere:Element("ToggleColor", "Indicators",{default = {Color = Color3.fromRGB(255, 255, 255)}})
+		Playere:Element("Jumbobox", "Types", {options = {"Tool", "Distance"}})
+		Playere:Element("Dropdown", "Font", {options = {"Plex", "Monospace", "System", "UI"}}) 
+		Playere:Element("Slider", "Size", {min = 12, max = 16, default = 13})
+		
+		--my code fuck anyone who complains about it
+		local chams = {} -- too lazy to check for highlighs everytime
+		highlightfolder = Instance.new('Folder',game.CoreGui)
+		Playere:Element('ToggleTrans','Chams',{},function(tbl)
+			for i,v in pairs(Players:GetPlayers()) do
+				if (not chams[v.Name]) and v.Character and v ~= LocalPlayer then
+					if tbl.Toggle or values.visuals.players['Outline chams'].Toggle then
+						local highlight = Instance.new('Highlight',highlightfolder)
+						highlight.Adornee = v.Character
+						if tbl.Toggle then
+							highlight.FillColor = tbl.Color
+							highlight.FillTransparency = tbl.Transparency
+						
+						else
+							highlighs.FillTransparency = 1
+						end
+						if values.visuals.players['Outline chams'].Toggle then
+							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+							highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+						else
+							highlight.OutlineTransparency = 1
+						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
+						chams[v.Name] = highlight
+					end
+				elseif v.Character and v ~= LocalPlayer then
+					if tbl.Toggle or values.visuals.players['Outline chams'].Toggle then
+						local highlight = chams[v.Name]
+						highlight.Adornee = v.Character
+						if tbl.Toggle then
+							highlight.FillColor = tbl.Color
+							highlight.FillTransparency = tbl.Transparency
+						
+						else
+							highlight.FillTransparency = 1
+						end
+						if values.visuals.players['Outline chams'].Toggle then
+							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+							highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+						else
+							highlight.OutlineTransparency = 1
+						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
+					else
+						chams[v.Name]:Destroy()
+						chams[v.Name] = nil
+					end
+				end
+			end
+		end)
+		Playere:Element('ToggleTrans','Outline chams',{},function(tbl)
+			for i,v in pairs(Players:GetPlayers()) do
+				if (not chams[v.Name]) and v.Character and v ~= LocalPlayer then
+					if tbl.Toggle or values.visuals.players['Chams'].Toggle then
+						local highlight = Instance.new('Highlight',highlightfolder)
+						highlight.Adornee = v.Character
+						if values.visuals.players['Chams'].Toggle then
+							highlight.FillColor = tbl.Color
+							highlight.FillTransparency = tbl.Transparency
+						else
+							highlight.FillTransparency = 1
+						end
+						if tbl.Toggle then
+							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+							highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+						else
+							highlight.OutlineTransparency = 1
+						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end					
+						chams[v.Name] = highlight
+					end
+				elseif v.Character and v ~= LocalPlayer then
+					if tbl.Toggle or values.visuals.players['Chams'].Toggle then
+						local highlight = chams[v.Name]
+						highlight.Adornee = v.Character
+						if values.visuals.players['Chams'].Toggle then
+							highlight.FillColor = values.visuals.players['Chams'].Color
+							highlight.FillTransparency = values.visuals.players['Chams'].Transparency
+						else
+							highlighs.FillTransparency = 1
+						end
+						if tbl.Toggle then
+							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+							highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+						else
+							highlight.OutlineTransparency = 1
+						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
+					else
+						chams[v.Name]:Destroy()
+						chams[v.Name] = nil
+					end
+				end
+			end
+		end)
+		Playere:Element('Toggle','Visible only',{},function(tbl)
+			for i,v in pairs(Players:GetPlayers()) do
+				--v.CharacterAdded:Connect(function()
+					if (not chams[v.Name]) and v.Character and v ~= LocalPlayer then
+						if values.visuals.players['Outline chams'].Toggle or values.visuals.players['Chams'].Toggle then
+							local highlight = Instance.new('Highlight',highlightfolder)
+							highlight.Adornee = v.Character
+							if values.visuals.players['Chams'].Toggle then
+								highlight.FillColor = values.visuals.players['Chams'].Color
+								highlight.FillTransparency = values.visuals.players['Chams'].Transparency
+							else
+								highlight.FillTransparency = 1
+							end
+							if values.visuals.players['Outline chams'].Toggle then
+								highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+								highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+							else
+								highlight.OutlineTransparency = 1
+							end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end							
+							chams[v.Name] = highlight
+						end
+					elseif v.Character and v ~= LocalPlayer then
+						if values.visuals.players['Outline chams'].Toggle or values.visuals.players['Chams'].Toggle then
+							local highlight = chams[v.Name]
+							highlight.Adornee = v.Character
+							if values.visuals.players['Chams'].Toggle then
+								highlight.FillColor = values.visuals.players['Chams'].Color
+								highlight.FillTransparency = values.visuals.players['Chams'].Transparency
+							else
+								highlight.FillTransparency = 1
+							end
+							if values.visuals.players['Outline chams'].Toggle then
+								highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+								highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+							else
+								highlight.OutlineTransparency = 1
+							end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end
+						else
+							chams[v.Name]:Destroy()
+							chams[v.Name] = nil
+						end
+					end
+				--end)		
+			end		
+		end)
+		Players.PlayerAdded:Connect(function(v)
+		
+		--for i,v in pairs(Players:GetPlayers()) do
+			v.CharacterAdded:Connect(function()
+				if (not chams[v.Name]) and v.Character and v ~= LocalPlayer then
+					if values.visuals.players['Outline chams'].Toggle or values.visuals.players['Chams'].Toggle then
+						local highlight = Instance.new('Highlight',highlightfolder)
+						highlight.Adornee = v.Character
+						if values.visuals.players['Chams'].Toggle then
+							highlight.FillColor = values.visuals.players['Chams'].Color
+							highlight.FillTransparency = values.visuals.players['Chams'].Transparency
+						else
+							highlight.FillTransparency = 1
+						end
+						if values.visuals.players['Outline chams'].Toggle then
+							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+							highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+						else
+							highlight.OutlineTransparency = 1
+						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
+						chams[v.Name] = highlight
+					end
+				elseif v.Character and v ~= LocalPlayer then
+					if values.visuals.players['Outline chams'].Toggle or values.visuals.players['Chams'].Toggle then
+						local highlight = chams[v.Name]
+						highlight.Adornee = v.Character
+						if values.visuals.players['Chams'].Toggle then
+							highlight.FillColor = values.visuals.players['Chams'].Color
+							highlight.FillTransparency = values.visuals.players['Chams'].Transparency
+						else
+							highlighs.FillTransparency = 1
+						end
+						if values.visuals.players['Outline chams'].Toggle then
+							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+							highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+						else
+							highlight.OutlineTransparency = 1
+						end
+						if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end							
+					else
+						chams[v.Name]:Destroy()
+						chams[v.Name] = nil
+					end
+				end
+			end)
+		end)
+		Players.PlayerRemoving:Connect(function(v)
+			if chams[v.Name] then
+				pcall(function()
+					chams:Destroy()
+					chams = nil
+				end)
+			end
+		end)
+		--task.wait(0.2)
+		for i,v in pairs(Players:GetPlayers()) do
+			v.CharacterAdded:Connect(function()
+				if (not chams[v.Name]) and v.Character and v ~= LocalPlayer then
+					if values.visuals.players['Outline chams'].Toggle or values.visuals.players['Chams'].Toggle then
+						local highlight = Instance.new('Highlight',highlightfolder)
+						highlight.Adornee = v.Character
+						if values.visuals.players['Chams'].Toggle then
+							highlight.FillColor = values.visuals.players['Chams'].Color
+							highlight.FillTransparency = values.visuals.players['Chams'].Transparency
+						else
+							highlight.FillTransparency = 1
+						end
+						if values.visuals.players['Outline chams'].Toggle then
+							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+							highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+						else
+							highlight.OutlineTransparency = 1
+						end
+						if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end	
+						chams[v.Name] = highlight
+					end
+				elseif v.Character and v ~= LocalPlayer then
+					if values.visuals.players['Outline chams'].Toggle or values.visuals.players['Chams'].Toggle then
+						local highlight = chams[v.Name]
+						highlight.Adornee = v.Character
+						if values.visuals.players['Chams'].Toggle then
+							highlight.FillColor = values.visuals.players['Chams'].Color
+							highlight.FillTransparency = values.visuals.players['Chams'].Transparency
+						else
+							highlight.FillTransparency = 1
+						end
+						if values.visuals.players['Outline chams'].Toggle then
+							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
+							highlight.OutlineTransparency = values.visuals.players['Outline chams'].Transparency
+						else
+							highlight.OutlineTransparency = 1
+						end
+							if values.visuals.players['Visible only'].Toggle then
+								highlight.DepthMode = 1
+							else
+								highlight.DepthMode = 0
+							end						
+					else
+						chams[v.Name]:Destroy()
+						chams[v.Name] = nil
+					end
+				end
+			end)		
+		end
+		local oof = visuals:Sector("Out Of FOV", "Right")
+		oof:Element("ToggleColor", "Enabled",{default = {Color = Color3.fromRGB(255, 255, 255)}})
+		oof:Element("Slider", "Size", {min = 10, max = 15, default = 15})
+		oof:Element("Slider", "Offset", {min = 100, max = 700, default = 400})
+		oof:Element("Jumbobox", "Settings", {options = {"Outline", "Blinking"}})
 
+	local PlayerDrawings = {}
+	local Settings = {
+		Line = {
+			Thickness = 1,
+			Color = Color3.fromRGB(0, 255, 0)
+		},
+		Text = {
+			Size = 13,
+			Center = true,
+			Outline = true,
+			Font = Drawing.Fonts.Plex,
+			Color = Color3.fromRGB(255, 255, 255)
+		},
+		Square = {
+			Thickness = 1,
+			Color = values.visuals.players["Box"].Color,
+			Filled = false
+		},
+		Triangle = {
+			Color = Color3.fromRGB(255, 255, 255),
+			Filled = true,
+			Visible = false,
+			Thickness = 1
+		}
+	}
+
+	function New(Type, Outline, Name)
+		local drawing = Drawing.new(Type)
+		for i, v in pairs(Settings[Type]) do
+			drawing[i] = v
+		end
+		if Outline then
+			drawing.Color = Color3.new(0, 0, 0)
+			drawing.Thickness = 3
+		end
+		return drawing
+	end
+
+	function Add(Player)
+		if not PlayerDrawings[Player] then
+			PlayerDrawings[Player] = {
+				Offscreen = New("Triangle", nil, "Offscreen"),
+				Name = New("Text", nil, "Name"),
+				Tool = New("Text", nil, "Tool"),
+				Distance = New("Text", nil, "Distance"),
+				BoxOutline = New("Square", true, "BoxOutline"),
+				Box = New("Square", nil, "Box"),
+				HealthOutline = New("Line", true, "HealthOutline"),
+				Health = New("Line", nil, "Health"),
+				HealthText = New('Text',nil,'HealthText')
+			}
+		end
+	end
+
+	for _, Player in pairs(Players:GetPlayers()) do
+		if Player ~= LocalPlayer then
+			Add(Player)
+		end
+	end
+	Players.PlayerAdded:Connect(Add)
+	Players.PlayerRemoving:Connect(
+		function(Player)
+			if PlayerDrawings[Player] then
+				for i, v in pairs(PlayerDrawings[Player]) do
+					if v then
+						v:Remove()
+					end
+				end
+
+				PlayerDrawings[Player] = nil
+			end
+		end
+	)
+
+
+	local ESPLoop =game:GetService("RunService").Stepped:Connect(function()
+        for _, Player in pairs(Players:GetPlayers()) do
+            local PlayerDrawing = PlayerDrawings[Player]
+            if not PlayerDrawing then
+                continue
+            end
+
+            for _, Drawing in pairs(PlayerDrawing) do
+                Drawing.Visible = false
+            end
+
+            if (not values.visuals.players.Enabled.Toggle or not values.visuals.players["Enabled"].Active) then
+                continue
+            end
+            local Character = Player.Character
+            local RootPart, Humanoid =
+                Character and Character:FindFirstChild("HumanoidRootPart"),
+                Character and Character:FindFirstChildOfClass("Humanoid")
+            if not Character or not RootPart or not Humanoid then
+                continue
+            end
+
+            local DistanceFromCharacter = (Camera.CFrame.Position - RootPart.Position).Magnitude
+            if values.visuals.players["Max Distance"].Slider < DistanceFromCharacter then
+				continue
+            end
+
+            local Pos, OnScreen = Camera:WorldToViewportPoint(RootPart.Position)
+            if not OnScreen then
+                local VisualTable = values.visuals["Out Of FOV"]
+
+                local RootPos = RootPart.Position
+                local CameraVector = Camera.CFrame.Position
+                local LookVector = Camera.CFrame.LookVector
+
+                local Dot = LookVector:Dot(RootPart.Position - Camera.CFrame.Position)
+                if Dot <= 0 then
+                    RootPos = (CameraVector + ((RootPos - CameraVector) - ((LookVector * Dot) * 1.01)))
+                end
+
+                local ScreenPos, OnScreen = Camera:WorldToScreenPoint(RootPos)
+                if not OnScreen then
+                    local Drawing = PlayerDrawing.Offscreen
+                    local FOV = 800 - values.visuals["Out Of FOV"].Offset.Slider
+                    local Size = values.visuals["Out Of FOV"].Size.Slider
+
+                    local Center = (Camera.ViewportSize / 2)
+                    local Direction = (Vector2.new(ScreenPos.X, ScreenPos.Y) - Center).Unit
+                    local Radian = math.atan2(Direction.X, Direction.Y)
+                    local Angle = (((math.pi * 2) / FOV) * Radian)
+                    local ClampedPosition =
+                        (Center +
+                        (Direction *
+                            math.min(
+                                math.abs(((Center.Y - FOV) / math.sin(Angle)) * FOV),
+                                math.abs((Center.X - FOV) / (math.cos(Angle)) / 2)
+                            )))
+                    local Point =
+                        Vector2.new(
+                        math.floor(ClampedPosition.X - (Size / 2)),
+                        math.floor((ClampedPosition.Y - (Size / 2) - 15))
+                    )
+
+                    local function Rotate(point, center, angle)
+                        angle = math.rad(angle)
+                        local rotatedX =
+                            math.cos(angle) * (point.X - center.X) - math.sin(angle) * (point.Y - center.Y) + center.X
+                        local rotatedY =
+                            math.sin(angle) * (point.X - center.X) + math.cos(angle) * (point.Y - center.Y) + center.Y
+
+                        return Vector2.new(math.floor(rotatedX), math.floor(rotatedY))
+                    end
+
+                    local Rotation = math.floor(-math.deg(Radian)) - 47
+                    Drawing.PointA = Rotate(Point + Vector2.new(Size, Size), Point, Rotation)
+                    Drawing.PointB = Rotate(Point + Vector2.new(-Size, -Size), Point, Rotation)
+                    Drawing.PointC = Rotate(Point + Vector2.new(-Size, Size), Point, Rotation)
+                    Drawing.Color = VisualTable["Enabled"].Color
+                    Drawing.Filled =
+                        not table.find(values.visuals["Out Of FOV"].Settings.Jumbobox, "Outline") and true or false
+                    if table.find(values.visuals["Out Of FOV"].Settings.Jumbobox, "Blinking") then
+                        Drawing.Transparency = (math.sin(tick() * 5) + 1) / 2
+                    else
+                        Drawing.Transparency = 1
+                    end
+
+                    if VisualTable.Enabled.Toggle then
+                        Drawing.Visible = true
+                    else
+                        Drawing.Visible = false
+                    end
+                end
+            else
+				local VisualTable = values.visuals.players
+                local Size =
+                    (Camera:WorldToViewportPoint(RootPart.Position - Vector3.new(0, 3, 0)).Y -
+                    Camera:WorldToViewportPoint(RootPart.Position + Vector3.new(0, 2.6, 0)).Y) /
+                    2
+                local BoxSize = Vector2.new(math.floor(Size * 1.5), math.floor(Size * 1.9))
+                local BoxPos = Vector2.new(math.floor(Pos.X - Size * 1.5 / 2), math.floor(Pos.Y - Size * 1.6 / 2))
+
+                local Name = PlayerDrawing.Name
+                local Tool = PlayerDrawing.Tool
+                local Distance = PlayerDrawing.Distance
+                local Box = PlayerDrawing.Box
+                local BoxOutline = PlayerDrawing.BoxOutline
+                local Health = PlayerDrawing.Health
+				local HealthText = PlayerDrawing.HealthText
+                local HealthOutline = PlayerDrawing.HealthOutline
+
+                if VisualTable.Box.Toggle then
+                    Box.Size = BoxSize
+                    Box.Position = BoxPos
+                    Box.Visible = true
+                    Box.Color = VisualTable["Box"].Color
+                    BoxOutline.Size = BoxSize
+                    BoxOutline.Position = BoxPos
+                    BoxOutline.Visible = true
+                end
+
+                if VisualTable.Health.Toggle then
+                    Health.From = Vector2.new((BoxPos.X - 5), BoxPos.Y + BoxSize.Y)
+                    Health.To =
+                        Vector2.new(Health.From.X, Health.From.Y - (Humanoid.Health / Humanoid.MaxHealth) * BoxSize.Y)
+                    Health.Color = VisualTable["Health"].Color
+                    Health.Visible = true
+
+                    HealthOutline.From = Vector2.new(Health.From.X, BoxPos.Y + BoxSize.Y + 1)
+                    HealthOutline.To = Vector2.new(Health.From.X, (Health.From.Y - 1 * BoxSize.Y) - 1)
+                    HealthOutline.Visible = true
+									
+
+--math.floor(value*100)/100
+					if VisualTable['Health Text'].Toggle then
+						HealthText.Text = tostring(math.floor(Humanoid.Health*100)/100)
+						
+						HealthText.Position = Vector2.new(Health.To.X, Health.To.Y-5) -- 0 up - 1366 down
+						HealthText.Size = VisualTable['Size'].Slider
+						HealthText.Font = Drawing.Fonts[VisualTable['Font'].Dropdown]
+						HealthText.Visible = true
+						HealthText.Color = VisualTable['Health Text'].Color
+					end
+                end
+
+                if VisualTable.Name.Toggle then
+                    Name.Text = Player.Name
+                    Name.Position = Vector2.new(BoxSize.X / 2 + BoxPos.X, BoxPos.Y - 16)
+                    Name.Color = VisualTable["Name"].Color
+                    Name.Font = Drawing.Fonts[VisualTable['Font'].Dropdown]
+                    Name.Visible = true
+					Name.Size = VisualTable['Size'].Slider
+                end
+
+                if VisualTable.Indicators.Toggle then
+                    local BottomOffset = BoxSize.Y + BoxPos.Y + 1
+                    if table.find(VisualTable.Types.Jumbobox, "Tool") then
+                        local Equipped =
+                            Player.Character:FindFirstChildOfClass("Tool") and
+                            Player.Character:FindFirstChildOfClass("Tool").Name or
+                            "None"
+                        Equipped = Equipped
+                        Tool.Text = Equipped
+                        Tool.Position = Vector2.new(BoxSize.X / 2 + BoxPos.X, BottomOffset)
+                        Tool.Color = VisualTable["Indicators"].Color
+                        Tool.Font = Drawing.Fonts[VisualTable['Font'].Dropdown]
+                        Tool.Visible = true
+						Tool.Size = VisualTable['Size'].Slider
+                        BottomOffset = BottomOffset + 15
+                    end
+                    if table.find(VisualTable.Types.Jumbobox, "Distance") then
+                        Distance.Text = math.floor(DistanceFromCharacter) .. "m"
+                        Distance.Position = Vector2.new(BoxSize.X / 2 + BoxPos.X, BottomOffset)
+                        Distance.Color = VisualTable["Indicators"].Color
+                        Distance.Font = Drawing.Fonts[VisualTable['Font'].Dropdown]
+                        Distance.Visible = true
+						Distance.Size = VisualTable['Size'].Slider
+
+                        BottomOffset = BottomOffset + 15
+                    end
+                end
+            end
+        end
+	end)
 end
 --[[ SKINS ]]--
 do
@@ -903,7 +1462,7 @@ do
 	folder1 = Instance.new('Folder',workspace)
 	folder1.Name = 'OldCharacter'
 	
-	local characters = skins:Sector('characters','Right')
+	local characters = skins:Sector('characters','Left')
 	characters:Element('Toggle','character changer',{},function(tbl)
 		if tbl.Toggle then
 			if values.skins.characters.skin.Dropdown == 'Custom characters' then
@@ -970,7 +1529,7 @@ do
 			end
 	end
 	
-local boobs = skins:Sector('boobs','Right')
+local boobs = skins:Sector('boobs','Left')
 boobs:Element('ToggleColor','enabled',{},function(tbl)
 	if LocalPlayer.Character and not LocalPlayer.Character:FindFirstChild('boobsModel') then
 		local char = LocalPlayer.Character
@@ -1162,7 +1721,7 @@ end)
 	end)
 	local trannyenabled = false
 
-	local tranny = skins:Sector("trannyware", "Right") 
+	local tranny = skins:Sector("trannyware", "Left") 
 
 	local a = INST("MeshPart",workspace)
 	a.Size = Vec3(1.35,1.4,1.35)
@@ -1179,7 +1738,7 @@ end)
 
 
 
-	local chinahatsector = skins:Sector('China hat', 'Right')
+	local chinahatsector = skins:Sector('China hat', 'Left')
 	chinahatsector:Element('ToggleColor', 'enabled')
 	chinahatsector:Element('Dropdown', 'animation', {options = {"none", 'default',"scanning", "lava", "pulse"}})
 	chinahatsector:Element('ToggleColor', 'trails')
@@ -1239,31 +1798,175 @@ end)
 	end)	
 end
 
---[[
-for i,v in pairs(getgc(true)) do
-	if typeof(v) == 'table' then
-		if rawget(v,'EnableRagdoll')  then
-			v.EnableRagdoll = function()
-			    return
-			   end
+--[[ OTHERS ]]--
+do
+	local function ValidateSong(songID) 
+		if not songID or not tonumber(songID) then return false end
+
+		local success, result = pcall(function()
+			return game.MarketplaceService:GetProductInfo(songID)
+		end)
+
+		if success and result and result.AssetTypeId == 3 then
+			return true
+		else
+			return false
 		end
 	end
+	local radio = other:Sector('Radio','Left')
+	radio:Element('TextBox', 'music',{placeholder = 'ID or path',NoLimit = true})
+	radio:Element('Dropdown','type',{options = {'Roblox ID','workspace mp3'}})
+	radio:Element('Slider','Volume', {min = 0,max = 10}, function(tbl)
+		if getgenv().RadioSound then
+			RadioSound.Volume = tbl.Slider/10
+		end
+	end)
+	radio:Element('Button2','Play (resets audio)',{}, function()
+		
+		if values.other.Radio.type.Dropdown == 'Roblox ID' then
+			if ValidateSong(values.other.Radio.music.Text) == true then
+				if getgenv().RadioSound ~= nil then
+					RadioSound:Stop()
+					getgenv().RadioSound:Destroy()
+					getgenv().RadioSound = nil
+				end
+				getgenv().RadioSound = Instance.new('Sound',workspace)
+				RadioSound.Volume = values.other.Radio.Volume.Slider/10
+				RadioSound.SoundId = "rbxassetid://"..values.other.Radio.music.Text
+				RadioSound:Play()
+			else return error('Wrong id or path!') end
+		else
+			getAsset = getsynasset or getcustomasset
+			if not isfile(values.other.Radio.music.Text) then
+				return error('Wrong id or path!')
+			end
+			if getgenv().RadioSound then
+				getgenv().RadioSound:Destroy()
+				getgenv().RadioSound = nil
+			end
+			getgenv().RadioSound = Instance.new('Sound',workspace)
+			RadioSound.Volume = values.other.Radio.Volume.Slider/10
+			RadioSound.SoundId = getAsset(values.other.Radio.music.Text)
+			RadioSound:Play()			
+		end
+	end)
+	radio:Element('Button2','Pause',nil,function()
+		if RadioSound then
+			RadioSound:Pause()
+		end
+	end)
+	radio:Element('Button2','Resume',nil,function()
+		if RadioSound then
+			RadioSound:Resume()
+		end
+	end)	
+	radio:Element('Button2','Stop (reset audio)',nil,function()
+		if RadioSound then
+			RadioSound:Stop()
+		end
+	end)	
+	radio:Element('Toggle','Loop',nil,function(tbl)
+		if RadioSound then
+			RadioSound.Looped = tbl.Toggle
+		end
+	end)
+
+
+	
+	do
+		local dvd = other:Sector('DVD Logo','Right')
+		
+		local ScreenGui = Instance.new("ScreenGui")
+		local ImageLabel = Instance.new("ImageLabel")
+
+		--Properties:
+
+		ScreenGui.Parent = game.CoreGui
+		ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+		ScreenGui.Name = 'dvd logo'
+		ScreenGui.Enabled = false
+
+		ImageLabel.Parent = ScreenGui
+		ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ImageLabel.BackgroundTransparency = 1.000
+		ImageLabel.Position = UDim2.new(0.187000006, 0, 0.270999998, 0)
+		ImageLabel.Size = UDim2.new(0, 187, 0, 83)
+		ImageLabel.Image = "rbxassetid://10789990891"
+		ImageLabel.SliceScale = 3.000
+
+		-- Scripts:
+
+		local function JVMZPQB_fake_script() -- ImageLabel.LocalScript 
+			local script = Instance.new('LocalScript', ImageLabel)
+
+			--script.Parent.Position = UDim2.new(0,math.random(10,script.Parent.Parent.AbsoluteSize.X),0,math.random(10,script.Parent.Parent.AbsoluteSize.Y))
+			
+			--print('check')
+			
+			getgenv().YSpeed = 5
+			getgenv().XSpeed = 5
+			
+			getgenv().changecolor = false
+			getgenv().dvdmethod = 'tick'
+			game:GetService('RunService').RenderStepped:Connect(function()
+				local ScreenSize = script.Parent.Parent.AbsoluteSize
+				
+				script.Parent.Position += UDim2.new(0,getgenv().XSpeed,0,getgenv().YSpeed)
+				--print(script.Parent.AbsolutePosition)
+				if (script.Parent.AbsolutePosition.X >= ScreenSize.X or script.Parent.AbsolutePosition.X <= 0) or ((script.Parent.AbsolutePosition.X + script.Parent.AbsoluteSize.X) >= ScreenSize.X or (script.Parent.AbsolutePosition.X + script.Parent.AbsoluteSize.X) <= 0) then
+					getgenv().XSpeed = getgenv().XSpeed * -1
+					--print('X')
+					if getgenv().changecolor then
+						if dvdmethod == 'tick' then
+						script.Parent.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
+						else
+						script.Parent.ImageColor3 = Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
+						end
+					end
+				end
+				if (script.Parent.AbsolutePosition.Y >= ScreenSize.Y or script.Parent.AbsolutePosition.Y <= -35) or ((script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) >= ScreenSize.Y or (script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) <= -35) then
+					getgenv().YSpeed = getgenv().YSpeed * -1
+					if getgenv().changecolor then
+						if getgenv().dvdmethod == 'tick' then
+						script.Parent.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
+						else
+						script.Parent.ImageColor3 = Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
+						end
+					end
+				end
+			end)
+		end
+		coroutine.wrap(JVMZPQB_fake_script)()
+		
+		dvd:Element('ToggleColor','Enable',{},function(tbl)
+			ScreenGui.Enabled = tbl.Toggle
+			ScreenGui.ImageLabel.ImageColor3 = tbl.Color
+		end)
+		dvd:Element('Toggle','Change color when screen edge touched',{},function(tbl)
+			getgenv().changecolor = tbl.Toggle
+			--ScreenGui.ImageLabel.ImageColor3 = tbl.Color
+		end)		
+		dvd:Element('Dropdown','Color change method',{options = {'tick','random'}},function(tbl)
+			getgenv().dvdmethod = tbl.Dropdown
+		end)
+		dvd:Element("Slider",'Speed',{min = 1,max = 20,default = 10},function(tbl)
+			if getgenv().YSpeed <= 0 then
+				getgenv().YSpeed = tbl.Slider * -1
+			else
+				getgenv().YSpeed = tbl.Slider
+			end
+			if getgenv().XSpeed <= 0 then
+				getgenv().XSpeed = tbl.Slider * -1
+			else
+				getgenv().XSpeed = tbl.Slider
+			end			
+		end)
+	end
+	
+	
+	
+
+	
 end
 
-local LocalPlayer = game.Players.LocalPlayer
-
-local ChrModels = game:GetObjects("rbxassetid://7951832105")[1]
---repeat wait() until ChrModels ~= nil 
-
-ChangeCharacter(ChrModels['Imposter'])
-
-local oldNamecall; oldNamecall = hookmetamethod(game,'__namecall', function(self, ...) 
-	local method = tostring(getnamecallmethod()) 
-	local args = {...} 
-    if self.Name == 'ChangeCharacter' then
-        return wait(9e9)
-    end
-
-	return oldNamecall(self, unpack(args)) 
-end)
---]]
+CreateHitElement("Script loaded in "..(math.floor((tick() - BeforeLoad)*100)/100).." seconds!",MainUIColor,5, 220, 22)
