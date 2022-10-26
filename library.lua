@@ -3319,19 +3319,14 @@ do
 											TextLabel.TextColor3 = getMainColor()
 										end								
 									end 
-
 									Button.MouseButton1Down:Connect(function() 
-
 										for i,v in pairs(Frame:GetChildren()) do 
 											if v:IsA("TextButton") then 
 												library:Tween(v.TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
-											end 
-										end 
-
-										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
-
-										Element.value.Scroll = v 
-
+											end
+										end
+										library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()})
+										Element.value.Scroll = v
 										values[tabname][sectorname][text] = Element.value 
 										callback(Element.value) 
 									end) 
@@ -3345,36 +3340,19 @@ do
 											library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 										end 
 									end) 
-								end 
-
+								end
 								function Element:SetValue(val) 
 									Element.value = val 
-
 									for i,v in pairs(Frame:GetChildren()) do 
 										if v:IsA("TextButton") then 
 											library:Tween(v.TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
 										end 
 									end 
-
-									library:Tween(Frame[Element.value.Scroll].TextLabel, TweenInfo.new(0.1, num.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
+									library:Tween(Frame[Element.value.Scroll].TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 									values[tabname][sectorname][text] = Element.value 
 									callback(Element.value) 
 								end 
 								values[tabname][sectorname][text] = Element.value
-								
-								
-								
-								
-								
-								
-								
-								
-								
-								
-								
-								
-								
-								
 							elseif type == "cfgtype" then 
 							local amount = data.Amount or 6 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,amount * 16 + 8) 
@@ -3449,9 +3427,7 @@ ConfigUpdateCfgList:Connect(function()
 									TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
 									if first then first = false 
 										TextLabel.TextColor3 = getMainColor() 
---[[function MenuAccent(color)
-TextLabel.TextColor3 = color
-end--]]
+
 									end 
  ConfigUpdateCfgList2:Connect(function()
 Button:Destroy()
@@ -4146,7 +4122,6 @@ end
 							elseif type == "ToggleColor" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
 								Element.value = {Rainbow = false, RainbowSpeed = 3, Toggle = data.default and data.default.Toggle or false, Color = data.default and data.default.Color or C.COL3RGB(255,255,255), SetColor} 
-								--print(Element.value.Color,text)
 								local Toggle = C.INST("Frame") 
 								local Button = C.INST("TextButton") 
 								local Color = C.INST("Frame") 
@@ -4230,7 +4205,7 @@ end
 								Frame.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
 								Frame.BorderColor3 = C.COL3RGB(18, 18, 16) 
 								Frame.Position = C.UDIM2(-0.666666687, -170, 1.375, 0) 
-								Frame.Size = C.UDIM2(0, 200, 0, 300) --edit second value (10 or 20 or 30 i forgor)
+								Frame.Size = C.UDIM2(0, 200, 0, 300)
 								Frame.Visible = false 
 								Frame.ZIndex = 4
 
@@ -4242,7 +4217,7 @@ end
 								Button5.Parent = Frame 
 								Button5.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
 								Button5.BackgroundTransparency = 1.000
-								Button5.Position = C.UDIM2(0, -20, 0.6, 0) --edit here
+								Button5.Position = C.UDIM2(0, -20, 0.6, 0)
 								Button5.Size = C.UDIM2(1, 0, 0, 15) 
 								Button5.ZIndex = 4
 
