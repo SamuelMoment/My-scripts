@@ -3721,8 +3721,10 @@ ConfigUpdateCfgList:Fire()
 								end) 
 							elseif type == "ToggleKeybind" then 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,16) 
-								Element.value = {Toggle = data.default and data.default.Toggle or false, Key = data.default and data.default.Key or nil, Type = "Always", Active = true} 
-								Element.value.Key = data.default and data.default.Key or nil
+								Element.value = {Toggle = data.default and data.default.Toggle or false, Key = data.default and data.default.Key or nil, Type = data.default and data.default.Type or "Always", Active = true} 
+								if Element.value.Type == 'Toggle' and Element.value.Key ~= nil then
+									keybindadd(text,Element.value.Key)
+								end
 								local Toggle = C.INST("Frame") 
 								local Button = C.INST("TextButton") 
 								local Color = C.INST("Frame") 
@@ -3805,9 +3807,9 @@ ConfigUpdateCfgList:Fire()
 									Keybind.BackgroundColor3 = C.COL3RGB(31, 31, 31) 
 									Keybind.BorderColor3 = C.COL3RGB(18, 18, 16) 
 									Keybind.Position = C.UDIM2(0, 270, 0.5, -6) 
-									Keybind.Text = data.default and data.default.Key or 'none'
-									Keybind.Size = C.UDIM2(0, 43, 0, 12) 
-									Keybind.Size = C.UDIM2(0,txt:GetTextSize("NONE", 14, Enum.Font.SourceSansSemibold, C.Vec2(700, 12)).X + 5,0, 12)
+									Keybind.Text = data.default and data.default.Key or 'NONE'
+									Keybind.Size = C.UDIM2(0,txt:GetTextSize(Keybind.Text, 14, Enum.Font.SourceSansSemibold, C.Vec2(700, 12)).X + 5,0, 12)
+									
 									Keybind.AutoButtonColor = false 
 									Keybind.Font = Enum.Font.Gotham 
 									Keybind.TextColor3 = C.COL3RGB(200, 200, 200) 

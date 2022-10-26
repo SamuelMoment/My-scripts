@@ -4552,7 +4552,7 @@ end
 				
 			addons:Element('ToggleColor', 'ui border', {default = {Color = C.COL3RGB(255,255,255)}})	
 				
-				addons:Element('ToggleKeybind', 'gui keybind', {default = {Key = RightShift, Type = Toggle, Toggle = true}}, function(tbl)
+				addons:Element('ToggleKeybind', 'gui keybind', {default = {Key = 'RightShift', Type = 'Toggle', Toggle = true}}, function(tbl)
 	if tbl.Toggle then
 		watermarklocation.watermark.Draggable = tbl.Active
 		ovascreengui['ova'].Enabled = tbl.Active

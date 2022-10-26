@@ -214,27 +214,28 @@ INSERT(allcfgs, 'shit so script wont crash')
 end--]]
 
 
-local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/library.lua"))()
+local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement = loadstring(game:HttpGet("https://raw.githubusercontent.com/SamuelMoment/My-scripts/main/library.lua"))()
 library.setcfglocation(cfglocation)
 
 Spawn = Signal.new('Spawn')
 Died = Signal.new('Died')
 
 	
-	
-local ChrModels = game:GetObjects("rbxassetid://10861091036")[1]
+local cacheModels = game:GetObjects("rbxassetid://11377511083")[1]
+repeat wait() until cacheModels ~= nil
+local ChrModels = cacheModels:FindFirstChild('r6')
 repeat wait() until ChrModels ~= nil 
 
-local ChrModels2 = game:GetObjects("rbxassetid://10870484406")[1]
+local ChrModels2 = cacheModels:FindFirstChild('r6 2')
 repeat wait() until ChrModels2 ~= nil 
 
-local ChrModels3 = game:GetObjects("rbxassetid://10870491265")[1]
+local ChrModels3 = cacheModels:FindFirstChild('r6 3')
 repeat wait() until ChrModels3 ~= nil
 
-local ChinaHat = game:GetObjects('rbxassetid://9756426202')[1]
+local ChinaHat = game:GetObjects('rbxassetid://11377527413')[1]
 repeat wait() until ChinaHat ~= nil
 
-local Effects = game:GetObjects('rbxassetid://10884096598')[1]
+local Effects = game:GetObjects('rbxassetid://11377514627')[1]
 repeat wait() until Effects ~= nil
 	CreateHitElement(" Welcome, "..LocalPlayer.Name.."!",MainUIColor,5,340, 22)
 	wait(0.5)
@@ -1627,6 +1628,7 @@ end
 	task.spawn(function()
 		game:GetService("RunService").RenderStepped:Connect(function()
 			pcall(function()
+				if LocalPlayer.Character:FindFirstChildWhichIsA('Tool') then return end
 				for i, v in pairs(LocalPlayer.Backpack:GetChildren()) do
 					if v:IsA("Tool") then
 						if v:FindFirstChild("Hitboxes") ~= nil then
@@ -1984,73 +1986,55 @@ end
 --config tab
 do
 
-local allcfgs = {} 
-
-for _,cfg in pairs(listfiles('SamuelPaste_cw/cfgs')) do 
-	local cfgname = C.GSUB(cfg, 'SamuelPaste_cw/cfgs\\', "") 
-	C.INSERT(allcfgs, cfgname) 
-end
-
-
-
-local configs = misc:Sector("configs", "Left") 
-configs:Element("TextBox", "config", {placeholder = "config name"}) -- values.misc.configs.config.Text
-configs:Element("Button", "save new cfg", {}, function() 
-	if values.misc.configs.config.Text ~= "" then 
-		library:SaveConfig(values.misc.configs.config.Text) 
-		insertwithoutdupes(allcfgs, ""..values.misc.configs.config.Text..".txt")
-	end
-	ConfigUpdateCfgList2:Fire()
-	ConfigUpdateCfgList:Fire()
-end) 
-configs:Element("Button", "load", {}, function() 
-	ConfigLoad:Fire(values.misc["configs"].config.Text)
-end)
-configs:Element("cfgtype", "cfgs", {options = allcfgs, Amount = 5})
-configs:Element("Button", "load from list", {}, function() 
-	ConfigLoad1:Fire(values.misc.configs.cfgs.Scroll)
-end)
-configs:Element("Button", "Update cfg in list", {}, function()
-	library:SaveConfig1(values.misc["configs"].cfgs.Scroll)
-end)
-configs:Element("Button", "Refresh cfg list", {}, function()
-table.clear(allcfgs)
-
-for _,cfg in pairs(listfiles('SamuelPaste_cw/cfgs')) do 
-	local cfgname = C.GSUB(cfg, 'SamuelPaste_cw/cfgs\\', "") 
-	C.INSERT(allcfgs, cfgname) 
-end
-	ConfigUpdateCfgList2:Fire()
-	ConfigUpdateCfgList:Fire()
-end)
-configs:Element("Button", 'overwrite cfgs from old folder', {}, function()
-	--[[for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-		local cfgname = C.GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
-		writefile(cfglocation..cfgname, readfile(cfg))
-	end--]]
-	for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-		local cfgname = C.GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
-		writefile('SamuelPaste_cw/cfgs/'..cfgname, readfile(cfg))
-	end
-	table.clear(allcfgs)
-
+	local allcfgs = {} 
+	
 	for _,cfg in pairs(listfiles(cfglocation)) do 
-		local cfgname = C.GSUB(cfg, cfglocation.."\\", "") 
+		local cfgname = C.GSUB(cfg, cfglocation..'\\', "") 
+		C.INSERT(allcfgs, cfgname) 
+	end
+	
+	
+	
+	local configs = misc:Sector("configs", "Left") 
+	configs:Element("TextBox", "config", {placeholder = "config name"}) -- values.misc.configs.config.Text
+	configs:Element("Button", "save new cfg", {}, function() 
+		if values.misc.configs.config.Text ~= "" then 
+			library:SaveConfig(values.misc.configs.config.Text) 
+			insertwithoutdupes(allcfgs, ""..values.misc.configs.config.Text..".txt")
+		end
+		ConfigUpdateCfgList2:Fire()
+		ConfigUpdateCfgList:Fire()
+	end) 
+	configs:Element("Button", "load", {}, function() 
+		ConfigLoad:Fire(values.misc["configs"].config.Text)
+	end)
+	configs:Element("cfgtype", "cfgs", {options = allcfgs, Amount = 5})
+	configs:Element("Button", "load from list", {}, function() 
+		ConfigLoad1:Fire(values.misc.configs.cfgs.Scroll)
+	end)
+	configs:Element("Button", "Update cfg in list", {}, function()
+		library:SaveConfig1(values.misc["configs"].cfgs.Scroll)
+	end)
+	configs:Element("Button", "Refresh cfg list", {}, function()
+	table.clear(allcfgs)
+	
+	for _,cfg in pairs(listfiles('SamuelPaste_cw/cfgs')) do 
+		local cfgname = C.GSUB(cfg, cfglocation..'\\', "") 
 		C.INSERT(allcfgs, cfgname) 
 	end
 		ConfigUpdateCfgList2:Fire()
 		ConfigUpdateCfgList:Fire()
-end)
+	end)
 
-configs:Element("Toggle", "keybind list", nil, function(tbl) 
-	library:SetKeybindVisible(tbl.Toggle) 
-end) 
-		configs:Element("Toggle", "specators list", {}, function(tbl)
-			library:SetSpectatorVisible(tbl.Toggle) 
-		end)
-			configs:Element("Toggle", "keystrokes", {}, function(tbl)
-				if tbl.Toggle then
-						 local ScreenGuiKey = C.INST("ScreenGui")
+	configs:Element("Toggle", "keybind list", nil, function(tbl) 
+		library:SetKeybindVisible(tbl.Toggle) 
+	end) 
+	configs:Element("Toggle", "specators list", {}, function(tbl)
+		library:SetSpectatorVisible(tbl.Toggle) 
+	end)
+	configs:Element("Toggle", "keystrokes", {}, function(tbl)
+		if tbl.Toggle then
+			local ScreenGuiKey = C.INST("ScreenGui")
 			local W = C.INST("TextLabel")
 			local A = C.INST("TextLabel")
 			local S = C.INST("TextLabel")
@@ -2080,19 +2064,6 @@ end)
 			W.TextColor3 = C.COL3RGB(255, 255, 255)
 			W.TextSize = 14.000
 			W.TextStrokeTransparency = 0.000
-			
-			_.Name = "_"
-			_.Parent = ScreenGuiKey
-			_.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_.BackgroundTransparency = 1.000
-			_.Position = C.UDIM2(0.488053292, 0, 0.728395104, 0)
-			_.Size = C.UDIM2(0, 29, 0, 28)
-			_.Visible = true
-			_.Font = Enum.Font.Code
-			_.Text = "_"
-			_.TextColor3 = C.COL3RGB(255, 255, 255)
-			_.TextSize = 14.000
-			_.TextStrokeTransparency = 0.000
 
 			A.Name = "A"
 			A.Parent = ScreenGuiKey
@@ -2106,19 +2077,6 @@ end)
 			A.TextColor3 = C.COL3RGB(255, 255, 255)
 			A.TextSize = 14.000
 			A.TextStrokeTransparency = 0.000
-			
-			_2.Name = "_2"
-			_2.Parent = ScreenGuiKey
-			_2.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_2.BackgroundTransparency = 1.000
-			_2.Position = C.UDIM2(0.453584045, 0, 0.777777791, 0)
-			_2.Size = C.UDIM2(0, 29, 0, 28)
-			_2.Visible = true
-			_2.Font = Enum.Font.Code
-			_2.Text = "_"
-			_2.TextColor3 = C.COL3RGB(255, 255, 255)
-			_2.TextSize = 14.000
-			_2.TextStrokeTransparency = 0.000
 
 			S.Name = "S"
 			S.Parent = ScreenGuiKey
@@ -2132,19 +2090,6 @@ end)
 			S.TextColor3 = C.COL3RGB(255, 255, 255)
 			S.TextSize = 14.000
 			S.TextStrokeTransparency = 0.000
-			
-			_3.Name = "_3"
-			_3.Parent = ScreenGuiKey
-			_3.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_3.BackgroundTransparency = 1.000
-			_3.Position = C.UDIM2(0.488053292, 0, 0.777777791, 0)
-			_3.Size = C.UDIM2(0, 29, 0, 28)
-			_3.Visible = true
-			_3.Font = Enum.Font.Code
-			_3.Text = "_"
-			_3.TextColor3 = C.COL3RGB(255, 255, 255)
-			_3.TextSize = 14.000
-			_3.TextStrokeTransparency = 0.000
 
 			D.Name = "D"
 			D.Parent = ScreenGuiKey
@@ -2158,19 +2103,6 @@ end)
 			D.TextColor3 = C.COL3RGB(255, 255, 255)
 			D.TextSize = 14.000
 			D.TextStrokeTransparency = 0.000
-			
-			_4.Name = "_4"
-			_4.Parent = ScreenGuiKey
-			_4.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_4.BackgroundTransparency = 1.000
-			_4.Position = C.UDIM2(0.522522688, 0, 0.777777791, 0)
-			_4.Size = C.UDIM2(0, 29, 0, 28)
-			_4.Visible = true
-			_4.Font = Enum.Font.Code
-			_4.Text = "_"
-			_4.TextColor3 = C.COL3RGB(255, 255, 255)
-			_4.TextSize = 14.000
-			_4.TextStrokeTransparency = 0.000
 
 			E.Name = "E"
 			E.Parent = ScreenGuiKey
@@ -2184,19 +2116,6 @@ end)
 			E.TextColor3 = C.COL3RGB(255, 255, 255)
 			E.TextSize = 14.000
 			E.TextStrokeTransparency = 0.000
-			
-			_5.Name = "_5"
-			_5.Parent = ScreenGuiKey
-			_5.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_5.BackgroundTransparency = 1.000
-			_5.Position = C.UDIM2(0.453584045, 0, 0.728395045, 0)
-			_5.Size = C.UDIM2(0, 29, 0, 28)
-			_5.Visible = true
-			_5.Font = Enum.Font.Code
-			_5.Text = "_"
-			_5.TextColor3 = C.COL3RGB(255, 255, 255)
-			_5.TextSize = 14.000
-			_5.TextStrokeTransparency = 0.000
 
 			R.Name = "R"
 			R.Parent = ScreenGuiKey
@@ -2210,19 +2129,6 @@ end)
 			R.TextColor3 = C.COL3RGB(255, 255, 255)
 			R.TextSize = 14.000
 			R.TextStrokeTransparency = 0.000
-			
-			_6.Name = "_6"
-			_6.Parent = ScreenGuiKey
-			_6.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-			_6.BackgroundTransparency = 1.000
-			_6.Position = C.UDIM2(0.522522688, 0, 0.728395045, 0)
-			_6.Size = C.UDIM2(0, 29, 0, 28)
-			_6.Visible = true
-			_6.Font = Enum.Font.Code
-			_6.Text = "_"
-			_6.TextColor3 = C.COL3RGB(255, 255, 255)
-			_6.TextSize = 14.000
-			_6.TextStrokeTransparency = 0.000
 	 
 
 			local UserInputService = game:GetService("UserInputService")
@@ -2237,287 +2143,308 @@ end)
 
 			UserInputService.InputBegan:Connect(function(input)
 				if (input.KeyCode == W1Key) then
-					W.Visible = true
-					_.Visible = false
+					W.Text = 'W'
 				elseif (input.KeyCode == A1Key) then
-					A.Visible = true
-					_2.Visible = false
+					A.Text = 'A'
 				elseif (input.KeyCode == S1Key) then
-					S.Visible = true
-					_3.Visible = false
+					S.Text = 'S'
 				elseif (input.KeyCode == D1Key) then
-					D.Visible = true
-					_4.Visible = false
+					D.Text = 'D'
 				elseif (input.KeyCode == E1Key) then
-					E.Visible = true
-					_5.Visible = false
+					E.Text = 'C'
 				elseif (input.KeyCode == SpaceKey) then
-					R.Visible = true
-					_6.Visible = false
+					R.Text = 'J'
 				end
 			end)
 
 			UserInputService.InputEnded:Connect(function(input)
 				if (input.KeyCode == W1Key) then
-					W.Visible = false
-					_.Visible = true
+					W.Text = '_'
 				elseif (input.KeyCode == A1Key) then
-					A.Visible = false
-					_2.Visible = true
+					A.Text = '_'
 				elseif (input.KeyCode == S1Key) then
-					S.Visible = false
-					_3.Visible = true
+					S.Text = '_'
 				elseif (input.KeyCode == D1Key) then
-					D.Visible = false
-					_4.Visible = true
+					D.Text = '_'
 				elseif (input.KeyCode == E1Key) then
-					E.Visible = false
-					_5.Visible = true	
+					E.Text = '_'
 				elseif (input.KeyCode == SpaceKey) then
-					R.Visible = false
-					_6.Visible = true
+					R.Text = '_'
 				end
 			end)		
-			else
+		else
 			game.CoreGui.keystrokess:Destroy()
+		end
+	end)
+
+
+	local addons = misc:Sector("addons", "Left") 
+	addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
+		if tbl.Toggle then
+			oldColor = MainUIColor
+			getgenv().MainUIColor = tbl.Color
+			game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
+			game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
+			if game.CoreGui:FindFirstChild('fl indicator') then
+			game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
 			end
-			end)
+			for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
+				if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
+					v.BackgroundColor3 = MainUIColor
+				elseif v:IsA('ScrollingFrame') and v.Parent.Name == 'Scroll' then
+					v.ScrollBarImageColor3 = MainUIColor
+				elseif v:IsA('UIGradient') and v.Name ~= 'HueFrameGradient' then
+					v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
+				elseif v:IsA('TextLabel') and v.TextColor3 == oldColor and (v.Name ~= 'CheckerINeed' and v.Name ~= 'SectionText') then
+					v.TextColor3 = MainUIColor
+				end
+			end
+		  
+			for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
+				if v:IsA("TextButton") then
+					v.Gard.BackgroundColor3 = MainUIColor
+				end
+			end	
+			for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
+				if v:IsA("Frame") then
+					v.Grad.BackgroundColor3 = MainUIColor
+				end
+			end
+		else
+			oldColor = MainUIColor
+			getgenv().MainUIColor = Color3.fromRGB(255,20,147)
+			game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
+			game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
+			if game.CoreGui:FindFirstChild('fl indicator') then
+			game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
+			end
+			for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
+				if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
+					v.BackgroundColor3 = MainUIColor
+				elseif v:IsA('ScrollingFrame') and v.Parent.Name == 'Scroll' then
+					v.ScrollBarImageColor3 = MainUIColor
+				elseif v:IsA('UIGradient') and v.Name ~= 'HueFrameGradient' then
+					v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
+				elseif v:IsA('TextLabel') and v.TextColor3 == oldColor and (v.Name ~= 'CheckerINeed' and v.Name ~= 'SectionText') then
+					v.TextColor3 = MainUIColor
+				elseif v:IsA('Frame') and v.Name == 'Toggle' then
+					v.BackgroundColor3 = MainUIColor
+				end
+			end
+		  
+			for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
+				if v:IsA("TextButton") then
+					v.Gard.BackgroundColor3 = MainUIColor
+				end
+			end	
+			for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
+				if v:IsA("Frame") then
+					v.Grad.BackgroundColor3 = MainUIColor
+				end
+			end
+			
+		end
+	end)
+
+	watermarkthemes = {}
+	watermarklocation = nil
 
 
-local addons = misc:Sector("addons", "Left") 
-				addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
-					if tbl.Toggle then
-						oldColor = MainUIColor
-						getgenv().MainUIColor = tbl.Color
-						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
-						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
-						if game.CoreGui:FindFirstChild('fl indicator') then
-						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
-						end
-						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
-							if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
-								v.BackgroundColor3 = MainUIColor
-							elseif v:IsA('ScrollingFrame') and v.Parent.Name == 'Scroll' then
-								v.ScrollBarImageColor3 = MainUIColor
-							elseif v:IsA('UIGradient') and v.Name ~= 'HueFrameGradient' then
-								v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
-							elseif v:IsA('TextLabel') and v.TextColor3 == oldColor and (v.Name ~= 'CheckerINeed' and v.Name ~= 'SectionText') then
-								v.TextColor3 = MainUIColor
-							end
-						end
-					  
-						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
-							if v:IsA("TextButton") then
-								v.Gard.BackgroundColor3 = MainUIColor
-							end
-						end	
-						for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
-							if v:IsA("Frame") then
-								v.Grad.BackgroundColor3 = MainUIColor
-							end
-						end
-					else
-						oldColor = MainUIColor
-						getgenv().MainUIColor = Color3.fromRGB(255,20,147)
-						game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
-						game:GetService("CoreGui").SpectatorsList.Spectators.Color.BackgroundColor3 = MainUIColor
-						if game.CoreGui:FindFirstChild('fl indicator') then
-						game:GetService("CoreGui")["fl indicator"].wgrgerqgerq.gradins.BackgroundColor3 = MainUIColor
-						end
-						for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
-							if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
-								v.BackgroundColor3 = MainUIColor
-							elseif v:IsA('ScrollingFrame') and v.Parent.Name == 'Scroll' then
-								v.ScrollBarImageColor3 = MainUIColor
-							elseif v:IsA('UIGradient') and v.Name ~= 'HueFrameGradient' then
-								v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, C.COL3RGB(75, 92, 112))}
-							elseif v:IsA('TextLabel') and v.TextColor3 == oldColor and (v.Name ~= 'CheckerINeed' and v.Name ~= 'SectionText') then
-								v.TextColor3 = MainUIColor
-							elseif v:IsA('Frame') and v.Name == 'Toggle' then
-								v.BackgroundColor3 = MainUIColor
-							end
-						end
-					  
-						for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
-							if v:IsA("TextButton") then
-								v.Gard.BackgroundColor3 = MainUIColor
-							end
-						end	
-						for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
-							if v:IsA("Frame") then
-								v.Grad.BackgroundColor3 = MainUIColor
-							end
-						end
-						
-					end
-				end)
+	do
+		local watermark = C.INST('ScreenGui')
+		local watermark_2 = C.INST('Frame')
+		local title = C.INST('TextLabel')
+		local none = C.INST('UIGradient')
+		local linetop = C.INST('UIGradient')
+		local linetopandbottem = C.INST('UIGradient')
+		local shadowatbottem = C.INST('UIGradient')
+		local shadowattop = C.INST('UIGradient')
+		local shadowattopandbottom = C.INST('UIGradient')
 
-watermarkthemes = {}
-watermarklocation = nil
+		watermarklocation = watermark
 
+		watermark.Name = 'watermark'
+		watermark.Parent = game.CoreGui
+		watermark.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-do
-	local watermark = C.INST('ScreenGui')
-	local watermark_2 = C.INST('Frame')
-	local title = C.INST('TextLabel')
-	local none = C.INST('UIGradient')
-	local linetop = C.INST('UIGradient')
-	local linetopandbottem = C.INST('UIGradient')
-	local shadowatbottem = C.INST('UIGradient')
-	local shadowattop = C.INST('UIGradient')
-	local shadowattopandbottom = C.INST('UIGradient')
+		watermark_2.Name = 'watermark'
+		watermark_2.Parent = watermark
+		watermark_2.BackgroundColor3 = C.COL3RGB(29, 29, 29)
+		watermark_2.BorderColor3 = C.COL3RGB(255, 255, 255)
+		watermark_2.Position = C.UDIM2(0.912, 0, 0.00858895481, 0)
+		watermark_2.Size = C.UDIM2(0, 89, 0, 20)
+		
+		title.Name = 'title'
+		title.Parent = watermark_2
+		title.BackgroundColor3 = C.COL3RGB(255, 255, 255)
+		title.BackgroundTransparency = 1.000
+		title.Position = C.UDIM2(0, 0, 0.0597654358, 0)
+		title.Size = C.UDIM2(0, 0, 0, 18)
+		title.Font = Enum.Font.Nunito
+		title.LineHeight = 1.21
+		title.Text = '		 yes.no'
+		title.TextColor3 = C.COL3RGB(255, 255, 255)
+		title.TextSize = 16.000
+		title.TextStrokeColor3 = C.COL3RGB(25, 25, 25)
+		title.TextStrokeTransparency = 0.000
+		title.TextXAlignment = Enum.TextXAlignment.Left
 
-	watermarklocation = watermark
+		none.Enabled = false
+		none.Color =ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(255, 255, 255))}
+		none.Rotation = 0
+		none.Name = 'none'
+		none.Parent = watermark_2
 
-	watermark.Name = 'watermark'
-	watermark.Parent = game.CoreGui
-	watermark.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+		linetop.Enabled = false
+		linetop.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(0, 0, 0)), ColorSequenceKeypoint.new(0.00, C.COL3RGB(56, 56, 56)), ColorSequenceKeypoint.new(0.00, C.COL3RGB(0, 0, 0)), ColorSequenceKeypoint.new(0.66, C.COL3RGB(0, 0, 0)), ColorSequenceKeypoint.new(0.99, C.COL3RGB(0, 0, 0)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(255, 255, 255))}
+		linetop.Rotation = -90
+		linetop.Name = 'linetop'
+		linetop.Parent = watermark_2
+		
+		shadowatbottem.Enabled = false
+		shadowatbottem.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(0, 0, 0))}
+		shadowatbottem.Rotation = 90
+		shadowatbottem.Name = 'shadowatbottem'
+		shadowatbottem.Parent = watermark_2
 
-	watermark_2.Name = 'watermark'
-	watermark_2.Parent = watermark
-	watermark_2.BackgroundColor3 = C.COL3RGB(29, 29, 29)
-	watermark_2.BorderColor3 = C.COL3RGB(255, 255, 255)
-	watermark_2.Position = C.UDIM2(0.912, 0, 0.00858895481, 0)
-	watermark_2.Size = C.UDIM2(0, 89, 0, 20)
-	
-	title.Name = 'title'
-	title.Parent = watermark_2
-	title.BackgroundColor3 = C.COL3RGB(255, 255, 255)
-	title.BackgroundTransparency = 1.000
-	title.Position = C.UDIM2(0, 0, 0.0597654358, 0)
-	title.Size = C.UDIM2(0, 0, 0, 18)
-	title.Font = Enum.Font.Nunito
-	title.LineHeight = 1.21
-	title.Text = '		 yes.no'
-	title.TextColor3 = C.COL3RGB(255, 255, 255)
-	title.TextSize = 16.000
-	title.TextStrokeColor3 = C.COL3RGB(25, 25, 25)
-	title.TextStrokeTransparency = 0.000
-	title.TextXAlignment = Enum.TextXAlignment.Left
+		shadowattop.Enabled = false
+		shadowattop.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(0, 0, 0))}
+		shadowattop.Rotation = -90
+		shadowattop.Name = 'shadowattop'
+		shadowattop.Parent = watermark_2
 
-	none.Enabled = false
-	none.Color =ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(255, 255, 255))}
-	none.Rotation = 0
-	none.Name = 'none'
-	none.Parent = watermark_2
+		shadowattopandbottom.Enabled = false
+		shadowattopandbottom.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(25, 25, 25)), ColorSequenceKeypoint.new(0.59, C.COL3RGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(25, 25, 25))}
+		shadowattopandbottom.Rotation = -90
+		shadowattopandbottom.Name = 'shadowattopandbottom'
+		shadowattopandbottom.Parent = watermark_2
 
-	linetop.Enabled = false
-	linetop.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(0, 0, 0)), ColorSequenceKeypoint.new(0.00, C.COL3RGB(56, 56, 56)), ColorSequenceKeypoint.new(0.00, C.COL3RGB(0, 0, 0)), ColorSequenceKeypoint.new(0.66, C.COL3RGB(0, 0, 0)), ColorSequenceKeypoint.new(0.99, C.COL3RGB(0, 0, 0)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(255, 255, 255))}
-	linetop.Rotation = -90
-	linetop.Name = 'linetop'
-	linetop.Parent = watermark_2
-	
-	shadowatbottem.Enabled = false
-	shadowatbottem.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(0, 0, 0))}
-	shadowatbottem.Rotation = 90
-	shadowatbottem.Name = 'shadowatbottem'
-	shadowatbottem.Parent = watermark_2
-
-	shadowattop.Enabled = false
-	shadowattop.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(0, 0, 0))}
-	shadowattop.Rotation = -90
-	shadowattop.Name = 'shadowattop'
-	shadowattop.Parent = watermark_2
-
-	shadowattopandbottom.Enabled = false
-	shadowattopandbottom.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, C.COL3RGB(25, 25, 25)), ColorSequenceKeypoint.new(0.59, C.COL3RGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, C.COL3RGB(25, 25, 25))}
-	shadowattopandbottom.Rotation = -90
-	shadowattopandbottom.Name = 'shadowattopandbottom'
-	shadowattopandbottom.Parent = watermark_2
-
-	for a,b in next, watermark_2:GetChildren() do -- inserts all the theme names into 'watermarkthemes'
-		if b:IsA('UIGradient') then
-			C.INSERT(watermarkthemes, b.Name)
+		for a,b in next, watermark_2:GetChildren() do -- inserts all the theme names into 'watermarkthemes'
+			if b:IsA('UIGradient') then
+				C.INSERT(watermarkthemes, b.Name)
+			end
 		end
 	end
-end
 
 
-themebackground = {
-	['Default'] = 8893436115,
-	['Shiba.gang'] = 2151741365,
-	['Hearts'] = 6073763717,
-	['Abstract'] = 6073743871,
-	['Hexagon'] = 6073628839,
-	['Circles'] = 6071579801,
-	['Lace With Flowers'] = 6071575925,
-	['Floral'] = 5553946656,
-}
+	themebackground = {
+		['Default'] = 8893436115,
+		['Shiba.gang'] = 2151741365,
+		['Hearts'] = 6073763717,
+		['Abstract'] = 6073743871,
+		['Hexagon'] = 6073628839,
+		['Circles'] = 6071579801,
+		['Lace With Flowers'] = 6071575925,
+		['Floral'] = 5553946656,
+	}
 
-Images_names = {}
-C.INSERT(Images_names, 'Default')
-for a,b in next, themebackground do 
-	insertwithoutdupes(Images_names, a)
-end
-				
-addons:Element('ToggleColor', 'ui border', {default = {Color = C.COL3RGB(255,255,255)}})	
-				
-addons:Element('ToggleKeybind', 'gui keybind', {default = {Key = RightShift, Type = Toggle, Toggle = true}}, function(tbl)
-	if tbl.Toggle then
-		watermarklocation.watermark.Draggable = tbl.Active
-		ovascreengui['ova'].Enabled = tbl.Active
-		library.uiopen = tbl.Active
+	Images_names = {}
+	C.INSERT(Images_names, 'Default')
+	for a,b in next, themebackground do 
+		insertwithoutdupes(Images_names, a)
 	end
-end)
-addons:Element("TextBox", "mnt", {placeholder = "Custom cheat name"}, function()
-	game:GetService("CoreGui")["electric boogalo"].Holder.TextLabel.Text = values.misc.addons.mnt.Text
-	valuewtr = values.misc.addons.mnt.Text
-	print(valuewtr)
-end)
-
-
-
-addons:Element('Dropdown', 'background', {options = Images_names})
-addons:Element('ToggleTrans', 'background color', {default = {Color = C.COL3RGB(180,180,180), Transparency = 0}})
-local watermark = misc:Sector('watermark', 'Right')
-
-watermark:Element('Toggle', 'enabled', {default = {Toggle = true}}, function(tbl)
-	watermarklocation.Enabled = tbl.Toggle
-end)
-watermark:Element('Dropdown', 'themes', {options = watermarkthemes})
-local watermarktext
-watermark:Element('TextBox', 'watermark text', {placeholder = 'text here', default = {text = '		 yes.no'}}, function(tbl)
-	pcall(function()
-		watermarktext:Disconnect()
+					
+	addons:Element('ToggleColor', 'ui border', {default = {Color = C.COL3RGB(255,255,255)}})	
+					
+	addons:Element('ToggleKeybind', 'gui keybind', {default = {Key = 'RightShift', Type = 'Toggle', Toggle = true}}, function(tbl)
+		if tbl.Toggle then
+			watermarklocation.watermark.Draggable = tbl.Active
+			ovascreengui['ova'].Enabled = tbl.Active
+			library.uiopen = tbl.Active
+		end
 	end)
-	watermarktext = RunService.RenderStepped:Connect(function()
-		wait(1)
-		local textierawr = textboxtriggers(tbl.Text)
-		watermarklocation.watermark.title.Text = textierawr
+	addons:Element("TextBox", "mnt", {placeholder = "Custom cheat name"}, function()
+		game:GetService("CoreGui")["electric boogalo"].Holder.TextLabel.Text = values.misc.addons.mnt.Text
+		valuewtr = values.misc.addons.mnt.Text
+		print(valuewtr)
 	end)
-end)
 
-watermark:Element('Dropdown', 'text font', {options = fonts}, function(tbl)
-	watermarklocation.watermark.title.Font = Enum.Font[tbl.Dropdown]
-end)
-watermark:Element('Slider', 'text size', {min = 0, max = 50, default = watermarklocation.watermark.title.TextSize}, function(tbl)
-	watermarklocation.watermark.title.TextSize = tbl.Slider
-end)
-watermark:Element('Slider', 'text line height', {min = -50, max = 50, default = watermarklocation.watermark.title.LineHeight}, function(tbl)
-	watermarklocation.watermark.title.LineHeight = 1.1 * (tbl.Slider / 10)
-end)
-watermark:Element('Slider', 'watermark lenght', {min = 0, max = 100, default = 89}, function(tbl)
-	watermarklocation.watermark.Size = C.UDIM2(0, tbl.Slider * 5, 0, values.misc.watermark['watermark height'].Slider)
-end)
-watermark:Element('Slider', 'watermark height', {min = 0, max = 100, default = 20}, function(tbl)
-	watermarklocation.watermark.Size = C.UDIM2(0, values.misc.watermark['watermark lenght'].Slider * 5, 0, tbl.Slider)
-end)
-watermark:Element('ToggleColor', 'border color', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
-	watermarklocation.watermark.BorderColor3 = tbl.Color
-end)
-watermark:Element('ToggleColor', 'text color', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
-	watermarklocation.watermark.title.TextColor3 = tbl.Color
-end)
 
-watermark:Element('Slider', 'watermark offset X', {min = -100, max = 0, default = watermarklocation.watermark.Position.X.Scale}, function(tbl)
-	watermarklocation.watermark.Position = UDim2.new(0.912 + (tbl.Slider / 150), 0, watermarklocation.watermark.Position.Y.Scale, 0)
-end)
 
-watermark:Element('Slider', 'watermark offset y', {min = -100, max = 0, default = watermarklocation.watermark.Position.Y.Scale}, function(tbl)
-	watermarklocation.watermark.Position = UDim2.new(watermarklocation.watermark.Position.X.Scale, 0,  0.00858895481 + (tbl.Slider / 150) , 0)
-end)
+	addons:Element('Dropdown', 'background', {options = Images_names})
+	addons:Element('ToggleTrans', 'background color', {default = {Color = C.COL3RGB(180,180,180), Transparency = 0}})
+	local watermark = misc:Sector('watermark', 'Right')
 
+	watermark:Element('Toggle', 'enabled', {default = {Toggle = true}}, function(tbl)
+		watermarklocation.Enabled = tbl.Toggle
+	end)
+	watermark:Element('Dropdown', 'themes', {options = watermarkthemes})
+	local watermarktext
+	watermark:Element('TextBox', 'watermark text', {placeholder = 'text here', default = {text = '		 yes.no'}}, function(tbl)
+		pcall(function()
+			watermarktext:Disconnect()
+		end)
+		watermarktext = RunService.RenderStepped:Connect(function()
+			wait(1)
+			local textierawr = textboxtriggers(tbl.Text)
+			watermarklocation.watermark.title.Text = textierawr
+		end)
+	end)
+
+	watermark:Element('Dropdown', 'text font', {options = fonts}, function(tbl)
+		watermarklocation.watermark.title.Font = Enum.Font[tbl.Dropdown]
+	end)
+	watermark:Element('Slider', 'text size', {min = 0, max = 50, default = watermarklocation.watermark.title.TextSize}, function(tbl)
+		watermarklocation.watermark.title.TextSize = tbl.Slider
+	end)
+	watermark:Element('Slider', 'text line height', {min = -50, max = 50, default = watermarklocation.watermark.title.LineHeight}, function(tbl)
+		watermarklocation.watermark.title.LineHeight = 1.1 * (tbl.Slider / 10)
+	end)
+	watermark:Element('Slider', 'watermark lenght', {min = 0, max = 100, default = 89}, function(tbl)
+		watermarklocation.watermark.Size = C.UDIM2(0, tbl.Slider * 5, 0, values.misc.watermark['watermark height'].Slider)
+	end)
+	watermark:Element('Slider', 'watermark height', {min = 0, max = 100, default = 20}, function(tbl)
+		watermarklocation.watermark.Size = C.UDIM2(0, values.misc.watermark['watermark lenght'].Slider * 5, 0, tbl.Slider)
+	end)
+	watermark:Element('ToggleColor', 'border color', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
+		watermarklocation.watermark.BorderColor3 = tbl.Color
+	end)
+	watermark:Element('ToggleColor', 'text color', {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl)
+		watermarklocation.watermark.title.TextColor3 = tbl.Color
+	end)
+
+	watermark:Element('Slider', 'watermark offset X', {min = -100, max = 0, default = watermarklocation.watermark.Position.X.Scale}, function(tbl)
+		watermarklocation.watermark.Position = UDim2.new(0.912 + (tbl.Slider / 150), 0, watermarklocation.watermark.Position.Y.Scale, 0)
+	end)
+
+	watermark:Element('Slider', 'watermark offset y', {min = -100, max = 0, default = watermarklocation.watermark.Position.Y.Scale}, function(tbl)
+		watermarklocation.watermark.Position = UDim2.new(watermarklocation.watermark.Position.X.Scale, 0,  0.00858895481 + (tbl.Slider / 150) , 0)
+	end)
+
+	task.spawn(function()
+		while true do task.wait()
+			for i,b in next, watermarklocation.watermark:GetChildren() do 
+				if b:IsA('UIGradient') then 
+					if b.Name == values.misc.watermark.themes.Dropdown then 
+						b.Enabled = true
+					else
+						b.Enabled = false
+					end
+				end
+			end;
+
+
+			if ovascreengui['menu'].Image ~= 'rbxassetid://'..themebackground[values.misc.addons['background'].Dropdown] then 
+				ovascreengui['menu'].Image = 'rbxassetid://'..themebackground[values.misc.addons['background'].Dropdown]
+			end;
+
+			ovascreengui['menu'].ImageColor3 = values.misc.addons['background color'].Color
+			ovascreengui['menu'].BackgroundColor3 = C.COL3RGB(1, 1, 1)
+
+			ovascreengui['menu'].ImageTransparency = values.misc.addons['background color'].Transparency
+
+
+			if values.misc.addons['ui border'].Toggle then 
+				ovascreengui['menu'].BorderSizePixel = 1
+				ovascreengui['menu'].BorderColor3 = values.misc.addons['ui border'].Color
+			else 
+				ovascreengui['menu'].BorderSizePixel = 0
+			end;
+		end;
+	end)
 end
+
+
 function NOFLY()
 	FLYING = false
 	if flyKeyDown or flyKeyUp then flyKeyDown:Disconnect() flyKeyUp:Disconnect() end
@@ -2804,7 +2731,7 @@ do
 		end)
 	end)
 	player:Element("Toggle", "Walk Speed")
-	player:Element("Slider", "Speed", {min = 0, max = 150, default = 75})
+	player:Element("Slider", "Speed", {min = 0, max = 75, default = 75})
 	player:Element("Toggle", "Jump Power")
 	player:Element("Slider", "Power", {min = 0, max = 500, default = 150})
 	Noclipping = game:GetService'RunService'.Stepped:Connect(NoclipLoop)
@@ -4566,10 +4493,7 @@ end
 					ChangeCharacter(ChrModels2:FindFirstChild(values.skins.characters.skin.Scroll[values.skins.characters.skin.Dropdown])) 
 				elseif values.skins.characters.skin.Dropdown == 'Custom characters 3' then
 					ChangeCharacter(ChrModels3:FindFirstChild(values.skins.characters.skin.Scroll[values.skins.characters.skin.Dropdown]))
-					
-				elseif game.Players:FindFirstChild(values.skins.characters.skin.Scroll[values.skins.characters.skin.Dropdown]) then
-					repeat wait() if not game.Players:FindFirstChild(values.skins.characters.skin.Scroll[values.skins.characters.skin.Dropdown]) then break end until game.Players:FindFirstChild(values.skins.characters.skin.Scroll[values.skins.characters.skin.Dropdown]).Character ~= nil
-					if not game.Players:FindFirstChild(values.skins.characters.skin.Scroll[values.skins.characters.skin.Dropdown]) then return end
+				else
 					ChangeCharacter(game.Players:FindFirstChild(values.skins.characters.skin.Scroll[values.skins.characters.skin.Dropdown]).Character)
 				end
 			end 
@@ -4583,7 +4507,25 @@ end
 	scrolldropchars['Custom characters'] = AllCharacters
 	scrolldropchars['Custom characters 2'] = AllCharacters2
 	scrolldropchars['Custom characters 3'] = AllCharacters3
-	scrolldropchars['Players characters'] = loopkillplr
+	local names123 = {}
+	for i,v in pairs(Players:GetPlayers()) do
+		if v ~= LocalPlayer then
+			if v.Character then
+				C.INSERT(names123,v.Name)
+			end
+			v.CharacterAdded:Connect(function()
+				if not C.TBLFIND(names123,v.Name) then
+					C.INSERT(names123,v.Name)
+					values.skins.characters.skin.UpdateValue['Players characters'](names123)
+				end
+			end)
+			v.CharacterRemoving:Connect(function()
+				C.TBLREMOVE(names123,v.Name)
+				values.skins.characters.skin.UpdateValue['Players characters'](names123)
+			end)
+		end
+	end
+	scrolldropchars['Players characters'] = names123
 	
 	characters:Element("ScrollDrop", "skin", {options = scrolldropchars, Amount = 9, alphabet = true}, function(tbl) 
 		if values.skins.characters["character changer"].Toggle then 
@@ -4604,18 +4546,23 @@ end
 		end 
 	end) 
 	
-	game.Players.PlayerAdded:Connect(function(plr)
-		insertwithoutdupes(loopkillplr,plr.Name)
-		values.skins.characters.skin.UpdateValue['Players characters'](loopkillplr)
+	Players.PlayerAdded:Connect(function(plr)
+		plr.CharacterAdded:Connect(function()
+			insertwithoutdupes(names123,plr.Name)
+			values.skins.characters.skin.UpdateValue['Players characters'](names123)
+		end)
+		plr.CharacterRemoving:Connect(function()
+			removewithoutdupes(names123,plr.Name)
+			values.skins.characters.skin.UpdateValue['Players characters'](names123)		
+		end)
 	end)
-	game.Players.PlayerRemoving:Connect(function(plr)
-		removewithoutdupes(loopkillplr,plr.Name)
-		values.skins.characters.skin.UpdateValue['Players characters'](loopkillplr)
+	Players.PlayerRemoving:Connect(function(plr)
+		removewithoutdupes(names123,plr.Name)
+		values.skins.characters.skin.UpdateValue['Players characters'](names123)
 	end)
 	
 
 local trannyenabled = false
-local socks = false
 
 local niggers = skins:Sector("trannyware", "Right") 
 
@@ -4630,9 +4577,6 @@ niggers:Element('Toggle', 'skirt', {}, function(tbl)
 	trannyenabled = tbl.Toggle
 end)
 
-niggers:Element('Toggle', 'socks', {}, function(tbl)
-	socks = tbl.Toggle
-end)
 
 
 
@@ -4646,11 +4590,6 @@ RunService.RenderStepped:connect(function()
 	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Torso") and trannyenabled then
 		a.Position = game.Players.LocalPlayer.Character.Torso.Position - Vector3.new(0,1.3,0)
 		a.Rotation = game.Players.LocalPlayer.Character.Torso.Rotation
-	end
-	if socks and game.Players.LocalPlayer.Character then
-		if game.Players.LocalPlayer.Character:FindFirstChild("Pants") then
-			game.Players.LocalPlayer.Character.Pants.PantsTemplate = "rbxassetid://5381345577"
-		end
 	end
 	a.Transparency = trannyenabled and 0 or 1
 	
@@ -5441,37 +5380,4 @@ do
 
 	
 end
-
-
-task.spawn(function()
-	while true do task.wait()
-		for i,b in next, watermarklocation.watermark:GetChildren() do 
-			if b:IsA('UIGradient') then 
-				if b.Name == values.misc.watermark.themes.Dropdown then 
-					b.Enabled = true
-				else
-					b.Enabled = false
-				end
-			end
-		end;
-
-
-		if ovascreengui['menu'].Image ~= 'rbxassetid://'..themebackground[values.misc.addons['background'].Dropdown] then 
-			ovascreengui['menu'].Image = 'rbxassetid://'..themebackground[values.misc.addons['background'].Dropdown]
-		end;
-
-		ovascreengui['menu'].ImageColor3 = values.misc.addons['background color'].Color
-		ovascreengui['menu'].BackgroundColor3 = C.COL3RGB(1, 1, 1)
-
-		ovascreengui['menu'].ImageTransparency = values.misc.addons['background color'].Transparency
-
-
-		if values.misc.addons['ui border'].Toggle then 
-			ovascreengui['menu'].BorderSizePixel = 1
-			ovascreengui['menu'].BorderColor3 = values.misc.addons['ui border'].Color
-		else 
-			ovascreengui['menu'].BorderSizePixel = 0
-		end;
-	end;
-end)
 CreateHitElement("Script loaded in "..(math.floor((tick() - BeforeLoad)*100)/100).." seconds!",MainUIColor,5, 220, 22)
