@@ -3154,9 +3154,7 @@ do
 										end
 										updatescroll(joe2)
 										Element.value.UpdateValue[v] = updatescroll
-										print(Element.value.UpdateValue)
-										table.foreach(Element.value.UpdateValue,print)
-										print('---------------')
+
 										first = false 
 									end 
 								end 
