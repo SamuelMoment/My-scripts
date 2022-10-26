@@ -3356,7 +3356,7 @@ do
 										end 
 									end 
 
-									library:Tween(Frame[Element.value.Scroll].TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
+									library:Tween(Frame[Element.value.Scroll].TextLabel, TweenInfo.new(0.1, num.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
 									values[tabname][sectorname][text] = Element.value 
 									callback(Element.value) 
 								end 
