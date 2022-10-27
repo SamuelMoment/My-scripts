@@ -678,8 +678,8 @@ do
 		Grad.Parent = Frame
 		Grad.BackgroundColor3 = getMainColor()
 		Grad.BorderSizePixel = 0
-		Grad.Position = UDim2.new(0, 1, 0, -1)
-		Grad.Size = UDim2.new(0, 60, 0, 2)
+		Grad.Position = UDim2.new(0, -1, 0, -1)
+		Grad.Size = UDim2.new(0, 62, 0, 2)
 		Grad.ZIndex = 694201337
 
 		UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(11, 11, 11)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
@@ -705,11 +705,12 @@ do
 		Frame_2.Parent = Frame
 		Frame_2.BackgroundColor3 = Color3.fromRGB(11, 11, 11)
 		Frame_2.Position = UDim2.new(0, 0, 1, 0)
-		Frame_2.Size = UDim2.new(0, 60, 0, 28)
-		Frame_2.Visible = false
+		Frame_2.Size = UDim2.new(0, 60, 0, 20)
+		Frame_2.BorderSizePixel = 0
+		Frame_2.Visible = true
 		
 		UIListLayout.Parent = Frame_2 
-		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
+		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left 
 		UIListLayout.SortOrder = Enum.SortOrder.Name
 		--[[TextLabel.Parent = Frame
 		TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -721,53 +722,22 @@ do
 		TextLabel.TextXAlignment = Enum.TextXAlignment.Left--]]
 		makeDraggable(Frame)
 		end
-		
-		local keybindss = {}
-		local biggestkeybind
-		
 	function keybindadd(text,keybind) 
-	if KeybindList.Frame.Frame:FindFirstChild(text) then 
-		KeybindList.Frame.Frame:FindFirstChild(text):Destroy(); 
-		KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10); 
-	end
-		if not KeybindList.Frame.Frame:FindFirstChild(text) then 
-			local TextLabel = C.INST("TextLabel")
-			--local size = GetTextBounds(''..text..''..keybind..'', Enum.Font.Code, 14)
-			--[[if size >= (KeybindList.Frame.Size.X - 8) then
-			KeybindList.Frame.Size = C.UDIM2(0, Size + 8, 0, 20)
-			KeybindList.Frame.Grad.Size = C.UDIM2(0,KeybindList.Frame.Size.X, 0,4)
-			KeybindList.Frame.Frame.Size = C.UDIM2(0, Size + 8, 0, 20 * #keybindss)
-			end--]]
-			--[[TextLabel.BackgroundColor3 = C.COL3RGB(1, 1, 1) 
-			TextLabel.BorderColor3 = C.COL3RGB(255,20,147) 
-			TextLabel.
-			TextLabel.BorderSizePixel = 0 
-			TextLabel.Size = C.UDIM2(0, 170, 0, 20) 
-			TextLabel.ZIndex = 2 
-			TextLabel.Font = Enum.Font.SourceSansSemibold 
-			TextLabel.Text = ""..text.." : Enabled"
-			TextLabel.TextColor3 = C.COL3RGB(255, 255, 255) 
-			TextLabel.TextSize = 14.000 
-			TextLabel.Name = text 
-			TextLabel.Parent = KeybindList.TextLabel.Frame --]]
-			local Size = GetTextBounds("["..keybind..'] '..text..'', Enum.Font.SourceSans, 14)
-			local XOriginalSize = KeybindList.Frame.Frame.Size.X.Offset
-			local XScale = Size
-			
-			if XScale >= XOriginalSize then
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,10)
-				KeybindList.Frame.Size = KeybindList.Frame.Size + C.UDIM2(0, Size, 0, 0)
-				KeybindList.Frame.Grad.Size = KeybindList.Frame.Grad.Size + C.UDIM2(0, Size, 0 ,0)
-			else
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,0,0,10)
-			end
-				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-					KeybindList.Frame.Frame.Visible = false
-					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-				else
-					KeybindList.Frame.Frame.Visible = true
+		if KeybindList.Frame.Frame:FindFirstChild(text) then 
+			KeybindList.Frame.Frame:FindFirstChild(text):Destroy(); 
+			KeybindList.Frame.Frame.Visible = true
+			KeybindList.Frame.Frame.Size = C.UDIM2(0, 0, 0, 20)
+			for i,v in pairs(KeybindList.Frame.Frame:GetChildren()) do
+				if v:IsA('TextLabel') then
+					if KeybindList.Frame.Frame.Size.X.Offset <= v.TextBounds.X then
+						KeybindList.Frame.Frame.Size = C.UDIM2(0,TextLabel.TextBounds.X,0,KeybindList.Frame.Frame.Size.Y.Offset)
+					end		
+					KeybindList.Frame.Frame.Size += C.UDIM2(0,0,0,10)
 				end
+			end
+		end
+			local TextLabel = C.INST("TextLabel")
+
 			TextLabel.Name = text
 			TextLabel.Parent = KeybindList.Frame.Frame
 			TextLabel.Active = true
@@ -775,7 +745,7 @@ do
 			TextLabel.BackgroundTransparency = 1.000
 			TextLabel.LayoutOrder = 1
 			TextLabel.Position = UDim2.new(0,10,0,0)
-			TextLabel.Size = UDim2.new(0, 60, 0, 20)
+			TextLabel.Size = UDim2.new(0, 100, 0, 20)
 			TextLabel.ZIndex = 694201337
 			TextLabel.Font = Enum.Font.SourceSans
 			TextLabel.LineHeight = 1.190
@@ -783,104 +753,86 @@ do
 			TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 			TextLabel.TextSize = 14.000
 			TextLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-		end 
+			TextLabel.TextXAlignment = 'Left'
+			if KeybindList.Frame.Frame.Size.X.Offset <= TextLabel.TextBounds.X then
+				KeybindList.Frame.Frame.Size = C.UDIM2(0,TextLabel.TextBounds.X,0,KeybindList.Frame.Frame.Size.Y.Offset)
+						KeybindList.Frame.Grad.Size = C.UDIM2(0,TextLabel.TextBounds.X,0, 2)
+						KeybindList.Frame.Size = C.UDIM2(0,TextLabel.TextBounds.X,0,20)	
+			end
+			KeybindList.Frame.Frame.Size += C.UDIM2(0,0,0,10)
 	end 
 		
 	function keybindtoggle(text) 
 		KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Enabled'
+		if KeybindList.Frame.Frame.Size.X.Offset <= KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X then
+			KeybindList.Frame.Frame.Size = C.UDIM2(0,KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X,0,KeybindList.Frame.Frame.Size.Y.Offset)
+						KeybindList.Frame.Grad.Size = C.UDIM2(0,KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X,0, 2)
+						KeybindList.Frame.Size = C.UDIM2(0,KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X,0,20)				
+		end	
 	end 
-					function keybindhold(text)
-						KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Held'
-					end
+	function keybindhold(text)
+		KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Held'
+		if KeybindList.Frame.Frame.Size.X.Offset <= KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X then
+			KeybindList.Frame.Frame.Size = C.UDIM2(0,KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X,0,KeybindList.Frame.Frame.Size.Y.Offset)
+						KeybindList.Frame.Grad.Size = C.UDIM2(0,KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X,0, 2)
+						KeybindList.Frame.Size = C.UDIM2(0,KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X,0,20)				
+		end							
+	end
+	function keybindpress(text)
+		KeybindList.Frame.Frame:FindFirstChild(text).Text = C.GSUB(KeybindList.Frame.Frame:FindFirstChild(text).Text,' : Pressed','')
+		KeybindList.Frame.Frame:FindFirstChild(text).Text = KeybindList.Frame.Frame:FindFirstChild(text).Text..' : Pressed'
+		if KeybindList.Frame.Frame.Size.X.Offset <= KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X then
+			KeybindList.Frame.Frame.Size = C.UDIM2(0,KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X,0,KeybindList.Frame.Frame.Size.Y.Offset)
+						KeybindList.Frame.Grad.Size = C.UDIM2(0,KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X+2,0, 2)
+						KeybindList.Frame.Size = C.UDIM2(0,KeybindList.Frame.Frame:FindFirstChild(text).TextBounds.X,0,20)				
+		end	
+	end
 
-	function keybindremove(text, keybind) 
-		if KeybindList.Frame.Frame:FindFirstChild(text) and KeybindList.Frame.Frame:FindFirstChild(text).Text then
-
-			KeybindList.Frame.Frame:FindFirstChild(text):Destroy()
-			KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10)
-					if not KeybindList.Frame.Frame:FindFirstChild(text) then 
-			local TextLabel = C.INST("TextLabel")
-			--local size = GetTextBounds(''..text..''..keybind..'', Enum.Font.Code, 14)
-			--[[if size >= (KeybindList.Frame.Size.X - 8) then
-			KeybindList.Frame.Size = C.UDIM2(0, Size + 8, 0, 20)
-			KeybindList.Frame.Grad.Size = C.UDIM2(0,KeybindList.Frame.Size.X, 0,4)
-			KeybindList.Frame.Frame.Size = C.UDIM2(0, Size + 8, 0, 20 * #keybindss)
-			end--]]
-			--[[TextLabel.BackgroundColor3 = C.COL3RGB(1, 1, 1) 
-			TextLabel.BorderColor3 = C.COL3RGB(255,20,147) 
-			TextLabel.
-			TextLabel.BorderSizePixel = 0 
-			TextLabel.Size = C.UDIM2(0, 170, 0, 20) 
-			TextLabel.ZIndex = 2 
-			TextLabel.Font = Enum.Font.SourceSansSemibold 
-			TextLabel.Text = ""..text.." : Enabled"
-			TextLabel.TextColor3 = C.COL3RGB(255, 255, 255) 
-			TextLabel.TextSize = 14.000 
-			TextLabel.Name = text 
-			TextLabel.Parent = KeybindList.TextLabel.Frame --]]
-			local Size = GetTextBounds("["..keybind..'] '..text..'', Enum.Font.SourceSans, 14)
-			local XOriginalSize = KeybindList.Frame.Frame.Size.X.Offset
-			local XScale = Size
+	function keybindremove(text) 
+		if KeybindList.Frame.Frame:FindFirstChild(text) then
+			KeybindList.Frame.Frame:FindFirstChild(text).Text = C.GSUB(KeybindList.Frame.Frame:FindFirstChild(text).Text,' : Enabled','')
+			KeybindList.Frame.Frame:FindFirstChild(text).Text = C.GSUB(KeybindList.Frame.Frame:FindFirstChild(text).Text,' : Held','')
+			KeybindList.Frame.Frame:FindFirstChild(text).Text = C.GSUB(KeybindList.Frame.Frame:FindFirstChild(text).Text,' : Pressed','')
 			
-			if XScale >= XOriginalSize then
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0, Size,0,10)
-			else
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size + C.UDIM2(0,0,0,10)
-			end
-				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-					KeybindList.Frame.Frame.Visible = false
-					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-				else
-					KeybindList.Frame.Frame.Visible = true
+			KeybindList.Frame.Frame.Size = C.UDIM2(0, 0, 0, 20)
+			KeybindList.Frame.Size = UDim2.new(0, 60, 0, 20)
+			for i,v in pairs(KeybindList.Frame.Frame:GetChildren()) do
+				if v:IsA('TextLabel') then
+					if KeybindList.Frame.Frame.Size.X.Offset <= v.TextBounds.X then
+						KeybindList.Frame.Frame.Size = C.UDIM2(0,v.TextBounds.X,0,KeybindList.Frame.Frame.Size.Y.Offset)
+						KeybindList.Frame.Grad.Size = C.UDIM2(0,v.TextBounds.X+2,0, 2)
+						KeybindList.Frame.Size = C.UDIM2(0,v.TextBounds.X,0,20)					
+					end
+					KeybindList.Frame.Frame.Size += C.UDIM2(0,0,0,10)
 				end
-			TextLabel.Name = text
-			TextLabel.Parent = KeybindList.Frame.Frame
-			TextLabel.Active = true
-			TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-			TextLabel.BackgroundTransparency = 1.000
-			TextLabel.LayoutOrder = 1
-			TextLabel.Position = UDim2.new(0,10,0,0)
-			TextLabel.Size = UDim2.new(0, 60, 0, 20)
-			TextLabel.ZIndex = 694201337
-			TextLabel.Font = Enum.Font.SourceSans
-			TextLabel.LineHeight = 1.190
-			TextLabel.Text = "["..keybind..'] '..text..''
-			TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-			TextLabel.TextSize = 14.000
-			TextLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-		end 
-				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-					KeybindList.Frame.Frame.Visible = false
-					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-				else
-					KeybindList.Frame.Frame.Visible = true
-				end
+			end			
 		end
 	end 
 
 	function keybindremove2(text) 
 		if KeybindList.Frame.Frame:FindFirstChild(text) then
-				
-				KeybindList.Frame.Frame.Size = KeybindList.Frame.Frame.Size - C.UDIM2(0,0,0,10)
-				local XOffset = KeybindList.Frame.Frame.Size.X.Offset
-				if XOffset <= 60 then
-					--KeybindList.Frame.Frame.Size.X.Offset = 60
-					KeybindList.Frame.Frame.Size = C.UDIM2(KeybindList.Frame.Frame.Size.X.Scale, 60, KeybindList.Frame.Frame.Size.Y.Scale, KeybindList.Frame.Frame.Size.Y.Offset)
+			KeybindList.Frame.Frame:FindFirstChild(text):Destroy()
+			KeybindList.Frame.Frame.Size = C.UDIM2(0, 60, 0, 20)
+			KeybindList.Frame.Size = UDim2.new(0, 60, 0, 20)
+			KeybindList.Frame.Grad.Size = UDim2.new(0, 60, 0, 2)
+			KeybindList.Frame.Keybinds.Size = UDim2.new(0, 60, 0, 20)
+			for i,v in pairs(KeybindList.Frame.Frame:GetChildren()) do
+				if v:IsA('TextLabel') then
+					if KeybindList.Frame.Frame.Size.X.Offset <= v.TextBounds.X then
+						KeybindList.Frame.Frame.Size = C.UDIM2(0,v.TextBounds.X,0,KeybindList.Frame.Frame.Size.Y.Offset)
+						KeybindList.Frame.Grad.Size = C.UDIM2(0,v.TextBounds.X+2,0, 2)
+						KeybindList.Frame.Size = C.UDIM2(0,v.TextBounds.X,0,20)						
+					end
+					KeybindList.Frame.Frame.Size += C.UDIM2(0,0,0,10)
 				end
-				if KeybindList.Frame.Frame.Size.Y.Offset == 28 then
-					--KeybindList.Frame.Frame.Size.X.Offset = 60
-					KeybindList.Frame.Frame.Size = C.UDIM2(KeybindList.Frame.Frame.Size.X.Scale, 60, KeybindList.Frame.Frame.Size.Y.Scale, KeybindList.Frame.Frame.Size.Y.Offset)
-				end
-				if KeybindList.Frame.Frame.Size == C.UDIM2(0,60,0,28) then
-					KeybindList.Frame.Frame.Visible = false
-					KeybindList.Frame.Size = C.UDIM2(0,60,0,20)
-					KeybindList.Frame.Grad.Size = C.UDIM2(0,60,0, 2)
-				else
-					KeybindList.Frame.Frame.Visible = true
-				end
-			KeybindList.Frame.Frame:FindFirstChild(text):Destroy() 
+			end				
+			if #KeybindList.Frame.Frame:GetChildren() == 1 then
+				KeybindList.Frame.Frame.Visible = false
+				KeybindList.Frame.Frame.Size = C.UDIM2(0, 60, 0, 20)
+				KeybindList.Frame.Size = UDim2.new(0, 60, 0, 20)
+				KeybindList.Frame.Grad.Size = UDim2.new(0, 60, 0, 2)
+				KeybindList.Frame.Keybinds.Size = UDim2.new(0, 60, 0, 20)
+			end
 		end 
 	end 
 
@@ -6928,19 +6880,17 @@ elseif type == "Button" then
 								Button_2.MouseButton1Down:Connect(function() 
 									TextLabel.TextColor3 = getMainColor() 
 									library:Tween(TextLabel, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
-										local lmfaooo, lol = pcall(function()
-										callback()
-											end)
-										if lmfaooo then
+										local lmfaooo, lol = pcall(function()callback()end)
+									if lmfaooo then
 										TextLabel.Text = 'Success!'
 										wait(1)
 										TextLabel.Text = text
-										else 
+									else 
 										TextLabel.Text = 'Error!'
 										wait(1)
 										TextLabel.Text = text
 										print(lol)
-										end
+									end
 								end) 
 								Button_2.MouseEnter:Connect(function() 
 									library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
@@ -6972,80 +6922,7 @@ elseif type == "Button" then
 									Keybind.AnchorPoint = C.Vec2(1,0) 
 									Keybind.ZIndex = 3 
 
-									--[[Frame.Parent = Keybind 
-									Frame.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
-									Frame.BorderColor3 = C.COL3RGB(18, 18, 16) 
-									Frame.Position = C.UDIM2(1, -49, 0, 1) 
-									Frame.Size = C.UDIM2(0, 49, 0, 49) 
-									Frame.Visible = false 
-									Frame.ZIndex = 3
 
-									UIListLayout.Parent = Frame 
-									UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
-									UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder 
-
-									Hold.Name = "Hold" 
-									Hold.Parent = Frame 
-									Hold.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
-									Hold.BackgroundTransparency = 1.000 
-									Hold.BorderColor3 = C.COL3RGB(18, 18, 16) 
-									Hold.Position = C.UDIM2(-3.03289485, 231, 0.115384616, -6) 
-									Hold.Size = C.UDIM2(1, 0, 0, 16) 
-									Hold.AutoButtonColor = false 
-									Hold.Font = Enum.Font.Gotham 
-									Hold.Text = "Hold" 
-									Hold.TextColor3 = C.COL3RGB(200, 200, 200) 
-									Hold.TextSize = 11.000
-									Hold.ZIndex = 3
-
-									Toggle.Name = "Toggle" 
-									Toggle.Parent = Frame 
-									Toggle.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
-									Toggle.BackgroundTransparency = 1.000 
-									Toggle.BorderColor3 = C.COL3RGB(18, 18, 16) 
-									Toggle.Position = C.UDIM2(-3.03289485, 231, 0.115384616, -6) 
-									Toggle.Size = C.UDIM2(1, 0, 0, 16) 
-									Toggle.AutoButtonColor = false 
-									Toggle.Font = Enum.Font.Gotham 
-									Toggle.Text = "Toggle" 
-									Toggle.TextColor3 = C.COL3RGB(200, 200, 200) 
-									Toggle.TextSize = 11.000
-									Toggle.ZIndex = 3 --]]
-
-									--[[for _,button in pairs(Frame:GetChildren()) do 
-										if button:IsA("TextButton") then 
-											button.MouseButton1Down:Connect(function() 
-												Element.value.Type = button.Text 
-												Frame.Visible = false 
-												if Element.value.Active ~= (Element.value.Type == "Always" and true or false) then 
-													Element.value.Active = Element.value.Type == "Always" and true or false 
-													callback(Element.value) 
-												end 
-												if button.Text == "Always" then 
-													keybindremove(text, Element.value.Key) 
-												end 
-												for _,button in pairs(Frame:GetChildren()) do 
-													if button:IsA("TextButton") and button.Text ~= Element.value.Type then 
-														button.Font = Enum.Font.Gotham 
-														library:Tween(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200,200,200)}) 
-													end 
-												end 
-												button.Font = Enum.Font.SourceSansBold 
-												button.TextColor3 = C.COL3RGB(173, 24, 74) 
-												values[tabname][sectorname][text] = Element.value 
-											end) 
-											button.MouseEnter:Connect(function() 
-												if Element.value.Type ~= button.Text then 
-													library:Tween(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255,255,255)}) 
-												end 
-											end) 
-											button.MouseLeave:Connect(function() 
-												if Element.value.Type ~= button.Text then 
-													library:Tween(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200,200,200)}) 
-												end 
-											end) 
-										end 
-									end --]]
 									Keybind.MouseButton1Down:Connect(function() 
 										if not binding then 
 											wait() 
@@ -7054,20 +6931,9 @@ elseif type == "Button" then
 											Keybind.Size = C.UDIM2(0,txt:GetTextSize("...", 14, Enum.Font.Gotham, C.Vec2(700, 12)).X + 4,0, 12) 
 										end 
 									end) 
-									--[[Keybind.MouseButton2Down:Connect(function() 
-										if not binding then 
-											Frame.Visible = not Frame.Visible 
-										end 
-									end) --]]
 									local Player = game.Players.LocalPlayer 
 									local Mouse = Player:GetMouse() 
 									local InFrame = false 
-									--[[Frame.MouseEnter:Connect(function() 
-										InFrame = true 
-									end) 
-									Frame.MouseLeave:Connect(function() 
-										InFrame = false 
-									end) --]]
 									local InFrame2 = false 
 									Keybind.MouseEnter:Connect(function() 
 										InFrame2 = true 
@@ -7076,11 +6942,6 @@ elseif type == "Button" then
 										InFrame2 = false 
 									end) 
 									game:GetService("UserInputService").InputBegan:Connect(function(input) 
-										--[[if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2 and not binding then 
-											if Frame.Visible == true and not InFrame and not InFrame2 then 
-												Frame.Visible = false 
-											end 
-										end --]]
 										if binding then 
 											binding = false 
 											Keybind.Text = input.KeyCode.Name ~= "Unknown" and input.KeyCode.Name:upper() or input.UserInputType.Name:upper() 
@@ -7090,8 +6951,12 @@ elseif type == "Button" then
 												Keybind.Text = "none" 
 												Keybind.Size = C.UDIM2(0,txt:GetTextSize(Keybind.Text, 14, Enum.Font.Gotham, C.Vec2(700, 12)).X + 4,0, 12) 
 												Element.value.Key = nil 
+												keybindremove2(text)
 												--Element.value.Active = true 
 											end 
+											if Element.value.Key ~= nil then
+												keybindadd(text,Element.value.Key)
+											end
 											callback(Element.value) 
 										else 
 											if Element.value.Key ~= nil then 
@@ -7114,51 +6979,24 @@ elseif type == "Button" then
 																keybindremove(text, Element.value.Key) 
 															end 
 														end--]]
-														local lmfaooo, lol = pcall(function()
-															callback()
-																end)
-															if lmfaooo then
-															keybindadd(text, '')
+														local lmfaooo, lol = pcall(function()callback()end)
+														if lmfaooo then
+															keybindpress(text)
 															wait(1)
-															keybindremove(text, '')
-															else 
-															keybindadd(text, '')
-															wait(1)
-															keybindremove(text, '')
-															print(lol)
+															keybindremove(text)
+														else
+															error(lol)
 														end
 													end 
 												else 
 													if input.KeyCode == Enum.KeyCode[Element.value.Key] then 
-														--[[if Element.value.Type == "Hold" then 
-															Element.value.Active = true 
-										a					callback(Element.value) 
-															if Element.value.Active and Element.value.Toggle then 
-																keybindhold(text)
-															else 
-																keybindremove(text, Element.value.Key) 
-															end 
-														elseif Element.value.Type == "Toggle" then 
-															Element.value.Active = not Element.value.Active 
-															callback(Element.value) 
-															if Element.value.Active and Element.value.Toggle then 
-																keybindtoggle(text) 
-															else 
-																keybindremove(text, Element.value.Key) 
-															end
-														end--]] 
-														local lmfaooo, lol = pcall(function()
-															callback()
-																end)
-															if lmfaooo then
-															keybindadd('Success!')
+														local lmfaooo, lol = pcall(function()callback()end)
+														if lmfaooo then
+															keybindpress(text)
 															wait(1)
-															keybindremove('Success!')
-															else 
-															keybindadd('Error!')
-															wait(1)
-															keybindremove('Error!')
-															print(lol)
+															keybindremove(text)
+														else 
+															error(lol)
 														end
 													end 
 												end 
