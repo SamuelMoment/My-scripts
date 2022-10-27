@@ -175,6 +175,7 @@ local main = gui.Tab('main')
 local misc = gui.Tab('misc')
 local visuals = gui.Tab('visuals')
 local skins = gui.Tab('skins')
+local other = gui.Tab('other')
 
 local Players = game:GetService('Players')
 local LocalPlayer = Players.LocalPlayer
@@ -183,6 +184,7 @@ local RunService = game:GetService('RunService')
 local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 local Mouse = LocalPlayer:GetMouse()
+local SelfObj = {}
 --[[ MAIN ]]--
 do
 
@@ -757,11 +759,17 @@ do
 			end		
 		end)
 		miscTab:Element('Toggle','No enviroment damage')
+		miscTab:Element('Toggle','No animations')
 		local old; old = hookmetamethod(game,'__namecall',function(self,...)
 			local method = getnamecallmethod()
 			local args = {...}
 			if self.Name == 'ChangeCharacter' then
 				if values.misc.misc.player['No enviroment damage'].Toggle and args[1] == 'Damage' then
+					return
+				end
+			end
+			if self.Name == 'Humanoid' and method == 'LoadAnimation' then
+				if values.misc.misc.player['No animations'].Toggle then
 					return
 				end
 			end
@@ -1330,7 +1338,203 @@ do
             end
         end
 	end)
+
+	local effects = visuals:Sector('effects','Right')
+	Instance.new('ColorCorrectionEffect',Camera).Name = 'ColorCorrection'
+	effects:Element("ToggleColor", "world color", {default = {Color = COL3RGB(255,255,255)}}, function(val) 
+		if val.Toggle and Camera:FindFirstChild('ColorCorrection') then 
+			Camera.ColorCorrection.TintColor = val.Color 
+		elseif Camera:FindFirstChild('ColorCorrection') then
+			Camera.ColorCorrection.TintColor = COL3RGB(255,255,255) 
+		end 
+	end) 
+	effects:Element("Toggle", "shadowmap technology", {default = {Toggle = true}}, function(val) sethiddenproperty(game.Lighting, "Technology", val.Toggle and "ShadowMap" or "Legacy") end) 
+	effects:Element("ToggleColor", "indoor ambient", {default = {Color = COL3RGB(255,255,255)}}, function(tbl) 
+		if tbl.Toggle then 
+			game.Lighting.Ambient = tbl.Color
+		else 
+			game.Lighting.Ambient = COL3RGB(255,255,255) 
+		end 
+	end)
+	effects:Element("ToggleColor", "outdoor ambient", {default = {Color = COL3RGB(255,255,255)}}, function(tbl) 
+		if tbl.Toggle then 
+			game.Lighting.OutdoorAmbient = tbl.Color
+		else 
+			game.Lighting.OutdoorAmbient = COL3RGB(255,255,255) 
+		end 
+	end)
+	local oldNewIndex; oldNewIndex = hookmetamethod(game,'__newindex',function(self,index,value)
+	
+		if self == game.Lighting then
+			if index == 'OutdoorAmbient' then
+				if values.visuals.effects['outdoor ambient'].Toggle then
+					value = values.visuals.effects['outdoor ambient'].Color
+				end
+			elseif index == 'Ambient' then
+				if values.visuals.effects['indoor ambient'].Toggle then
+					value = values.visuals.effects['indoor ambient'].Color
+				end				
+			end
+		end
+		return oldNewIndex(self,index,value)
+	end)
+	local self = visuals:Sector('self','Right')
+	self:Element("ToggleColor", "self chams", {default = {Color = COL3RGB(255,255,255)}}, function(tbl) 
+		if tbl.Toggle then 
+			for _,obj in pairs(SelfObj) do 
+				if obj.Parent ~= nil then 
+					obj.Material = values.visuals.self["self chams material"].Dropdown 
+					obj.Color = tbl.Color 
+				end 
+			end 
+		else 
+			for _,obj in pairs(SelfObj) do 
+				if obj.Parent ~= nil then 
+					obj.Material = obj.OriginalMaterial.Value 
+					obj.Color = obj.OriginalColor.Value 
+				end 
+			end 
+		end 
+	end) 
+	--self:Element("Toggle", "silent dog shit")
+	self:Element("Dropdown", "self chams material", {options = {"ForceField", "Neon", "Glass"}}, function(val)
+		if not values.visuals.self['self chams'].Toggle then return end
+		for _,obj in pairs(SelfObj) do 
+			if obj.Parent ~= nil then 
+				obj.Material = Enum.Material[val.Dropdown]
+				obj.Color = values.visuals.self['self chams'].Color
+			end
+		end
+	end)
 end
+
+LocalPlayer.CharacterAdded:Connect(function(char) 
+	char:WaitForChild('HumanoidRootPart')
+	char:WaitForChild('UpperTorso')
+	char:WaitForChild('Head')
+	SelfObj = {}
+	for i,v in pairs(char:GetChildren()) do 
+		if v:IsA("BasePart") and v.Transparency ~= 1 then 
+			INSERT(SelfObj, v) 
+			local Color = INST("Color3Value") 
+			Color.Name = "OriginalColor" 
+			Color.Value = v.Color 
+			Color.Parent = v 
+
+			local String = INST("StringValue") 
+			String.Name = "OriginalMaterial" 
+			String.Value = v.Material.Name 
+			String.Parent = v 
+		elseif v:IsA("Accessory") and v.Handle.Transparency ~= 1 then 
+			INSERT(SelfObj, v.Handle) 
+			local Color = INST("Color3Value") 
+			Color.Name = "OriginalColor" 
+			Color.Value = v.Handle.Color 
+			Color.Parent = v.Handle 
+
+			local String = INST("StringValue") 
+			String.Name = "OriginalMaterial" 
+			String.Value = v.Handle.Material.Name 
+			String.Parent = v.Handle 
+		end 
+	end 
+	if values.visuals.self["self chams"].Toggle then 
+		for _,obj in pairs(SelfObj) do 
+			if obj.Parent ~= nil then 
+				obj.Material = values.visuals.self["self chams material"].Dropdown 
+				obj.Color = values.visuals.self["self chams"].Color 
+			end 
+		end 
+	end 
+	LocalPlayer.Character.ChildAdded:Connect(function(Child) 
+		if Child:IsA("Accessory") and Child.Handle.Transparency ~= 1 then 
+			INSERT(SelfObj, Child.Handle) 
+			local Color = INST("Color3Value") 
+			Color.Name = "OriginalColor" 
+			Color.Value = Child.Handle.Color 
+			Color.Parent = Child.Handle 
+
+			local String = INST("StringValue") 
+			String.Name = "OriginalMaterial" 
+			String.Value = Child.Handle.Material.Name 
+			String.Parent = Child.Handle 
+
+			if values.visuals.self["self chams"].Toggle then 
+				for _,obj in pairs(SelfObj) do 
+					if obj.Parent ~= nil then 
+						obj.Material = values.visuals.self["self chams material"].Dropdown 
+						obj.Color = values.visuals.self["self chams"].Color 
+					end 
+				end 
+			end 
+		end 
+	end) 
+
+	--[[if values.misc.animations.enabled.Toggle and values.misc.animations.enabled.Active then 
+		LoadedAnim = LocalPlayer.Character.Humanoid:LoadAnimation(Dance) 
+		LoadedAnim.Priority = Enum.AnimationPriority.Action 
+		LoadedAnim:Play() 
+	end --]]
+end) 
+if LocalPlayer.Character ~= nil then 
+	for i,v in pairs(LocalPlayer.Character:GetChildren()) do 
+		if v:IsA("BasePart") and v.Transparency ~= 1 then 
+			INSERT(SelfObj, v) 
+			local Color = INST("Color3Value") 
+			Color.Name = "OriginalColor" 
+			Color.Value = v.Color 
+			Color.Parent = v 
+
+			local String = INST("StringValue") 
+			String.Name = "OriginalMaterial" 
+			String.Value = v.Material.Name 
+			String.Parent = v 
+		elseif v:IsA("Accessory") and v.Handle.Transparency ~= 1 then 
+			INSERT(SelfObj, v.Handle) 
+			local Color = INST("Color3Value") 
+			Color.Name = "OriginalColor" 
+			Color.Value = v.Handle.Color 
+			Color.Parent = v.Handle 
+
+			local String = INST("StringValue") 
+			String.Name = "OriginalMaterial" 
+			String.Value = v.Handle.Material.Name 
+			String.Parent = v.Handle 
+		end 
+	end 
+	if values.visuals.self["self chams"].Toggle then 
+		for _,obj in pairs(SelfObj) do 
+			if obj.Parent ~= nil then 
+				obj.Material = values.visuals.self["self chams material"].Dropdown 
+				obj.Color = values.visuals.self["self chams"].Color 
+			end 
+		end 
+	end 
+	LocalPlayer.Character.ChildAdded:Connect(function(Child) 
+		if Child:IsA("Accessory") and Child.Handle.Transparency ~= 1 then 
+			INSERT(SelfObj, Child.Handle) 
+			local Color = INST("Color3Value") 
+			Color.Name = "OriginalColor" 
+			Color.Value = Child.Handle.Color 
+			Color.Parent = Child.Handle 
+
+			local String = INST("StringValue") 
+			String.Name = "OriginalMaterial" 
+			String.Value = Child.Handle.Material.Name 
+			String.Parent = Child.Handle 
+
+			if values.visuals.self["self chams"].Toggle then 
+				for _,obj in pairs(SelfObj) do 
+					if obj.Parent ~= nil then 
+						obj.Material = values.visuals.self["self chams material"].Dropdown
+						obj.Color = values.visuals.self["self chams"].Color 
+					end 
+				end 
+			end 
+		end 
+	end) 
+end 
+
 --[[ SKINS ]]--
 do
 	local models = game:GetObjects('rbxassetid://11377496028')[1]
@@ -1375,7 +1579,6 @@ do
 	function ChangeCharacter(NewCharacter)
 		if not NewCharacter then return end
 		--print('asqwqeq')
-
 		for i,v in pairs(LocalPlayer.Character:GetChildren()) do
 			if v:IsA('CharacterMesh') then
 				v:Destroy()
@@ -1384,7 +1587,6 @@ do
 		end		
 		pcall(function()
 			if NewCharacter:FindFirstChild('Head') and not NewCharacter:FindFirstChild('Head'):FindFirstChild('face') then
-
 				LocalPlayer.Character.Head:FindFirstChild('face').Texture = ''
 			end
 		end)
@@ -1394,23 +1596,17 @@ do
 				end 
 				if Part:IsA("BasePart") then 
 					if NewCharacter:FindFirstChild(Part.Name) then
-
 						Part.Color = NewCharacter:FindFirstChild(Part.Name).Color 
 						Part.Transparency = NewCharacter:FindFirstChild(Part.Name).Transparency 
 					end 
 				end 
-
 				if (Part.Name == "Head" or Part.Name == "FakeHead") and Part:FindFirstChildOfClass("Decal") and NewCharacter.Head:FindFirstChildOfClass("Decal") then 
-	
 					Part:FindFirstChildOfClass("Decal").Texture = NewCharacter.Head:FindFirstChildOfClass("Decal").Texture
 				end 
 				if (Part.Name == "Head" or Part.Name == "FakeHead") and Part:FindFirstChildOfClass("SpecialMesh") and NewCharacter.Head:FindFirstChildOfClass("SpecialMesh") then 
-					if NewCharacter.Head:FindFirstChildOfClass("SpecialMesh").MeshId ~= '' then
-							
+					if NewCharacter.Head:FindFirstChildOfClass("SpecialMesh").MeshId ~= '' then	
 						Part:FindFirstChildOfClass("SpecialMesh").MeshId = NewCharacter.Head:FindFirstChildOfClass("SpecialMesh").MeshId
-
-				   else
-			   
+				    else
 						Part:FindFirstChildOfClass("SpecialMesh"):Destroy()
 						Instance.new('SpecialMesh',Part).Scale = Vector3.new(1.25,1.25,1.25)
 				   end
@@ -1419,13 +1615,8 @@ do
 			
 			if NewCharacter:FindFirstChildOfClass("Shirt") then 
 				local Clone = NewCharacter:FindFirstChildOfClass("Shirt"):Clone() 		
-				
 				if LocalPlayer.Character:FindFirstChildOfClass("Shirt")	then 
-
 					LocalPlayer.Character:FindFirstChildOfClass("Shirt"):Destroy() 
-
-
-							
 				end 
 				Clone.Parent = LocalPlayer.Character 
 			else
@@ -1435,10 +1626,8 @@ do
 			if NewCharacter:FindFirstChildOfClass("Pants") then 
 				local Clone = NewCharacter:FindFirstChildOfClass("Pants"):Clone() 
 				if LocalPlayer.Character:FindFirstChildOfClass("Pants") then 
-
 					LocalPlayer.Character:FindFirstChildOfClass("Pants"):Destroy() 
 				end 
-				
 				Clone.Parent = LocalPlayer.Character 
 			else
 				LocalPlayer.Character:FindFirstChildOfClass('Pants').PantsTemplate = ''			
@@ -1458,6 +1647,40 @@ do
 					Part:Clone().Parent = LocalPlayer.Character
 				end
 			end 
+			for i,v in pairs(LocalPlayer.Character:GetChildren()) do 
+				if v:IsA("BasePart") and v.Transparency ~= 1 then 
+					C.INSERT(SelfObj, v) 
+					local Color = C.INST("Color3Value") 
+					Color.Name = "OriginalColor" 
+					Color.Value = v.Color 
+					Color.Parent = v 
+
+					local String = C.INST("StringValue") 
+					String.Name = "OriginalMaterial" 
+					String.Value = v.Material.Name 
+					String.Parent = v 
+				elseif v:IsA("Accessory") and v.Handle.Transparency ~= 1 then 
+					C.INSERT(SelfObj, v.Handle) 
+					local Color = C.INST("Color3Value") 
+					Color.Name = "OriginalColor" 
+					Color.Value = v.Handle.Color 
+					Color.Parent = v.Handle 
+
+					local String = C.INST("StringValue") 
+					String.Name = "OriginalMaterial" 
+					String.Value = v.Handle.Material.Name 
+					String.Parent = v.Handle 
+				end 
+			end 
+
+			if values.visuals.self["self chams"].Toggle then 
+				for _,obj in pairs(SelfObj) do 
+					if obj.Parent ~= nil then 
+						obj.Material = values.visuals.self["self chams material"].Dropdown 
+						obj.Color = values.visuals.self["self chams"].Color 
+					end 
+				end 
+			end 			
 	end
 	folder1 = Instance.new('Folder',workspace)
 	folder1.Name = 'OldCharacter'

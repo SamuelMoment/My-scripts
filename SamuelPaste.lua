@@ -3030,7 +3030,7 @@ self:Element("Dropdown", "self chams material", {options = {"ForceField", "Neon"
 		for _,obj in pairs(SelfObj) do 
 			if obj.Parent ~= nil then 
 				obj.Material = Enum.Material.ForceField
-				obj.Color = tbl.Color
+				obj.Color = values.visuals.self['self chams'].Color
 			end
 		end
 	else
@@ -3038,7 +3038,7 @@ self:Element("Dropdown", "self chams material", {options = {"ForceField", "Neon"
 			for _,obj in pairs(SelfObj) do 
 				if obj.Parent ~= nil then
 					obj.Material = Enum.Material.Neon
-					obj.Color = tbl.Color
+					obj.Color = values.visuals.self['self chams'].Color
 				end
 			end
 		else
@@ -3046,7 +3046,7 @@ self:Element("Dropdown", "self chams material", {options = {"ForceField", "Neon"
 				for _,obj in pairs(SelfObj) do
 					if obj.Parent ~= nil then
 						obj.Material = Enum.Material.Glass
-						obj.Color = tbl.Color
+						obj.Color = values.visuals.self['self chams'].Color
 					end
 				end
 			end
