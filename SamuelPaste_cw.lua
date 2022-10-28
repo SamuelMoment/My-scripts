@@ -214,7 +214,7 @@ INSERT(allcfgs, 'shit so script wont crash')
 end--]]
 
 
-local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement = loadstring(game:HttpGet("https://raw.githubusercontent.com/SamuelMoment/My-scripts/main/library.lua"))()
+local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/library.lua"))()
 library.setcfglocation(cfglocation)
 
 Spawn = Signal.new('Spawn')
@@ -3196,7 +3196,7 @@ UIStroke.Parent = Frame
 	local function getClosestToMouse()
 		local player, nearestDistance = nil, values.rage['Ranged sector']['field of view'].Slider
 		for i,v in pairs(Players:GetPlayers()) do
-			if v ~= Players.LocalPlayer and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") then
+			if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") then
 				local root, visible = workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
 				if visible then
 					local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(root.X, root.Y)).Magnitude
