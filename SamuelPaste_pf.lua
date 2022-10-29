@@ -1320,26 +1320,7 @@ end)
         end
     end)
 
-do
-   for i,v in pairs(getgc(true)) do
-       if (type(v) == "table") then
-            if (rawget(v, "getbodyparts")) then
-                client.replication = v
-                client.replication.bodyparts = debug.getupvalue(client.replication.getbodyparts, 1)
-           end
-       end
-   end
-end
 
-game:GetService("RunService").RenderStepped:Connect(function()
-   for i,v in pairs(game.Players:GetPlayers()) do
-       if (v and client.replication.bodyparts[v]) then
-           local char = client.replication.bodyparts[v]
-           char.head.Parent.Name = v.Name
-           v.Character = char.head.Parent
-       end
-   end
-end)
 
 
 
@@ -2109,21 +2090,15 @@ end
         else
 			client.char:setbasewalkspeed(16)
 		end
-        if not ambientenabled and fullbright then
-            Lighting.Ambient = Color3.fromRGB(255,255,255)
-            Lighting.Brightness = 1000
-        end
         if fullbright then
             Lighting.Brightness = 1000
-            Lighting.Ambient = Color3.fromRGB(255,255,255)
-        end
-        if not fullbright and ambientenabled then
-            Lighting.Ambient = values.visuals.world.Ambient.Color
-        elseif not fullbright and not ambientenabled then
-            Lighting.Ambient = OldAmbience
-        end
+        else
+			Lighting.Brightness = OldBrightness
+		end
         if ambientenabled then
-            Lighting.Ambient = values.visuals.world.Ambient.Color 
+            Lighting.Ambient = values.visuals.world.Ambient.Color
+        else
+            Lighting.Ambient = OldAmbience
         end
         
         if values.misc.Client['Knife aura'].Toggle and client.char.alive then

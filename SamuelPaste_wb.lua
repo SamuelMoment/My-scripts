@@ -232,7 +232,7 @@ local args = {
         ["AmmoType"] = "PistolAmmo",
         ["HitHum"] = workspace.Shops.StableOwner2.Humanoid,
         ["Material"] = Enum.Material.Plastic,
-        ["PlayerRootPos"] = Vector3.new(1518.964111328125, 112.3499755859375, 1401.94384765625),
+        ["PlayerRootPos"] = Vector3.new(1518.964111328125, 112.3499755859375, 1401.94384765625), -- localplayer
         ["ToolName"] = "Colt .45",
         ["StartPoint"] = CFrame.new(1519.222900390625, 115.30229187011719, 1399.2899169921875) * CFrame.Angles(-0.06205425411462784, 0.5447583794593811, 0.031709421426057816),
         ["MaxDistance"] = 1000,
@@ -241,7 +241,7 @@ local args = {
         ["FirstFrame"] = true,
         ["StartTime"] = 1666946553.5256464,
         ["Delay"] = 0.31786537170410156,
-        ["RootPosition"] = Vector3.new(1494.7205810546875, 112.35033416748047, 1357.9443359375)
+        ["RootPosition"] = Vector3.new(1494.7205810546875, 112.35033416748047, 1357.9443359375) -- enemy
     }
 }
 
