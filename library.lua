@@ -210,11 +210,7 @@ function removewithoutdupes(tab, thethingyouneedtoremove) -- my own code :sungla
 	end
 end	
 
-local loopkillplr = {}
-for i,v in pairs(game.Players:GetPlayers()) do
-	if v == game.Players.LocalPlayer then continue end
-	table.insert(loopkillplr,v.Name)
-end
+getgenv().loopkillplr = {}
 local txt = game:GetService("TextService") 
 
 function library:Tween(...) game:GetService("TweenService"):Create(...):Play() end 
@@ -6532,6 +6528,21 @@ end)
 									callback(Element.value) 
 								end 
 								values[tabname][sectorname][text] = Element.value
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+									
+								
 							elseif type == "Slider" then 
 
 								Section.Size = Section.Size + C.UDIM2(0,0,0,25) 
