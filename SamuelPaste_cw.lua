@@ -1989,7 +1989,7 @@ do
 	local allcfgs = {} 
 	
 	for _,cfg in pairs(listfiles(cfglocation)) do 
-		local cfgname = C.GSUB(cfg, cfglocation..'\\', "") 
+		local cfgname = C.GSUB(cfg, cfglocation, "") 
 		C.INSERT(allcfgs, cfgname) 
 	end
 	
@@ -2019,7 +2019,7 @@ do
 	table.clear(allcfgs)
 	
 	for _,cfg in pairs(listfiles('SamuelPaste_cw/cfgs')) do 
-		local cfgname = C.GSUB(cfg, cfglocation..'\\', "") 
+		local cfgname = C.GSUB(cfg, cfglocation, "") 
 		C.INSERT(allcfgs, cfgname) 
 	end
 		ConfigUpdateCfgList2:Fire()

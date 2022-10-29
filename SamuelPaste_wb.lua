@@ -347,7 +347,7 @@ do
 		local allcfgs = {} 
 		
 		for _,cfg in pairs(listfiles(cfglocation)) do 
-			local cfgname = GSUB(cfg, cfglocation..'\\', "") 
+			local cfgname = GSUB(cfg, cfglocation, "") 
 			INSERT(allcfgs, cfgname) 
 		end
 		
@@ -377,7 +377,7 @@ do
 		table.clear(allcfgs)
 		
 		for _,cfg in pairs(listfiles(cfglocation)) do 
-			local cfgname = GSUB(cfg, cfglocation..'\\', "") 
+			local cfgname = GSUB(cfg, cfglocation, "") 
 			INSERT(allcfgs, cfgname) 
 		end
 			ConfigUpdateCfgList2:Fire()
