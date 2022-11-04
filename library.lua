@@ -2748,16 +2748,20 @@ do
 									end) 
 								end 
 								ConfigLoad:Connect(function(cfg) 
-									local fix = library:ConfigFix(cfg) 
-									if fix[tabname][sectorname][tabtext][text] ~= nil then 
-										Element:SetValue(fix[tabname][sectorname][tabtext][text]) 
-									end 
+									pcall(function()
+										local fix = library:ConfigFix(cfg) 
+										if fix[tabname][sectorname][tabtext][text] ~= nil then 
+											Element:SetValue(fix[tabname][sectorname][tabtext][text]) 
+										end 
+									end)
 								end)
 								ConfigLoad1:Connect(function(cfg)
-									local fix = library:ConfigFix1(cfg) 
-									if fix[tabname][sectorname][tabtext][text] ~= nil then 
-										Element:SetValue(fix[tabname][sectorname][tabtext][text]) 
-									end 
+									pcall(function()
+										local fix = library:ConfigFix1(cfg) 
+										if fix[tabname][sectorname][tabtext][text] ~= nil then 
+											Element:SetValue(fix[tabname][sectorname][tabtext][text]) 
+										end 
+									end)
 								end)
 
 								return Element 
@@ -7038,7 +7042,7 @@ elseif type == "Button" then
 								end) 
 							end)
 							ConfigLoad1:Connect(function(cfg) 
-							pcall(function() 
+								pcall(function() 
 									local fix = library:ConfigFix1(cfg) 
 									if fix[tabname][sectorname][text] ~= nil then 
 										Element:SetValue(fix[tabname][sectorname][text]) 

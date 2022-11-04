@@ -490,13 +490,13 @@ Button_2.MouseButton1Down:Connect(function()
 	end
 	
 	if game.GameId == 113491250 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/SamuelPaste_pf.lua'))()
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_pf.lua'))()
 	elseif game.GameId == 1390601379 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/SamuelPaste_cw.lua'))()
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_cw.lua'))()
 	elseif game.GameId == 3698756756 or game.GameId == 10053187005 or game.GameId == 3311740703 or game.GameId == 1190826589 or game.GameId == 3681951220 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/SamuelPaste.lua'))()
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste.lua'))()
 	elseif game.GameId == 873703865 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/SamuelPaste_wb.lua'))()
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_wb.lua'))()
 	end	
 end) 
 Button_2.MouseEnter:Connect(function() 

@@ -115,6 +115,11 @@ local cfglocation = "SamuelPaste_cw/cfgs/"
 makefolder('SamuelPaste_cw')
 makefolder('SamuelPaste_cw/cfgs')
 
+local loopkillplr = {}
+for i,v in pairs(game.Players:GetPlayers()) do
+	if v == game.Players.LocalPlayer then continue end
+	table.insert(loopkillplr,v.Name)
+end
 
 if not isfile('SamuelPaste_cw/customkillsay.txt') then
 	writefile('SamuelPaste_cw/customkillsay.txt', "message1\
@@ -451,7 +456,7 @@ local GetClosest = function(Distance,Priority,IgnoreTarget)
 	local Target
 
 	for i,v in ipairs(Players:GetPlayers()) do
-		if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 and (v.Backpack:FindFirstChildWhichIsA('Tool') or v.Character:FindFirstChildWhichIsA('Tool')) then
+		if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 and LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').Health > 0 and (v.Backpack:FindFirstChildWhichIsA('Tool') or v.Character:FindFirstChildWhichIsA('Tool')) and (not values.rage.Players['Whitelist players'].Toggle or not table.find(values.rage['Players'].Players.Jumbobox,v.Name)) then
 			local TargetHRP = v.Character.HumanoidRootPart
 			local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
 			if Priority == 'Health' then
@@ -465,7 +470,7 @@ local GetClosest = function(Distance,Priority,IgnoreTarget)
 					Target = v
 				end
 			end
-			if values.rage.combat['Target player'].Toggle and v.Name == values.rage.combat['Target'].Scroll and not IgnoreTarget and (v.Backpack:FindFirstChildWhichIsA('Tool') or v.Character:FindFirstChildWhichIsA('Tool')) then
+			if values.rage['Players']['Target player'].Toggle and v.Name == values.rage['Players']['Target'].Scroll and not IgnoreTarget and (v.Backpack:FindFirstChildWhichIsA('Tool') or v.Character:FindFirstChildWhichIsA('Tool')) then
 				return v
 			end
 		end
@@ -1144,7 +1149,31 @@ function parry()
 	game:GetService("ReplicatedStorage").Communication.Events.Parry:FireServer()
 end
 do
-local combat = main:Sector('combat', 'Left')
+	local playersTab = main:Sector('Players','Left')
+	playersTab:Element('Toggle','Target player')
+	local loop123
+	playersTab:Element('lmao2','Target',{options = loopkillplr,Toggle = 'Target player'},function(tbl) -- toggle for detecting if palyer is left
+		pcall(function()
+			loop123:Disconnect()
+		end)
+		loop123 = RunService.Heartbeat:Connect(function()
+			if not game.Players:FindFirstChild(tbl.Scroll) then return loop123:Disconnect() end
+			values.rage['Players']['Alive: '].stringchange('Alive: '..(game.Players[tbl.Scroll] and game.Players[tbl.Scroll].Character and (game.Players[tbl.Scroll].Backpack:FindFirstChildWhichIsA('Tool') or game.Players[tbl.Scroll].Character:FindFirstChildWhichIsA('Tool')) and 'true' or 'false'))
+			values.rage['Players']['Score: '].stringchange('Score: '..tostring(game.Players[tbl.Scroll].leaderstats.Score.Value))
+			values.rage['Players']['Level: '].stringchange('Level: '..tostring(game.Players[tbl.Scroll].leaderstats.Level.Value))
+			values.rage['Players']['Account age: '].stringchange('Account age: '..tostring(game.Players[tbl.Scroll].AccountAge))
+			values.rage['Players']['Display nickname: '].stringchange('Display nickname: '..tostring(game.Players[tbl.Scroll].DisplayName))
+		end)
+	end)
+	playersTab:Element('Label','Alive: ')
+	playersTab:Element('Label','Score: ')
+	playersTab:Element('Label','Level: ')
+	playersTab:Element('Label','Account age: ')
+	playersTab:Element('Label','Display nickname: ')
+
+	playersTab:Element('Toggle','Whitelist players')
+	playersTab:Element('lmao3','Players',{options = loopkillplr})
+	local combat = main:Sector('combat', 'Left')
 
 	local Autos = main:Sector("Autos", "Right")
 	local Misc = main:Sector("Misc", "Right")
@@ -1214,27 +1243,6 @@ local combat = main:Sector('combat', 'Left')
 	if #randomtableidk == 0 then
 		C.INSERT(randomtableidk, 'none')
 	end--]]
-	combat:Element('Toggle','Target player')
-	local loop123
-	combat:Element('lmao2','Target',{options = loopkillplr,Toggle = 'Target player'},function(tbl)
-		pcall(function()
-			loop123:Disconnect()
-		end)
-		loop123 = RunService.Heartbeat:Connect(function()
-			if not game.Players:FindFirstChild(tbl.Scroll) then return loop123:Disconnect() end
-			values.rage.combat['Alive: '].stringchange('Alive: '..(game.Players[tbl.Scroll] and game.Players[tbl.Scroll].Character and (game.Players[tbl.Scroll].Backpack:FindFirstChildWhichIsA('Tool') or game.Players[tbl.Scroll].Character:FindFirstChildWhichIsA('Tool')) and 'true' or 'false'))
-			values.rage.combat['Score: '].stringchange('Score: '..tostring(game.Players[tbl.Scroll].leaderstats.Score.Value))
-			values.rage.combat['Level: '].stringchange('Level: '..tostring(game.Players[tbl.Scroll].leaderstats.Level.Value))
-			values.rage.combat['Account age: '].stringchange('Account age: '..tostring(game.Players[tbl.Scroll].AccountAge))
-			values.rage.combat['Display nickname: '].stringchange('Display nickname: '..tostring(game.Players[tbl.Scroll].DisplayName))
-		end)
-	end)
-	
-	combat:Element('Label','Alive: ')
-	combat:Element('Label','Score: ')
-	combat:Element('Label','Level: ')
-	combat:Element('Label','Account age: ')
-	combat:Element('Label','Display nickname: ')
 	--values.rage.combat['Target player'].Toggle
 	Spins:Element("Toggle", "Spin")
 	Spins:Element("Slider", "Spin Power", {min = 0, max = 50, default = 50})
@@ -1242,7 +1250,7 @@ local combat = main:Sector('combat', 'Left')
 	Autos:Element('Dropdown','Auto Parry Method',{options = {'Animation','Sound'}})
 	Autos:Element("Slider", "Auto Parry Distance", {min = 0, max = 25, default = 10})
 	Autos:Element("Slider", "Auto Parry Chance", {min = 0, max = 100, default = 100})
-	local respawn = main:Sector('Respawn', 'Left')
+	local respawn = main:Sector('Respawn', 'Right')
 	respawn:Element('Toggle', 'Fast Respawn')
 	respawn:Element('Toggle', 'Auto spawn')
 	--respawn:Element('Toggle', 'Respawn on death position')
@@ -1719,7 +1727,7 @@ end
 			end
 		end
 	)--print('task.spawn #6')
-	local silent = main:Sector("Ranged sector", 'Right')
+	local silent = main:Sector("Ranged sector", 'Left')
 	silent:Element('Toggle', 'silent aim')
 	
 	silent:Element('Slider','field of view',{min = 1,max = 420,default = 120})
@@ -1754,6 +1762,7 @@ end
 	silent:Element('ToggleTrans', 'Outline highlight target')
 	silent:Element('ToggleColor', 'Silent aim info gui',{default = {Color = Color3.new(85, 170, 255)}})
 
+	--silent:Element('Dropdown','hit type',{options = {'redirect','auto hit','both'}})
 	silent:Element('Dropdown', 'body part to hit', {options = {"Head","HumanoidRootPart","Torso","Left Leg","Right Leg","Left Arm","Right Arm"}})
 	silent:Element('Slider','hitchance',{min = 1,max = 100,default = 100})
 	silent:Element('Slider','hit distance',{min = 1,max = 25,default = 15})
@@ -3196,7 +3205,7 @@ UIStroke.Parent = Frame
 	local function getClosestToMouse()
 		local player, nearestDistance = nil, values.rage['Ranged sector']['field of view'].Slider
 		for i,v in pairs(Players:GetPlayers()) do
-			if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") then
+			if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") and (not values.rage.Players['Whitelist players'].Toggle or not table.find(values.rage['Players'].Players.Jumbobox,v.Name)) then
 				local root, visible = workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
 				if visible then
 					local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(root.X, root.Y)).Magnitude
@@ -3204,6 +3213,12 @@ UIStroke.Parent = Frame
 					if distance < nearestDistance then
 						nearestDistance = distance
 						player = v
+					end
+				end
+				if values.rage['Players']['Target player'].Toggle and v.Name == values.rage['Players']['Target'].Scroll then
+					local root,visible = workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+					if visible then
+						return v
 					end
 				end
 			end
@@ -3247,12 +3262,12 @@ UIStroke.Parent = Frame
 		end,
 		Hit = function(Target)
 			local Fake
-			Fake = Target["Head"].Position + Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5))
+			Fake = Target[values.rage['Ranged sector']['body part to hit'].Dropdown].Position + Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5))
 			fireserver("RangedHit",{
 				HitGet(LocalPlayer.Character,"Ranged"),
-				Target["Head"],
+				Target[values.rage['Ranged sector']['body part to hit'].Dropdown],
 				Fake,
-				Target["Head"].CFrame:ToObjectSpace(CFrame.new(Fake)),
+				Target[values.rage['Ranged sector']['body part to hit'].Dropdown].CFrame:ToObjectSpace(CFrame.new(Fake)),
 				Fake * Vector3.new(math.random(1,5),math.random(1,5),math.random(1,5)),
 				tostring(ShotIdx)}
 			)
@@ -3271,7 +3286,7 @@ UIStroke.Parent = Frame
 		end
 		if (Shot and p:IsA("MeshPart") and p:FindFirstChild("Tip") ~= nil) then
 			Arrow = p
-			Instance.new('Highlight',game.CoreGui).Adornee = p
+			Instance.new('Highlight',p).Adornee = p
 			Shot = false
 			if createbullettracer then
 				createbullettracer(p)
@@ -3335,9 +3350,11 @@ UIStroke.Parent = Frame
 		return Vector2.new(M.ViewSizeX * (0.5 + 0.5 * x), M.ViewSizeY * (0.5 + 0.5 * y))
 	end
 
+	local C
+	local Predict
 	RunService.Heartbeat:Connect(function()
 		local Tool = Functions.GetWeapon(LocalPlayer.Character,"Ranged")
-		local C = getClosestToMouse()
+		C = getClosestToMouse()
 			
 		if not Tool then
 			Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
@@ -3369,7 +3386,7 @@ UIStroke.Parent = Frame
 					Aiming.Text = "Aiming At: "..C.Name
 					PredictionV.Text = "Prediction Value: "..values.rage['Ranged sector']['Prediction val'].Slider/100
 				
-				local Predict = C.Character[values.rage['Ranged sector']['body part to hit'].Dropdown].CFrame + (C.Character[values.rage['Ranged sector']['body part to hit'].Dropdown].Velocity * values.rage['Ranged sector']['Prediction val'].Slider/100 + Vector3.new(0, .1, 0))
+				Predict = C.Character[values.rage['Ranged sector']['body part to hit'].Dropdown].CFrame + (C.Character[values.rage['Ranged sector']['body part to hit'].Dropdown].Velocity * values.rage['Ranged sector']['Prediction val'].Slider/100 + Vector3.new(0, .1, 0))
 				Predicted = CFrame.new(FirePos,(typeof(Predict) == "CFrame" and Predict.Position or Predict)).LookVector * 30
 					
 						--predicted = (CFrame.lookAt(Tool.Contents.Handle.FirePoint.WorldCFrame.Position, Prediction.Position)).LookVector * 30;
@@ -3388,9 +3405,9 @@ UIStroke.Parent = Frame
 				if C then
 					if (Arrow.Position - C.Character.HumanoidRootPart.Position).Magnitude <= values.rage['Ranged sector']['hit distance'].Slider then
 						if values.rage['Ranged sector'].hitchance.Slider == 100 then
-						Functions.Hit(C.Character)
-						Shot = false
-						Arrow = nil
+							Functions.Hit(C.Character)
+							Shot = false
+							Arrow = nil
 						else
 							if math.random(1,100) >= values.rage['Ranged sector'].hitchance.Slider then
 								Functions.Hit(C.Character)
@@ -3437,7 +3454,7 @@ do
 		Playere:Element("Slider", "Size", {min = 12, max = 16, default = 13})
 		
 		--my code fuck anyone who complains about it
-		local chams = {} -- too lazy to check for highlighs everytime
+		local chams = {} -- too lazy to check for highlight everytime
 		highlightfolder = Instance.new('Folder',game.CoreGui)
 		Playere:Element('ToggleTrans','Chams',{},function(tbl)
 			for i,v in pairs(Players:GetPlayers()) do
@@ -3450,7 +3467,7 @@ do
 							highlight.FillTransparency = tbl.Transparency
 						
 						else
-							highlighs.FillTransparency = 1
+							highlight.FillTransparency = 1
 						end
 						if values.visuals.players['Outline chams'].Toggle then
 							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
@@ -3527,7 +3544,7 @@ do
 							highlight.FillColor = values.visuals.players['Chams'].Color
 							highlight.FillTransparency = values.visuals.players['Chams'].Transparency
 						else
-							highlighs.FillTransparency = 1
+							highlight.FillTransparency = 1
 						end
 						if tbl.Toggle then
 							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
@@ -3637,7 +3654,7 @@ do
 							highlight.FillColor = values.visuals.players['Chams'].Color
 							highlight.FillTransparency = values.visuals.players['Chams'].Transparency
 						else
-							highlighs.FillTransparency = 1
+							highlight.FillTransparency = 1
 						end
 						if values.visuals.players['Outline chams'].Toggle then
 							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
@@ -4520,7 +4537,7 @@ end
 				end
 			end)
 			v.CharacterRemoving:Connect(function()
-				C.TBLREMOVE(names123,v.Name)
+				removewithoutdupes(names123,v.Name)
 				values.skins.characters.skin.UpdateValue['Players characters'](names123)
 			end)
 		end
@@ -5309,9 +5326,8 @@ do
 		-- Scripts:
 
 		local function JVMZPQB_fake_script() -- ImageLabel.LocalScript 
-			local script = Instance.new('LocalScript', ImageLabel)
 
-			--script.Parent.Position = UDim2.new(0,math.random(10,script.Parent.Parent.AbsoluteSize.X),0,math.random(10,script.Parent.Parent.AbsoluteSize.Y))
+			--ImageLabel.Position = UDim2.new(0,math.random(10,ImageLabel.Parent.AbsoluteSize.X),0,math.random(10,ImageLabel.Parent.AbsoluteSize.Y))
 			
 			--print('check')
 			
@@ -5320,29 +5336,29 @@ do
 			
 			getgenv().changecolor = false
 			getgenv().dvdmethod = 'tick'
-			game:GetService('RunService').RenderStepped:Connect(function()
-				local ScreenSize = script.Parent.Parent.AbsoluteSize
+			RunService.RenderStepped:Connect(function()
+				local ScreenSize = ScreenGui.AbsoluteSize
 				
-				script.Parent.Position += UDim2.new(0,getgenv().XSpeed,0,getgenv().YSpeed)
-				--print(script.Parent.AbsolutePosition)
-				if (script.Parent.AbsolutePosition.X >= ScreenSize.X or script.Parent.AbsolutePosition.X <= 0) or ((script.Parent.AbsolutePosition.X + script.Parent.AbsoluteSize.X) >= ScreenSize.X or (script.Parent.AbsolutePosition.X + script.Parent.AbsoluteSize.X) <= 0) then
+				ImageLabel.Position += UDim2.new(0,getgenv().XSpeed,0,getgenv().YSpeed)
+				--print(ImageLabel.AbsolutePosition)
+				if (ImageLabel.AbsolutePosition.X >= ScreenSize.X or ImageLabel.AbsolutePosition.X <= 0) or ((ImageLabel.AbsolutePosition.X + ImageLabel.AbsoluteSize.X) >= ScreenSize.X or (ImageLabel.AbsolutePosition.X + ImageLabel.AbsoluteSize.X) <= 0) then
 					getgenv().XSpeed = getgenv().XSpeed * -1
 					--print('X')
 					if getgenv().changecolor then
 						if dvdmethod == 'tick' then
-						script.Parent.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
+						ImageLabel.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
 						else
-						script.Parent.ImageColor3 = Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
+						ImageLabel.ImageColor3 = Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
 						end
 					end
 				end
-				if (script.Parent.AbsolutePosition.Y >= ScreenSize.Y or script.Parent.AbsolutePosition.Y <= -35) or ((script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) >= ScreenSize.Y or (script.Parent.AbsolutePosition.Y + script.Parent.AbsoluteSize.Y) <= -35) then
+				if (ImageLabel.AbsolutePosition.Y >= ScreenSize.Y or ImageLabel.AbsolutePosition.Y <= -35) or ((ImageLabel.AbsolutePosition.Y + ImageLabel.AbsoluteSize.Y) >= ScreenSize.Y or (ImageLabel.AbsolutePosition.Y + ImageLabel.AbsoluteSize.Y) <= -35) then
 					getgenv().YSpeed = getgenv().YSpeed * -1
 					if getgenv().changecolor then
 						if getgenv().dvdmethod == 'tick' then
-						script.Parent.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
+						ImageLabel.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
 						else
-						script.Parent.ImageColor3 = Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
+						ImageLabel.ImageColor3 = Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255))
 						end
 					end
 				end

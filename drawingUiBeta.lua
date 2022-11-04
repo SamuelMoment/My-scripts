@@ -61,6 +61,7 @@ utility['outline'] = function(draw,color,type,thickness)
 end
 
 function utility.create(class, properties)
+---@diagnostic disable-next-line: undefined-global
     local obj = drawing:new(class)
 
     for prop, v in next, properties do
@@ -221,18 +222,24 @@ local gradient = decode("iVBORw0KGgoAAAANSUhEU  gAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR
 
 function library:New(scriptName)
     local menu = {}   
-    getgenv().s = drawing:new('Square')
+---@diagnostic disable-next-line: undefined-global
+    local s = drawing:new('Square')
     
+
     s.Size = Vector2.new(500,550)
-    s.Position =Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, workspace.CurrentCamera.ViewportSize.Y / 2  - (game:GetService("GuiService"):GetGuiInset().Y/2))
+
+    s.Position = Vector2.new(workspace.CurrentCamera.ViewportSize.X / 2, workspace.CurrentCamera.ViewportSize.Y / 2  - (game:GetService("GuiService"):GetGuiInset().Y/2))
     s.Position = Vector2.new(s.Position.X - s.Size.X/2,s.Position.Y - s.Size.Y/2)
     s.Thickness = 1
     s.Transparency = 1
     s.Visible = true
+
     s.Filled = true
     s.Color = Color3.fromRGB(30,30,30)
+
     s.ZIndex = 1
-    
+    getgenv().s = s
+
     makeDraggable(s)
     local s1 = drawing:new('Square')
     s1.Size = Vector2.new(s.Size.X, 25)
@@ -243,8 +250,10 @@ function library:New(scriptName)
     s1.Filled = true
     s1.Color = Color3.fromRGB(35,35,35)
     s1.ZIndex = 1
+---@diagnostic disable-next-line: undefined-global
     s1.Parent = s
     
+---@diagnostic disable-next-line: undefined-global
     local textlabel = drawing:new('Text')
     textlabel.Parent = s1
     textlabel.Outline = true
@@ -256,7 +265,7 @@ function library:New(scriptName)
     textlabel.Font = Drawing.Fonts.Plex
     
     TabOffset = textlabel.TextBounds.X + 5
-    Tabs = {}
+    local Tabs = {}
     CurrentTab = nil
     local pickers = {}
     function menu:Tab(tabName)
@@ -279,7 +288,7 @@ function library:New(scriptName)
         frame.ZIndex = 1
         frame.Size = textlabel1.TextBounds
         
-        Right = drawing:new('Square')
+        local Right = drawing:new('Square')
         Right.Size = Vector2.new(500,550)
         Right.Thickness = 1
         Right.Transparency = 0
@@ -291,7 +300,7 @@ function library:New(scriptName)
         Right.Size = Vector2.new(235,515)
         Right.Position = Vector2.new(10,30)
   
-        Left = drawing:new('Square')
+        local Left = drawing:new('Square')
         
         Left.Size = Vector2.new(500,550)
         Left.Thickness = 1
@@ -336,8 +345,8 @@ function library:New(scriptName)
         Tabs[tabName]['LastRightSector'] = nil
         Tabs[tabName]['LastLeftSector'] = nil
         function Tab:Sector(text,Side)
-            SectorFuncs = {}
-            Sector = drawing:new('Square')
+            local SectorFuncs = {}
+            local Sector = drawing:new('Square')
             Sector.Size = Vector2.new(500,550)
             Sector.Thickness = 1
             Sector.Transparency = 1
@@ -346,7 +355,7 @@ function library:New(scriptName)
             Sector.Color = Color3.fromRGB(35,35,35)
             Sector.ZIndex = 2    
             Sector.Parent = Tabs[tabName][Side]
-            UpdateSectors = function(currentSector,Side)
+            local UpdateSectors = function(currentSector,Side)
                 if Side == 'Right' then
                     local offset = Vector2.new(0,5)
                     for i,v in pairs(Tabs[tabName]['RightSectors']) do
@@ -484,7 +493,7 @@ function library:New(scriptName)
                         end                        
                     end
                 elseif Type == "ToggleColor" or Type == 'ToggleTrans' then
-                    Values = {Toggle = data.Toggle ~= nil and data.Toggle or data.default and data.default.Toggle and data.default.Toggle or false,Color}
+                    Values = {Color = nil, Toggle = data.Toggle ~= nil and data.Toggle or data.default and data.default.Toggle and data.default.Toggle or false}
                     local holder = drawing:new('Square')
                     holder.Parent = Sector
                     holder.Size = Vector2.new(Sector.Size.X,5)
@@ -536,9 +545,10 @@ function library:New(scriptName)
                         end                        
                     end
         
-                        default = (data.default and data.default.Color and data.default.Color or Color3.new(255,0,0))
+                        local default = (data.default and data.default.Color and data.default.Color or Color3.new(255,0,0))
+                        local defaultalpha = nil
                         if Type == 'ToggleTrans' then
-                            defaultalpha = (data.default and data.default.Transparency and data.default.Transparency or 1)
+                            local defaultalpha = (data.default and data.default.Transparency and data.default.Transparency or 1)
                         end
                     local icon = utility.create("Square", {
                         Filled = true,
@@ -733,6 +743,7 @@ function library:New(scriptName)
                         end
                 
                         local oldcolor = hsv
+                        local oldalpha = nil
                         if Type == 'ToggleTrans' then
                             local oldalpha = alpha
                         end
@@ -768,7 +779,7 @@ function library:New(scriptName)
                     end
                 
                         local slidingalpha = false
-                    
+                        local curhuesizey = nil
                         local function updatealpha(input)
                             local sizeY = 1 - math.clamp(((input.Position.Y - alphaframe.AbsolutePosition.Y) + 36) / alphaframe.AbsoluteSize.Y, 0, 1)
                             local posY = math.clamp(((input.Position.Y - alphaframe.AbsolutePosition.Y) / alphaframe.AbsoluteSize.Y) * alphaframe.AbsoluteSize.Y + 36, 0, alphaframe.AbsoluteSize.Y - 2)
@@ -937,7 +948,7 @@ function library:New(scriptName)
                         Size = Vector2.new(170,10),
                         Color = MainUIColor
                     })
-                    slider2 = utility.create('Square',{
+                    local slider2 = utility.create('Square',{
                         Parent = Sector,
                         ZIndex = 2,
                         Position = Vector2.new(33,offset+8),
@@ -996,7 +1007,7 @@ function library:New(scriptName)
 								end 
 								text1.Text = tostring(default)
 								Slider.Size = UDim2.new(a,0,1,0)  
-
+                                local moveconnection,releaseconnection
 								holder.MouseButton1Down:Connect(function() 
 									Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 170), 0, 10) 
 									val = math.floor(((((tonumber(max) - tonumber(min)) / 170) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100 

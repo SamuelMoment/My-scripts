@@ -799,8 +799,6 @@ do
 		end)
 		addons:Element("TextBox", "mnt", {placeholder = "Custom cheat name"}, function()
 			game:GetService("CoreGui")["electric boogalo"].Holder.TextLabel.Text = values.misc.addons.mnt.Text
-			valuewtr = values.misc.addons.mnt.Text
-			print(valuewtr)
 		end)
 	
 	
@@ -997,7 +995,7 @@ do
 							highlight.FillTransparency = tbl.Transparency
 						
 						else
-							highlighs.FillTransparency = 1
+							highlight.FillTransparency = 1
 						end
 						if values.visuals.players['Outline chams'].Toggle then
 							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
@@ -1074,7 +1072,7 @@ do
 							highlight.FillColor = values.visuals.players['Chams'].Color
 							highlight.FillTransparency = values.visuals.players['Chams'].Transparency
 						else
-							highlighs.FillTransparency = 1
+							highlight.FillTransparency = 1
 						end
 						if tbl.Toggle then
 							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
@@ -1184,7 +1182,7 @@ do
 							highlight.FillColor = values.visuals.players['Chams'].Color
 							highlight.FillTransparency = values.visuals.players['Chams'].Transparency
 						else
-							highlighs.FillTransparency = 1
+							highlight.FillTransparency = 1
 						end
 						if values.visuals.players['Outline chams'].Toggle then
 							highlight.OutlineColor = values.visuals.players['Outline chams'].Color
@@ -1843,24 +1841,24 @@ do
 			end 
 			for i,v in pairs(LocalPlayer.Character:GetChildren()) do 
 				if v:IsA("BasePart") and v.Transparency ~= 1 then 
-					C.INSERT(SelfObj, v) 
-					local Color = C.INST("Color3Value") 
+					INSERT(SelfObj, v) 
+					local Color = INST("Color3Value") 
 					Color.Name = "OriginalColor" 
 					Color.Value = v.Color 
 					Color.Parent = v 
 
-					local String = C.INST("StringValue") 
+					local String = INST("StringValue") 
 					String.Name = "OriginalMaterial" 
 					String.Value = v.Material.Name 
 					String.Parent = v 
 				elseif v:IsA("Accessory") and v.Handle.Transparency ~= 1 then 
-					C.INSERT(SelfObj, v.Handle) 
-					local Color = C.INST("Color3Value") 
+					INSERT(SelfObj, v.Handle) 
+					local Color = INST("Color3Value") 
 					Color.Name = "OriginalColor" 
 					Color.Value = v.Handle.Color 
 					Color.Parent = v.Handle 
 
-					local String = C.INST("StringValue") 
+					local String = INST("StringValue") 
 					String.Name = "OriginalMaterial" 
 					String.Value = v.Handle.Material.Name 
 					String.Parent = v.Handle 
@@ -1968,12 +1966,12 @@ boobs:Element('ToggleColor','enabled',{},function(tbl)
 			
 			part.Position = torso.Position
 			end)--]]
-		getgenv().weld = Instance.new('Weld',char.boobsModel)
+		local weld = Instance.new('Weld',char.boobsModel)
 		weld.Part0 = torso
 		weld.Part1 = part
 		weld.C0 = CFrame.new() + Vector3.new(0.5,0.3,-0.75)
 
-		getgenv().part2 = Instance.new('Part',char.boobsModel)
+		local part2 = Instance.new('Part',char.boobsModel)
 		part2.Name = 'boob2'
 		part2.CanCollide = false
 		part2.Anchored = false
@@ -2234,7 +2232,7 @@ do
 	radio:Element('TextBox', 'music',{placeholder = 'ID or path',NoLimit = true})
 	radio:Element('Dropdown','type',{options = {'Roblox ID','workspace mp3'}})
 	radio:Element('Slider','Volume', {min = 0,max = 10}, function(tbl)
-		if getgenv().RadioSound then
+		if RadioSound then
 			RadioSound.Volume = tbl.Slider/10
 		end
 	end)
@@ -2242,26 +2240,26 @@ do
 		
 		if values.other.Radio.type.Dropdown == 'Roblox ID' then
 			if ValidateSong(values.other.Radio.music.Text) == true then
-				if getgenv().RadioSound ~= nil then
+				if RadioSound ~= nil then
 					RadioSound:Stop()
-					getgenv().RadioSound:Destroy()
-					getgenv().RadioSound = nil
+					RadioSound:Destroy()
+					RadioSound = nil
 				end
-				getgenv().RadioSound = Instance.new('Sound',workspace)
+				local RadioSound = Instance.new('Sound',workspace)
 				RadioSound.Volume = values.other.Radio.Volume.Slider/10
 				RadioSound.SoundId = "rbxassetid://"..values.other.Radio.music.Text
 				RadioSound:Play()
 			else return error('Wrong id or path!') end
 		else
-			getAsset = getsynasset or getcustomasset
+			local getAsset = getsynasset or getcustomasset
 			if not isfile(values.other.Radio.music.Text) then
 				return error('Wrong id or path!')
 			end
-			if getgenv().RadioSound then
-				getgenv().RadioSound:Destroy()
-				getgenv().RadioSound = nil
+			if RadioSound then
+				RadioSound:Destroy()
+				RadioSound = nil
 			end
-			getgenv().RadioSound = Instance.new('Sound',workspace)
+			local RadioSound = Instance.new('Sound',workspace)
 			RadioSound.Volume = values.other.Radio.Volume.Slider/10
 			RadioSound.SoundId = getAsset(values.other.Radio.music.Text)
 			RadioSound:Play()			
@@ -2334,6 +2332,7 @@ do
 					getgenv().XSpeed = getgenv().XSpeed * -1
 					--print('X')
 					if getgenv().changecolor then
+---@diagnostic disable-next-line: undefined-global
 						if dvdmethod == 'tick' then
 						script.Parent.ImageColor3 = Color3.fromHSV(tick() % 1/1,1,1)
 						else
