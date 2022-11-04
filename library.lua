@@ -6537,6 +6537,7 @@ end)
 								end 
 								values[tabname][sectorname][text] = Element.value
 							elseif type == "lmao3" then 
+								--print('found')
 								Section.Size = Section.Size + C.UDIM2(0,0,0,39) 
 								Element.value = {Jumbobox = {}} 
 								data.options = data.options or {} 
@@ -6653,8 +6654,8 @@ end)
 
 									abcd.Text = str 
 								end 
-							function gaysex()
-								for i,v in ipairs(data.options) do 
+							function gaysex(a)
+								for i,v in ipairs(a) do 
 									do 
 										local Button = C.INST("TextButton") 
 										local TextLabel = C.INST("TextLabel") 
@@ -6726,20 +6727,20 @@ end)
 									end 
 								end 
 							end
-							gaysex()
+							gaysex(data.options)
 							game.Players.PlayerAdded:Connect(function(plr)
 								table.clear(data.options)
 								for i,v in pairs(game.Players:GetPlayers()) do
-									insertwithoutdupes(data.options,v.Name)
+									C.INSERT(data.options,v.Name)
 								end
-								gaysex()
+								gaysex(data.options)
 							end)
 							game.Players.PlayerAdded:Connect(function(plr)
 								table.clear(data.options)
 								for i,v in pairs(game.Players:GetPlayers()) do
-									insertwithoutdupes(data.options,v.Name)
+									C.INSERT(data.options,v.Name)
 								end
-								gaysex()
+								gaysex(data.options)
 							end)
 								function Element:SetValue(val) 
 									Element.value = val 
