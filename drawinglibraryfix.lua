@@ -1,5 +1,7 @@
 if getgenv().drawing then return end
-getgenv().drawing = {} do
+getgenv().drawing = {} 
+local drawing = getgenv().drawing
+do
     local services = setmetatable({}, {
         __index = function(self, key)
             if key == "InputService" then
@@ -24,6 +26,7 @@ getgenv().drawing = {} do
     local ENABLE_TRACEBACK = false
 
     getgenv().Signal = {}
+    local Signal = getgenv().Signal
     Signal.__index = Signal
     Signal.ClassName = "Signal"
 

@@ -4,7 +4,7 @@ end
 if getgenv().s then getgenv().s:Remove() end
 
 local Vec2 = Vector2.new
-local draw = function(...) return drawing:new(...) end
+local draw = function(...) return getgenv().draw(...) end
 
 
 local makeDraggable = function(frame)
@@ -48,7 +48,7 @@ local utility = {}
 utility['outline'] = function(draw,color,type,thickness)
     if not type then type = 'Square' end
     if not thickness then thickness = 16 end
-    local outline = drawing:new(type)
+    local outline = draw(type)
     outline.Parent = draw
     outline.Size = UDim2.new(1, 2, 1, 2)
     outline.ZIndex = draw.ZIndex-1
@@ -62,7 +62,7 @@ end
 
 function utility.create(class, properties)
 ---@diagnostic disable-next-line: undefined-global
-    local obj = drawing:new(class)
+    local obj = draw(class)
 
     for prop, v in next, properties do
         obj[prop] = v
@@ -223,7 +223,7 @@ local gradient = decode("iVBORw0KGgoAAAANSUhEU  gAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR
 function library:New(scriptName)
     local menu = {}   
 ---@diagnostic disable-next-line: undefined-global
-    local s = drawing:new('Square')
+    local s = draw('Square')
     
 
     s.Size = Vector2.new(500,550)
@@ -241,7 +241,7 @@ function library:New(scriptName)
     getgenv().s = s
 
     makeDraggable(s)
-    local s1 = drawing:new('Square')
+    local s1 = draw('Square')
     s1.Size = Vector2.new(s.Size.X, 25)
     s1.Position =Vector2.new(0,0)
     s1.Thickness = 1
@@ -254,7 +254,7 @@ function library:New(scriptName)
     s1.Parent = s
     
 ---@diagnostic disable-next-line: undefined-global
-    local textlabel = drawing:new('Text')
+    local textlabel = draw('Text')
     textlabel.Parent = s1
     textlabel.Outline = true
     textlabel.Text = scriptName
@@ -270,7 +270,7 @@ function library:New(scriptName)
     local pickers = {}
     function menu:Tab(tabName)
         local tabName = tabName
-        local textlabel1 = drawing:new('Text')
+        local textlabel1 = draw('Text')
         textlabel1.Parent = s1
         textlabel1.Outline = true
         textlabel1.Text = tostring(' | %s'):format(tabName)
@@ -281,14 +281,14 @@ function library:New(scriptName)
         textlabel1.Font = Drawing.Fonts.Plex
         TabOffset = TabOffset + textlabel1.TextBounds.X
         
-        local frame = drawing:new('Square')
+        local frame = draw('Square')
         frame.Parent = s1
         frame.Transparency = 0
         frame.Position = Vector2.new(TabOffset,5) - Vector2.new(textlabel1.Size+30,0)
         frame.ZIndex = 1
         frame.Size = textlabel1.TextBounds
         
-        local Right = drawing:new('Square')
+        local Right = draw('Square')
         Right.Size = Vector2.new(500,550)
         Right.Thickness = 1
         Right.Transparency = 0
@@ -300,7 +300,7 @@ function library:New(scriptName)
         Right.Size = Vector2.new(235,515)
         Right.Position = Vector2.new(10,30)
   
-        local Left = drawing:new('Square')
+        local Left = draw('Square')
         
         Left.Size = Vector2.new(500,550)
         Left.Thickness = 1
@@ -346,7 +346,7 @@ function library:New(scriptName)
         Tabs[tabName]['LastLeftSector'] = nil
         function Tab:Sector(text,Side)
             local SectorFuncs = {}
-            local Sector = drawing:new('Square')
+            local Sector = draw('Square')
             Sector.Size = Vector2.new(500,550)
             Sector.Thickness = 1
             Sector.Transparency = 1
@@ -383,7 +383,7 @@ function library:New(scriptName)
             UpdateSectors(Sector,Side)
             Sector.Size = Vector2.new(235,10)
 
-            local SectorName = drawing:new('Text')
+            local SectorName = draw('Text')
             SectorName.Parent = Sector
             SectorName.Outline = true
             SectorName.Text = tostring('%s'):format(text)
@@ -398,7 +398,7 @@ function library:New(scriptName)
                 if callback == nil then callback = function() end end
                 
                 if Type == 'Button' then
-                    local button = drawing:new('Square')
+                    local button = draw('Square')
                     button.Parent = Sector
                     button.Size = Vector2.new(150,5)
                     button.ZIndex = 3
@@ -414,7 +414,7 @@ function library:New(scriptName)
                     
                     utility.outline(button,Color3.fromRGB(50,50,50),'Square')
                     
-                    local text1 = drawing:new('Text')
+                    local text1 = draw('Text')
                     text1.Parent = button
                     text1.Size = 13
                     text1.Font = Drawing.Fonts.Plex
@@ -442,7 +442,7 @@ function library:New(scriptName)
                     UpdateSectors(Sector,Side)                    
                 elseif Type == 'Toggle' then
                     Values = {Toggle = data.Toggle ~= nil and data.Toggle or data.default and data.default.Toggle and data.default.Toggle or false}
-                    local holder = drawing:new('Square')
+                    local holder = draw('Square')
                     holder.Parent = Sector
                     holder.Size = Vector2.new(Sector.Size.X,5)
                     holder.Position = Vector2.new(0,offset)
@@ -456,7 +456,7 @@ function library:New(scriptName)
                     
 
                     
-                    local color = drawing:new('Square')
+                    local color = draw('Square')
                     color.Parent = holder
                     color.ZIndex = 4
                     color.Position = UDim2.new(0,35,0.4,-6)
@@ -494,7 +494,7 @@ function library:New(scriptName)
                     end
                 elseif Type == "ToggleColor" or Type == 'ToggleTrans' then
                     Values = {Color = nil, Toggle = data.Toggle ~= nil and data.Toggle or data.default and data.default.Toggle and data.default.Toggle or false}
-                    local holder = drawing:new('Square')
+                    local holder = draw('Square')
                     holder.Parent = Sector
                     holder.Size = Vector2.new(Sector.Size.X,5)
                     holder.Position = Vector2.new(0,offset)
@@ -508,7 +508,7 @@ function library:New(scriptName)
                     
 
                     
-                    local color = drawing:new('Square')
+                    local color = draw('Square')
                     color.Parent = holder
                     color.ZIndex = 4
                     color.Position = UDim2.new(0,35,0.4,-6)

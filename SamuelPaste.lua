@@ -2,29 +2,10 @@
 -----------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 
---[[
-method i want to use for keybinds incase i forget
-table[keybind1] = should be bigggest keybind, value should be table[keybind1] - table[keybind2]
-table[keybind2] = should be less bigger
-tbh i forget the method i wanted to use first so yeah
---]]
+
 
 if game.CoreGui:FindFirstChild("electric boogalo") then return error('script is already executed or you executed another script')end
-getgenv().PasteDisabled = false
-local wait = task.wait -- small test
-values = {} --blahwrlqwrqwr
-local library = {tabs = {}}
-local Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/backup_signal.lua"))() 
---local Api = loadstring(game:HttpGet("https://pastebin.com/raw/5L3wV43u"))() 
---local ConfigSave = Signal.new("ConfigSave") 
-local ConfigLoad = Signal.new("ConfigLoad")
-local ConfigLoad1 = Signal.new("ConfigLoad1")
---ConfigSave1 = Signal.new("ConfigSave") 
-ConfigUpdateCfgList = Signal.new('ConfigUpdateCfgList')
-ConfigUpdateCfgList2 = Signal.new('ConfigUpdateCfgList2')
---VisualizeSilentAngles = Signal.new('VisualizeSilentAngles')
-hitlogs = Signal.new('hitlogs')
---MenuAccent = Signal.new('MenuAccent')
+
 function insertwithoutdupes(tab, thethingyouneedtoinsert) -- my own code :sunglasses:
 	if not table.find(tab, thethingyouneedtoinsert) then
 		table.insert(tab, thethingyouneedtoinsert)
@@ -217,7 +198,7 @@ function textboxtriggers(text)
 end
 
 local txt = game:GetService("TextService") 
-function library:Tween(...) game:GetService("TweenService"):Create(...):Play() end 
+
 --local cfglocation = "pastedstormy/pastedstormycfgs/"
  
 --makefolder("pastedstormy") 
@@ -281,9 +262,9 @@ end
 C.INSERT(allcfgs, 'shit so script wont crash')
 end--]]
 
-local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/library.lua"))()
+local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/library.lua"))()
 library.setcfglocation(cfglocation)
-
+local hitlogs = Signal.new()
 	hitlogs:Connect(function(text,col,time, size2, size4)
 		CreateHitElement(text,col, time, size2, size4)
 	end)
@@ -291,53 +272,51 @@ library.setcfglocation(cfglocation)
 	wait(0.5)
 
 
-UserInputService = game:GetService("UserInputService") 
-ReplicatedStorage = game:GetService("ReplicatedStorage") 
-RunService = game:GetService("RunService") 
-Lighting = game:GetService("Lighting") 
-PlayerGui = LocalPlayer.PlayerGui
-Crosshairs = PlayerGui.GUI.Crosshairs
-Crosshair = PlayerGui.GUI.Crosshairs.Crosshair
-Mouse = LocalPlayer:GetMouse() 
-Camera = workspace.CurrentCamera 
-ClientScript = LocalPlayer.PlayerGui.Client 
-Client = getsenv(ClientScript) 
-ChatScript = getsenv(LocalPlayer.PlayerGui.GUI.Main.Chats.DisplayChat)
+local UserInputService = game:GetService("UserInputService") 
+local ReplicatedStorage = game:GetService("ReplicatedStorage") 
+local RunService = game:GetService("RunService") 
+local Lighting = game:GetService("Lighting") 
+local PlayerGui = LocalPlayer.PlayerGui
+local Crosshairs = PlayerGui['EEED-GUI'].Crosshairs
+local Crosshair = PlayerGui['EEED-GUI'].Crosshairs.Crosshair
+local Mouse = LocalPlayer:GetMouse() 
+local Camera = workspace.CurrentCamera 
+local ClientScript = LocalPlayer.PlayerGui:FindFirstChildWhichIsA('LocalScript') 
+local Client = getsenv(ClientScript) 
+local ChatScript = getsenv(LocalPlayer.PlayerGui['EEED-GUI'].Main.Chats.DisplayChat)
 
 repeat RunService.RenderStepped:Wait() until game:IsLoaded() 
 
-oldcreatebullethole = Client.createbullethole 
+local oldcreatebullethole = Client.createbullethole 
 local LGlove, RGlove, LSleeve, RSleeve, RArm, LArm 
-WeaponObj = {} 
-SelfObj = {} 
-Viewmodels =  ReplicatedStorage.Viewmodels 
-Weapons =  ReplicatedStorage.Weapons 
-ViewmodelOffset = C.CF(0,0,0) 
-Smokes = {} 
-Mollies = {}
+local WeaponObj = {} 
+local SelfObj = {} 
+local Viewmodels =  ReplicatedStorage.Viewmodels 
+local Weapons = Client.WeaponData
+local ViewmodelOffset = C.CF(0,0,0) 
+local Smokes = {} 
+local Mollies = {}
 local RageTarget 
-if game.ReplicatedStorage:FindFirstChild('GetIcon') then
-GetIcon = require(game.ReplicatedStorage.GetIcon) 
-else
-GetIcon = require(game.ReplicatedStorage.GetIconOld) 
-end
-BodyVelocity = C.INST("BodyVelocity") 
+
+local GetIcon = require(game.ReplicatedStorage.GetIcon) 
+
+local BodyVelocity = C.INST("BodyVelocity") 
 BodyVelocity.MaxForce = C.Vec3(C.HUGE, 0, C.HUGE) 
-Collision = {Camera, workspace.Ray_Ignore, workspace.Debris} 
-FakelagFolder = C.INST("Folder", nil) 
+local Collision = {Camera, workspace.Ray_Ignore, workspace.Debris} 
+local FakelagFolder = C.INST("Folder", nil) 
 FakelagFolder.Name = "Fakelag" 
-backtrackfolder = C.INST("Folder", nil)
+local backtrackfolder = C.INST("Folder", nil)
 backtrackfolder.Name = "backtrackfolder"
-fowardtrackFolder = C.INST("Folder", nil)
+local fowardtrackFolder = C.INST("Folder", nil)
 fowardtrackFolder.Name = "FowardtrackFolder"
-FakeAnim = C.INST("Animation", nil) 
+local FakeAnim = C.INST("Animation", nil) 
 FakeAnim.AnimationId = "rbxassetid://0" 
-Gloves = ReplicatedStorage.Gloves 
+local Gloves = ReplicatedStorage.Gloves 
 if Gloves:FindFirstChild("ImageLabel") then 
 	Gloves.ImageLabel:Destroy() 
 end 
-GloveModels = Gloves.Models 
-Multipliers = { 
+local GloveModels = Gloves.Models 
+local Multipliers = { 
 	["Head"] = 4, 
 	["FakeHead"] = 4, 
 	["HeadHB"] = 4, 
@@ -363,7 +342,6 @@ Skyboxes = {
 		SkyboxBk = "rbxassetid://159454299", 
 		SkyboxDn = "rbxassetid://159454296", 
 		SkyboxFt = "rbxassetid://159454293", 
-		SkyboxLf = "rbxassetid://159454286", 
 		SkyboxRt = "rbxassetid://159454300", 
 		SkyboxUp = "rbxassetid://159454288", 
 	}, 
@@ -372,7 +350,6 @@ Skyboxes = {
 		SkyboxBk = "rbxassetid://1417494030", 
 		SkyboxDn = "rbxassetid://1417494146", 
 		SkyboxFt = "rbxassetid://1417494253", 
-		SkyboxLf = "rbxassetid://1417494402", 
 		SkyboxRt = "rbxassetid://1417494499", 
 		SkyboxUp = "rbxassetid://1417494643", 
 	}, 
@@ -381,7 +358,6 @@ Skyboxes = {
 		SkyboxBk = "rbxassetid://570557514", 
 		SkyboxDn = "rbxassetid://570557775", 
 		SkyboxFt = "rbxassetid://570557559", 
-		SkyboxLf = "rbxassetid://570557620", 
 		SkyboxRt = "rbxassetid://570557672", 
 		SkyboxUp = "rbxassetid://570557727", 
 	}, 
@@ -390,7 +366,6 @@ Skyboxes = {
 		SkyboxBk = "rbxassetid://264908339", 
 		SkyboxDn = "rbxassetid://264907909", 
 		SkyboxFt = "rbxassetid://264909420", 
-		SkyboxLf = "rbxassetid://264909758", 
 		SkyboxRt = "rbxassetid://264908886", 
 		SkyboxUp = "rbxassetid://264907379", 
 	}, 
@@ -422,27 +397,7 @@ do
 	NewScope = ScreenGui 
 end 
 local oldSkybox 
-local ownerJoined = {"GetRealGetFpsGui", "jjbetterthansynapse", 'SamuelThePaster', 'SamuelBetterThanU'}
-Players.PlayerAdded:Connect(function(plr)
-	if C.TBLFIND(ownerJoined, plr.Name) then
-		CreateHitElement(" !!!HOLY FUCKING SHIT!!! OWNER OF SCRIPT JOINED PREPARE TO GET FUCKED UP!!! ",MainUIColor,15, 0, 380, 0, 22)
-	end
-end)
 
-Players.PlayerRemoving:Connect(function(plr)
-	if C.TBLFIND(ownerJoined, plr.Name) then
-		CreateHitElement(" LMFAO owner left you probably made him rage quit or he's updating script ",MainUIColor,15, 0, 380, 0, 22)
-	end
-end)
-for i,v in pairs(Players:GetPlayers()) do
-	if C.TBLFIND(ownerJoined, v.Name) then
-		if v ~= LocalPlayer then
-			CreateHitElement(" !!!HOLY FUCKING SHIT!!! YOU JOINED TO OWNER OF SCRIPT PREPARE TO GET FUCKED UP!!! ",MainUIColor,15, 0, 380, 0, 22)
-		elseif v == LocalPlayer then
-			CreateHitElement(" Hello daddy uwu ",MainUIColor,5, 0, 100, 0, 22)
-		end
-	end
-end
 local function VectorRGB(RGB) 
 	return C.Vec3(RGB.R, RGB.G, RGB.B) 
 end 
@@ -504,8 +459,7 @@ local function UpdateWeapon(obj)
 	obj.Reflectance = values.visuals.effects["reflectance"].Slider/10
 	obj.Transparency = values.visuals.effects["weapon chams"].Transparency
 end 
-if game.GameId ~= 3681951220 then
-	local Skins = ReplicatedStorage.Skins 
+	--[[local Skins = ReplicatedStorage.Skins 
 	local function MapSkin(Gun, Skin, CustomSkin) 
 		if CustomSkin ~= nil then 
 			for _,Data in pairs(CustomSkin) do 
@@ -529,8 +483,7 @@ if game.GameId ~= 3681951220 then
 				end 
 			end 
 		end 
-	end 
-end
+	end --]]
 local function ChangeCharacter(NewCharacter) 
 	for _,Part in pairs (LocalPlayer.Character:GetChildren()) do 
 		if Part:IsA("Accessory") then 
@@ -755,7 +708,7 @@ local allluas = {}
 for _,lua in pairs(listfiles("SamuelPaste/lua")) do 
 	local luaname = C.GSUB(lua, "SamuelPaste/lua\\", "") 
 	C.INSERT(allluas, luaname) 
-end 
+end
 
 
 
@@ -798,12 +751,12 @@ knife:Element('Dropdown', "effects", {options = EffectsNames, Amount = 5})
 local glove = skins:Sector('glove', 'Left')
 glove:Element('Toggle', 'glove changer')
 glove:Element('ScrollDrop', 'model', {options = AllGloves, Amount = 9})
-if game.GameId ~= 3681951220 then
+--[[if game.GameId ~= 3681951220 then
 local skin = skins:Sector('skins', 'Right')
 skin:Element('Toggle', 'skin changer')
 skin:Element('ScrollDrop', 'skin', {options = AllSkins, Amount = 15, alphabet = true})
 
-end
+end--]]
 
 local custom = skins:Sector('custom models', 'Left')
 
@@ -1042,10 +995,6 @@ end)
 
 
 local other = others:Sector("other", "Left") 
-other:Element("Scroll", "lua", {options = allluas, Amount = 5}) 
-other:Element("Button", "load", {}, function() 
-	loadstring(readfile("SamuelPaste/lua\\"..values.others["other"].lua.Scroll))() 
-end)
 
 
 local luas2 = others:Sector("Scripts", "Right")
@@ -1124,117 +1073,108 @@ end)
 
 --other:Element('Dropdown', 'Copy colors type', {options = {'RGB', 'HSV', 'HEX',}}) --hsl, cmyk
 other:Element('Button2', 'clean gui', nil, function()
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.PlayerBox.GreyPart.PHealth.Position = C.UDIM2(0, 5, 0, 0)
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Spectate.PlayerBox.GreyPart.PHealth.Position = C.UDIM2(0, 5, 0, 0)
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.PlayerBox.GreyPart.Plus.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Spectate.PlayerBox.GreyPart.Plus.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Circle.Transparency = 0.6
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Circle.Transparency = 0.6
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Transparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Vitals.Transparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Buymenu.Base.ImageTransparency = 0.8
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Buymenu.Base.ImageTransparency = 0.8
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item1.bk.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Inventory.Item1.bk.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item2.bk.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Inventory.Item2.bk.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item3.bk.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Inventory.Item3.bk.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item4.bk.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Inventory.Item4.bk.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item5.bk.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Inventory.Item5.bk.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item6.bk.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Inventory.Item6.bk.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Transparency = 0
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].CTWin.Transparency = 0
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Color.Transparency = 0
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].CTWin.Color.Transparency = 0
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.CTWin.Info.Transparency = 0
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].CTWin.Info.Transparency = 0
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Transparency = 0
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].TWin.Transparency = 0
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Color.Transparency = 0
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].TWin.Color.Transparency = 0
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TWin.Info.Transparency = 0
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].TWin.Info.Transparency = 0
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.Item7.bk.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Inventory.Item7.bk.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.bk.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Vitals.bk.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.bk.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].AmmoGUI.bk.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Transparency = 0.6
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].UpperInfo.Transparency = 0.6
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Transparency = 0.4
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].TeamSelection.Transparency = 0.4
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.BackgroundColor3 = C.COL3RGB(60, 60, 60)
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].TeamSelection.BackgroundColor3 = C.COL3RGB(60, 60, 60)
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Blue.Label.Text = "Samuel"
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].TeamSelection.Blue.Label.Text = "Samuel"
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.TeamSelection.Red.Label.Text = "Paste"
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].TeamSelection.Red.Label.Text = "Paste"
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.BuyZone.ImageTransparency = 1
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Cash.BuyZone.ImageTransparency = 1
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.BuyZone.Size = C.UDIM2(0, 0, 0, 0)
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Cash.BuyZone.Size = C.UDIM2(0, 0, 0, 0)
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Size = C.UDIM2(0, 206, 0, 40)
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Cash.Size = C.UDIM2(0, 206, 0, 40)
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Position = C.UDIM2(0, 6, 0, 230)
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Cash.Position = C.UDIM2(0, 6, 0, 230)
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.TextSize = 26.000
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Cash.TextSize = 26.000
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Cash.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Cash.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Health.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Vitals.Health.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Armor.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Vitals.Armor.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.APlus:Destroy()
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Vitals.APlus:Destroy()
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Vitals.Plus:Destroy()
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Vitals.Plus:Destroy()
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Spectate.Controls.Text = "SamuelPaste"
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Spectate.Controls.Text = "SamuelPaste"
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.CTScore.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].UpperInfo.CTScore.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Timer.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].UpperInfo.Timer.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.TScore.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].UpperInfo.TScore.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoClip.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].AmmoGUI.AmmoClip.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoReserve.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].AmmoGUI.AmmoReserve.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.AmmoClip.TextColor3 = C.COL3RGB(255, 255, 255)
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].AmmoGUI.AmmoClip.TextColor3 = C.COL3RGB(255, 255, 255)
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.AmmoGUI.Slash.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].AmmoGUI.Slash.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.ImageTransparency = 0.6
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.TextLabel.Font = Enum.Font.Gotham
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Notify.Icon.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Notify.ImageTransparency = 0.6
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Notify.TextLabel.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Notify.Icon.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.MapVote.TextLabel.Text = "Map vote"
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.MapVote.TextLabel.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].MapVote.TextLabel.Text = "Map vote"
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].MapVote.TextLabel.Font = Enum.Font.Gotham
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Defusal.Defusing.Font = Enum.Font.Gotham
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.Defusal.Time.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Defusal.Defusing.Font = Enum.Font.Gotham
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].Defusal.Time.Font = Enum.Font.Gotham
 
 --game:GetService("Players").LocalPlayer.PlayerGui.Performance.Perf.Visible = false
 
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Timer.Size = C.UDIM2(1, 0, 0, 36)
-game:GetService("Players").LocalPlayer.PlayerGui.GUI.UpperInfo.Scaler:Destroy()
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].UpperInfo.Timer.Size = C.UDIM2(1, 0, 0, 36)
+game:GetService("Players").LocalPlayer.PlayerGui['EEED-GUI'].UpperInfo.Scaler:Destroy()
 end)
-other:Element('Button2', 'UnLoad script', {}, function()
-writefile(cfglocation..'unload script cfg.txt', game:HttpGet("https://raw.githubusercontent.com/SamuelMoment/SamuelMoment/main/nothing.cfg"))
---big ass code (not big ass)
-ConfigLoad1:Fire('unload script cfg.txt')
-wait(1)
-RunService:UnbindFromRenderStep("Rage")
-delfile(cfglocation..'unload script cfg.txt')
-game.CoreGui['electric boogalo']:Destroy()
-getgenv().PasteDisabled = true
-end)
+
 
 local trannyenabled = false
 local socks = false
@@ -1329,7 +1269,7 @@ local givefunc
 for _, v in pairs(getgc()) do
 local parentScript = rawget(getfenv(v), "script")
 
-    if type(v) == "function" and parentScript == game:GetService("Players").LocalPlayer.PlayerGui.Client and islclosure(v) and not is_synapse_function(v) and debug.getinfo(v).name == "giveTool" then
+    if type(v) == "function" and parentScript == game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChildWhichIsA('LocalScript') and islclosure(v) and not is_synapse_function(v) and debug.getinfo(v).name == "giveTool" then
         givefunc = v
         break
     end
@@ -1349,7 +1289,7 @@ daddy:Element('Dropdown', 'what slot', {options = {'knife', 'pistol', 'primary',
 daddy:Element('ScrollDrop', 'weapon', {options = mydadbeatsme})
 
 
-if game.GameId == 3698756756 then
+--[[if game.GameId == 3698756756 then
 local ssExploits = others:Sector('funny exploits', 'Right')
 
 
@@ -1426,7 +1366,7 @@ ssExploits:Element('Button', 'freeze game', {}, function()
 	game.ReplicatedStorage.Events.IDBody:FireServer("id", {Identified = workspace.Status.Preparation}) -- breaks reload lol
 end)
 
-end
+end--]]
 local copy = others:Sector("Disord links", "Right") 
 copy:Element("Button", "My discord", {}, function() 
 	setclipboard("IAmSamuel#9008") 
@@ -1560,8 +1500,8 @@ local step2
 	if not (tbl.Toggle) then step2:Disconnect() return end
 	--values.others.other.Player.Dropdown
 				if Players[values.rage["Loop kill"]['Player'].Dropdown].Character and Players[values.rage["Loop kill"]['Player'].Dropdown].Team ~= LocalPlayer.Team and Players[values.rage["Loop kill"]['Player'].Dropdown].Character:FindFirstChild("UpperTorso") then
-                if ReplicatedStorage.Events:FindFirstChild('HitNN') then
-				ReplicatedStorage.Events.HitNN:FireServer(
+
+				ReplicatedStorage.Events.EEED:FireServer(
                     Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso, -- 1
                     Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso.CFrame --2
                     "Banana", --3
@@ -1576,24 +1516,6 @@ local step2
                     100,
                     C.Vec3()
                 )
-				else
-				
-				ReplicatedStorage.Events.HitPart:FireServer(
-                    Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso, -- 1
-                    Players[values.rage["Loop kill"]['Player'].Dropdown].Character.UpperTorso.CFrame --2
-                    "Banana", --3
-                    100, -- Range --4
-                    game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
-                    C.Vec3(), -- Start Position --6
-                    C.Vec3(),
-                    100, -- Damage Modifier
-                    false,
-                    false,
-                    C.Vec3(),
-                    100,
-                    C.Vec3()
-                )				
-				end
 				end
 	end)
 	end
@@ -1617,11 +1539,7 @@ local step1
 					local oh11 = C.Vec3(0,0,0)
 					local oh12 = 16868
 					local oh13 = C.Vec3(0, 0, 0)
-					if ReplicatedStorage.Events:FindFirstChild('HitNN') then
-					ReplicatedStorage.Events.HitNN:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
-					else
-					ReplicatedStorage.Events.HitPart:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
-					end
+					ReplicatedStorage.Events.EEED:FireServer(oh1, oh2, oh3, oh4, oh5, oh6, oh7, oh8, oh9, oh10, oh11, oh12, oh13)
 				end
 	end)
 	end
@@ -1814,10 +1732,7 @@ game:GetService("Workspace").FunFacts["Shots were fired"].Changed:Connect(functi
 			spawn(function()
 				for i=1,10 do wait()
 					pcall(function()
-						if  game.ReplicatedStorage.Events:FindFirstChild('Control') then
-						game.ReplicatedStorage.Events.Control:FireServer(values.rage.angles['pitch'].Slider/7, true)
-						end
-						game.ReplicatedStorage.Events.ControlTurn:FireServer(values.rage.angles['pitch'].Slider/7, false)
+						game.ReplicatedStorage.Events.ControlTurn:FireServer(values.rage.angles['pitch'].Slider/7, LocalPlayer.Character:FindFirstChild("Climbing") and true or false)
 					end)
 				end
 			end)
@@ -2300,7 +2215,19 @@ local exploits = rage:Sector("exploits", "Left")
 		end)
 	end)
 end)--]]
-				
+exploits:Element("Button", "crash server", {}, function() 
+	CreateHitElement("Crashing server...",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 280, 22)
+	while true do
+		pcall(function()
+			RunService.RenderStepped:Wait()
+			for i = 1,100,1 do
+				local ohInstance1 = LocalPlayer.Character.Gun.Mag                                                                                                                                                                                                                                                                                                    -- Server Crasher exploit by property (Mexicanhook). mis hermanos solo usan mexicanhook
+	
+				ReplicatedStorage.Events.DropMag:FireServer(ohInstance1)
+			end
+		end)
+	end
+end)    				
 exploits:Element("Button", "plant c4", {}, function()
 	pcall(function()
 	if IsAlive(LocalPlayer) and workspace.Map.Gamemode.Value == "defusal" and workspace.Status.Preparation.Value == false and not planting then 
@@ -2373,8 +2300,7 @@ exploits:Element("ToggleKeybind", "kill all", {}, function(tbl)
 			if not tbl.Toggle and not tbl.Active then return stormykillall:Disconnect() end
 				for _,Player in pairs(Players:GetPlayers()) do
 					if Player.Character and Player.Team ~= LocalPlayer.Team and Player.Character:FindFirstChild('UpperTorso') then
-						if game:GetService('ReplicatedStorage').Events:FindFirstChild('HitNN') then
-						game:GetService('ReplicatedStorage').Events.HitNN:FireServer(
+						game:GetService('ReplicatedStorage').Events.EEED:FireServer(
 							Player.Character.UpperTorso,
 							Player.Character.UpperTorso.CFrame.p,
 							Client.gun.Name, --3
@@ -2389,23 +2315,6 @@ exploits:Element("ToggleKeybind", "kill all", {}, function(tbl)
 							100,
 							C.Vec3()
 						)
-						else
-						game:GetService('ReplicatedStorage').Events.Hitpart:FireServer(
-							Player.Character.UpperTorso,
-							Player.Character.UpperTorso.CFrame.p,
-							Client.gun.Name, --3
-							100000000000000, -- Range --4
-							game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
-							C.Vec3(), -- Start Position --6
-							C.Vec3(),
-							1000, -- Damage Modifier
-							false,
-							true,
-							C.Vec3(),
-							100,
-							C.Vec3()
-						)						
-						end
 				end
 			end
 		end)
@@ -2420,8 +2329,7 @@ exploits:Element("ToggleKeybind", "hexagon kill all", {}, function(tbl)
 			if not tbl.Toggle and not tbl.Active then return hexagonkillall:Disconnect() end
 				for i,v in ipairs(Players:GetPlayers()) do
 					if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team and IsAlive(v) and IsAlive(game.Players.LocalPlayer) then
-						if ReplicatedStorage.Events:FindFirstChild('HitNN') then
-						ReplicatedStorage.Events.HitNN:FireServer(
+						ReplicatedStorage.Events.EEED:FireServer(
 							v.Character.UpperTorso,
 							v.Character.UpperTorso.CFrame
 							"Banana",
@@ -2436,7 +2344,6 @@ exploits:Element("ToggleKeybind", "hexagon kill all", {}, function(tbl)
 							100,
 							C.Vec3()
 						)
-						end
 					end
 				end
 		end)
@@ -2884,19 +2791,19 @@ effects:Element("Jumbobox", "removals", {options = {"scope", "scope lines", "fla
 		end 
 	end 
 	if C.TBLFIND(tbl, "scope") then 
-		PlayerGui.GUI.Crosshairs.Scope.ImageTransparency = 1 
-		PlayerGui.GUI.Crosshairs.Scope.Scope.ImageTransparency = 1 
-		PlayerGui.GUI.Crosshairs.Frame1.Transparency = 1 
-		PlayerGui.GUI.Crosshairs.Frame2.Transparency = 1 
-		PlayerGui.GUI.Crosshairs.Frame3.Transparency = 1 
-		PlayerGui.GUI.Crosshairs.Frame4.Transparency = 1 
+		PlayerGui['EEED-GUI'].Crosshairs.Scope.ImageTransparency = 1 
+		PlayerGui['EEED-GUI'].Crosshairs.Scope.Scope.ImageTransparency = 1 
+		PlayerGui['EEED-GUI'].Crosshairs.Frame1.Transparency = 1 
+		PlayerGui['EEED-GUI'].Crosshairs.Frame2.Transparency = 1 
+		PlayerGui['EEED-GUI'].Crosshairs.Frame3.Transparency = 1 
+		PlayerGui['EEED-GUI'].Crosshairs.Frame4.Transparency = 1 
 	else 
-		PlayerGui.GUI.Crosshairs.Scope.ImageTransparency = 0 
-		PlayerGui.GUI.Crosshairs.Scope.Scope.ImageTransparency = 0 
-		PlayerGui.GUI.Crosshairs.Frame1.Transparency = 0 
-		PlayerGui.GUI.Crosshairs.Frame2.Transparency = 0 
-		PlayerGui.GUI.Crosshairs.Frame3.Transparency = 0 
-		PlayerGui.GUI.Crosshairs.Frame4.Transparency = 0 
+		PlayerGui['EEED-GUI'].Crosshairs.Scope.ImageTransparency = 0 
+		PlayerGui['EEED-GUI'].Crosshairs.Scope.Scope.ImageTransparency = 0 
+		PlayerGui['EEED-GUI'].Crosshairs.Frame1.Transparency = 0 
+		PlayerGui['EEED-GUI'].Crosshairs.Frame2.Transparency = 0 
+		PlayerGui['EEED-GUI'].Crosshairs.Frame3.Transparency = 0 
+		PlayerGui['EEED-GUI'].Crosshairs.Frame4.Transparency = 0 
 	end 
 	PlayerGui.Blnd.Enabled = not C.TBLFIND(tbl, "flash") and true or false 
 	Lighting.GlobalShadows = not C.TBLFIND(tbl, "shadows") and true or false 
@@ -3228,7 +3135,10 @@ world:Element("Jumbobox", "types", {options = {"icon"}}, function(tbl)
 			weapon.BillboardGui.ImageLabel.ImageColor3 = values.visuals.world["item esp"].Color 
 		end 
 	end 
-end) --]]
+end)--]]
+
+
+
 local configs = misc:Sector("configs", "Left") 
 configs:Element("TextBox", "config", {placeholder = "config name"}) -- values.misc.configs.config.Text
 configs:Element("Button", "save new cfg", {}, function() 
@@ -3259,11 +3169,7 @@ end
 	ConfigUpdateCfgList2:Fire()
 	ConfigUpdateCfgList:Fire()
 end)
-configs:Element("Button", 'overwrite cfgs from old folder', {}, function()
-	--[[for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
-		local cfgname = C.GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
-		writefile(cfglocation..cfgname, readfile(cfg))
-	end--]]
+--[[configs:Element("Button", 'overwrite cfgs from old folder', {}, function()
 	for _,cfg in pairs(listfiles("pastedstormy/pastedstormycfgs")) do 
 		local cfgname = C.GSUB(cfg, "pastedstormy/pastedstormycfgs\\", "") 
 		writefile('SamuelPaste/cfgs/'..cfgname, readfile(cfg))
@@ -3276,7 +3182,7 @@ configs:Element("Button", 'overwrite cfgs from old folder', {}, function()
 	end
 		ConfigUpdateCfgList2:Fire()
 		ConfigUpdateCfgList:Fire()
-end)
+end)--]]
 
 configs:Element("Toggle", "keybind list", nil, function(tbl) 
 	library:SetKeybindVisible(tbl.Toggle) 
@@ -3525,11 +3431,11 @@ local crosshaireditor = misc:Sector("crosshair editor", "Right")
 local function UpdateCrosshair() 
 	if values.misc["crosshair editor"].enabled.Toggle then 
 		local length = values.misc["crosshair editor"].length.Slider 
-		PlayerGui.GUI.Crosshairs.Crosshair.LeftFrame.Size = C.UDIM2(0, length, 0, 2) 
-		PlayerGui.GUI.Crosshairs.Crosshair.RightFrame.Size = C.UDIM2(0, length, 0, 2) 
-		PlayerGui.GUI.Crosshairs.Crosshair.TopFrame.Size = C.UDIM2(0, 2, 0, length) 
-		PlayerGui.GUI.Crosshairs.Crosshair.BottomFrame.Size = C.UDIM2(0, 2, 0, length) 
-		for _,frame in pairs(PlayerGui.GUI.Crosshairs.Crosshair:GetChildren()) do 
+		PlayerGui['EEED-GUI'].Crosshairs.Crosshair.LeftFrame.Size = C.UDIM2(0, length, 0, 2) 
+		PlayerGui['EEED-GUI'].Crosshairs.Crosshair.RightFrame.Size = C.UDIM2(0, length, 0, 2) 
+		PlayerGui['EEED-GUI'].Crosshairs.Crosshair.TopFrame.Size = C.UDIM2(0, 2, 0, length) 
+		PlayerGui['EEED-GUI'].Crosshairs.Crosshair.BottomFrame.Size = C.UDIM2(0, 2, 0, length) 
+		for _,frame in pairs(PlayerGui['EEED-GUI'].Crosshairs.Crosshair:GetChildren()) do 
 			if C.FIND(frame.Name, "Frame") then 
 				frame.BorderColor3 = C.COL3(0,0,0) 
 				if values.misc["crosshair editor"].border.Toggle then 
@@ -3540,11 +3446,11 @@ local function UpdateCrosshair()
 			end 
 		end 
 	else 
-		PlayerGui.GUI.Crosshairs.Crosshair.LeftFrame.Size = C.UDIM2(0, 10, 0, 2) 
-		PlayerGui.GUI.Crosshairs.Crosshair.RightFrame.Size = C.UDIM2(0, 10, 0, 2) 
-		PlayerGui.GUI.Crosshairs.Crosshair.TopFrame.Size = C.UDIM2(0, 2, 0, 10) 
-		PlayerGui.GUI.Crosshairs.Crosshair.BottomFrame.Size = C.UDIM2(0, 2, 0, 10) 
-		for _,frame in pairs(PlayerGui.GUI.Crosshairs.Crosshair:GetChildren()) do 
+		PlayerGui['EEED-GUI'].Crosshairs.Crosshair.LeftFrame.Size = C.UDIM2(0, 10, 0, 2) 
+		PlayerGui['EEED-GUI'].Crosshairs.Crosshair.RightFrame.Size = C.UDIM2(0, 10, 0, 2) 
+		PlayerGui['EEED-GUI'].Crosshairs.Crosshair.TopFrame.Size = C.UDIM2(0, 2, 0, 10) 
+		PlayerGui['EEED-GUI'].Crosshairs.Crosshair.BottomFrame.Size = C.UDIM2(0, 2, 0, 10) 
+		for _,frame in pairs(PlayerGui['EEED-GUI'].Crosshairs.Crosshair:GetChildren()) do 
 			if C.FIND(frame.Name, "Frame") then 
 				frame.BorderSizePixel = 0 
 			end 
@@ -4208,7 +4114,7 @@ chat:Element("Dropdown", "kill say type", {options = {"default", "random", "cust
 chat:Element('Dropdown', 'custom file type', {options = {'1,2,3 etc.', 'random'}})
 chat:Element("TextBox", "message", {placeholder = "message"})
 chat:Element("Toggle", "no filter") 
-local grenades = misc:Sector("grenades", "Right") 
+--[[local grenades = misc:Sector("grenades", "Right") 
 grenades:Element("ToggleKeybind", "spam grenades") 
 coroutine.wrap(function() 
 	while true do 
@@ -4223,22 +4129,9 @@ coroutine.wrap(function()
 		end 
 	end 
 end)() 
-grenades:Element("Dropdown", "grenade", {options = {"Flashbang", "Smoke Grenade", "Molotov", "HE Grenade", "Decoy Grenade"}}) 
-grenades:Element("Button", "crash server", {}, function() 
-CreateHitElement("Crashing server...",values.misc.client.hitlogs.Color,1 * values.misc.client["log time"].Slider, 280, 22)
-    while true do
-        pcall(function()
-            RunService.RenderStepped:Wait()
-            for i = 1,100,1 do
-                local ohInstance1 = LocalPlayer.Character.Gun.Mag                                                                                                                                                                                                                                                                                                    -- Server Crasher exploit by property (Mexicanhook). mis hermanos solo usan mexicanhook
+grenades:Element("Dropdown", "grenade", {options = {"Flashbang", "Smoke Grenade", "Molotov", "HE Grenade", "Decoy Grenade"}})--]] 
 
-                ReplicatedStorage.Events.DropMag:FireServer(ohInstance1)
-            end
-        end)
-    end
-end)    
-
-local Dance = C.INST("Animation") 
+--[[local Dance = C.INST("Animation") 
 Dance.AnimationId = ''
 Dance.Name = 'Dance'
 
@@ -4305,7 +4198,7 @@ animations:Element('TextBox', 'custom animation', {placeholder = 'animation id'}
 	end)
 
 	Dance.AnimationId = 'rbxassetid://'..tbl.Text
-end)
+end)--]]
 
 				local addons = misc:Sector("addons", "Left") 
 				addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
@@ -4783,7 +4676,7 @@ UserInputService.InputBegan:Connect(function(key, isFocused)
 		if values.rage.exploits["Defuse c4 type"].Dropdown == "Instant" and workspace:FindFirstChild("C4") then
 			spawn(function()
 				wait(0.25)
-				if IsAlive(LocalPlayer) and workspace:FindFirstChild("C4") and workspace.C4:FindFirstChild("Defusing") and LocalPlayer.PlayerGui.GUI.Defusal.Visible == true and workspace.C4.Defusing.Value == LocalPlayer then
+				if IsAlive(LocalPlayer) and workspace:FindFirstChild("C4") and workspace.C4:FindFirstChild("Defusing") and LocalPlayer.PlayerGui['EEED-GUI'].Defusal.Visible == true and workspace.C4.Defusing.Value == LocalPlayer then
 					LocalPlayer.Backpack.Defuse:FireServer(workspace.C4)
 				end
 			end)
@@ -4807,6 +4700,7 @@ local Filter = false
 local LastStep 
 local TriggerDebounce = false 
 local DisableAA = false 
+local switch180roll = false
 aroundtheworld_value = 0
 
 local Fov = Drawing.new("Circle") 
@@ -4815,7 +4709,7 @@ Fov.Color = C.COL3RGB(15,15,15)
 Fov.Transparency = 0.5 
 Fov.Position = C.Vec2(Mouse.X, Mouse.Y + 16) 
 Fov.Radius = 120 
-RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for searching)
+RunService.Stepped:Connect(function(step) --ragebot, rage bot (for searching)
 	local Ping = game.Stats.PerformanceStats.Ping:GetValue()
 	LastStep = step
 	local CamCFrame = Camera.CFrame
@@ -4843,7 +4737,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 	
 	--wait(5)
 	if PlayerIsAlive then
-	local Root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+		local Root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 		local RageGuy 
 		if workspace:FindFirstChild("Map") and Client.gun ~= "none" and Client.gun.Name ~= "C4" then
 			if values.rage.aimbot.enabled.Toggle and LocalPlayer.Character and LocalPlayer.Character.HumanoidRootPart and Client.gun then
@@ -4887,15 +4781,15 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 							Player.Character.RightUpperLeg.CFrame = C.CF(Player.Character.RightUpperLeg.Position)
 						end
 					end
-					if Player.Character and (Player.TeamColor ~= LocalPlayer.TeamColor or values.rage.aimbot.teammates.Toggle) and Player.Character:FindFirstChild("Humanoid") and not Client.DISABLED and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and not Player.Character:FindFirstChildOfClass("ForceField") and GetDeg(CamCFrame, Player.Character.Head.Position) <= values.rage.weapons.default["max fov"].Slider and Player ~= LocalPlayer then
-						if Player.Team ~= LocalPlayer.Team or values.rage.aimbot.teammates.Toggle and Player:FindFirstChild("Status") and Player.Status.Team.Value ~= LocalPlayer.Status.Team.Value and Player.Status.Alive.Value then
-							if Client.gun:FindFirstChild("Melee") and values.rage.aimbot["knifebot"].Toggle then -- knife bot (for fast searching)
+					if Player.Character and (Player.Team ~= LocalPlayer.Team or values.rage.aimbot.teammates.Toggle) and Player.Character:FindFirstChild("Humanoid") and not Client.DISABLED and Player.Character:FindFirstChild("Humanoid").Health > 0 and Player.Team ~= "TTT" and not Player.Character:FindFirstChildOfClass("ForceField") and GetDeg(CamCFrame, Player.Character.Head.Position) <= values.rage.weapons.default["max fov"].Slider and Player ~= LocalPlayer then
+						if (Player.Team ~= LocalPlayer.Team or values.rage.aimbot.teammates.Toggle) and IsAlive(Player) then
+							if rawget(Client.gun,"Melee") and values.rage.aimbot["knifebot"].Toggle then -- knife bot (for fast searching)
 							local AutoPeek = {OldPeekPosition = CFrame.new()}
 							AutoPeek.OldPeekPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
 							if values.rage.exploits["otw knife"].Toggle and values.rage.exploits["otw knife"].Active then 
-								for i,v in next, Players:GetChildren() do
+								for i,v in next, Players:GetPlayers() do
 									if v ~= LocalPlayer and v.Team ~= LocalPlayer.Team then
-												if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+												if IsAlive(v) then
 												aroundtheworld_value=aroundtheworld_value + (0.01 * 2)
 												LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame*C.CFAngles(0, aroundtheworld_value, 0)*C.CF(0, 0, 500)
 												break
@@ -4905,9 +4799,6 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 							else
 								LocalPlayer.Character.HumanoidRootPart.CFrame = AutoPeek.OldPeekPosition
 							end
-					for i,v in pairs(workspace.Ray_Ignore:GetDescendants()) do
-						v:Destroy()
-					end
 								local Ignore = {unpack(Collision)}
 								if #ragebotwhitelist ~= 0 then
 									for i,v in pairs(ragebotwhitelist) do
@@ -4946,8 +4837,8 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 --arguments
 										--[1] = Hit,
 										--[2] = Hit.Position,
-				if ReplicatedStorage.Events:FindFirstChild('HitNN') then
-                ReplicatedStorage.Events.HitNN:FireServer(
+
+                ReplicatedStorage.Events.EEED:FireServer(
                     Hit, -- 1
                     Hit.CFrame.p, --2
                     "Banana", --3
@@ -4962,23 +4853,6 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
                     100,
                     C.Vec3()
                 )
-				else
-                ReplicatedStorage.Events.HitPart:FireServer(
-                    Hit, -- 1
-                    Hit.CFrame.p, --2
-                    "Banana", --3
-                    100000000000000, -- Range --4
-                    game.Players.LocalPlayer.Character:WaitForChild("Gun"), --5
-                    C.Vec3(), -- Start Position --6
-                    C.Vec3(), -- end position
-                    100000, -- Damage Modifier
-                    false,
-                    true,
-                    C.Vec3(),
-                    100,
-                    C.Vec3()
-                )				
-				end
 								end
 							else
 								local Ignore = {unpack(Collision)}
@@ -4999,8 +4873,8 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 								end
 								table.clear(Hitboxes)
 								for _,Hitbox in ipairs(values.rage.weapons.default.hitboxes.Jumbobox) do
-									if (Player.TeamColor ~= LocalPlayer.TeamColor or values.rage.aimbot.teammates.Toggle) and Player.Character then
---values.rage.aimbot["auto baim"].Toggle
+									if (Player.Team ~= LocalPlayer.Team or values.rage.aimbot.teammates.Toggle) and Player.Character then
+--values.rage.aimbot["auto  baim"].Toggle
 										if values.rage.aimbot["auto baim"].Toggle then
 											if Player.Character:FindFirstChild('FakeHead') or Player.Character:FindFirstChild('HeadHB') and Hitbox == 'Head' then
 												C.INSERT(Hitboxes, Player.Character.Head)
@@ -5062,6 +4936,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 										end
 									end
 								end
+
 								for _,Hitbox in ipairs(Hitboxes) do 
 									local Ignore2 = {unpack(Ignore)} 
 									for _,Part in pairs(Player.Character:GetChildren()) do 
@@ -5070,7 +4945,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 									if values.rage.aimbot["automatic penetration"].Toggle then 
 									    local Hits = {}
 										local EndHit, Hit, Pos
-										local Penetration = Client.gun.Penetration.Value * values.rage.aimbot["automatic penetration modifier"].Slider/100
+										local Penetration = Client.gun.Penetration * values.rage.aimbot["automatic penetration modifier"].Slider/100
 										local Ray1 = C.RAY(Origin, (Hitbox.Position - Origin).unit * (Hitbox.Position - Origin).magnitude)
 										repeat
 											Hit, Pos = workspace:FindPartOnRayWithIgnoreList(Ray1, Ignore2, false, true)
@@ -5085,17 +4960,17 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 										until EndHit ~= nil or #Hits >= 4 or Hit == nil
 										if EndHit ~= nil and Multipliers[EndHit.Name] ~= nil and #Hits <= 4 then
 											if #Hits == 0 then
-												local Damage = Client.gun.DMG.Value * Multipliers[EndHit.Name]
+												local Damage = Client.gun.DMG * Multipliers[EndHit.Name]
 												if Player:FindFirstChild("Kevlar") then
 													if C.FIND(EndHit.Name, "Head") then
 														if Player:FindFirstChild("Helmet") then
-															Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+															Damage = (Damage / 100) * Client.gun.ArmorPenetration
 														end
 													else
-														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+														Damage = (Damage / 100) * Client.gun.ArmorPenetration
 													end
 												end
-												Damage = Damage * (Client.gun.RangeModifier.Value/100 ^ ((Origin - EndHit.Position).Magnitude/500))/100
+												Damage = Damage * (Client.gun.RangeModifier/100 ^ ((Origin - EndHit.Position).Magnitude/500))/100
 												if Damage >= values.rage.weapons.default["minimum damage"].Slider then
 													RageGuy = EndHit
 													RageTarget = EndHit
@@ -5129,7 +5004,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 															[12] = 100,
 															[13] = C.Vec3()
 														}
-														game.ReplicatedStorage.Events.HitNN:FireServer(unpack(Arguments))
+														game.ReplicatedStorage.Events.EEED:FireServer(unpack(Arguments))
 														VisualizeSilentAngles(RageTarget.Position)
 														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
@@ -5147,7 +5022,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 																[12] = 100,
 																[13] = C.Vec3()
 															}
-															game.ReplicatedStorage.Events.HitNN:FireServer(unpack(Arguments))
+															game.ReplicatedStorage.Events.EEED:FireServer(unpack(Arguments))
 														end
 													end
 													--[[if values.misc.client.hitlogs.Toggle then
@@ -5158,7 +5033,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 													break
 												end
 											else
-												local penetration = Client.gun.Penetration.Value * values.rage.aimbot["automatic penetration modifier"].Slider/100
+												local penetration = Client.gun.Penetration * values.rage.aimbot["automatic penetration modifier"].Slider/100
 												local limit = 0
 												local dmgmodifier = 1
 												for i = 1, #Hits do
@@ -5184,7 +5059,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 													if part.Transparency == 1 or part.CanCollide == false or part.Name == "Glass" or part.Name == "Cardboard" then
 														modifier = 0
 													end
-													local direction = (Hitbox.Position - pos).unit * C.CLAMP(Client.gun.Range.Value, 1, 100)
+													local direction = (Hitbox.Position - pos).unit * C.CLAMP(Client.gun.Range, 1, 100)
 													local ray = C.RAY(pos + direction * 1, direction * -2)
 													local _,endpos = workspace:FindPartOnRayWithWhitelist(ray, {part}, true)
 													local thickness = (endpos - pos).Magnitude
@@ -5192,18 +5067,18 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 													limit = C.MIN(penetration, limit + thickness)
 													dmgmodifier = 1 - limit / penetration
 												end
-												local Damage = Client.gun.DMG.Value * Multipliers[EndHit.Name] * dmgmodifier
+												local Damage = Client.gun.DMG * Multipliers[EndHit.Name] * dmgmodifier
 												if Player:FindFirstChild("Kevlar") then
 													if C.FIND(EndHit.Name, "Head") then
 														if Player:FindFirstChild("Helmet") then
-															Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+															Damage = (Damage / 100) * Client.gun.ArmorPenetration
 														end
 													else
-														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+														Damage = (Damage / 100) * Client.gun.ArmorPenetration
 													end
 												end
-												Damage = Damage * (Client.gun.RangeModifier.Value/100 ^ ((Origin - EndHit.Position).Magnitude/500))/100
-												if Damage >= values.rage.weapons.default["minimum damage"].Slider then
+												Damage = Damage * (Client.gun.RangeModifier/100 ^ ((Origin - EndHit.Position).Magnitude/500))/100
+												if Damage >= values.rage.weapons.default["minimum damage"].Slider or Damage == values.rage.weapons.default["minimum damage"].Slider then
 													RageGuy = EndHit
 													RageTarget = EndHit
 													if not values.rage.aimbot["silent aim"].Toggle then
@@ -5224,8 +5099,8 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 												
 													elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
 														Client.firebullet()
-															if game.ReplicatedStorage.Events:FindFirstChild('HitNN') then
-															game.ReplicatedStorage.Events.HitNN:FireServer(
+
+															game.ReplicatedStorage.Events.EEED:FireServer(
 																EndHit,
 																EndHit.Position,
 																LocalPlayer.Character.EquippedTool.Value,
@@ -5238,27 +5113,11 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 																100,
 																C.Vec3()
 															)
-															else
-															game.ReplicatedStorage.Events.HitPart:FireServer(
-																EndHit,
-																EndHit.Position,
-																LocalPlayer.Character.EquippedTool.Value,
-																100,
-																LocalPlayer.Character.Gun,
-																values.rage.exploits["damage modifier"].Slider,
-																false,
-																false,
-																C.Vec3(),
-																100,
-																C.Vec3()
-															)															
-															end
 														VisualizeSilentAngles(RageTarget.Position)
 														if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
-															if game.ReplicatedStorage.Events:FindFirstChild('HitNN') then
-															game.ReplicatedStorage.Events.HitNN:FireServer(
+															game.ReplicatedStorage.Events.EEED:FireServer(
 																EndHit,
 																EndHit.Position,
 																LocalPlayer.Character.EquippedTool.Value,
@@ -5271,21 +5130,7 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 																100,
 																C.Vec3()
 															)
-															else
-															game.ReplicatedStorage.Events.HitPart:FireServer(
-																EndHit,
-																EndHit.Position,
-																LocalPlayer.Character.EquippedTool.Value,
-																100,
-																LocalPlayer.Character.Gun,
-																values.rage.exploits["damage modifier"].Slider,
-																false,
-																false,
-																C.Vec3(),
-																100,
-																C.Vec3()
-															)															
-															end
+
 															
 														end
 													end
@@ -5307,14 +5152,14 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 											if Player:FindFirstChild("Kevlar") then
 												if C.FIND(Hit.Name, "Head") then											
 													if Player:FindFirstChild("Helmet") then
-														Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+														Damage = (Damage / 100) * Client.gun.ArmorPenetration
 													end
 												else
-													Damage = (Damage / 100) * Client.gun.ArmorPenetration.Value
+													Damage = (Damage / 100) * Client.gun.ArmorPenetration
 												end
 											end
-											Damage = Damage * (Client.gun.RangeModifier.Value/100 ^ ((Origin - Hit.Position).Magnitude/500))
-											if Damage >= values.rage.weapons.default["minimum damage"].Slider then
+											Damage = Damage * (Client.gun.RangeModifier/100 ^ ((Origin - Hit.Position).Magnitude/500))
+											if Damage >= values.rage.weapons.default["minimum damage"].Slider or Damage == values.rage.weapons.default["minimum damage"].Slider then
 												RageGuy = Hit
 												RageTarget = Hit
 												if not values.rage.aimbot["silent aim"].Toggle then
@@ -5334,8 +5179,8 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
                                                     end
 												elseif values.rage.aimbot["automatic fire"].Dropdown == "hitpart" then
 													Client.firebullet()
-															if game.ReplicatedStorage.Events:FindFirstChild('HitNN') then
-															game.ReplicatedStorage.Events.HitNN:FireServer(
+
+															game.ReplicatedStorage.Events.EEED:FireServer(
 																EndHit,
 																EndHit.Position,
 																LocalPlayer.Character.EquippedTool.Value,
@@ -5348,27 +5193,11 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 																100,
 																C.Vec3()
 															)
-															else
-															game.ReplicatedStorage.Events.HitPart:FireServer(
-																EndHit,
-																EndHit.Position,
-																LocalPlayer.Character.EquippedTool.Value,
-																100,
-																LocalPlayer.Character.Gun,
-																values.rage.exploits["damage modifier"].Slider,
-																false,
-																false,
-																C.Vec3(),
-																100,
-																C.Vec3()
-															)															
-															end
 													VisualizeSilentAngles(RageTarget.Position)
 													if values.rage.exploits['custom tap'].Toggle and values.rage.exploits['custom tap'].Active then
 														for chingchong = 2, values.rage.exploits['tap amount'].Slider do
 															Client.firebullet()
-															if game.ReplicatedStorage.Events:FindFirstChild('HitNN') then
-															game.ReplicatedStorage.Events.HitNN:FireServer(
+															game.ReplicatedStorage.Events.EEED:FireServer(
 																EndHit,
 																EndHit.Position,
 																LocalPlayer.Character.EquippedTool.Value,
@@ -5381,21 +5210,6 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 																100,
 																C.Vec3()
 															)
-															else
-															game.ReplicatedStorage.Events.HitPart:FireServer(
-																EndHit,
-																EndHit.Position,
-																LocalPlayer.Character.EquippedTool.Value,
-																100,
-																LocalPlayer.Character.Gun,
-																values.rage.exploits["damage modifier"].Slider,
-																false,
-																false,
-																C.Vec3(),
-																100,
-																C.Vec3()
-															)															
-															end
 														end
 													end
 													--[[if values.misc.client.hitlogs.Toggle then -- 
@@ -5501,33 +5315,6 @@ RunService:BindToRenderStep('Rage', 400, function(step) --ragebot, rage bot (for
 		end 
 	end
 
-
-
-
-
-
---[[pcall(function()
-	for i,v in pairs(ChamItems) do
-		local cham = v[1]
-		local fromobject = v[2]
-			if cham.Name == 'WallCham' then 
-				if cham:IsA('BoxHandleAdornment') then 
-					cham.Size = fromobject.Size + C.Vec3( (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10),  (values.visuals.players['cham thickness'].Slider/10))
-				elseif cham:IsA('CylinderHandleAdornment') then 
-					cham.Height = 1.2 + (values.visuals.players['cham thickness'].Slider/10)
-					cham.Radius = 0.61 + (values.visuals.players['cham thickness'].Slider/10)
-				end
-			elseif cham.Name == 'VisibleCham' then
-				if cham:IsA('BoxHandleAdornment') then 
-					cham.Size = fromobject.Size + C.Vec3( (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10),  (values.visuals.players['vcham thickness'].Slider/10))
-				elseif cham:IsA('CylinderHandleAdornment') then 
-					cham.Height = 1.2 + (values.visuals.players['vcham thickness'].Slider/10)
-					cham.Radius = 0.61 + (values.visuals.players['vcham thickness'].Slider/10)
-				end
-			end
-		end
-end)--]]
-
 	if PlayerIsAlive then
 		if values.rage.exploits['around the world'].Toggle and values.rage.exploits['around the world'].Active then 
 			for i,v in next, Players:GetChildren() do
@@ -5595,7 +5382,7 @@ end)--]]
 		
 		local SelfVelocity = LocalPlayer.Character.HumanoidRootPart.Velocity
 
-		if values.misc.animations.enabled.Toggle then
+		--[[if values.misc.animations.enabled.Toggle then
 			if LoadedAnim then 
 				if savedanimationdance ~= Dance then 
 					savedanimationdance = Dance
@@ -5619,7 +5406,7 @@ end)--]]
 			if LoadedAnim then 
 				LoadedAnim:Stop()
 			end
-		end
+		end--]]
 
 
 		Root = LocalPlayer.Character.HumanoidRootPart
@@ -5910,17 +5697,11 @@ end)--]]
 			if values.rage.angles['overwrite keybind'].Toggle and values.rage.angles['overwrite keybind'].Active then
 				Pitch = values.rage.angles['overwrite pitch'].Dropdown == 'none' and CamLook.Y or values.rage.angles['overwrite pitch'].Dropdown == 'up' and 1 or values.rage.angles['overwrite pitch'].Dropdown == 'down' and -1 or values.rage.angles['overwrite pitch'].Dropdown == 'zero' and 0 or values.rage.angles['overwrite pitch'].Dropdown == 'among' and C.HUGE or values.rage.angles['overwrite pitch'].Dropdown == 'random' and Random.new():NextNumber(0.01,10) or values.rage.angles['overwrite pitch'].Dropdown == 'spin' and savedspinpitch
 		    end
-			if game.ReplicatedStorage.Events:FindFirstChild('Control') then
-			game.ReplicatedStorage.Events.Control:FireServer(Pitch, true)
-			end
-			game.ReplicatedStorage.Events.ControlTurn:FireServer(Pitch, false)
+			game.ReplicatedStorage.Events.ControlTurn:FireServer(Pitch, LocalPlayer.Character:FindFirstChild("Climbing") and true or false)
 		else
 			LocalPlayer.Character.Humanoid.HipHeight = 2
 			Root.CFrame = C.CF(Root.Position) * C.CFAngles(0, -C.ATAN2(CamLook.Z, CamLook.X) + C.RAD(270), 0)
-			 if game.ReplicatedStorage.Events:FindFirstChild('Control') then
-			game.ReplicatedStorage.Events.Control:FireServer(CamLook.Y, true)
-			end
-			game.ReplicatedStorage.Events.ControlTurn:FireServer(CamLook.Y, false)
+			game.ReplicatedStorage.Events.ControlTurn:FireServer(CamLook.Y, LocalPlayer.Character:FindFirstChild("Climbing") and true or false)
 		end
 		if values.rage.others['remove head'].Toggle then
 			if LocalPlayer.Character:FindFirstChild('FakeHead') then
@@ -6107,7 +5888,7 @@ setreadonly(mt,false)
 mt.__namecall = function(self, ...) 
 	local method = tostring(getnamecallmethod()) 
 	local args = {...} 
-if not PasteDisabled then
+
 	if method == "SetPrimaryPartCFrame" and self.Name == "Arms" then 
 		if values.visuals.self["third person"].Toggle and values.visuals.self["third person"].Active and LocalPlayer.Character then 
 			args[1] = args[1] * C.CF(99, 99, 99) 
@@ -6166,7 +5947,7 @@ if not PasteDisabled then
 			args[1] =  args[1] * C.CFAngles(0,0,C.RAD(180))      
 		end      
 	end 
-	if method == "FindPartOnRayWithWhitelist" and not checkcaller() and Client.gun ~= "none" and Client.gun.Name ~= "C4" then 
+	if method == "FindPartOnRayWithWhitelist" and not checkcaller() and Client.gun ~= nil and Client.gun ~= "none" and Client.gun.Name ~= "C4" then 
 		if #args[2] == 1 and args[2][1].Name == "SpawnPoints" then 
 			local Team = LocalPlayer.Status.Team.Value 
 
@@ -6284,7 +6065,7 @@ if not PasteDisabled then
 			args[1] = FakeAnim 
 		end 
 	end 
-	if method == "FireServer" and (self.Name == "HitPart" or self.Name == 'HitNN') then 
+	if method == "FireServer" and (self.Name == "EEED") then 
 		if values.rage.aimbot["force hit"].Toggle then 
 			args[1] = RageTarget 
 			args[2] = RageTarget.Position 
@@ -6407,30 +6188,20 @@ if not PasteDisabled then
 				args[1] = game.Players[args[1].Parent.Name].Character[args[1].Name]
 				args[2] = args[1].Position
 		end--]]
-	end 
 	end
 	return oldNamecall(self, unpack(args)) 
 end 	
 		local oldIndex
 		oldIndex = hookmetamethod(game,"__index",function(self, key)      
 			local CallingScript = getcallingscript()      
-	if not PasteDisabled then
 			if not checkcaller() and self == Viewmodels and LocalPlayer.Character ~= nil and LocalPlayer.Character:FindFirstChild("UpperTorso") then      
-				local WeaponName = C.GSUB(key, "v_", "")      
+				local WeaponName = C.GSUB(key, "v_", "")     
 				if not C.FIND(WeaponName, "Arms") then      
-					if Weapons[WeaponName]:FindFirstChild("Melee") and values.skins.knife["knife changer"].Toggle then      
+					if rawget(Weapons[WeaponName],"Melee") and values.skins.knife["knife changer"].Toggle then      
 						if Viewmodels:FindFirstChild("v_"..values.skins.knife.model.Scroll) then
 							return Viewmodels:FindFirstChild("v_"..values.skins.knife.model.Scroll)      
 						else      
 							local Clone = Models.Knives[values.skins.knife.model.Scroll]:Clone()    
-							--[[if values.skins.knife.effects.Dropdown ~= 'none' and values.skins.knife['Knife effects'].Toggle then
-								for i,v in pairs(Effects[values.skins.knife.effects.Dropdown]:GetChildren()) do
-									for i2,v2 in pairs(LocalPlayer.Character.Gun:GetChildren()) do if v2:IsA('Attachment') and v2.Name ~= values.skins.knife.effects.Dropdown then v2:Destroy() end end
-									local lmfao = v:Clone()
-									lmfao.Parent = Clone.Handle
-									lmfao.Name = values.skins.knife.effects.Dropdown
-								end	
-							end	--]]	
 							spawn(function()
 								if values.skins.knife.effects.Dropdown ~= 'none' and values.skins.knife['Knife effects'].Toggle then 
 									pcall(function()
@@ -6439,7 +6210,7 @@ end
 												for uW,uX in pairs(Effects:GetChildren()) do 
 													if uX.Name==values.skins.knife.effects.Dropdown then 
 														for uY,uZ in pairs(uX:GetChildren()) do 
-															if Weapons[WeaponName]:FindFirstChild("Melee") then 
+															if rawget(Weapons[WeaponName],"Melee") then 
 																local u_=uZ:Clone()
 																u_.Parent=uV 
 																if values.skins.knife['Change pos (very confused better dont use)'].Toggle then
@@ -6470,7 +6241,6 @@ end
 					return 5      
 				end      
 			end      
-	end
 			return oldIndex(self, key)      
 		end)      
 				  
@@ -6501,25 +6271,24 @@ mt.__newindex = function(self, i, v)
 
 	return oldNewIndex(self, i, v) 
 end 
-PlayerGui.GUI.Crosshairs.Scope:GetPropertyChangedSignal("Visible"):Connect(function(current) 
+PlayerGui['EEED-GUI'].Crosshairs.Scope:GetPropertyChangedSignal("Visible"):Connect(function(current) 
 	if not C.TBLFIND(values.visuals.effects.removals.Jumbobox, "scope lines") then return end 
 
 	if current ~= false then 
-		PlayerGui.GUI.Crosshairs.Scope.Visible = false 
+		PlayerGui['EEED-GUI'].Crosshairs.Scope.Visible = false 
 	end 
 end) 
-PlayerGui.GUI.Crosshairs.Crosshair:GetPropertyChangedSignal("Visible"):Connect(function(current) 
+PlayerGui['EEED-GUI'].Crosshairs.Crosshair:GetPropertyChangedSignal("Visible"):Connect(function(current) 
 	if not LocalPlayer.Character then return end 
 	if not values.visuals.effects["force crosshair"].Toggle then return end 
 	if LocalPlayer.Character:FindFirstChild("AIMING") then return end 
 
-	PlayerGui.GUI.Crosshairs.Crosshair.Visible = true 
+	PlayerGui['EEED-GUI'].Crosshairs.Crosshair.Visible = true 
 end) 
 
 LocalPlayer.Additionals.TotalDamage:GetPropertyChangedSignal("Value"):Connect(function(current) 
 	if current == 0  then return end
 
-	if not current == 0 then
 	coroutine.wrap(function() 
 		if values.misc.client.hitmarker.Toggle then 
 			local Line = Drawing.new("Line") 
@@ -6581,9 +6350,9 @@ LocalPlayer.Additionals.TotalDamage:GetPropertyChangedSignal("Value"):Connect(fu
 	sound.SoundId = values.visuals.world.hitsound.Dropdown == "skeet" and "rbxassetid://5447626464" or values.visuals.world.hitsound.Dropdown == "neverlose" and "rbxassetid://5043539486" or values.visuals.world.hitsound.Dropdown == "rust" and "rbxassetid://5043539486" or values.visuals.world.hitsound.Dropdown == "bag" and "rbxassetid://364942410" or values.visuals.world.hitsound.Dropdown == "baimware" and "rbxassetid://6607339542" or values.visuals.world.hitsound.Dropdown == "osu" and "rbxassetid://7149919358" or values.visuals.world.hitsound.Dropdown == "Tf2" and "rbxassetid://296102734" or values.visuals.world.hitsound.Dropdown == "Tf2 pan" and "rbxassetid://3431749479" or values.visuals.world.hitsound.Dropdown  == "M55solix" and "rbxassetid://364942410" or values.visuals.world.hitsound.Dropdown == "Slap" and "rbxassetid://4888372697" or values.visuals.world.hitsound.Dropdown  == "1" and "rbxassetid://7349055654" or values.visuals.world.hitsound.Dropdown == "Minecraft" and "rbxassetid://7273736372" or values.visuals.world.hitsound.Dropdown == "jojo" and "rbxassetid://6787514780" or values.visuals.world.hitsound.Dropdown == "vibe" and "rbxassetid://1848288500" or values.visuals.world.hitsound.Dropdown == "supersmash" and "rbxassetid://2039907664" or values.visuals.world.hitsound.Dropdown == "epic" and "rbxassetid://7344303740" or values.visuals.world.hitsound.Dropdown == "retro" and "rbxassetid://3466984142" or values.visuals.world.hitsound.Dropdown == "quek" and "rbxassetid://4868633804" or values.visuals.world.hitsound.Dropdown == "SEMI" and "rbxassetid://7791675603" 
 	sound.Volume = values.visuals.world["sound volume"].Slider      
 	sound.PlayOnRemove = true      
-	sound:Destroy()  
-	end
-end) 
+	sound:Destroy()
+end)
+
 local randomkillsay = {
 	"Looks like you need a better cheat!",
 	"1",
@@ -6641,7 +6410,7 @@ LocalPlayer.Status.Kills:GetPropertyChangedSignal("Value"):Connect(function(curr
 		if values.misc.chat["kill say type"].Dropdown == "default" then
 			ReplicatedStorage.Events.PlayerChatted:FireServer(
 			values.misc.chat["message"].Text ~= "" 
-			and values.misc.chat["message"].Text or "h imagine dying"
+			and values.misc.chat["message"].Text or "1"
 			, false, "Innocent", false, true)
 		elseif values.misc.chat['kill say type'].Dropdown == 'random' then
 		ReplicatedStorage.Events.PlayerChatted:FireServer(
@@ -6775,12 +6544,12 @@ Camera.ChildAdded:Connect(function(obj)
 		end
 	end
 
-		local gunname = Client.gun ~= 'none' and values.skins.knife['knife changer'].Toggle and Client.gun:FindFirstChild('Melee') and values.skins.knife.model.Scroll or Client.gun ~= 'none' and Client.gun.Name
-	if game.GameId ~= 3681951220 and values.skins.skins['skin changer'].Toggle and gunname ~= nil and Skins:FindFirstChild(gunname) then
+	--local gunname = Client.gun ~= nil and Client.gun ~= 'none' and (values.skins.knife['knife changer'].Toggle and Client.gun:FindFirstChild('Melee') and values.skins.knife.model.Scroll) or Client.gun.Name
+	--[[if game.GameId ~= 3681951220 and values.skins.skins['skin changer'].Toggle and gunname ~= nil and Skins:FindFirstChild(gunname) then
 		if values.skins.skins.skin.Scroll[gunname] ~= 'Inventory' then
 			MapSkin(gunname, values.skins.skins.skin.Scroll[gunname])
 		end
-	end
+	end--]]
 	for _,v in pairs(WeaponObj) do
 		if v:IsA("MeshPart") then
 			local OriginalTexture = C.INST("StringValue")
@@ -7075,11 +6844,11 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 		end 
 	end) 
 
-	if values.misc.animations.enabled.Toggle and values.misc.animations.enabled.Active then 
+	--[[if values.misc.animations.enabled.Toggle and values.misc.animations.enabled.Active then 
 		LoadedAnim = LocalPlayer.Character.Humanoid:LoadAnimation(Dance) 
 		LoadedAnim.Priority = Enum.AnimationPriority.Action 
 		LoadedAnim:Play() 
-	end 
+	end --]]
 end) 
 if LocalPlayer.Character ~= nil then 
 	for i,v in pairs(LocalPlayer.Character:GetChildren()) do 
@@ -7116,7 +6885,7 @@ if LocalPlayer.Character ~= nil then
 		end 
 	end 
 	LocalPlayer.Character.ChildAdded:Connect(function(Child) 
-		if Child:IsA("Accessory") and Child.Handle.Transparency ~= 1 then 
+		if Child:IsA("Accessory") and Child:FindFirstChild('Handle') and Child.Handle.Transparency ~= 1 then 
 			C.INSERT(SelfObj, Child.Handle) 
 			local Color = C.INST("Color3Value") 
 			Color.Name = "OriginalColor" 
@@ -7278,12 +7047,12 @@ end
 
 wait()
 
-local senv = getsenv(game.Players.LocalPlayer.PlayerGui.Client)
-senv.splatterBlood = function() end
+
+Client.splatterBlood = function() end
+ChatScript.moveOldMessages()
 		ChatScript.createNewMessage("SamuelPaste","SamuelPaste winning $$$",MainUIColor,C.COL3(1,1,1),0.01,nil)
 		ChatScript.moveOldMessages()
 		ChatScript.createNewMessage("SamuelPaste","Thanks cideware, tinp0g and mad for sending me pastes",MainUIColor,C.COL3(1,1,1),0.01,nil)
-		print("Hello bucks script user :D")
 		
 
 while true do task.wait()
