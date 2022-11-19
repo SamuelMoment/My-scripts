@@ -1,10 +1,10 @@
 if not getgenv().drawing then
-loadstring(game:HttpGet("https://gitfront.io/r/Samuel/Gw6t8rBAGPhN/My-scripts/raw/drawinglibraryfix.lua"))() 
+loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/drawinglibraryfix.lua"))() 
 end
 if getgenv().s then getgenv().s:Remove() end
 
 local Vec2 = Vector2.new
-local draw = function(...) return getgenv().draw(...) end
+local draw = function(...) return drawing:new(...) end
 
 
 local makeDraggable = function(frame)
@@ -45,18 +45,15 @@ local makeDraggable = function(frame)
 end
 
 local utility = {}
-utility['outline'] = function(draw,color,type,thickness)
-    if not type then type = 'Square' end
-    if not thickness then thickness = 16 end
-    local outline = draw(type)
+utility['outline'] = function(draw,color)
+
+    local outline = drawing:new("Square")
     outline.Parent = draw
     outline.Size = UDim2.new(1, 2, 1, 2)
-    outline.ZIndex = draw.ZIndex-1
-    outline.Filled = false
-    outline.Thickness = thickness
     outline.Position = UDim2.new(0, -1, 0, -1)
+    outline.ZIndex = draw.ZIndex - 1
     outline.Color = color
-    outline.Filled = false
+    outline.Thickness = draw.Thickness
     return outline
 end
 
@@ -412,7 +409,7 @@ function library:New(scriptName)
                         offset += button.Position.Y+button.Size.Y
                     end--]]
                     
-                    utility.outline(button,Color3.fromRGB(50,50,50),'Square')
+                    utility.outline(button,Color3.fromRGB(50,50,50))
                     
                     local text1 = draw('Text')
                     text1.Parent = button
@@ -459,11 +456,12 @@ function library:New(scriptName)
                     local color = draw('Square')
                     color.Parent = holder
                     color.ZIndex = 4
-                    color.Position = UDim2.new(0,35,0.4,-6)
-                    color.Size = UDim2.new(0,15,0,15)
-                    color.Color = Color3.fromRGB(46,46,46)
+                    color.Position = UDim2.new(0,35,0,0)
+                    color.Size = UDim2.new(0,12.5,0,12.5)
+                    color.Color = Color3.fromRGB(30,30,30)
                     color.Thickness = 0
                     color.Filled = true
+                    utility.outline(color,Color3.fromRGB(50,50,50),1)
                 
                    -- utility.outline(toggleclick,Color3.fromRGB(75,75,75),'Square')
                     local text1 = draw('Text')
@@ -497,7 +495,7 @@ function library:New(scriptName)
                     local holder = draw('Square')
                     holder.Parent = Sector
                     holder.Size = Vector2.new(Sector.Size.X,5)
-                    holder.Position = Vector2.new(0,offset)
+                    holder.Position = Vector2.new(0,offset-2)
                     holder.ZIndex = 3
                     holder.Thickness = 1
                     holder.Filled = true
@@ -511,18 +509,18 @@ function library:New(scriptName)
                     local color = draw('Square')
                     color.Parent = holder
                     color.ZIndex = 4
-                    color.Position = UDim2.new(0,35,0.4,-6)
-                    color.Size = UDim2.new(0,15,0,15)
-                    color.Color = Color3.fromRGB(46,46,46)
+                    color.Position = UDim2.new(0,35,0,0)
+                    color.Size = UDim2.new(0,12.5,0,12.5)
+                    color.Color = Color3.fromRGB(30,30,30)
                     color.Thickness = 0
                     color.Filled = true
-                
+                    utility.outline(color,Color3.fromRGB(50,50,50),1)
                    -- utility.outline(toggleclick,Color3.fromRGB(75,75,75),'Square')
                     local text1 = draw('Text')
                     text1.Parent = color
                     text1.Text = text
                     text1.ZIndex = 3
-                    text1.Position = Vector2.new(20,0)
+                    text1.Position = Vector2.new(15,-1)
                     text1.Font = Drawing.Fonts.Plex
                     text1.Size = 13
                     text1.Color = Color3.fromRGB(200,200,200)
@@ -533,7 +531,7 @@ function library:New(scriptName)
                         if Values.Toggle then
                             color.Color = MainUIColor
                         else
-                            color.Color = Color3.fromRGB(46,46,46)
+                            color.Color = Color3.fromRGB(30,30,30)
                         end
                         callback()
                     end)
@@ -545,6 +543,10 @@ function library:New(scriptName)
                         end                        
                     end
         
+
+
+
+
                         local default = (data.default and data.default.Color and data.default.Color or Color3.new(255,0,0))
                         local defaultalpha = nil
                         if Type == 'ToggleTrans' then
@@ -928,6 +930,10 @@ function library:New(scriptName)
                             slidingsaturation = false
                         end
                     end)
+
+
+
+
                 elseif Type == 'Slider' then
                     local holder = utility.create('Square',{
                         Parent = Sector,
@@ -941,34 +947,44 @@ function library:New(scriptName)
                     })
                     local Slider = utility.create('Square',{
                         Parent = Sector,
-                        ZIndex = 3,
-                        Position = Vector2.new(35,offset+10),
+                        ZIndex = 4,
+                        Position = UDim2.new(0,11.5,0,offset+9.5),
                         Filled = true,
                         Thickness = 0,
-                        Size = Vector2.new(170,10),
+                        Size = Vector2.new(210,10),
                         Color = MainUIColor
                     })
+                    
                     local slider2 = utility.create('Square',{
                         Parent = Sector,
                         ZIndex = 2,
-                        Position = Vector2.new(33,offset+8),
+                        Position = Vector2.new(10,offset+8),
                         Filled = true,
                         Thickness = 0,
-                        Size = Vec2(174,14),
+                        Size = Vec2(214,12),
                         Color = Color3.fromRGB(30,30,30)
                     })
-
+                    local slider3 = utility.create('Square',{
+                        Parent = Sector,
+                        ZIndex = 3,
+                        Position = Vector2.new(10,offset+8),
+                        Filled = false,
+                        Thickness = 0,
+                        Size = Vec2(214,12),
+                        Color = Color3.fromRGB(50,50,50)
+                    })
+                    --utility.outline(slider2,Color3.fromRGB(50,50,50))
                     utility.create('Text',{
                         Parent = holder,
                         ZIndex = 4,
-                        Position = UDim2.new(0,0,0,-15),
+                        Position = UDim2.new(0,0,0,-17),
                         Font = Drawing.Fonts.Plex,
                         Text = text,
                         Size = 13,
                         Color = Color3.fromRGB(200,200,200)
                     })
 
-                    offset = Slider.Position.Y + Slider.Size.Y + 10
+                    offset = Slider.Position.Y.Offset + Slider.Size.Y + 10
                     Sector.Size = Vector2.new(Sector.Size.X,offset)               
                     UpdateSectors(Sector,Side)  
                     
@@ -985,11 +1001,12 @@ function library:New(scriptName)
                     local text1 = utility.create('Text',{
                         Parent = textholder,
                         ZIndex = 4,
-                        Position = UDim2.new(0.5,-13,0,-2),
+                        Position = UDim2.new(0.5,0,0,-3),
                         Font = Drawing.Fonts.Plex,
-                        Text = '1000',
+                        Text = '1000/1000',
                         Size = 13,
-                        Color = Color3.fromRGB(20,20,20)
+                        Color = Color3.fromRGB(200,200,200),
+                        Center = true
                     })
                     
             
@@ -999,29 +1016,31 @@ function library:New(scriptName)
 								
 								local min,max,default = data.min or 0, data.max or 100, data.default or 0
 								
-								text1.Text = tostring(default)
+								text1.Text = tostring(default)..'/'..tostring(max)
 								if min > 0 then 
 									a = ((default - min)) / (max-min) 
 								else 
 									a = (default-min)/(max-min) 
 								end 
-								text1.Text = tostring(default)
-								Slider.Size = UDim2.new(a,0,1,0)  
+								text1.Text = tostring(default)..'/'..tostring(max)
+								Slider.Size = UDim2.new(a,0,0,12)
                                 local moveconnection,releaseconnection
 								holder.MouseButton1Down:Connect(function() 
-									Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 170), 0, 10) 
-									val = math.floor(((((tonumber(max) - tonumber(min)) / 170) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100 
-									text1.Text = tostring(val)
+									Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 213), 0, 12) 
+									val = math.floor(((((tonumber(max) - tonumber(min)) / 213) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100 
+									text1.Text = tostring(val)..'/'..tostring(max)
 									moveconnection = mouse.Move:Connect(function() 
-										Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 170), 0, 10) 
-									val = math.floor(((((tonumber(max) - tonumber(min)) / 170) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100									
-									text1.Text = tostring(val)
+                                        if Slider == nil then return moveconnection:Disconnect() end
+										Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 213), 0, 12) 
+									val = math.floor(((((tonumber(max) - tonumber(min)) / 213) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100									
+									text1.Text = tostring(val)..'/'..tostring(max)
 									end) 
 									releaseconnection = uis.InputEnded:Connect(function(Mouse) 
+                                        if Slider == nil then return releaseconnection:Disconnect() end
 										if Mouse.UserInputType == Enum.UserInputType.MouseButton1 then 
-											Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 170), 0, 10) 
-									val = math.floor(((((tonumber(max) - tonumber(min)) / 170) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100
-									text1.Text = tostring(val)
+											Slider.Size = UDim2.new(0, math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, 213), 0, 12) 
+									        val = math.floor(((((tonumber(max) - tonumber(min)) / 213) * Slider.AbsoluteSize.X) + tonumber(min) or 0)*100)/100
+									        text1.Text = tostring(val)..'/'..tostring(max)
 											callback() 
 											moveconnection:Disconnect() 
 											releaseconnection:Disconnect() 
@@ -1052,6 +1071,6 @@ end)
 test:Element('ToggleTrans','testTog',{default = {Toggle = true}},function()
 
 end)
-test:Element('Slider','test3',{},function()
+test:Element('Slider','test3',{default = 1},function()
 
 end)

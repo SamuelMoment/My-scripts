@@ -200,13 +200,7 @@ local LocalPlayer = Players.LocalPlayer
 
 
 local MainUIColor = Color3.fromRGB(255,20,147)
-
-
---getgenv().planting = false
---getgenv().defusing = false
--- i see those pastes lying around\
-
-																																																																												-- Bad 9672 & WetIDreamz 0001 & zeox 9999												
+											
 getgenv().emojis = {
 	[":clown:"] = utf8.char(129313);
 	[":cold_face:"] = utf8.char(129398);

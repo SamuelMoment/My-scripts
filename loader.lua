@@ -1,3 +1,17 @@
+local function getGameAndLoad()
+	if game.GameId == 113491250 then
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_pf.lua'))()
+	elseif game.GameId == 1390601379 then
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_cw.lua'))()
+	elseif game.GameId == 3698756756 or game.GameId == 10053187005 or game.GameId == 3311740703 or game.GameId == 1190826589 or game.GameId == 3681951220 then
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste.lua'))()
+	elseif game.GameId == 873703865 then
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_wb.lua'))()
+	end	
+end
+if shouldSkipGui then
+	getGameAndLoad()
+end
 local makeDraggable = function(frame)
 				dragging = false 
 					local a = frame
@@ -489,15 +503,7 @@ Button_2.MouseButton1Down:Connect(function()
 		end			
 	end
 	
-	if game.GameId == 113491250 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_pf.lua'))()
-	elseif game.GameId == 1390601379 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_cw.lua'))()
-	elseif game.GameId == 3698756756 or game.GameId == 10053187005 or game.GameId == 3311740703 or game.GameId == 1190826589 or game.GameId == 3681951220 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste.lua'))()
-	elseif game.GameId == 873703865 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_wb.lua'))()
-	end	
+	getGameAndLoad()
 end) 
 Button_2.MouseEnter:Connect(function() 
 	library:Tween(TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextColor3 = C.COL3RGB(255, 255, 255)}) 
