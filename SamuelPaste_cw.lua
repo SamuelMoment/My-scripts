@@ -2633,8 +2633,8 @@ do
 	end)
 	--values.misc.misc.utility['Redirect throwable grenades to closest player']
 	 player:Element("Toggle", "Auto Airdrop-Claimer")
-	 miscsector:Element("Toggle","Velocity Fly",nil,function(state)
-		 if state.Toggle then
+	 miscsector:Element("ToggleKeybind","Velocity Fly",nil,function(state)
+		 if state.Toggle and state.Active then
 			 NOFLY()
 			 sFLY(false,false,false)
 		 else
@@ -2644,9 +2644,9 @@ do
 		local function keydown(key)
 			return game:GetService("UserInputService"):IsKeyDown(key)
 		end 
-	miscsector:Element('Toggle','Velocity fly 2',nil,function(tbl)
+	miscsector:Element('ToggleKeybind','Velocity fly 2',nil,function(tbl)
 		g = game.RunService.Heartbeat:Connect(function()
-			if not tbl.Toggle then return g:Disconnect() end
+			if not (tbl.Toggle and tbl.Active) then return g:Disconnect() end
 			if not LocalPlayer.Character then return end
 				local move = game.Players.LocalPlayer.Character.Humanoid.MoveDirection * 16 * 4
 				if keydown(Enum.KeyCode.Space) then
@@ -2658,8 +2658,8 @@ do
 				end
 		end)	 
 	 end)
-	miscsector:Element("Toggle", "Fly",nil,function(state)
-		if values.misc.misc2.misc["Fly"].Toggle then
+	miscsector:Element("ToggleKeybind", "Fly",nil,function(state)
+		if state.Toggle and state.Active then
 			NOFLY()
 			sFLY(false, true, true)
 			LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)
@@ -2668,9 +2668,23 @@ do
 			--LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
 		end
 	end)
+		getgenv().lookuptable = lookuptable or require(game.ReplicatedStorage.Framework.Nevermore)['_lookupTable']
 
+		getgenv().datastore = datastore or require(lookuptable['DataHandler']).getSessionDataRoduxStoreForPlayer(game.Players.LocalPlayer):getState()
+
+	miscsector:Element('ToggleKeybind','cw fly',nil,function(tbl)
+		if tbl.Toggle and tbl.Active then
+			datastore.fly.isFlying = tbl.Toggle
+			getupvalue(require(lookuptable.FlyHandlerClient)['_startModule'], 2)(game.Players.LocalPlayer.Character)
+		else
+			datastore.fly.isFlying = false
+			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild('HumanoidRootPart') and LocalPlayer.Character:FindFirstChild('HumanoidRootPart'):FindFirstChild('LinearVelocity') then
+				LocalPlayer.Character:FindFirstChild('HumanoidRootPart'):FindFirstChild('LinearVelocity'):Destroy()
+			end
+		end
+	end)
 	Spawn:Connect(function()
-				if values.misc.misc2.misc["Fly"].Toggle then
+				if values.misc.misc2.misc["Fly"].Toggle and values.misc.misc2.misc["Fly"].Active then
 					NOFLY()
 					sFLY(false, true, true)
 					LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)
@@ -2678,7 +2692,7 @@ do
 					NOFLY()
 					LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(false)
 				end		
-				if values.misc.misc2.misc["Velocity Fly"].Toggle then
+				if values.misc.misc2.misc["Velocity Fly"].Toggle and values.misc.misc2.misc["Velocity Fly"].Active then
 					 NOFLY()
 					 sFLY(false,false,false)
 				else
@@ -4658,12 +4672,12 @@ end)
 local WeaponEffects = skins:Sector('Custom weapon effects','Left')
 WeaponEffects:Element('Toggle','enabled',{},function(tbl)
 		if LocalPlayer.Character:FindFirstChildOfClass('Tool') and LocalPlayer.Character:FindFirstChildOfClass('Tool'):FindFirstChild('Hitboxes') then
-					for i,v in pairs(LocalPlayer.Character:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle'):GetChildren()) do
-						if v.Name == 'Effect' then
-							v:Destroy()
-						end
-					end		
-			if values.skins['Custom weapon effects'].enabled.Toggle then
+			for i,v in pairs(LocalPlayer.Character:FindFirstChildOfClass('Tool').Contents:FindFirstChild('Handle'):GetChildren()) do
+				if v.Name == 'Effect' then
+					v:Destroy()
+				end
+			end		
+			if tbl.Toggle then
 
 				if Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll) then
 			
@@ -4686,7 +4700,7 @@ WeaponEffects:Element('Toggle','enabled',{},function(tbl)
 							v:Destroy()
 						end
 					end			
-				if values.skins['Custom weapon effects'].enabled.Toggle then
+				if tbl.Toggle then
 					if Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll) then
 				
 						effect = Effects:FindFirstChild(values.skins['Custom weapon effects'].effect.Scroll)
