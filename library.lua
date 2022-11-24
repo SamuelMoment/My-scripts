@@ -382,7 +382,7 @@ end
 	SampleLabel.BackgroundColor3 = C.COL3RGB(255, 255, 255)
 	SampleLabel.BackgroundTransparency = 1.000
 	SampleLabel.BorderSizePixel = 0
-	SampleLabel.Position = C.UDIM2(1.97835922, 0, 0, 0)
+	SampleLabel.Position = C.UDIM2(2, 0, 0, 0)
 	SampleLabel.Size = C.UDIM2(0, 0, 0, 24)
 	SampleLabel.Font = Enum.Font.Ubuntu
 	SampleLabel.Text = "TEST"
@@ -399,14 +399,23 @@ end
 	UIGradient.Parent = SampleFrame
 	end
 	 
-	local function CreateHitElement(text,col,time, size2, size4)
+	local function CreateHitElement(text,col,time)
 		spawn(function()
 			local Frame = MX_ONHIT.OnHitFrame.SampleFrame:Clone()
 			local Grad = Frame.Grad
 			local Label = Grad.SampleLabel
+
+			Label.Parent = Grad
+			Label.TextColor3 = col
+			Label.Text = text
+
+			TextBounds = game.TextService:GetTextSize(text,13,Enum.Font.Ubuntu,Vector2.new(1000,100))
+
+
 			
-			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, size2, 0, size4)}) 
-			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, size2, 0, size4)}) 	
+			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, TextBounds.X+15, 0,TextBounds.Y)}) 
+
+			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, TextBounds.X, 0, Label.Size.Y.Offset)}) 	
 			
 			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.000})	   
 			library:Tween(Grad, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.000})  
@@ -414,17 +423,15 @@ end
 			
 			Frame.Parent = MX_ONHIT.OnHitFrame
 			Grad.Parent = Frame
-			Label.Parent = Grad
-			Label.TextColor3 = col
-			Label.Text = text
+
 			wait(time)
 			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1.000})	   
 			library:Tween(Grad, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1.000})  
 			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1.000})
 			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextStrokeTransparency = 1.000})
 			
-			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, 0, size3, size4)}) 
-			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, 0, size3, size4)}) 
+			library:Tween(Frame, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, 0, 0, Frame.Size.Y.Offset)}) 
+			library:Tween(Label, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = C.UDIM2(0, 0, 0, Frame.Size.Y.Offset)}) 
 			
 			wait(0.8)
 			Frame:Destroy()
@@ -6517,7 +6524,7 @@ Players.PlayerRemoving:Connect(function(plr)
 	end
 	if values[tabname][sectorname][SomeRandomValue] ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle then
 		if values[tabname][sectorname][text].Scroll == plr.Name then
-			CreateHitElement("The person you were targetting has left the server.",getMainColor(),7.5, 250, 22)
+			CreateHitElement("The person you were targetting has left the server.",getMainColor(),7.5)
 		end
 	end
 	updatescroll2()
