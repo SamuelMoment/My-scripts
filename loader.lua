@@ -11,6 +11,7 @@ local function getGameAndLoad()
 end
 if shouldSkipGui then
 	getGameAndLoad()
+	return
 end
 local makeDraggable = function(frame)
 				dragging = false 
