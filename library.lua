@@ -6398,8 +6398,7 @@ end--]]
 									end) 
 								end 
 								Element.value = {Scroll = data.default and data.default.Scroll or data.options[1]} 
-								
-								local SomeRandomValue = data.Toggle or nil
+
 								
 								local Scroll = C.INST("Frame") 
 								local Frame = C.INST("ScrollingFrame") 
@@ -6523,11 +6522,6 @@ Players.PlayerRemoving:Connect(function(plr)
 	table.clear(data.options)
 	for i,v in pairs(game.Players:GetPlayers()) do
 		C.INSERT(data.options, v.Name)
-	end
-	if values[tabname][sectorname][SomeRandomValue] ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle ~= nil and values[tabname][sectorname][SomeRandomValue].Toggle then
-		if values[tabname][sectorname][text].Scroll == plr.Name then
-			CreateHitElement("The person you were targetting has left the server.",getMainColor(),7.5)
-		end
 	end
 	updatescroll2()
 end)

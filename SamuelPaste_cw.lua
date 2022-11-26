@@ -134,7 +134,7 @@ message2\
 message3"
 )
 end
-if not isfile('SamuelPaste_cw/customantitags.txt') then
+--[[if not isfile('SamuelPaste_cw/customantitags.txt') then
 	writefile('SamuelPaste_cw/customantitags.txt', "--METHOD 1 = IN MIDDLE, METHOD 2 = AFTER, METHOD 3 = INFRONT, METHOD 4 = SECOND TYPE OF ANTI TAGS \
 	['uc'] = {\
 		FULLWORD = {\
@@ -192,7 +192,7 @@ if not isfile('SamuelPaste_cw/customantitags.txt') then
 		METHOD = 2\
 	}"
 )
-end
+end--]]
 
 
 local Players = game:GetService("Players") 
@@ -216,9 +216,9 @@ end--]]
 local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/library.lua"))()
 library.setcfglocation(cfglocation)
 
-Spawn = Signal.new('Spawn')
-Died = Signal.new('Died')
-
+local Spawn = Signal.new()
+local Died = Signal.new()
+local KillFeed = Signal.new()
 	
 local cacheModels = game:GetObjects("rbxassetid://11377511083")[1]
 repeat wait() until cacheModels ~= nil
@@ -236,7 +236,7 @@ repeat wait() until ChinaHat ~= nil
 
 local Effects = game:GetObjects('rbxassetid://11377514627')[1]
 repeat wait() until Effects ~= nil
-	CreateHitElement(" Welcome, "..LocalPlayer.Name.."!",MainUIColor,5,340, 22)
+	CreateHitElement(" Welcome, "..LocalPlayer.Name.."!",MainUIColor,5)
 	wait(0.5)
 	--[[CreateHitElement(" To close gui, go to misc tab and set up keybind  ",MainUIColor,5, 0, 340, 0, 30)
 	CreateHitElement(" !!!  IMPORTANT  !!!\
@@ -329,9 +329,7 @@ for i,v in pairs(getgc(true)) do
 			--print('found')
 			SavedValues['oldrender'] = v.render
 			v.render = function(sex1)
-				if sex1.props.killfeedItemInfo.playerThatKilled == LocalPlayer and sex1.props.killfeedItemInfo.playerThatDied ~= LocalPlayer then
-					killsaysignal:Fire()
-				end
+				KillFeed:Fire(sex1.props.killfeedItemInfo.playerThatKilled,sex1.props.killfeedItemInfo.playerThatDied)
 				return SavedValues['oldrender'](sex1)
 			end
 		end
@@ -808,7 +806,7 @@ do
 		--local femboy = 1
 		--local customchatspam = 0
 		--local killsaymessages = readfile('SamuelPaste_cw/customkillsay.txt'):split('\n', '')
-		chat:Element('Toggle','No tags')
+		--[[chat:Element('Toggle','No tags')
 		chat:Element('Dropdown','No tags method',{options = {'main','1','2'}})
 		chat:Element('Dropdown','Main no tags method', {options = {'in script','custom file'}})
 		
@@ -1023,17 +1021,6 @@ do
 		else
 			return Word
 		end
-	end
-
-	--[[game:GetService("TextChatService").OnIncomingMessage = function(L)
-		if L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then
-			local Bypassed = bypass(L.Text)
-			if Bypassed == "" or Bypassed == nil then
-			else
-				L.Text = Bypassed
-			end
-		end
-		--end
 	end--]]
 
 	fire = false
@@ -1045,32 +1032,24 @@ do
 		--[[chat:Element('Button','Clean chat',{}, function()
 		game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\na")
 		end)--]]
-		killsaysignal = Signal.new('killsaysignal')
-		killsaysignal:Connect(function()
+		KillFeed:Connect(function(killed,died)
 			if values.rage.chat["kill say"].Toggle then 
+				if killed ~= LocalPlayer then return end
+				if died == LocalPlayer then return end
+				
 				if values.rage.chat["kill say type"].Dropdown == "message" then
-					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-						values.rage.chat["message"].Text ~= "" 
-						and values.rage.chat["message"].Text or "L bro cant win the pasted script"
-					)
+					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(values.rage.chat["message"].Text ~= "" and values.rage.chat["message"].Text or "L bro cant win the pasted script")
 				elseif values.rage.chat['kill say type'].Dropdown == 'random' then
-				game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-					chatmessages_pasteed[math.random(#chatmessages_pasteed)]
-				)
+					game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(chatmessages_pasteed[math.random(#chatmessages_pasteed)])
 				else
-					
 					local messages = readfile('SamuelPaste/customkillsay.txt'):split('\n', '')
 					if values.rage.chat['custom file type'].Dropdown == 'random' then
-						game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-							messages[math.random(#messages)]
-						)	
+						game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(messages[math.random(#messages)])	
 					else
-						game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(
-							messages[customtypemessagesnumber]
-						)
+						game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(messages[customtypemessagesnumber])
 						customtypemessagesnumber += 1
 						if customtypemessagesnumber == (#messages + 1) then
-						customtypemessagesnumber = 1
+							customtypemessagesnumber = 1
 						end
 					end
 				end
@@ -1081,7 +1060,8 @@ do
 	--local oldIncomingMessage = game:GetService("TextChatService").OnIncomingMessage
 	game:GetService("TextChatService").OnIncomingMessage = function(L)
 		if L.TextSource and L.TextSource.UserId == game.Players.LocalPlayer.UserId then
-			if values.rage.chat['No tags'].Toggle then
+			--patched
+			--[[if values.rage.chat['No tags'].Toggle then
 				if values.rage.chat['No tags method'].Dropdown == '1' then
 					if L.TextSource and tonumber(L.TextSource.UserId) == game:FindService("Players").LocalPlayer.UserId then 
 						for i,v in next, randomtable do
@@ -1106,7 +1086,7 @@ do
 						L.Text = Bypassed
 					end
 				end
-			end					
+			end--]]		
 			if edited == false and (values.rage.chat['custom text color'].Toggle or values.rage.chat['custom message size'].Toggle or values.rage.chat['custom font'].Toggle) then 
 				text = L.Text
 				if values.rage.chat['custom text color'].Toggle or values.rage.chat['custom message size'].Toggle or values.rage.chat['custom font'].Toggle then
@@ -1145,8 +1125,38 @@ end
 do
 	local playersTab = main:Sector('Players','Left')
 	playersTab:Element('Toggle','Target player')
+	playersTab:Element('Slider','Log Time',{min = 1,max = 10,default = 3})
+	playersTab:Element('Toggle','Log Leave')
+	--playersTab:Element('Toggle','Log Spawn')
+	playersTab:Element('Toggle','Log Self-Respawn')
+	
+	game.Players.PlayerRemoving:Connect(function(plr)
+		if values.rage['Players']['Target player'].Toggle and values.rage['Players']['Log Leave'].Toggle and plr.Name == values.rage['Players']['Target'].Scroll then
+			CreateHitElement(tostring('Your target %s has left the server'):format(plr.Name),MainUIColor,values.rage['Players']['Log Time'].Slider)
+		end
+	end)
+	--[[game.Players.PlayerAdded:Connect(function(plr)
+		plr.CharacterAdded:Connect(function()
+			if values.rage['Players']['Target player'].Toggle and values.rage['Players']['Log Spawn'].Toggle and plr.Name == values.rage['Players']['Target'].Scroll then
+				CreateHitElement(tostring('Your target %s has spawned'):format(plr.Name),MainUIColor,values.rage['Players']['Log Time'].Slider)
+			end		
+		end)
+	end)
+	for i,v in pairs(game.Players:GetPlayers()) do
+		if v == LocalPlayer then continue end
+		v.CharacterAdded:Connect(function()
+			if values.rage['Players']['Target player'].Toggle and values.rage['Players']['Log Spawn'].Toggle and v.Name == values.rage['Players']['Target'].Scroll then
+				CreateHitElement(tostring('Your target %s has spawned'):format(v.Name),MainUIColor,values.rage['Players']['Log Time'].Slider)
+			end		
+		end)
+	end--]]
+	KillFeed:Connect(function(killed,died)
+		if values.rage['Players']['Target player'].Toggle and values.rage['Players']['Log Self-Respawn'].Toggle and (killed.Name == values.rage['Players']['Target'].Scroll and died.Name == values.rage['Players']['Target'].Scroll) then
+			CreateHitElement(tostring('Your target %s has self-respawned'):format(v.Name),MainUIColor,values.rage['Players']['Log Time'].Slider)
+		end
+	end)
 	local loop123
-	playersTab:Element('lmao2','Target',{options = loopkillplr,Toggle = 'Target player'},function(tbl) -- toggle for detecting if palyer is left
+	playersTab:Element('lmao2','Target',{options = loopkillplr},function(tbl)
 		pcall(function()
 			loop123:Disconnect()
 		end)
@@ -4301,8 +4311,10 @@ local ESPLoop =
 		
 		effects:Element('Slider','Image Transparency', {min = 0,max = 1})
 		
-		killeffect = function()		
+		killeffect = function(killed,died)		
 			if not values.visuals.effects['Kill screen'].Toggle then return end
+			if killed ~= LocalPlayer then return end
+			if died == LocalPlayer then return end
 			task.spawn(function()
 				scren = Instance.new('ScreenGui',game.CoreGui)
 				scren.IgnoreGuiInset = true
@@ -4357,7 +4369,7 @@ local ESPLoop =
 			end)
 		end
 		effects:Element('Button','Test',{},killeffect)
-		killsaysignal:Connect(killeffect)
+		KillFeed:Connect(killeffect)
 		--Kill screen Kill screen type (Color,Image), Image Image type(Roblox ID workspace image)
 	end
 end
@@ -5404,4 +5416,4 @@ do
 
 	
 end
-CreateHitElement("Script loaded in "..(math.floor((tick() - BeforeLoad)*100)/100).." seconds!",MainUIColor,5, 220, 22)
+CreateHitElement("Script loaded in "..(math.floor((tick() - BeforeLoad)*100)/100).." seconds!",MainUIColor,5)
