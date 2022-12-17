@@ -1135,21 +1135,6 @@ do
 			CreateHitElement(tostring('Your target %s has left the server'):format(plr.Name),MainUIColor,values.rage['Players']['Log Time'].Slider)
 		end
 	end)
-	--[[game.Players.PlayerAdded:Connect(function(plr)
-		plr.CharacterAdded:Connect(function()
-			if values.rage['Players']['Target player'].Toggle and values.rage['Players']['Log Spawn'].Toggle and plr.Name == values.rage['Players']['Target'].Scroll then
-				CreateHitElement(tostring('Your target %s has spawned'):format(plr.Name),MainUIColor,values.rage['Players']['Log Time'].Slider)
-			end		
-		end)
-	end)
-	for i,v in pairs(game.Players:GetPlayers()) do
-		if v == LocalPlayer then continue end
-		v.CharacterAdded:Connect(function()
-			if values.rage['Players']['Target player'].Toggle and values.rage['Players']['Log Spawn'].Toggle and v.Name == values.rage['Players']['Target'].Scroll then
-				CreateHitElement(tostring('Your target %s has spawned'):format(v.Name),MainUIColor,values.rage['Players']['Log Time'].Slider)
-			end		
-		end)
-	end--]]
 	KillFeed:Connect(function(killed,died)
 		if values.rage['Players']['Target player'].Toggle and values.rage['Players']['Log Self-Respawn'].Toggle and (killed.Name == values.rage['Players']['Target'].Scroll and died.Name == values.rage['Players']['Target'].Scroll) then
 			CreateHitElement(tostring('Your target %s has self-respawned'):format(v.Name),MainUIColor,values.rage['Players']['Log Time'].Slider)
@@ -1222,8 +1207,11 @@ do
 	 --combat:Element("Toggle", "AA Aura")
 	combat:Element("Dropdown", "Priority",{options = {'Distance','Health'}})
 	combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 12, default = 12})
-	combat:Element("Toggle", "Custom Kill Aura Distance")
-	combat:Element("Slider", "Custom Distance", {min = 0, max = 10000, default = 600})
+	combat:Element("Toggle", "Teleport")	
+	combat:Element('Dropdown','Teleport type',{options = {'Behind','Stroke'}})
+	combat:Element("Slider", "Teleport Distance", {min = 0, max = 5, default = 5})
+	--combat:Element("Toggle", "Custom Kill Aura Distance")
+	--combat:Element("Slider", "Custom Distance", {min = 0, max = 10000, default = 600})
 	
 	combat:Element('Toggle','Visualize target',{default = {Color = Color3.fromRGB(255, 255, 255)}})
 	combat:Element("ToggleColor", "Box",{default = {Color = Color3.fromRGB(255, 255, 255)}})
@@ -1231,14 +1219,11 @@ do
 	combat:Element("ToggleColor", "Health",{default = {Color = Color3.fromRGB(0, 255, 0)}})
 	combat:Element('ToggleColor','Health Text',{default = {Color = Color3.fromRGB(255,255,255)}})
 	combat:Element("ToggleColor", "Indicators",{default = {Color = Color3.fromRGB(255, 255, 255)}})
-	
-	combat:Element("Toggle", "Teleport Behind (for kill aura)")
-	combat:Element("Slider", "Teleport Distance", {min = 0, max = 5, default = 5})
 	combat:Element("Toggle", "Stomp Aura")
 	combat:Element("Dropdown", "Stomp aura priority",{options = {'Distance','Health'}})
 	combat:Element("Slider", "Stomp Aura Distance", {min = 0, max = 25, default = 25})
-	combat:Element("Toggle", "Custom Stomp Aura Distance")
-	combat:Element("Slider", "Custom Stomp Distance", {min = 0, max = 1000, default = 600})
+	--combat:Element("Toggle", "Custom Stomp Aura Distance")
+	--combat:Element("Slider", "Custom Stomp Distance", {min = 0, max = 1000, default = 600})
 	--[[randomtableidk = {}
 	for _,v in pairs(game.Players:GetPlayers()) do 
 		C.INSERT(randomtableidk, v.Name)
@@ -1358,7 +1343,7 @@ do
 		end
 	end)
 	
-	task.spawn(function()
+	--[[task.spawn(function()
 		RunService.RenderStepped:Connect(function()
 			pcall(function()
 				local Closest
@@ -1376,11 +1361,7 @@ do
 					end
 
 					if not Weapon then
-					else
-					--[[if getgenv().Weapon1 == nil or getgenv().Weapon1.Parent == nil then
-						getgenv().Weapon1 = Weapon:Clone()
-						Weapon = Weapon1
-					end			--]]			
+					else		
 						if values.rage.combat["Custom Kill Aura Distance"].Toggle then
 							for i, v in pairs(Weapon:GetDescendants()) do
 								if v:IsA "BasePart" then
@@ -1426,43 +1407,30 @@ do
 					end
 			end)
 		end)
+	end)--]]
+	RunService.RenderStepped:Connect(function()
+		if not values.rage.combat["Kill Aura"].Toggle then return end 
+		Closest = GetClosest(values.rage.combat["Kill Aura Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil		
+		local Weapon
+		for i, v in pairs(LocalPlayer.Character:GetChildren()) do
+			if v:IsA("Tool") then
+				if v:FindFirstChild("Hitboxes") ~= nil then
+					Weapon = v
+				end
+			end
+		end		
+		if not (Closest and Weapon) then return end
+		if values.rage.combat["Teleport"].Toggle then
+			if values.rage.combat['Teleport type'].Dropdown == 'Behind' then
+				LocalPlayer.Character.HumanoidRootPart.CFrame =
+					Closest.Character.HumanoidRootPart.CFrame *
+					CFrame.new(0, 0, values.rage.combat["Teleport Distance"].Slider)
+			else
+				LocalPlayer.Character.HumanoidRootPart.CFrame = Closest.Character.HumanoidRootPart.CFrame * CFrame.new(math.random(-values.rage.combat["Teleport Distance"].Slider,values.rage.combat["Teleport Distance"].Slider),math.random(-values.rage.combat["Teleport Distance"].Slider,values.rage.combat["Teleport Distance"].Slider),math.random(-values.rage.combat["Teleport Distance"].Slider,values.rage.combat["Teleport Distance"].Slider)) 
+			end
+		end	
 	end)
---[[wrap = function(real) --we pass a real object, and it will spit out a fake copy
-	if type(real) == "userdata" then --this is all we should worry about for now
-		local fake = newproxy(true)
-		local meta = getmetatable(fake)
-
-		meta.__index = function(s,k)
-			--when we get things from the fake object, they should also be fake objects
-			return wrap(real[k]) --that's why this recursion is essential
-		end
-
-		meta.__newindex = function(s,k,v)
-			--allowing us to set values
-			real[k] = v
-		end
-
-		meta.__tostring = function(s)
-			--the more it behaves like the real object, the better
-			return tostring(real)
-		end
-
-		--meta.__etc...
-
-		--you can implement as many of these as necessary
-		--when you're done, return the new fake object
-		return fake
-	--elseif...
-	else
-		--remember that everything we get from the object will be passed through this function
-		--that includes non-userdatas, such as strings, tables, functions and more
-		--some of these things we will eventually need handlers for, and some we won't
-		--if this else block is ever reached though, we can just return the object without doing anything
-		return real
-	end
-end	
---]] 
- task.spawn(
+task.spawn(
 		function()
 			while task.wait() do
 			  pcall(
@@ -1471,21 +1439,10 @@ end
 							local Closest
 							--wait(.4)
 							if not values.rage.combat["Kill Aura"].Toggle then return end 
-							if values.rage.combat["Custom Kill Aura Distance"].Toggle then
-								Closest = GetClosest(values.rage.combat["Custom Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
-							else
-								Closest = GetClosest(values.rage.combat["Kill Aura Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
-							end
+							Closest = GetClosest(values.rage.combat["Kill Aura Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
 							if Closest ~= nil then
 								if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
 								else
-									if values.rage.combat["Teleport Behind (for kill aura)"].Toggle then
-										if not values.rage.combat["Custom Kill Aura Distance"].Toggle then
-											LocalPlayer.Character.HumanoidRootPart.CFrame =
-												Closest.Character.HumanoidRootPart.CFrame *
-												CFrame.new(0, 0, values.rage.combat["Teleport Distance"].Slider)
-										end
-									end
 									local Weapon
 									for i, v in pairs(LocalPlayer.Character:GetChildren()) do
 										if v:IsA("Tool") then
@@ -1497,12 +1454,6 @@ end
 									if not Weapon then
 									else								
 										for i=1,3 do
-											local rayOrigin = LocalPlayer.Character.HumanoidRootPart.Position
-											local rayDirection = Vector3.new(0, 0, 5)
-											local raycastParams = RaycastParams.new()
-											raycastParams.IgnoreWater = true
-											raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-											local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
 											local args1 = {
 												[1] = Weapon,
 												[2] = i
@@ -1516,10 +1467,10 @@ end
 												[2] = Closest.Character.Head,
 												[3] = Weapon.Hitboxes.Hitbox,
 												[4] = Closest.Character.Head.Position,
-												[5] = Closest.Character.Head.CFrame:ToObjectSpace(
-													CFrame.new(Closest.Character.Head.Position)
-												),
-												[6] = raycastResult
+												[5] = Closest.Character.Head.CFrame:ToObjectSpace(CFrame.new(Closest.Character.Head.Position)),
+												[6] = Closest.Character.HumanoidRootPart.CFrame.LookVector,
+												[7] = Vector3.new(1,1,1),
+												[8] = Vector3.new(0,1,0)
 											}
 											if Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
 												events.MeleeDamage:FireServer(unpack(args))
@@ -1529,14 +1480,6 @@ end
 												return
 											end
 										end
-									end
-								end
-							elseif Closest == nil then
-								for i, v in pairs(Weapon:GetDescendants()) do
-									if v:IsA "BasePart" then
-										v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-										v.Velocity = Vector3.new(100000,100000,100000)
-										v.CanCollide = false
 									end
 								end
 							end
@@ -1552,11 +1495,11 @@ end
 					function()
 						if values.rage.combat["Stomp Aura"].Toggle then
 							local Closest
-							if values.rage.combat["Custom Stomp Aura Distance"].Toggle then
-								Closest = GetClosest(values.rage.combat["Custom Stomp Distance"].Slider,values.rage.combat["Stomp aura priority"].Dropdown)
-							else
+							--if values.rage.combat["Custom Stomp Aura Distance"].Toggle then
+								--Closest = GetClosest(values.rage.combat["Custom Stomp Distance"].Slider,values.rage.combat["Stomp aura priority"].Dropdown)
+							--else
 								Closest = GetClosest(values.rage.combat["Stomp Aura Distance"].Slider,values.rage.combat["Stomp aura priority"].Dropdown)
-							end
+							--end
 							if Closest then
 								if Closest.Character:FindFirstChild("Humanoid").Health == 0 then
 								else
@@ -1564,7 +1507,7 @@ end
 									if not Weapon then
 									else
 										if Closest.Character.Humanoid.Health <= 15 then
-											if values.rage.combat["Custom Stomp Aura Distance"].Toggle then
+											--[[if values.rage.combat["Custom Stomp Aura Distance"].Toggle then
 												for i, v in pairs(Weapon:GetDescendants()) do
 													if v:IsA "BasePart" then
 														v.CFrame = Closest.Character.HumanoidRootPart.CFrame
@@ -1587,7 +1530,7 @@ end
 														end
 													end
 												end
-											end
+											end--]]
 
 											local args1 = {
 												[1] = Weapon,
@@ -1621,14 +1564,14 @@ end
 										end
 									end
 								end
-							elseif Closest == nil then
+							--[[elseif Closest == nil then
 								for i, v in pairs(Weapon:GetDescendants()) do
 									if v:IsA "BasePart" then
 										v.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
 										v.Velocity = Vector3.new(100000,100000,100000)
 										v.CanCollide = false
 									end
-								end
+								end--]]
 							end
 						end
 					end
@@ -1766,7 +1709,7 @@ end
 	silent:Element('ToggleTrans', 'Outline highlight target')
 	silent:Element('ToggleColor', 'Silent aim info gui',{default = {Color = Color3.new(85, 170, 255)}})
 
-	--silent:Element('Dropdown','hit type',{options = {'redirect','auto hit','both'}})
+	silent:Element('Dropdown','hit type',{options = {'redirect','auto hit'}})
 	silent:Element('Dropdown', 'body part to hit', {options = {"Head","HumanoidRootPart","Torso","Left Leg","Right Leg","Left Arm","Right Arm"}})
 	silent:Element('Slider','hitchance',{min = 1,max = 100,default = 100})
 	silent:Element('Slider','hit distance',{min = 1,max = 25,default = 15})
@@ -1828,27 +1771,13 @@ end
 			for i,v in pairs(getgc(true)) do
 				if typeof(v) == 'table' and rawget(v,'maxSpread') and rawget(v,'displayName') then
 					if values.rage['Ranged sector']['No recoil'].Toggle then
-						--print('-------------------------------')
-						
-						
-							randomstring = string.lower(v.displayName)
-							--print(rangedvalues[randomstring]['recoilXMax'])
-						--print(v.recoilXMax)
-						--print('-------------------------------')
-						--string = string..v.displayName..'\n'..rangedvalues[string.lower(v.displayName)].recoilXMax..'\n'..v.recoilXMax..'\n'..'-------------------------------'..'\n'
 						v.recoilYMin = 0
 						v.recoilZMin = 0
 						v.recoilXMin = 0
 						v.recoilYMax = 0
 						v.recoilZMax = 0
 						v.recoilXMax = 0
-						--print('-------------------------------')
-						print(v.recoilXMax)
-						print(rangedvalues[string.lower(v.displayName)]['recoilXMax'])
-						print('-------------------------------')
-						--string = string..'\n'..rangedvalues[string.lower(v.displayName)].recoilXMax..'\n'..v.recoilXMax..'\n'..'-------------------------------'..'\n'
 					else
-					--table.foreach(rangedvalues[string.lower(v.displayName)],print)
 						v.recoilYMin = rangedvalues[string.lower(v.displayName)]['recoilYMin']
 						v.recoilZMin = rangedvalues[string.lower(v.displayName)]['recoilZMin']
 						v.recoilXMin = rangedvalues[string.lower(v.displayName)]['recoilXMin']
@@ -1905,16 +1834,40 @@ end
 		silent:Element('Toggle', 'Auto reload')
 
 
-			getgenv().shootfunc = {}
-			getgenv().reloadfunc = {}
+		getgenv().shootfunc = {}
+		getgenv().reloadfunc = {}
 		silent:Element('Toggle','Auto shoot')
 		
-				table.clear(shootfunc)
-				table.clear(reloadfunc)
-			
+		table.clear(shootfunc)
+		table.clear(reloadfunc)
+		
+		for i,v in pairs(getgc(true)) do
+			if typeof(v) == 'table' then
+				if rawget(v,'canShoot') and rawget(v,'tool') and v.tool ~= nil and v.tool.Parent ~= nil then
+					shootfunc[v.tool.Name] = function()
+						if v.tool.Parent == LocalPlayer.Character then
+							if v:getCanShoot() then
+								v:shoot()
+							end
+						end
+					end
+					reloadfunc[v.tool.Name] = function()
+						v:reload()
+					end
+				end
+			end
+		end			
+		Spawn:Connect(function()
+			table.clear(shootfunc)
+			table.clear(reloadfunc)
+			repeat wait() until LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') 
+			task.wait(0.3)
 			for i,v in pairs(getgc(true)) do
 				if typeof(v) == 'table' then
 					if rawget(v,'canShoot') and rawget(v,'tool') and v.tool ~= nil and v.tool.Parent ~= nil then
+						if v.tool.Parent == nil then
+							return
+						end
 						shootfunc[v.tool.Name] = function()
 							if v.tool.Parent == LocalPlayer.Character then
 								if v:getCanShoot() then
@@ -1927,72 +1880,21 @@ end
 						end
 					end
 				end
-			end			
-			Spawn:Connect(function()
-				--if not tbl.Toggle then return end
-				table.clear(shootfunc)
-				table.clear(reloadfunc)
-				repeat wait() until LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') 
-				task.wait(0.3)
-				--print('spawned')
-				for i,v in pairs(getgc(true)) do
-					if typeof(v) == 'table' then
-						if rawget(v,'canShoot') and rawget(v,'tool') and v.tool ~= nil and v.tool.Parent ~= nil then
-							--table.foreach(v,print)
-							--print('Parent: '..v.tool.Parent.Name..', Name:'..v.tool.Name)
-							if v.tool.Parent == nil then
-								return
-							end
-							shootfunc[v.tool.Name] = function()
-								if v.tool.Parent == LocalPlayer.Character then
-									--print(v.tool.Parent)
-									if v:getCanShoot() then
-										v:shoot()
-									end
-								end
-							end
-							reloadfunc[v.tool.Name] = function()
-								v:reload()
-							end
-						end
+			end
+		end)
+		local shootloop;shootloop = RunService.Heartbeat:Connect(function()
+			if (not values.rage['Ranged sector']['Auto reload'].Toggle) or (not values.rage['Ranged sector']['Auto shoot'].Toggle) then return end
+			pcall(function()
+				if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') then
+					if values.rage['Ranged sector']['Auto shoot'].Toggle then
+						shootfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
+					end
+					if values.rage['Ranged sector']['Auto reload'].Toggle then
+						reloadfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
 					end
 				end
 			end)
-				local shootloop;shootloop = RunService.Heartbeat:Connect(function()
-					if (not values.rage['Ranged sector']['Auto reload'].Toggle) or (not values.rage['Ranged sector']['Auto shoot'].Toggle) then return end
-					pcall(function()
-						if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') then
-							if values.rage['Ranged sector']['Auto shoot'].Toggle then
-								shootfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
-							end
-							if values.rage['Ranged sector']['Auto reload'].Toggle then
-								reloadfunc[LocalPlayer.Character:FindFirstChildWhichIsA('Tool').Name]()
-							end
-						end
-					end)
-				end)
-				
-		--game.CollectionService:AddTag(game:GetService("Workspace").Map,'CAMERA_COLLISION_IGNORE_LIST')
-
-		--[[task.spawn(function()
-			while task.wait() do
-				pcall(function()
-					if game.Players.LocalPlayer.Character and values.maim['Ranged sector']['Instant charge'].Toggle then
-						if game.Players.LocalPlayer.Character:FindFirstChild('Longbow') then
-							for i,v in pairs(getconnections(game.Players.LocalPlayer.Character['Longbow'].ChargeProgressClient:GetPropertyChangedSignal("Value"))) do
-								v:Disable()
-							end			
-							game.Players.LocalPlayer.Character['Longbow'].ChargeProgressClient.Value = 1
-						elseif game.Players.LocalPlayer.Character:FindFirstChild('Heavy Bow') then
-							for i,v in pairs(getconnections(game.Players.LocalPlayer.Character['Heavy Bow'].ChargeProgressClient:GetPropertyChangedSignal("Value"))) do
-								v:Disable()
-							end			
-							game.Players.LocalPlayer.Character['Heavy Bow'].ChargeProgressClient.Value = 1
-						end
-					end
-				end)
-			end
-		end)--]]
+		end)
 	end
 
 
@@ -2456,7 +2358,9 @@ do
 		end;
 	end)
 end
-
+function isAlive(plr)
+	return plr.Character and (plr.Backpack:FindFirstChildWhichIsA('Tool') or plr.Character:FindFirstChildWhichIsA('Tool')) and true or false
+end
 
 function NOFLY()
 	FLYING = false
@@ -2490,10 +2394,12 @@ end
 
 --misc tab
 do
+	local FakelagFolder = Instance.new('Folder',workspace)
 
 	local misc1 = misc:MSector("misc", "Right")
 	local misc2 = misc:MSector("misc2", "Right")
 	local miscsector = misc2:Tab("misc")
+	--local fakelag = misc2:Tab('fake lag')
 	local instants = misc2:Tab('instants')
 	
 	local player = misc1:Tab("player")
@@ -2501,6 +2407,126 @@ do
 	miscsector:Element("Button", "No Identity fling", nil, function()
 		invisfling()
 	end)
+local fakeRagdoll = Signal.new()			
+local randomtable = {}
+for i,v in pairs(getgc(true)) do
+    if typeof(v) == 'table' then
+
+        if rawget(v,'setupMotors') then
+            oldsetup = v.setupMotors
+			oldstate = v.setupState
+			fake = function(...)
+                return
+            end
+			fakeRagdoll:Connect(function(b)
+				if b == false then
+					v.setupMotors = oldsetup
+					v.setupState = oldstate
+				else
+					v.setupMotors = fake
+					v.setupState = fake					
+				end
+			end)
+        end
+		--[[if rawget(v,'CROUCHED_HIP_HEIGHT_ADDITION') then
+			crouchedhip = v.CROUCHED_HIP_HEIGHT_ADDITION
+		end			
+		if rawget(v,'toggleCrouching') then
+			oldtoggle = v.toggleCrouching
+			v.toggleCrouching(false)
+			fake = function(sex)
+				if sex == true then
+					game.Players.LocalPlayer.Character.Humanoid.HipHeight = crouchedhip
+				else
+					game.Players.LocalPlayer.Character.Humanoid.HipHeight = 0
+				end
+				return oldtoggle(sex)
+			end
+			fakeRagdoll:Connect(function(b)
+				if b == false then
+					v.SLIDE_CLIENT_IS_SLIDING_CHANGE = oldtoggle
+				else
+					v.SLIDE_CLIENT_IS_SLIDING_CHANGE = fake			
+				end
+			end)
+		end
+		if rawget(v,'SLIDE_CLIENT_IS_SLIDING_CHANGE') then
+			oldslide = v.SLIDE_CLIENT_IS_SLIDING_CHANGE
+			fake = function(table1,table2)
+				randomtable = oldslide(table1,table2)
+				if randomtable.isSliding == true then
+					LocalPlayer.Character.Humanoid.HipHeight = -1.4
+				else
+					LocalPlayer.Character.Humanoid.HipHeight = 0
+				end
+				return randomtable
+			end
+			fakeRagdoll:Connect(function(b)
+				if b == false then
+					v.SLIDE_CLIENT_IS_SLIDING_CHANGE = oldslide
+				else
+					v.SLIDE_CLIENT_IS_SLIDING_CHANGE = fake			
+				end
+			end)			
+		end	--]]
+	end
+end
+
+miscsector:Element('Button','Fake ragdoll (cant swing)',{},function()
+	if not LocalPlayer.Character then return end
+	if not LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid') then return end
+	for i,v in pairs(getgc(true)) do
+		if typeof(v) == 'table' then
+			if rawget(v,'isStunned')  then
+				v.isStunned = false
+			end
+			if rawget(v,'isFrozen')  then
+				v.isFrozen = false
+			end
+			if rawget(v,'isRagdolled')  then
+				v.isRagdolled = false
+			end
+		end
+	end	
+	fakeRagdoll:Fire(true)
+	LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)
+	task.wait(1)
+
+	for i,v in pairs(game.Players.LocalPlayer.Character.Torso:GetChildren()) do
+		if v:IsA('Motor6D') then
+			v.Enabled = true
+		end
+	end
+	LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Running, true)
+
+	local StarterGui = game:GetService("StarterGui")
+	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
+
+	LocalPlayer.Character.Humanoid.AutoRotate = true
+	local Noclip
+	Noclip = RunService.Stepped:Connect(function()
+		game.Players.LocalPlayer.Character.Humanoid.AutoRotate = true
+		game.Players.LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)    
+		if LocalPlayer.Character then
+			for i,v in pairs(game.Players.LocalPlayer.Character.Torso:GetChildren()) do
+				if v:IsA('Motor6D') then
+					v.Enabled = true
+				end
+			end	
+			for i,v in pairs(LocalPlayer.Character:GetChildren()) do
+				if v:IsA('Part') then
+					v.CanCollide = false
+				end
+			end
+		end
+	end)
+	game.Players.LocalPlayer.CharacterAdded:Connect(function(chr)
+		fakeRagdoll:Fire(false)
+		Noclip:Disconnect()
+		chr:WaitForChild('Humanoid').AutoRotate = true
+		chr.Humanoid:WaitForChild('RagdollRemoteEvent'):FireServer(false)    
+	end)		
+end)	
 	miscsector:Element('Button','Teleport up',{},function()
 		if LocalPlayer.Character and (LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool') or LocalPlayer.Character:FindFirstChildWhichIsA('Tool')) and LocalPlayer.Character:FindFirstChild('HumanoidRootPart') then
 			--LocalPlayer.Character.HumanoidRootPart.Anchored = true
@@ -2527,6 +2553,97 @@ do
 		end
 	end)	
 	
+	--[[local freezeLoop = nil
+	fakelag:Element('ToggleKeybind','Freeze',nil,function(tbl)
+		pcall(function()
+			freezeLoop:Disconnect()
+		end)
+		if tbl.Toggle and tbl.Active then
+			if LocalPlayer.Character then
+				for i,v in pairs(FakelagFolder:GetChildren()) do
+					v:Destroy()
+				end
+				if values.misc.misc2['fake lag']['Visualize lag'].Toggle then
+					for _,hitbox in pairs(LocalPlayer.Character:GetChildren()) do
+						if hitbox:IsA('BasePart') and hitbox.Name ~= 'HumanoidRootPart' then
+							local Part = hitbox:Clone()
+							Part.Parent = FakelagFolder
+							Part.CFrame = hitbox.CFrame
+							Part.Color = values.misc.misc2['fake lag']['Visualize lag'].Color
+							Part.CanCollide = false
+							Part.Anchored = true
+							Part.Material = 'ForceField'
+						end
+					end				
+				end
+				freezeLoop = game.RunService.Stepped:Connect(function()
+					pcall(function()
+						game.Players.LocalPlayer.Character.Torso.Anchored = false
+						task.wait()
+						game.Players.LocalPlayer.Character.Torso.Anchored = true
+					end)
+				end)
+			end
+		end
+	end)
+	fakelag:Element('ToggleColor','Visualize lag',{default = {Color = MainUIColor}},function(tbl)
+		for i,v in pairs(FakelagFolder:GetChildren()) do
+			v:Destroy()
+		end
+		if LocalPlayer.Character and tbl.Toggle then
+			for _,hitbox in pairs(LocalPlayer.Character:GetChildren()) do
+				if hitbox:IsA('BasePart') and hitbox.Name ~= 'HumanoidRootPart' then
+					local Part = hitbox:Clone()
+					Part.Parent = FakelagFolder
+					Part.CFrame = hitbox.CFrame
+					Part.Color = tbl.Color
+					Part.CanCollide = false
+					Part.Anchored = true
+					Part.Material = 'ForceField'
+				end
+			end	
+		end
+	end)
+	Spawn:Connect(function(c)
+		pcall(function()
+			freezeLoop:Disconnect()
+		end)
+		for i,v in pairs(FakelagFolder:GetChildren()) do
+			v:Destroy()
+		end
+		if values.misc.misc2['fake lag'].Freeze.Toggle and values.misc.misc2['fake lag'].Freeze.Active then
+			if values.misc.misc2['fake lag']['Visualize lag'].Toggle then
+				for _,hitbox in pairs(c:GetChildren()) do
+					if hitbox:IsA('BasePart') and hitbox.Name ~= 'HumanoidRootPart' then
+						local Part = hitbox:Clone()
+						Part.Parent = FakelagFolder
+						Part.CFrame = hitbox.CFrame
+						Part.Color = values.misc.misc2['fake lag']['Visualize lag'].Color
+						Part.CanCollide = false
+						Part.Anchored = true
+						Part.Material = 'ForceField'
+					end
+				end					
+			end
+			if freezeLoop == nil then
+				freezeLoop = game.RunService.Stepped:Connect(function()
+					pcall(function()
+						game.Players.LocalPlayer.Character.Torso.Anchored = false
+						task.wait()
+						game.Players.LocalPlayer.Character.Torso.Anchored = true
+					end)
+				end)			
+			end
+		end
+	end)
+	Died:Connect(function()
+		for i,v in pairs(FakelagFolder:GetChildren()) do
+			v:Destroy()
+		end
+		pcall(function()
+			freezeLoop:Disconnect()
+		end)
+	end)--]]
 	utility:Element("Toggle", "No Utility Damage (expect bombs)")
 	utility:Element('Toggle', 'No knockback', {}, function(tbl)
 		for i,v in pairs(getgc(true)) do
@@ -3070,68 +3187,68 @@ end
 
 
 task.spawn(function()
-local Prediction
-local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
-local UIStroke = Instance.new("UIStroke")
-local Aiming = Instance.new("TextLabel")
-local Position = Instance.new("TextLabel")
-local PredictionV = Instance.new("TextLabel")
-
---Properties:
-
-ScreenGui.Parent = game.CoreGui
-ScreenGui.Name = 'Aiming real real'
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
-Frame.Size = UDim2.new(0, 10, 0, 10)
-
-
-UICorner.CornerRadius = UDim.new(10, 10)
-UICorner.Parent = Frame
-
-Aiming.Name = "Aiming"
-Aiming.Parent = Frame
-Aiming.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Aiming.BackgroundTransparency = 1.000
-Aiming.BorderColor3 = Color3.fromRGB(27, 42, 53)
-Aiming.Position = UDim2.new(-9.5, 0, 1.99999988, 0)
-Aiming.Size = UDim2.new(0, 200, 0, 11)
-Aiming.Font = Enum.Font.SpecialElite
-Aiming.Text = "Aiming At: None"
-Aiming.TextColor3 = Color3.fromRGB(255, 255, 255)
-Aiming.TextSize = 14.000
-
-Position.Name = "Position"
-Position.Parent = Frame
-Position.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Position.BackgroundTransparency = 1.000
-Position.BorderColor3 = Color3.fromRGB(27, 42, 53)
-Position.Position = UDim2.new(-9.5, 0, 3.99999988, 0)
-Position.Size = UDim2.new(0, 200, 0, 11)
-Position.Font = Enum.Font.SpecialElite
-Position.Text = "Position: None"
-Position.TextColor3 = Color3.fromRGB(255, 255, 255)
-Position.TextSize = 14.000
-
-PredictionV.Name = "PredictionV"
-PredictionV.Parent = Frame
-PredictionV.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-PredictionV.BackgroundTransparency = 1.000
-PredictionV.BorderColor3 = Color3.fromRGB(27, 42, 53)
-PredictionV.Position = UDim2.new(-9.5, 0, 5.99999988, 0)
-PredictionV.Size = UDim2.new(0, 200, 0, 11)
-PredictionV.Font = Enum.Font.SpecialElite
-PredictionV.Text = "Prediction Value: 0.01"
-PredictionV.TextColor3 = Color3.fromRGB(255, 255, 255)
-PredictionV.TextSize = 14.000
-
-UIStroke.Thickness = 2
-UIStroke.Parent = Frame
+	local Prediction
+	local ScreenGui = Instance.new("ScreenGui")
+	local Frame = Instance.new("Frame")
+	local UICorner = Instance.new("UICorner")
+	local UIStroke = Instance.new("UIStroke")
+	local Aiming = Instance.new("TextLabel")
+	local Position = Instance.new("TextLabel")
+	local PredictionV = Instance.new("TextLabel")
+	
+	--Properties:
+	
+	ScreenGui.Parent = game.CoreGui
+	ScreenGui.Name = 'Aiming real real'
+	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	
+	Frame.Parent = ScreenGui
+	Frame.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+	Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
+	Frame.Size = UDim2.new(0, 10, 0, 10)
+	
+	
+	UICorner.CornerRadius = UDim.new(10, 10)
+	UICorner.Parent = Frame
+	
+	Aiming.Name = "Aiming"
+	Aiming.Parent = Frame
+	Aiming.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Aiming.BackgroundTransparency = 1.000
+	Aiming.BorderColor3 = Color3.fromRGB(27, 42, 53)
+	Aiming.Position = UDim2.new(-9.5, 0, 1.99999988, 0)
+	Aiming.Size = UDim2.new(0, 200, 0, 11)
+	Aiming.Font = Enum.Font.SpecialElite
+	Aiming.Text = "Aiming At: None"
+	Aiming.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Aiming.TextSize = 14.000
+	
+	Position.Name = "Position"
+	Position.Parent = Frame
+	Position.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Position.BackgroundTransparency = 1.000
+	Position.BorderColor3 = Color3.fromRGB(27, 42, 53)
+	Position.Position = UDim2.new(-9.5, 0, 3.99999988, 0)
+	Position.Size = UDim2.new(0, 200, 0, 11)
+	Position.Font = Enum.Font.SpecialElite
+	Position.Text = "Position: None"
+	Position.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Position.TextSize = 14.000
+	
+	PredictionV.Name = "PredictionV"
+	PredictionV.Parent = Frame
+	PredictionV.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	PredictionV.BackgroundTransparency = 1.000
+	PredictionV.BorderColor3 = Color3.fromRGB(27, 42, 53)
+	PredictionV.Position = UDim2.new(-9.5, 0, 5.99999988, 0)
+	PredictionV.Size = UDim2.new(0, 200, 0, 11)
+	PredictionV.Font = Enum.Font.SpecialElite
+	PredictionV.Text = "Prediction Value: 0.01"
+	PredictionV.TextColor3 = Color3.fromRGB(255, 255, 255)
+	PredictionV.TextSize = 14.000
+	
+	UIStroke.Thickness = 2
+	UIStroke.Parent = Frame
 	task.spawn(function()
 		RunService.Heartbeat:Connect(function()
 			if values.rage['Ranged sector']['silent aim'].Toggle and values.rage['Ranged sector']['Silent aim info gui'].Toggle then
@@ -3145,18 +3262,6 @@ UIStroke.Parent = Frame
 				end			
 			end
 			PredictionV.Text = "Prediction Value: "..values.rage['Ranged sector']['Prediction val'].Slider
-			--[[if not values.rage['Ranged sector']['silent aim'].Toggle then
-				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
-			elseif getClosestToMouse() == nil then
-				Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
-			else
-				pcall(function()
-					local Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
-					if Tool:FindFirstChild("ClientAmmo") == nil then
-						Frame.Position = UDim2.new(0.100260414, 0, 0.349072516, 0)
-					end				
-				end)
-			end--]]
 		end)
 	end)
 
@@ -3304,7 +3409,7 @@ UIStroke.Parent = Frame
 		end
 		if (Shot and p:IsA("MeshPart") and p:FindFirstChild("Tip") ~= nil) then
 			Arrow = p
-			Instance.new('Highlight',p).Adornee = p
+			--Instance.new('Highlight',p).Adornee = p
 			Shot = false
 			if createbullettracer then
 				createbullettracer(p)
@@ -3422,15 +3527,17 @@ UIStroke.Parent = Frame
 			if Arrow then
 				if C then
 					if (Arrow.Position - C.Character.HumanoidRootPart.Position).Magnitude <= values.rage['Ranged sector']['hit distance'].Slider then
-						if values.rage['Ranged sector'].hitchance.Slider == 100 then
-							Functions.Hit(C.Character)
-							Shot = false
-							Arrow = nil
-						else
-							if math.random(1,100) >= values.rage['Ranged sector'].hitchance.Slider then
+						if values.rage['Ranged sector']['hit type'].Dropdown == 'auto hit' then
+							if values.rage['Ranged sector'].hitchance.Slider == 100 then
 								Functions.Hit(C.Character)
 								Shot = false
-								Arrow = nil						
+								Arrow = nil
+							else
+								if math.random(1,100) >= values.rage['Ranged sector'].hitchance.Slider then
+									Functions.Hit(C.Character)
+									Shot = false
+									Arrow = nil						
+								end
 							end
 						end
 					end
@@ -3438,6 +3545,28 @@ UIStroke.Parent = Frame
 			end
 		end
 	end)
+	local oldNamecall; oldNamecall = hookmetamethod(game,'__namecall', function(self, ...) 
+		local method = tostring(getnamecallmethod()) 
+		local args = {...} 
+		if method == 'Raycast' and values.rage['Ranged sector']['hit type'].Dropdown == 'redirect' then
+			local Origin = args[1]
+			if C and (C.Character.HumanoidRootPart.Position-Origin).Magnitude <= values.rage['Ranged sector']['hit distance'].Slider then
+				args[2] = (C.Character[values.rage['Ranged sector']['body part to hit'].Dropdown].Position-Origin).Unit * 100
+				--print(Origin == Arrow.Position and 'true' or 'false',(Origin-Arrow.Position).Magnitude<=5 and 'true' or 'false',(Origin-Arrow.Position).Magnitude)
+			end
+		end
+		if self.Name == 'RangedHit' then
+			if values.rage['Ranged sector']['Always headshot'].Toggle then
+				args[2] = args[2].Parent.Head
+			elseif values.rage['Ranged sector']['silent aim'].Toggle then
+				args[2] = args[2].Parent[values.rage['Ranged sector']['body part to hit'].Dropdown]
+			end
+	
+			Shot = false
+			Arrow = nil
+		end
+		return oldNamecall(self,unpack(args))
+	end)	
 end)
 
 --visuals tab
@@ -5059,110 +5188,6 @@ end
 				else
 					L.PrefixText = customTag..L.PrefixText
 				end--]]
-				
-	--[[for i,v in pairs(getgc(true)) do
-	if typeof(v) == 'table' then
-		if rawget(v,'RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE') then
-			old = v.RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE 
-			v.RAGDOLL_CLIENT_IS_RAGDOLLED_CHANGE = function(sex1,sex2)
-			   if fakingragdol == true then
-			   sex1['isRagdolled'] = false
-			   end
-			   return old(sex1,sex2)
-			end
-		end
-		if rawget(v,'setupMotors') then
-			oldsetup = v.setupMotors
-			v.setupMotors = function(...)
-				
-				if fakingragdol == true then
-				return
-				else
-				return oldsetup(...)
-				end
-			end
-			oldstate = v.setupState
-			v.setupState = function(...)
-				if fakingragdol == true then
-				return
-				else 
-				return oldstate(...)
-				end
-			end
-		end
-	end
-end
-
-local fakingragdol = false
-miscsector:Element('Button','Fake ragdoll',{},function()
-		fakingragdol = true
-		LocalPlayer = game.Players.LocalPlayer
---game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Physics, false)
- 
-		--fakingragdol = true
-		game.Players.LocalPlayer.Character.Humanoid.RagdollRemoteEvent:FireServer(true)
-		task.wait(1)
-
-		for i,v in pairs(game.Players.LocalPlayer.Character.Torso:GetChildren()) do
-			if v:IsA('Motor6D') then
-				v.Enabled = true
-			end
-		end
-		game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Running, true)
-
-		local StarterGui = game:GetService("StarterGui")
-		StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
-
-		game.Players.LocalPlayer.Character.Humanoid.AutoRotate = true
-
-getgenv().somerandomshit = false
-for i,v in pairs(getgc(true)) do
-	if typeof(v) == 'table' then
-
-		if rawget(v,'isStunned')  then
-			task.spawn(function()
-				--while somerandomshit do task.wait()
-					v.isStunned = false
-				--end
-			end)
-		end
-		if rawget(v,'isFrozen')  then
-						task.spawn(function()
-				--while somerandomshit do task.wait()
-					v.isFrozen = false
-				--end
-				end)
-		end
-		if rawget(v,'isRagdolled')  then
-			task.spawn(function()
-				--while somerandomshit do task.wait()
-					v.isRagdolled = false
-				--end
-			end)
-		end
-
-
-	end
-end
-   loop = game.RunService.RenderStepped:Connect(function()
-		pcall(function()
-			local chr = LocalPlayer.Character
-			local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")					
-			if hum.MoveDirection.Magnitude > 0 then
-					chr:TranslateBy(hum.MoveDirection * tonumber(2))
-			end
-			chr.HumanoidRootPart.Rotation *= Vector3.new(0,90,0)
-		end)
-	end)
-		--somerandomshit = false
-		game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
-					LocalPlayer.Character.Humanoid.AutoRotate = true
-					somerandomshit = true
-					loop:Disconnect()
-		end)
-		fakingragdol = false
-	end)--]]			
-			
 RunService.Heartbeat:Connect(function()
 	if values.misc.misc.utility['Redirect throwable grenades to closest player'].Toggle then
 		ClosestC4 = GetClosest(values.misc.misc.utility.Distance.Slider,'Distance',true) or nil
@@ -5177,11 +5202,11 @@ RunService.Heartbeat:Connect(function()
 						end
 					end	
 		if Weapon ~= nil then
-			if values.rage.combat["Custom Kill Aura Distance"].Toggle and Weapon ~= nil then
-				ClosestKillaura = GetClosest(values.rage.combat["Custom Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
-			else
+			--if values.rage.combat["Custom Kill Aura Distance"].Toggle and Weapon ~= nil then
+				--ClosestKillaura = GetClosest(values.rage.combat["Custom Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
+			--else
 				ClosestKillaura = GetClosest(values.rage.combat["Kill Aura Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
-			end
+			--end
 		else
 			ClosestKillaura = nil
 		end
@@ -5197,11 +5222,6 @@ local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(sel
   if ((Method == "Kick" or Method == "kick") and self == game.Players.LocalPlayer) or self.Name == 'LogKick' then
 	  return;
   end
-	if self.Name == 'RangedHit' then
-		if values.rage['Ranged sector']['Always headshot'].Toggle then
-			args[2] = args[2].Parent.Head
-		end
-	end
 	
 	if not checkcaller() then
 		if Method == "FireServer" then
