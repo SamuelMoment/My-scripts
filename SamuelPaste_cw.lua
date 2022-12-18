@@ -4273,9 +4273,67 @@ local ESPLoop =
 
 
 
-	local world = visuals:Sector("world", "Left") 
-	--BT
+	
+	--world
 	do
+		local world = visuals:Sector("world", "Left") 
+		world:Element("Slider", "time changer", {min = 0, max = 15, default = game.Lighting.ClockTime}, function(tbl)
+			game.Lighting.ClockTime = tbl.Slider
+		end)
+		local Skyboxes = { 
+			["nebula"] = { 
+				SkyboxLf = "rbxassetid://159454286", 
+				SkyboxBk = "rbxassetid://159454299", 
+				SkyboxDn = "rbxassetid://159454296", 
+				SkyboxFt = "rbxassetid://159454293", 
+				SkyboxRt = "rbxassetid://159454300", 
+				SkyboxUp = "rbxassetid://159454288", 
+			}, 
+			["vaporwave"] = { 
+				SkyboxLf = "rbxassetid://1417494402", 
+				SkyboxBk = "rbxassetid://1417494030", 
+				SkyboxDn = "rbxassetid://1417494146", 
+				SkyboxFt = "rbxassetid://1417494253", 
+				SkyboxRt = "rbxassetid://1417494499", 
+				SkyboxUp = "rbxassetid://1417494643", 
+			}, 
+			["clouds"] = { 
+				SkyboxLf = "rbxassetid://570557620", 
+				SkyboxBk = "rbxassetid://570557514", 
+				SkyboxDn = "rbxassetid://570557775", 
+				SkyboxFt = "rbxassetid://570557559", 
+				SkyboxRt = "rbxassetid://570557672", 
+				SkyboxUp = "rbxassetid://570557727", 
+			}, 
+			["twilight"] = { 
+				SkyboxLf = "rbxassetid://264909758", 
+				SkyboxBk = "rbxassetid://264908339", 
+				SkyboxDn = "rbxassetid://264907909", 
+				SkyboxFt = "rbxassetid://264909420", 
+				SkyboxRt = "rbxassetid://264908886", 
+				SkyboxUp = "rbxassetid://264907379", 
+			}, 
+		} 		
+		local oldSkybox
+		if Lighting:FindFirstChildOfClass("Sky") then oldSkybox = Lighting:FindFirstChildOfClass("Sky"):Clone() end 
+		world:Element("Dropdown", "skybox", {options = {"none", "nebula", "vaporwave", "clouds"}}, function(tbl) 
+			local sky = tbl.Dropdown 
+			if sky ~= "none" then 
+				if Lighting:FindFirstChildOfClass("Sky") then Lighting:FindFirstChildOfClass("Sky"):Destroy() end 
+				local skybox = C.INST("Sky") 
+				skybox.SkyboxLf = Skyboxes[sky].SkyboxLf 
+				skybox.SkyboxBk = Skyboxes[sky].SkyboxBk 
+				skybox.SkyboxDn = Skyboxes[sky].SkyboxDn 
+				skybox.SkyboxFt = Skyboxes[sky].SkyboxFt 
+				skybox.SkyboxRt = Skyboxes[sky].SkyboxRt 
+				skybox.SkyboxUp = Skyboxes[sky].SkyboxUp 
+				skybox.Name = "override" 
+				skybox.Parent = Lighting 
+			else 
+				if Lighting:FindFirstChildOfClass("Sky") then Lighting:FindFirstChildOfClass("Sky"):Destroy() end 
+				if oldSkybox ~= nil then oldSkybox:Clone().Parent = Lighting end 
+			end 
+		end) 		
 		world:Element('Dropdown', 'Tracers', {options = {"normal", "lightning 1", "lightning 2", "lightning 3",'lighting 4','lightning 5','lightning 6'}})
 		world:Element("ToggleColor", "bullet tracers", {default = {Color = C.COL3RGB(255, 255, 255)}}) 
 		local Folder = C.INST("Folder")
@@ -4312,7 +4370,42 @@ local ESPLoop =
 			Beam.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, values.visuals.world["bullet tracers"].Color), ColorSequenceKeypoint.new(1, values.visuals.world["bullet tracers"].Color)}
 		end
 	end
-	---------------
+	
+	--effects
+	do
+		local effects = visuals:Sector('effects','Left')
+		effects:Element("ToggleColor", "world color", {default = {Color = C.COL3RGB(255,255,255)}}, function(val) 
+			if val.Toggle and Lighting:FindFirstChild('ColorCorrection') then 
+				Lighting.ColorCorrection.TintColor = val.Color 
+			elseif Lighting:FindFirstChild('ColorCorrection') then
+				Lighting.ColorCorrection.TintColor = C.COL3RGB(255,255,255) 
+			end 
+		end)
+		RunService.RenderStepped:Connect(function()
+			if values.visuals.effects['world color'].Toggle and Lighting:FindFirstChild('ColorCorrection') then 
+				Lighting.ColorCorrection.TintColor = values.visuals.effects['world color'].Color 
+			elseif Lighting:FindFirstChild('ColorCorrection') then
+				Lighting.ColorCorrection.TintColor = C.COL3RGB(255,255,255) 
+			end 		
+		end)
+		effects:Element('Dropdown','lighting technology',{options = {'ShadowMap','Legacy','Future'}},function(tbl) 
+			sethiddenproperty(game.Lighting,'Technology',tbl.Dropdown)
+		end)
+		effects:Element("ToggleColor", "indoor ambient", {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl) 
+			if tbl.Toggle then 
+				game.Lighting.Ambient = tbl.Color
+			else 
+				game.Lighting.Ambient = C.COL3RGB(255,255,255) 
+			end 
+		end)
+		effects:Element("ToggleColor", "outdoor ambient", {default = {Color = C.COL3RGB(255,255,255)}}, function(tbl) 
+			if tbl.Toggle then 
+				game.Lighting.OutdoorAmbient = tbl.Color
+			else 
+				game.Lighting.OutdoorAmbient = C.COL3RGB(255,255,255) 
+			end 
+		end)
+	end
 	
 	do
 	--hit rbxassetid://160432334 kill rbxassetid://2868331684 nuke rbxassetid://3237286675 
