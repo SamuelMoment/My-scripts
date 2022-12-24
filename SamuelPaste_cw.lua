@@ -455,16 +455,17 @@ local GetClosest = function(Distance,Priority,IgnoreTarget)
 			   if mag < TargetDistance and v.Character.Humanoid.Health < TargetHealth then
 				   TargetHealth = v.Character.Humanoid.Health
 				   Target = v
+				   
 				end
 			else
 				if mag < TargetDistance then
 					TargetDistance = mag
-					Target = v
+					Target = v			
 				end
 			end
-			if values.rage['Players']['Target player'].Toggle and v.Name == values.rage['Players']['Target'].Scroll and not IgnoreTarget and (v.Backpack:FindFirstChildWhichIsA('Tool') or v.Character:FindFirstChildWhichIsA('Tool')) then
-				return v
-			end
+			if values.rage['Players']['Target player'].Toggle and Target.Name == values.rage['Players']['Target'].Scroll and not IgnoreTarget and (Target.Backpack:FindFirstChildWhichIsA('Tool') or Target.Character:FindFirstChildWhichIsA('Tool')) then
+				return Target
+			end			
 		end
 	end
 	
@@ -4372,8 +4373,8 @@ local ESPLoop =
 	end
 	
 	--effects
+	local effects = visuals:Sector('effects','Right')
 	do
-		local effects = visuals:Sector('effects','Left')
 		effects:Element("ToggleColor", "world color", {default = {Color = C.COL3RGB(255,255,255)}}, function(val) 
 			if val.Toggle and Lighting:FindFirstChild('ColorCorrection') then 
 				Lighting.ColorCorrection.TintColor = val.Color 
@@ -4515,8 +4516,6 @@ local ESPLoop =
 			game:GetService("ReplicatedStorage").Shared.Assets.Sounds.NukeAlarmSound:Stop()
 		end)		
 	end
-	
-	local effects = visuals:Sector('effects','Right')
 	--Kill screen
 	do
 	
