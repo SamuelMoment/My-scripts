@@ -236,8 +236,9 @@ repeat wait() until ChinaHat ~= nil
 
 local Effects = game:GetObjects('rbxassetid://11377514627')[1]
 repeat wait() until Effects ~= nil
-	CreateHitElement(" Welcome, "..LocalPlayer.Name.."!",MainUIColor,5)
-	wait(0.5)
+
+CreateHitElement(" Welcome, "..LocalPlayer.Name.."!",MainUIColor,5)
+wait(0.5)
 	--[[CreateHitElement(" To close gui, go to misc tab and set up keybind  ",MainUIColor,5, 0, 340, 0, 30)
 	CreateHitElement(" !!!  IMPORTANT  !!!\
  Expect many bugs/lags since dev is a retard,\
@@ -262,33 +263,38 @@ local Mouse = LocalPlayer:GetMouse()
 
 ----LIBRARY END---------
 --for i,v in pairs(getgc(true)) do if type(v) == "table" and rawget(v,"AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING") then v.AIR_TO_ADD_PER_SECOND_WHILE_SWIMMING = 99999999999999999999999999999 end end 
-	getgenv().rangedvalues = {}
+local old_namecall
+old_namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+    local args = {...}
+    local method = getnamecallmethod()
+    if method == 'Kick' then return wait(9e9) end
+    if self.Name == 'BAC' then
+        args[1] = {}
+        args[1][1] = args[1]
+    end
+    return old_namecall(self,unpack(args))
+end))
+
+
+local rangedvalues = {}
 local SavedValues = {}
 for i,v in pairs(getgc(true)) do
 	if typeof(v) == 'table'  then
-		if rawget(v,"getIsBodyMoverCreatedByGame") then
-			v.getIsBodyMoverCreatedByGame = function(...)
+		if rawget(v, 'getIsBodyMoverCreatedByGame') then
+			v.getIsBodyMoverCreatedByGame = function(gg)
 				return true
 			end
-		end
-		if rawget(v, 'kick') then
-			v.kick = function() return wait(9e9) end
-		end
-		if rawget(v, 'randomDelayKick') then
-			v.randomDelayKick = function() return wait(9e9) end
+			
 		end
 		if rawget(v, 'connectCharacter') then
-			v.connectCharacter = function(gg) return wait(9e9) end
+			 v.connectCharacter = function(gg) return wait(9e9) end
 		end
-		if rawget(v,"Remote")  then
+		if rawget(v,'Remote')  then
+			for i,v in pairs(getconnections(v.Remote:GetPropertyChangedSignal('Name'))) do
+				v:Disable()
+			end
 			v.Remote.Name = v.Name
-		end
-		if rawget(v,'antiSpeed') then
-			v.antiSpeed = {}
-			v.antiBodyMover = {}
-			v.antiInfJump = {}
-			--print('sex')
-		end
+		end		
 		if rawget(v,'cancelReload') then
 			task.spawn(function()
 				SavedValues['oldReload'] = v.cancelReload
@@ -333,18 +339,11 @@ for i,v in pairs(getgc(true)) do
 				return SavedValues['oldrender'](sex1)
 			end
 		end
-		if rawget(v, 'removeRichTextTags') then
-			replaceclosure(rawget(v, 'removeRichTextTags'), function(a)
-				return a
-			end)
-		end
 		if rawget(v,'getSessionDataRoduxStoreForPlayer') then
 			SavedValues['getState'] = v.getSessionDataRoduxStoreForPlayer(game.Players.LocalPlayer)
-			
 		end
 		if rawget(v,'knockbackCharacterPartAngular') then
 			SavedValues['oldknockbackCharacterPartAngular'] = v.knockbackCharacterPartAngular
-			
 		end
 		if rawget(v,'knockbackCharacterPart') then
 			SavedValues["oldknockbackCharacterPart"] = v.knockbackCharacterPart
@@ -352,11 +351,9 @@ for i,v in pairs(getgc(true)) do
 		end
 		if rawget(v,'knockbackPartAngular') then
 			SavedValues["oldknockbackPartAngular"] = v.knockbackPartAngular
-			
 		end
 		if rawget(v,'knockbackPartForce') then
 			SavedValues["oldknockbackPartForcer"] = v.knockbackPartForce
-			
 		end
 		if rawget(v,'displayName') then
 			if v.displayName == 'C4' then
@@ -376,7 +373,7 @@ for i,v in pairs(getgc(true)) do
 	end	
 end
 
-if syn then
+--[[if syn then
 
 	local fw = require(game.ReplicatedStorage.Framework.Nevermore);
 	syn_context_set(2)
@@ -406,7 +403,7 @@ if syn then
 	   return;
 	end)
 	syn_context_set(7)
-end
+end--]]
 
 
 
@@ -1123,6 +1120,15 @@ end
 function parry()
 	game:GetService("ReplicatedStorage").Communication.Events.Parry:FireServer()
 end
+
+--NEVERMORE
+
+local nm = require(game.ReplicatedStorage.Framework.Nevermore)
+syn.set_thread_identity(2)
+local datahandle = nm('DataHandler')
+
+syn.set_thread_identity(7)
+
 do
 	local playersTab = main:Sector('Players','Left')
 	playersTab:Element('Toggle','Target player')
@@ -1209,8 +1215,9 @@ do
 	combat:Element("Dropdown", "Priority",{options = {'Distance','Health'}})
 	combat:Element("Slider", "Kill Aura Distance", {min = 0, max = 12, default = 12})
 	combat:Element("Toggle", "Teleport")	
-	combat:Element('Dropdown','Teleport type',{options = {'Behind','Stroke'}})
+	--combat:Element('Dropdown','Teleport type',{options = {'Behind','Stroke'}})
 	combat:Element("Slider", "Teleport Distance", {min = 0, max = 5, default = 5})
+	combat:Element("Slider", "Teleport Distance Y Offset", {min = 0, max = 10, default = 0})
 	--combat:Element("Toggle", "Custom Kill Aura Distance")
 	--combat:Element("Slider", "Custom Distance", {min = 0, max = 10000, default = 600})
 	
@@ -1343,72 +1350,6 @@ do
 			end)
 		end
 	end)
-	
-	--[[task.spawn(function()
-		RunService.RenderStepped:Connect(function()
-			pcall(function()
-				local Closest
-				if values.rage.combat["Custom Kill Aura Distance"].Toggle then
-					Closest = GetClosest(values.rage.combat["Custom Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil
-				end
-				if Closest ~= nil and Closest.Character and Closest.Character:FindFirstChild('HumanoidRootPart') then	
-					local Weapon
-					for i, v in pairs(LocalPlayer.Character:GetChildren()) do
-						if v:IsA("Tool") then
-							if v:FindFirstChild("Hitboxes") ~= nil then
-								Weapon = v
-							end
-						end
-					end
-
-					if not Weapon then
-					else		
-						if values.rage.combat["Custom Kill Aura Distance"].Toggle then
-							for i, v in pairs(Weapon:GetDescendants()) do
-								if v:IsA "BasePart" then
-									v.CFrame = Closest.Character.Head.CFrame
-									v.Velocity =  Vector3.new(1000000000,100000000000,100000000000)
-									v.CanCollide = false
-									v.Massless = true												
-															--v.Anchored = true
-									if v:FindFirstChild "BodyVelocity" == nil then
-										local boopyve = Instance.new("BodyVelocity")
-										boopyve.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-										boopyve.P = math.huge
-										boopyve.Velocity =  Vector3.new(1000000000,100000000000,100000000000)
-										boopyve.Parent = v
-									end
-								end
-								if v:IsA("Motor6D") then
-									if v.Parent.Name == "Motor6Ds" then
-											v:Destroy()
-									end
-								end
-							end
-						end
-					end
-					elseif Closest == nil then
-						local Weapon
-						for i, v in pairs(LocalPlayer.Character:GetChildren()) do
-							if v:IsA("Tool") then
-								if v:FindFirstChild("Hitboxes") ~= nil then
-									Weapon = v
-								end
-							end
-						end
-						if Weapon ~= nil then
-							for i, v in pairs(Weapon:GetDescendants()) do
-								if v:IsA "BasePart" then
-									v.CFrame = LocalPlayer.Character.Head.CFrame
-									v.Velocity = Vector3.new(1000000000,100000000000,100000000000)
-									v.CanCollide = false
-								end
-							end
-						end
-					end
-			end)
-		end)
-	end)--]]
 	RunService.RenderStepped:Connect(function()
 		if not values.rage.combat["Kill Aura"].Toggle then return end 
 		Closest = GetClosest(values.rage.combat["Kill Aura Distance"].Slider,values.rage.combat["Priority"].Dropdown) or nil		
@@ -1422,13 +1363,9 @@ do
 		end		
 		if not (Closest and Weapon) then return end
 		if values.rage.combat["Teleport"].Toggle then
-			if values.rage.combat['Teleport type'].Dropdown == 'Behind' then
 				LocalPlayer.Character.HumanoidRootPart.CFrame =
 					Closest.Character.HumanoidRootPart.CFrame *
-					CFrame.new(0, 0, values.rage.combat["Teleport Distance"].Slider)
-			else
-				LocalPlayer.Character.HumanoidRootPart.CFrame = Closest.Character.HumanoidRootPart.CFrame * CFrame.new(math.random(-values.rage.combat["Teleport Distance"].Slider,values.rage.combat["Teleport Distance"].Slider),math.random(-values.rage.combat["Teleport Distance"].Slider,values.rage.combat["Teleport Distance"].Slider),math.random(-values.rage.combat["Teleport Distance"].Slider,values.rage.combat["Teleport Distance"].Slider)) 
-			end
+					CFrame.new(0, values.rage.combat["Teleport Distance Y Offset"].Slider, values.rage.combat["Teleport Distance"].Slider)
 		end	
 	end)
 task.spawn(
@@ -1463,17 +1400,17 @@ task.spawn(
 											events.MeleeSwing:FireServer(unpack(args1))
 											wait(.1)
 
-											local args = {
-												[1] = Weapon,
-												[2] = Closest.Character.Head,
-												[3] = Weapon.Hitboxes.Hitbox,
-												[4] = Closest.Character.Head.Position,
-												[5] = Closest.Character.Head.CFrame:ToObjectSpace(CFrame.new(Closest.Character.Head.Position)),
-												[6] = Closest.Character.HumanoidRootPart.CFrame.LookVector,
-												[7] = Vector3.new(1,1,1),
-												[8] = Vector3.new(0,1,0)
-											}
-											if Closest.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
+				local args = {
+					[1] = Weapon,
+					[2] = Closest.Character.Head,
+					[3] = Weapon.Hitboxes.Hitbox,
+					[4] = Closest.Character.Head.Position,
+					[5] = Closest.Character.Head.CFrame:ToObjectSpace(
+						CFrame.new(Closest.Character.Head.Position)
+					),
+					[6] = Closest.Character.Head.Position,
+				}
+											if datahandle.getSessionDataRoduxStoreForPlayer(Closest):getState().parry.isParrying == false then
 												events.MeleeDamage:FireServer(unpack(args))
 
 												events.MeleeDamage:FireServer(unpack(args))
@@ -2847,13 +2784,13 @@ end)
 	player:Element("Toggle", "Infinite Jump")
 	player:Element("Toggle", "No Jump Cooldown")
 	player:Element("Toggle", "Jump Whenever")
-	player:Element('Toggle', 'Prevent parry')
-	player:Element('Dropdown','Prevent parry type',{options = {'Skip damage','Unequip'}})
+	--[[player:Element('Toggle', 'Prevent parry')
+	player:Element('Dropdown','Prevent parry type',{options = {'Skip damage','Unequip'}})--]]
 	
 	miscsector:Element("Toggle", "Kill Feed Spam")
 	miscsector:Element("Toggle", "Free Emotes") 
 	miscsector:Element("Toggle", "Hide Name")
-	miscsector:Element('Toggle', 'Horizontal body',{}, function(tbl)
+	--[[miscsector:Element('Toggle', 'Horizontal body',{}, function(tbl)
 		task.spawn(function()
 			while wait() do
 				for i = 1,15 do
@@ -2874,7 +2811,7 @@ end)
 				if not tbl.Toggle then break end
 			end
 		end)
-	end)
+	end)--]]
 	player:Element("Toggle", "Walk Speed")
 	player:Element("Slider", "Speed", {min = 0, max = 75, default = 75})
 	player:Element("Toggle", "Jump Power")
@@ -5310,10 +5247,6 @@ end)
 local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(self, ...)
   local args = {...}
   local Method = getnamecallmethod();
- 
-  if ((Method == "Kick" or Method == "kick") and self == game.Players.LocalPlayer) or self.Name == 'LogKick' then
-	  return;
-  end
 	
 	if not checkcaller() then
 		if Method == "FireServer" then
@@ -5360,13 +5293,13 @@ local oldnamecall; oldnamecall = hookmetamethod(game, "__namecall", function(sel
 		end
 		return oldnamecall(self, unpack(args))
 	end
-	if self.Name == 'MeleeDamage' and values.misc.misc.player['Prevent parry'].Toggle and (args[2].Parent:FindFirstChild("SemiTransparentShield").Transparency == 0 or args[2].Parent:FindFirstChild("SemiTransparentShield"):FindFirstChildWhichIsA("Sound")) then
+	--[[if self.Name == 'MeleeDamage' and values.misc.misc.player['Prevent parry'].Toggle and (args[2].Parent:FindFirstChild("SemiTransparentShield").Transparency == 0 or args[2].Parent:FindFirstChild("SemiTransparentShield"):FindFirstChildWhichIsA("Sound")) then
 		if values.misc.misc.player['Prevent parry type'].Dropdown == 'Skip damage' then
 			return
 		else
 			args[1].Parent = LocalPlayer.Backpack
 		end
-	end
+	end--]]
   return oldnamecall(self, unpack(args))
 end)
 
