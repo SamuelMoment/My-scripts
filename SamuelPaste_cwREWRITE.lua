@@ -13,7 +13,7 @@ function removewithoutdupes(tab, thethingyouneedtoremove) -- my own code :sungla
 		table.remove(tab, table.find(tab, thethingyouneedtoremove))
 	end
 end	
-
+--[[
 local Vec2 = Vector2.new
 local Vec3 = Vector3.new
 local CF = CFrame.new
@@ -42,53 +42,18 @@ local INSERT = table.insert
 local TBLFIND = table.find 
 local TBLREMOVE = table.remove
 local TBLSORT = table.sort 
+--]]
 
-function findtextrandom(text)
-	if text:find(' @r ') then 
-		local b = text:split(' @r ')
-		return b[math.random(#b)]
-	else 
-		return text
-	end
-end
+local library,Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/library.lua"))()
+--[[
+since new library
 
-function textboxtriggers(text)
-	local triggers = {
-		['@user'] = game.Players.LocalPlayer.Name,
-		['@ping'] = string.split(game.Stats.PerformanceStats.Ping:GetValue(), '.')[1],
-		['@time'] = os.date('%H:%M:%S'),
-	}
 
-	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild('Humanoid') then 
-		triggers['@health'] = game.Players.LocalPlayer.Character.Humanoid.Health
-	end
 
-	for a,b in next, triggers do 
-		text = GSUB(text, a, b)
-	end
 
-	return findtextrandom(text)
-end
+--]]
 
-local cfglocation = "SamuelPaste_cw/cfgs/"
-makefolder('SamuelPaste_cw')
-makefolder('SamuelPaste_cw/cfgs')
 
-local loopkillplr = {}
-for i,v in pairs(game.Players:GetPlayers()) do
-	if v == game.Players.LocalPlayer then continue end
-	table.insert(loopkillplr,v.Name)
-end
-
-if not isfile('SamuelPaste_cw/customkillsay.txt') then
-	writefile('SamuelPaste_cw/customkillsay.txt', "message1\
-message2\
-message3"
-)
-end
-
-local library,Signal,ConfigLoad,ConfigLoad1,ConfigUpdateCfgList,ConfigUpdateCfgList2,CreateHitElement = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/library.lua"))()
-library.setcfglocation(cfglocation)
 
 local Spawn = Signal.new()
 local Died = Signal.new()
@@ -113,8 +78,8 @@ repeat wait() until Effects ~= nil
 
 repeat wait() until game:IsLoaded()
 
-CreateHitElement(" Welcome, "..game.Players.LocalPlayer.Name.."!",MainUIColor,5)
-wait(0.5)
+--CreateHitElement(" Welcome, "..game.Players.LocalPlayer.Name.."!",MainUIColor,5)
+--wait(0.5)
 
 local Players = game:GetService("Players") 
 local LocalPlayer = Players.LocalPlayer 
@@ -124,20 +89,26 @@ local RunService = game.RunService
 local Lighting = game.Lighting
 local Camera = workspace.CurrentCamera
 local Mouse = LocalPlayer:GetMouse()
-local mouse = Mouse
 
 local modules = {}
 local events = game:GetService("ReplicatedStorage").Communication.Events
 local functions = game:GetService("ReplicatedStorage").Communication.Functions
 
+makefolder('SamuelPaste')
 --[[ MENU SETUP ]]--
-local gui = library.New("SamuelPaste")
-local rage = gui.Tab('rage')
-local legit = gui.Tab("legit")
-local misc = gui.Tab('misc')
-local visuals = gui.Tab('visuals')
-local skins = gui.Tab('skins')
-local other = gui.Tab("other")
+local main = library:Load{
+    Name = "SamuelPaste",
+    SizeX = 600,
+    SizeY = 650,
+    Theme = "Midnight",
+    Extension = "cfg", -- config file extension
+    Folder = 'SamuelPaste/cfgs' -- config folder name
+}
+local rage 	  = main:Tab('rage')
+local legit   = main:Tab("legit")
+local misc 	  = main:Tab('misc')
+local visuals = main:Tab('visuals')
+local skins   = main:Tab('skins')
 
 --[[FUNCTIONS]]--
 do
@@ -201,7 +172,7 @@ do
 			if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") then
 				local root, visible = workspace.CurrentCamera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
 				if visible then
-					local distance = (Vector2.new(mouse.X, mouse.Y) - Vector2.new(root.X, root.Y)).Magnitude
+					local distance = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(root.X, root.Y)).Magnitude
 
 					if distance < nearestDistance then
 						nearestDistance = distance
@@ -308,24 +279,64 @@ do
 	--[[ TARGET INFO ]]--
 	
 	--[[ KILL AURA ]]--
-	local kaura = rage:Sector('Killaura','Left')
-	kaura:Element('Toggle','Enabled')
-	kaura:Element('Dropdown','Priority',{options={'distance','health'}})
-	kaura:Element('Slider','Distance',{min = 1,max = 13,default = 13})
-	--[[ TELEPORT BEHIND ]]--
-	kaura:Element('Toggle','Teleport behind')
-	kaura:Element('Slider','Teleport distance',{min = 1,max = 10,default = 5})
-	kaura:Element('Slider','Teleport distance Y',{min = 0,max = 10,default = 1})
+	local kaura = rage:Section{
+		Name='Killaura',
+		Side='Left',
+	}
+	kaura:Toggle{
+		Name='Enabled',
+		Flag='KillauraEnabled',
+	}
+	
+	kaura:Dropdown{
+		Name = 'Priority',
+		Content = {
+			'Health',
+			'Distance',
+		},
+		Flag = 'KillauraPriority'
+	}
+	
+	kaura:Slider{
+		Name = 'Distance',
+		Min = 1,
+		Max = 13,
+		Default = 13,
+		Flag = 'KillauraDistance'
+	}
+	----------------------------------------------------------------------------
+	kaura:Separator('Teleport Behind')
+	----------------------------------------------------------------------------
+	kaura:Toggle{
+		Name = 'Enabled',
+		Flag = 'KillauraBehind'
+	}
+	
+	kaura:Slider{
+		Name = 'Distance',
+		Min = 1,
+		Max = 10,
+		Default = 5,
+		Flag = 'KillauraBehindDistance'
+	}
+	
+	kaura:Slider{
+		Name = 'Distance',
+		Min = 1,
+		Max = 10,
+		Default = 1,
+		Flag = 'KillauraBehindDistanceY'
+	}
 	----------------------------------------------------------------------------
 	do
 		local executing = false
 		local CurrentClosest
 		RunService.Stepped:Connect(function()
-			if not values.rage.Killaura.Enabled.Toggle then return end
-			local Closest = GetClosests(values.rage.Killaura.Distance.Slider)
+			if not library.flags['KillauraEnabled'] then return end
+			local Closest = GetClosests(library.flags['KillauraDistance'])
 			
 			if #Closest ~= 0 and executing == false then
-				if values.rage.Killaura.Priority.Dropdown == 'health' then
+				if library.flags['KillauraPriority'] == 'Health' then
 					table.sort(Closest,function(a,b)
 						return a[1].Character.Health < b[1].Character.Health
 					end)
@@ -379,8 +390,8 @@ do
 		RunService.Stepped:Connect(function()
 			pcall(function()
 				if CurrentClosest and IsAlive(CurrentClosest) then
-					if values.rage.Killaura['Teleport behind'].Toggle then
-						LocalPlayer.Character.HumanoidRootPart.CFrame = CurrentClosest.Character.Torso.CFrame * CFrame.new(0,values.rage.Killaura['Teleport distance Y'].Slider,values.rage.Killaura['Teleport distance'].Slider)
+					if library.flags['KillauraBehind'] then
+						LocalPlayer.Character.HumanoidRootPart.CFrame = CurrentClosest.Character.Torso.CFrame * CFrame.new(0,library.flags['KillauraBehindDistanceY'],library.flags['KillauraBehindDistance'])
 					end		
 				end
 			end)
@@ -388,38 +399,61 @@ do
 	end
 	----------------------------------------------------------------------------
 	--[[ SILENT AIM ]]--
-	local sa = rage:Sector('Silent Aim','Right')
-	sa:Element('Toggle','Enabled')
-	sa:Element('Slider','Distance',{min = 1,max = 20,default = 20})
-	sa:Element('Slider','FOV',{min = 1,max = 420,default = 120})
-	sa:Element('ToggleTrans', 'Draw FOV', {default = {Color = COL3RGB(255,255,255), Transparency = 0}})
-	sa:Element('Toggle', 'Filled FOV')
-	sa:Element('Slider', 'FOV Thickness', {min = 1, max = 10, default = 1})
+	local sa = rage:Section{Name='Silent Aim',Side='Right'}
+	sa:Toggle{
+		Name = 'Enabled',
+		Flag = 'RageSilentAim'
+	}
+	
+	sa:Slider{
+		Name = 'FOV',
+		Min = 1,
+		Max = 420,
+		Default = 120,
+		Flag = 'RageFOV'
+	}
+	
+	sa:Toggle{
+		Name = 'Draw FOV',
+		Flag = 'RageFOVDraw'
+	}:ColorPicker{
+		Default = Color3.fromRGB(255,255,255),
+		DefaultAlpha = 0,
+		Flag = 'RageFOVDrawColor'
+	}
+	
+	sa:Toggle{
+		Name =  'Filled FOV',
+		Flag = 'RageFOVDrawFilled'
+	}	
+	
+	sa:Slider{
+		Name = 'FOV',
+		Min = 1,
+		Max = 10,
+		Default = 1,
+		Flag = 'RageFOVDrawThickness'
+	}
 	task.spawn(function()
 		local Fov = Drawing.new("Circle") 
 		Fov.Filled = true 
-		Fov.Color = COL3RGB(15,15,15) 
+		Fov.Color = Color3.fromRGB(15,15,15) 
 		Fov.Transparency = 0.5 
-		Fov.Position = Vec2(Mouse.X, Mouse.Y + 36) 
+		Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36) 
 		Fov.Radius = 120
 		RunService.Heartbeat:Connect(function()
-		
-			--pcall(function()
-				Fov.Visible = values.rage['Silent Aim']['Draw FOV'].Toggle
+			Fov.Visible = library.flags['RageFOVDraw']
 
-				Fov.Transparency = 1-values.rage['Silent Aim']['Draw FOV'].Transparency
+			Fov.Transparency = 1-library.flags['RageFOVDrawColor'].A
 			
-				Fov.Color =  values.rage['Silent Aim']['Draw FOV'].Color
-				Fov.Position = Vec2(Mouse.X, Mouse.Y + 36)
-				Fov.Radius = values.rage['Silent Aim']['FOV'].Slider
-				Fov.Thickness = values.rage['Silent Aim']['FOV Thickness'].Slider
-				Fov.Filled = values.rage['Silent Aim']['Filled FOV'].Toggle
-			--end)		
-			
+			Fov.Color =  library.flags['RageFOVDrawColor']
+			Fov.Position = Vec2(Mouse.X, Mouse.Y + 36)
+			Fov.Radius = library.flags['RageFOV']
+			Fov.Thickness = library.flags['RageFOVDrawThickness']
+			Fov.Filled = library.flags['RageFOVDrawFilled']
 		end)
 	end)
-	sa:Element('ToggleTrans', 'Highlight target')
-	sa:Element('ToggleTrans', 'Outline highlight target')	
+	--sa:ToggleTrans', 'Highlight target')	
 	
 	task.spawn(function()
 		local blacklist = {
@@ -433,7 +467,7 @@ do
 		local old=modules['RangedWeaponHandler'].calculateFireDirection
 		local closest
 		modules['RangedWeaponHandler'].calculateFireDirection=function(...)
-			closest = getClosestToMouse(values.rage['Silent Aim'].FOV.Slider)
+			closest = getClosestToMouse(library.flags['RageFOV'])
 			if closest ~= nil then
 				if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') and LocalPlayer.Character:FindFirstChildWhichIsA('Tool'):FindFirstChild('ClientAmmo') then
 					local tool = LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
@@ -448,10 +482,10 @@ do
 		local oldNamecall; oldNamecall = hookmetamethod(game,'__namecall', function(self, ...) 
 			local method = tostring(getnamecallmethod()) 
 			local args = {...} 
-			if method == 'Raycast' and values.rage['Silent Aim'].Enabled.Toggle then
+			if method == 'Raycast' and library.flags['RageSilentAim'] then
 				local a = getinfo(4)
 				if closest and closest.Character ~= nil and a and not table.find(blacklist,a.name) then
-					if (closest.Character.Head.Position-args[1]).Magnitude <= values.rage['Silent Aim'].FOV.Slider then
+					if (closest.Character.Head.Position-args[1]).Magnitude <= 15 then
 						args[2] = (closest.Character.Head.Position-args[1]).Unit * 100
 					end
 				end
@@ -461,135 +495,63 @@ do
 	end)
 end
 
---[[ CONFIG SHIT ]]--
-do
-	local allcfgs = {} 
-	for _,cfg in pairs(listfiles(cfglocation)) do 
-		local cfgname = GSUB(cfg, cfglocation, "") 
-		INSERT(allcfgs, cfgname) 
-	end
-	local configs = misc:Sector("configs", "Left") 
-	configs:Element("TextBox", "config", {placeholder = "config name"}) -- values.misc.configs.config.Text
-	configs:Element("Button", "save new cfg", {}, function() 
-		if values.misc.configs.config.Text ~= "" then 
-			library:SaveConfig(values.misc.configs.config.Text) 
-			insertwithoutdupes(allcfgs, ""..values.misc.configs.config.Text..".txt")
-		end
-		ConfigUpdateCfgList2:Fire()
-		ConfigUpdateCfgList:Fire()
-	end) 
-	configs:Element("Button", "load", {}, function() 
-		ConfigLoad:Fire(values.misc["configs"].config.Text)
-	end)
-	configs:Element("cfgtype", "cfgs", {options = allcfgs, Amount = 5})
-	configs:Element("Button", "load from list", {}, function() 
-		ConfigLoad1:Fire(values.misc.configs.cfgs.Scroll)
-	end)
-	configs:Element("Button", "Update cfg in list", {}, function()
-		library:SaveConfig1(values.misc["configs"].cfgs.Scroll)
-	end)
-	configs:Element("Button", "Refresh cfg list", {}, function()
-		table.clear(allcfgs)
-		
-		for _,cfg in pairs(listfiles('SamuelPaste_cw/cfgs')) do 
-			local cfgname = GSUB(cfg, cfglocation, "") 
-			INSERT(allcfgs, cfgname) 
-		end
-		ConfigUpdateCfgList2:Fire()
-		ConfigUpdateCfgList:Fire()
-	end)
-
-	configs:Element("Toggle", "keybind list", nil, function(tbl) 
-		library:SetKeybindVisible(tbl.Toggle) 
-	end) 
-
-
-	local addons = misc:Sector("addons", "Left") 
-	addons:Element('ToggleColor', 'Menu Accent', {default = {Color = MainUIColor}}, function(tbl)
-		if tbl.Toggle then
-			oldColor = MainUIColor
-			getgenv().MainUIColor = tbl.Color
-			game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
-			for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
-				if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
-					v.BackgroundColor3 = MainUIColor
-				elseif v:IsA('ScrollingFrame') and v.Parent.Name == 'Scroll' then
-					v.ScrollBarImageColor3 = MainUIColor
-				elseif v:IsA('UIGradient') and v.Name ~= 'HueFrameGradient' then
-					v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, COL3RGB(75, 92, 112))}
-				elseif v:IsA('TextLabel') and v.TextColor3 == oldColor and (v.Name ~= 'CheckerINeed' and v.Name ~= 'SectionText') then
-					v.TextColor3 = MainUIColor
-				end
-			end
-		  
-			for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
-				if v:IsA("TextButton") then
-					v.Gard.BackgroundColor3 = MainUIColor
-				end
-			end	
-			for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
-				if v:IsA("Frame") then
-					v.Grad.BackgroundColor3 = MainUIColor
-				end
-			end
-		else
-			oldColor = MainUIColor
-			getgenv().MainUIColor = Color3.fromRGB(255,20,147)
-			game:GetService("CoreGui").KeybindList.Frame.Grad.BackgroundColor3 = MainUIColor
-			for i,v in pairs (game:GetService('CoreGui')['electric boogalo'].Menu.Tabs:GetDescendants()) do
-				if v:IsA("Frame") and v.BackgroundColor3 == oldColor and v.Name ~= 'ColorDrag' then
-					v.BackgroundColor3 = MainUIColor
-				elseif v:IsA('ScrollingFrame') and v.Parent.Name == 'Scroll' then
-					v.ScrollBarImageColor3 = MainUIColor
-				elseif v:IsA('UIGradient') and v.Name ~= 'HueFrameGradient' then
-					v.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, MainUIColor), ColorSequenceKeypoint.new(1.00, COL3RGB(75, 92, 112))}
-				elseif v:IsA('TextLabel') and v.TextColor3 == oldColor and (v.Name ~= 'CheckerINeed' and v.Name ~= 'SectionText') then
-					v.TextColor3 = MainUIColor
-				elseif v:IsA('Frame') and v.Name == 'Toggle' then
-					v.BackgroundColor3 = MainUIColor
-				end
-			end
-		  
-			for i,v in pairs (game:GetService("CoreGui")["electric boogalo"].Menu.Holder.TabButtons:GetChildren()) do
-				if v:IsA("TextButton") then
-					v.Gard.BackgroundColor3 = MainUIColor
-				end
-			end	
-			for i,v in pairs (game:GetService("CoreGui")["MX_ONHIT"].OnHitFrame:GetChildren()) do
-				if v:IsA("Frame") then
-					v.Grad.BackgroundColor3 = MainUIColor
-				end
-			end
-		end
-	end)
-end
-
 --[[ MISC ]]--
 do
-	local misc2 = misc:Sector('Character Exploits','Right') -- skidded sort from pjhook prem
-	misc2:Element('Toggle','No Jump Cooldown')
-	misc2:Element('Toggle','No Dash Cooldown')
-	misc2:Element('Toggle','No Fall Damage')
+	local misc2 = misc:Section{Name='Character Exploits',Side='Right'} -- skidded sort from pjhook prem
+	misc2:Toggle{
+		Name = 'No Jump Cooldown',
+		Flag = 'NJC'
+	}
+	misc2:Toggle{
+		Name = 'No Dash Cooldown',
+		Flag = 'NDC'
+	}
+	misc2:Toggle{
+		Name = 'No Fall Damage',
+		Flag = 'NFD'
+	}
+	misc2:Toggle{
+		Name = 'Infinite Stamina/Air',
+		Flag = 'InfStamina'
+	}
+	misc2:Toggle{
+		Name = 'Infinite Jump',
+		Flag = 'InfJump'
+	}
 	
-	misc2:Element('Toggle','Infinite Stamina/Air')
-	misc2:Element('Toggle','Infinite Jump')
-	
-	misc2:Element('ToggleKeybind','Fly',{},function(tbl)
-		if LocalPlayer.Character then
-			GetState(LocalPlayer).fly.isFlying = tbl.Toggle and tbl.Active
-			if tbl.Toggle and tbl.Active then
-				getupvalue(modules['FlyHandlerClient']._startModule,2)(LocalPlayer.Character)
-			elseif LocalPlayer.Character:FindFirstChild('HumanoidRootPart') and LocalPlayer.Character:FindFirstChild('HumanoidRootPart'):FindFirstChild('LinearVelocity') then
-				LocalPlayer.Character:FindFirstChild('HumanoidRootPart'):FindFirstChild('LinearVelocity'):Destroy()
-			end
+	misc2:Toggle{
+		Name = 'Fly',
+		Flag = 'Fly'
+	}:Keybind{
+		Blacklist = {Enum.UserInputType.MouseButton1},
+		Flag = 'FlyKey',
+		Mode = 'Toggle',
+		Callback = function(key,from)
+			if from then return end
+			if LocalPlayer.Character then
+				GetState(LocalPlayer).fly.isFlying = tbl.Toggle and tbl.Active
+				if library.flags['Fly'] then
+					getupvalue(modules['FlyHandlerClient']._startModule,2)(LocalPlayer.Character)
+				elseif LocalPlayer.Character:FindFirstChild('HumanoidRootPart') and LocalPlayer.Character:FindFirstChild('HumanoidRootPart'):FindFirstChild('LinearVelocity') then
+					LocalPlayer.Character:FindFirstChild('HumanoidRootPart'):FindFirstChild('LinearVelocity'):Destroy()
+				end
+			end			
 		end
-	end)
-	misc2:Element('ToggleKeybind','No Clip')
+	}
+
+	misc2:Toggle{
+		Name = 'No Clip',
+		Flag = 'Noclip'
+	}:Keybind{
+		Blacklist = {Enum.UserInputType.MouseButton1},
+		Flag = 'NoclipKey',
+		Mode = 'Toggle',
+	}
 	--[[ SHIT THAT ISNT HOOK BUT IDK HOW TO CALL LMAO ]]--
 	UserInputService.InputBegan:Connect(function(k,j)
 		if j then return end
 		if k.KeyCode ==  Enum.KeyCode.Space then
-			if values.misc['Character Exploits']["Infinite Jump"].Toggle then
+			if library.flags['InfJump'] then
 				pcall(function()
 					LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 				end)
@@ -601,6 +563,262 @@ do
 	-------------------STAMINA-------------------
 	local old = modules['Stamina'].getRealNewStaminaValue
 	modules['Stamina'].getRealNewStaminaValue = function(...)
-		return values.misc['Character Exploits']['Infinite Stamina/Air'].Toggle and 150 or old(...)
+		return library.flags['InfStamina'] and 150 or old(...)
 	end
+end
+
+--[[ CONFIGURTAION ]]--
+do
+	--library:SaveConfig("config", true) -- universal config
+	--library:SaveConfig("config") -- game specific config
+	--library:DeleteConfig("config", true) -- universal config
+	--library:DeleteConfig("config") -- game specific config
+	--library:GetConfigs(true) -- return universal and game specific configs (table)
+	--library:GetConfigs() -- return game specific configs (table)
+	--library:LoadConfig("config", true) -- load universal config
+	--library:LoadConfig("config") -- load game specific config
+
+	local configs = main:Tab("Configuration")
+
+	local themes = configs:Section{Name = "Theme", Side = "Left"}
+
+	local themepickers = {}
+
+	local themelist = themes:Dropdown{
+		Name = "Theme",
+		Default = library.currenttheme,
+		Content = library:GetThemes(),
+		Flag = "Theme Dropdown",
+		Callback = function(option)
+			if option then
+				library:SetTheme(option)
+
+				for option, picker in next, themepickers do
+					picker:Set(library.theme[option])
+				end
+			end
+		end
+	}
+
+	library:ConfigIgnore("Theme Dropdown")
+
+	local namebox = themes:Box{
+		Name = "Custom Theme Name",
+		Placeholder = "Custom Theme",
+		Flag = "Custom Theme"
+	}
+
+	library:ConfigIgnore("Custom Theme")
+
+	themes:Button{
+		Name = "Save Custom Theme",
+		Callback = function()
+			if library:SaveCustomTheme(library.flags["Custom Theme"]) then
+				themelist:Refresh(library:GetThemes())
+				themelist:Set(library.flags["Custom Theme"])
+				namebox:Set("")
+			end
+		end
+	}
+
+	local customtheme = configs:Section{Name = "Custom Theme", Side = "Right"}
+
+	themepickers["Accent"] = customtheme:ColorPicker{
+		Name = "Accent",
+		Default = library.theme["Accent"],
+		Flag = "Accent",
+		Callback = function(color)
+			library:ChangeThemeOption("Accent", color)
+		end
+	}
+
+	library:ConfigIgnore("Accent")
+
+	themepickers["Window Background"] = customtheme:ColorPicker{
+		Name = "Window Background",
+		Default = library.theme["Window Background"],
+		Flag = "Window Background",
+		Callback = function(color)
+			library:ChangeThemeOption("Window Background", color)
+		end
+	}
+
+	library:ConfigIgnore("Window Background")
+
+	themepickers["Window Border"] = customtheme:ColorPicker{
+		Name = "Window Border",
+		Default = library.theme["Window Border"],
+		Flag = "Window Border",
+		Callback = function(color)
+			library:ChangeThemeOption("Window Border", color)
+		end
+	}
+
+	library:ConfigIgnore("Window Border")
+
+	themepickers["Tab Background"] = customtheme:ColorPicker{
+		Name = "Tab Background",
+		Default = library.theme["Tab Background"],
+		Flag = "Tab Background",
+		Callback = function(color)
+			library:ChangeThemeOption("Tab Background", color)
+		end
+	}
+
+	library:ConfigIgnore("Tab Background")
+
+	themepickers["Tab Border"] = customtheme:ColorPicker{
+		Name = "Tab Border",
+		Default = library.theme["Tab Border"],
+		Flag = "Tab Border",
+		Callback = function(color)
+			library:ChangeThemeOption("Tab Border", color)
+		end
+	}
+
+	library:ConfigIgnore("Tab Border")
+
+	themepickers["Tab Toggle Background"] = customtheme:ColorPicker{
+		Name = "Tab Toggle Background",
+		Default = library.theme["Tab Toggle Background"],
+		Flag = "Tab Toggle Background",
+		Callback = function(color)
+			library:ChangeThemeOption("Tab Toggle Background", color)
+		end
+	}
+
+	library:ConfigIgnore("Tab Toggle Background")
+
+	themepickers["Section Background"] = customtheme:ColorPicker{
+		Name = "Section Background",
+		Default = library.theme["Section Background"],
+		Flag = "Section Background",
+		Callback = function(color)
+			library:ChangeThemeOption("Section Background", color)
+		end
+	}
+
+	library:ConfigIgnore("Section Background")
+
+	themepickers["Section Border"] = customtheme:ColorPicker{
+		Name = "Section Border",
+		Default = library.theme["Section Border"],
+		Flag = "Section Border",
+		Callback = function(color)
+			library:ChangeThemeOption("Section Border", color)
+		end
+	}
+
+	library:ConfigIgnore("Section Border")
+
+	themepickers["Text"] = customtheme:ColorPicker{
+		Name = "Text",
+		Default = library.theme["Text"],
+		Flag = "Text",
+		Callback = function(color)
+			library:ChangeThemeOption("Text", color)
+		end
+	}
+
+	library:ConfigIgnore("Text")
+
+	themepickers["Disabled Text"] = customtheme:ColorPicker{
+		Name = "Disabled Text",
+		Default = library.theme["Disabled Text"],
+		Flag = "Disabled Text",
+		Callback = function(color)
+			library:ChangeThemeOption("Disabled Text", color)
+		end
+	}
+
+	library:ConfigIgnore("Disabled Text")
+
+	themepickers["Object Background"] = customtheme:ColorPicker{
+		Name = "Object Background",
+		Default = library.theme["Object Background"],
+		Flag = "Object Background",
+		Callback = function(color)
+			library:ChangeThemeOption("Object Background", color)
+		end
+	}
+
+	library:ConfigIgnore("Object Background")
+
+	themepickers["Object Border"] = customtheme:ColorPicker{
+		Name = "Object Border",
+		Default = library.theme["Object Border"],
+		Flag = "Object Border",
+		Callback = function(color)
+			library:ChangeThemeOption("Object Border", color)
+		end
+	}
+
+	library:ConfigIgnore("Object Border")
+
+	themepickers["Dropdown Option Background"] = customtheme:ColorPicker{
+		Name = "Dropdown Option Background",
+		Default = library.theme["Dropdown Option Background"],
+		Flag = "Dropdown Option Background",
+		Callback = function(color)
+			library:ChangeThemeOption("Dropdown Option Background", color)
+		end
+	}
+
+	library:ConfigIgnore("Dropdown Option Background")
+
+	local configsection = configs:Section{Name = "Configs", Side = "Left"}
+
+	local configlist = configsection:Dropdown{
+		Name = "Configs",
+		Content = library:GetConfigs(), -- GetConfigs(true) if you want universal configs
+		Flag = "Config Dropdown"
+	}
+
+	library:ConfigIgnore("Config Dropdown")
+
+	local loadconfig = configsection:Button{
+		Name = "Load Config",
+		Callback = function()
+			library:LoadConfig(library.flags["Config Dropdown"]) -- LoadConfig(library.flags["Config Dropdown"], true)  if you want universal configs
+		end
+	}
+
+	local delconfig = configsection:Button{
+		Name = "Delete Config",
+		Callback = function()
+			library:DeleteConfig(library.flags["Config Dropdown"]) -- DeleteConfig(library.flags["Config Dropdown"], true)  if you want universal configs
+			configlist:Refresh(library:GetConfigs())
+		end
+	}
+
+
+	local configbox = configsection:Box{
+		Name = "Config Name",
+		Placeholder = "Config Name",
+		Flag = "Config Name"
+	}
+
+	library:ConfigIgnore("Config Name")
+
+	local save = configsection:Button{
+		Name = "Save Config",
+		Callback = function()
+			library:SaveConfig(library.flags["Config Dropdown"] or library.flags["Config Name"]) -- SaveConfig(library.flags["Config Name"], true) if you want universal configs
+			configlist:Refresh(library:GetConfigs())
+		end
+	}
+
+	local keybindsection = configs:Section{Name = "UI Toggle Keybind", Side = "Left"}
+
+	keybindsection:Keybind{
+		Name = "UI Toggle",
+		Flag = "UI Toggle",
+		Default = Enum.KeyCode.RightShift,
+		Blacklist = {Enum.UserInputType.MouseButton1, Enum.UserInputType.MouseButton2, Enum.UserInputType.MouseButton3},
+		Callback = function(_, fromsetting)
+			if not fromsetting then
+				library:Close()
+			end
+		end
+	}
 end
