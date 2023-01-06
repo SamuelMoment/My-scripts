@@ -1,12 +1,6 @@
 local function getGameAndLoad()
-	if game.GameId == 113491250 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_pf.lua'))()
-	elseif game.GameId == 1390601379 then
+	if game.GameId == 1390601379 then
 		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_cw.lua'))()
-	elseif game.GameId == 3698756756 or game.GameId == 10053187005 or game.GameId == 3311740703 or game.GameId == 1190826589 or game.GameId == 3681951220 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste.lua'))()
-	elseif game.GameId == 873703865 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_wb.lua'))()
 	end	
 end
 if shouldSkipGui then
@@ -14,38 +8,38 @@ if shouldSkipGui then
 	return
 end
 local makeDraggable = function(frame)
-				dragging = false 
-					local a = frame
-					local dragInput 
-					local dragStart 
-					local startPos 
-					local function update(input) 
-						local delta = input.Position - dragStart 
-						a.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) 
-					end 
-					a.InputBegan:Connect(function(input) 
-						if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
-							dragging = true 
-							dragStart = input.Position 
-							startPos = a.Position 
+	dragging = false 
+	local a = frame
+	local dragInput 
+	local dragStart 
+	local startPos 
+	local function update(input) 
+		local delta = input.Position - dragStart 
+		a.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) 
+	end 
+	a.InputBegan:Connect(function(input) 
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
+			dragging = true 
+			dragStart = input.Position 
+			startPos = a.Position 
 
-							input.Changed:Connect(function() 
-								if input.UserInputState == Enum.UserInputState.End then 
-									dragging = false 
-								end 
-							end) 
-						end 
-					end) 
-					a.InputChanged:Connect(function(input) 
-						if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then 
-							dragInput = input 
-						end 
-					end) 
-					game:GetService('UserInputService').InputChanged:Connect(function(input) -- sex
-						if input == dragInput and dragging then 
-							update(input) 
-						end 
-					end)
+			input.Changed:Connect(function() 
+				if input.UserInputState == Enum.UserInputState.End then 
+					dragging = false 
+				end 
+			end) 
+		end 
+	end) 
+	a.InputChanged:Connect(function(input) 
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then 
+			dragInput = input 
+		end 
+	end) 
+	game:GetService('UserInputService').InputChanged:Connect(function(input) -- sex
+		if input == dragInput and dragging then 
+			update(input) 
+		end 
+	end)
 end
 
 
@@ -183,18 +177,10 @@ Game.BackgroundTransparency = 1.000
 Game.Position = UDim2.new(0, 5, 0, 2.5)
 Game.Size = UDim2.new(0, 160, 0, 23)
 Game.Font = Enum.Font.SourceSans
-Game.Text = "Game detected: "
-	if game.GameId == 113491250 then
-		Game.Text = "Game detected: Phantom Forces"
-	elseif game.GameId == 1390601379 then
-		Game.Text = "Game detected: Combat Warriors"
-	elseif game.GameId == 3698756756 or game.GameId == 10053187005 or game.GameId == 3311740703 or game.GameId == 1190826589 or game.GameId == 3681951220 then
-		Game.Text = "Game detected: Counter Blox"
-	elseif game.GameId == 873703865 then
-		Game.Text = "Game detected: Westbound"
-	else
-		Game.Text = 'Game detected: Unsupported game'
-	end
+Game.Text = "Game is unsupported."
+if game.GameId == 1390601379 then
+	Game.Text = "Game detected: Combat Warriors"
+end
 
 Game.TextColor3 = Color3.fromRGB(255,255,255)
 Game.TextSize = 20.000
