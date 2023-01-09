@@ -1,6 +1,6 @@
 if game.CoreGui:FindFirstChild("electric boogalo") then return error('script is already executed or you executed another script')end
 
-BeforeLoad = tick()
+local BeforeLoad = tick()
 
 
 function insertwithoutdupes(tab, thethingyouneedtoinsert) -- my own code :sunglasses:
@@ -45,20 +45,10 @@ local TBLSORT = table.sort
 --]]
 
 local library,Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/library.lua"))()
---[[
-since new library
+local blacklistedKeys = { --skidded cuz me lazy
+	Enum.KeyCode.Unknown,Enum.KeyCode.W,Enum.KeyCode.A,Enum.KeyCode.S,Enum.KeyCode.D,Enum.KeyCode.Slash,Enum.KeyCode.Tab,Enum.KeyCode.Backspace,Enum.KeyCode.Escape
+}
 
-
-
-
---]]
-
-
-
-local Spawn = Signal.new()
-local Died = Signal.new()
-local KillFeed = Signal.new()
-	
 local cacheModels = game:GetObjects("rbxassetid://11377511083")[1]
 repeat wait() until cacheModels ~= nil
 local ChrModels = cacheModels:FindFirstChild('r6')
@@ -97,66 +87,40 @@ local functions = game:GetService("ReplicatedStorage").Communication.Functions
 makefolder('SamuelPaste')
 --[[ MENU SETUP ]]--
 local main = library:Load{
-    Name = "SamuelPaste",
+    Name = "SamuelPaste $$$ > SamuelHook",
     SizeX = 600,
     SizeY = 650,
     Theme = "Midnight",
     Extension = "cfg", -- config file extension
     Folder = 'SamuelPaste/cfgs' -- config folder name
 }
-local rage 	  = main:Tab('rage')
-local legit   = main:Tab("legit")
-local misc 	  = main:Tab('misc')
-local visuals = main:Tab('visuals')
-local skins   = main:Tab('skins')
+local rage 	  = main:Tab('Rage')
+local legit   = main:Tab("Legit")
+local misc 	  = main:Tab('Misc')
+local visuals = main:Tab('Visuals')
+local skins   = main:Tab('Skins')
 
---[[FUNCTIONS]]--
+--[[ FUNCTIONS ]]--
 do
-	function GetClosest(distane,additional)
-		local Character = LocalPlayer.Character
-		local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPart")
-		if not (Character or HumanoidRootPart) then
-			return
-		end
-
-		local TargetDistance = distane or 50
-		local additional = additional or function(...) return true end
-		local Target
-
-		for i, v in ipairs(Players:GetPlayers()) do
-			if
-				v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and
-					v.Character:FindFirstChildWhichIsA("Humanoid").Health ~= 0 and additional(v) == true
-			 then
-				local TargetHRP = v.Character.HumanoidRootPart
-				local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
-				if mag < TargetDistance then
-					TargetDistance = mag
-					Target = v
-				end
-			end
-		end
-
-		return Target
-	end
-	function GetClosests(distane,additional)
+	function GetClosests(distane,addArgs)
 		if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild('HumanoidRootPart') then return end
 		local tbl = {}
+		local addArgs = addArgs or {}
+		--[[
+		onlyDown
+		--]]
 		local Character = LocalPlayer.Character
 		local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPart")
 
 		local TargetDistance = distane or 50
-		local additional = additional or function(...) return true end
 		local Target
 
 		for i, v in ipairs(Players:GetPlayers()) do
-			if
-				v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and
-					v.Character:FindFirstChildWhichIsA("Humanoid").Health ~= 0 and additional(v) == true
-			 then
+			if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChildWhichIsA("Humanoid").Health ~= 0 then
 				local TargetHRP = v.Character.HumanoidRootPart
 				local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
 				if mag < TargetDistance then
+					if addArgs['onlyDown'] and not IsDown(v) then continue end
 					table.insert(tbl,{v,mag})
 				end
 			end
@@ -164,8 +128,13 @@ do
 		table.sort(tbl,function(a,b)
 			return a[2] < b[2]
 		end)
-	   return tbl
+		return tbl
 	end
+	function GetClosest(...) 
+		local Closests = GetClosests(...)
+		if not Closests[1] then return nil end
+		return Closests[1][1] 
+	end --im too lazy and it easiesr for me to modify code
 	function getClosestToMouse(distance)
 		local player, nearestDistance = nil, distance or 99999
 		for i,v in pairs(Players:GetPlayers()) do
@@ -184,14 +153,23 @@ do
 		return player
 	end
 	function GetState(plr)
+		local plr = plr or LocalPlayer
 		return modules['DataHandler'].getSessionDataRoduxStoreForPlayer(plr):getState()
 	end	
+	function IsAlive(plr)
+		local plr = plr or LocalPlayer
+		return plr.Character and plr.Character:FindFirstChildWhichIsA('Humanoid') and (plr.Character:FindFirstChildWhichIsA('Tool') or plr.Backpack:FindFirstChildWhichIsA('Tool')) and true or false
+	end
+	function IsDown(plr)
+		local plr = plr or LocalPlayer
+		return GetState(plr).down.isDowned
+	end
 end
 
 
 
 
---[[BYPASS]]--
+--[[ BYPASS ]]--
 do
 	for i,v in pairs(getgc(true)) do
 		if typeof(v) ~= 'table' then continue end
@@ -231,9 +209,22 @@ end
 do
 	local nm = require(ReplicatedStorage.Framework.Nevermore)
 	local AM = rawget(nm, '_lookupTable') --credits to snnwer for that
-	--[[ shit i keep forgetting
-	getSessionDataRoduxStoreForPlayer
-	--]]
+	--[[ BYPASS V2 ]]--
+	do
+		local antiCheat = {
+			'AntiCheatHandler',
+			'AntiInjectClient',
+			'AntiSpeedClient',
+			'AntiInfJumpClient',
+			'AntiCheatHandlerClient',
+			'AntiBodyMoverClient',
+		}
+		for i,v in pairs(antiCheat) do
+			if rawget(AM,v) then
+				AM[v]:Destroy()
+			end
+		end
+	end
 	for i,v in pairs(AM) do
 		modules[i] = require(v)
 	end
@@ -245,7 +236,13 @@ do
 		end
 	end
 end
+
 --[[ SIGNALS ]]--
+local Spawn = Signal.new()
+local Died = Signal.new()
+local KillFeed = Signal.new()
+local Ranged = Signal.new()
+
 do
 	--killfeed
 	local old;old = hookfunction(modules['killfeed'].render,function(a)
@@ -272,6 +269,42 @@ do
 			end)
 		end
 	end
+	-- ranged
+	do
+		local ids = {'weapon43','weapon44','utility9','weapon53'}
+		local metadata = modules['WeaponMetadata']
+
+		for i,v in pairs(ids) do
+			local data = metadata[v]
+			local originalValues = {
+				maxSpread                 = data.maxSpread                ,
+				minSpread 				  = data.minSpread				  ,
+				recoilAmount              = data.recoilAmount             ,
+				maxTotalBloom             = data.maxTotalBloom            ,
+				startShootingAfterCharge  = data.startShootingAfterCharge ,
+				gravity                   = data.gravity                  ,
+				reloadWalkSpeedMultiplier = data.reloadWalkSpeedMultiplier,
+				chargeOnDuration          = data.chargeOnDuration         ,
+				chargeOffDuration		  = data.chargeOffDuration		 ,
+				maxDistance 			  = data.maxDistance,
+			}
+			local spoofedValues = {
+				maxSpread                 = 0                ,
+				minSpread                 = 0                ,
+			    recoilAmount              = 0                ,
+			    maxTotalBloom             = 0                ,
+			    startShootingAfterCharge  = true             ,
+			    gravity                   = Vector3.new()    ,
+			    reloadWalkSpeedMultiplier = 1                ,
+			    chargeOnDuration          = nil              ,
+				chargeOffDuration		  = nil              ,
+				maxDistance				  = 999999           ,
+			}
+			Ranged:Connect(function(index,toggle)
+				data[index] = toggle and spoofedValues[index] or originalValues[index]
+			end)
+		end
+	end
 end
 
 --[[ MAIN ]]--
@@ -291,9 +324,10 @@ do
 	kaura:Dropdown{
 		Name = 'Priority',
 		Content = {
-			'Health',
 			'Distance',
+			'Health',
 		},
+		Default = 'Distance',
 		Flag = 'KillauraPriority'
 	}
 	
@@ -303,6 +337,15 @@ do
 		Max = 13,
 		Default = 13,
 		Flag = 'KillauraDistance'
+	}
+	kaura:Dropdown{
+		Name = 'Kill Downed Players',
+		Content = {
+			'Regular',
+			'Finish'
+		},
+		Default = 'Regular',
+		Flag = 'KillauraFinish'
 	}
 	----------------------------------------------------------------------------
 	kaura:Separator('Teleport Behind')
@@ -317,25 +360,19 @@ do
 		Min = 1,
 		Max = 10,
 		Default = 5,
-		Flag = 'KillauraBehindDistance'
-	}
-	
-	kaura:Slider{
-		Name = 'Distance',
-		Min = 1,
-		Max = 10,
-		Default = 1,
-		Flag = 'KillauraBehindDistanceY'
+		Flag = 'KillauraBehindDistance',
 	}
 	----------------------------------------------------------------------------
 	do
 		local executing = false
-		local CurrentClosest
-		RunService.Stepped:Connect(function()
+		local Weapon
+		local KillLoop = function()
+			if executing == true then return end
 			if not library.flags['KillauraEnabled'] then return end
+			Weapon = nil
 			local Closest = GetClosests(library.flags['KillauraDistance'])
 			
-			if #Closest ~= 0 and executing == false then
+			if Closest ~= nil and #Closest ~= 0 then
 				if library.flags['KillauraPriority'] == 'Health' then
 					table.sort(Closest,function(a,b)
 						return a[1].Character.Health < b[1].Character.Health
@@ -343,15 +380,8 @@ do
 				end
 				executing = true
 				pcall(function()
-					for i, v in pairs(LocalPlayer.Character:GetChildren()) do
-						if v:IsA("Tool") then
-							if v:FindFirstChild("Hitboxes") ~= nil then
-								Weapon = v
-							end
-						end
-					end
-					if not Weapon then
-					else								
+					Weapon = LocalPlayer.Character:FindFirstChildWhichIsA("Tool")
+					if Weapon and Weapon:FindFirstChild('Hitboxes') then								
 						for i=1,3 do
 							local args1 = {
 								[1] = Weapon,
@@ -362,7 +392,7 @@ do
 							for i,v in pairs(Closest) do
 								if Weapon.Parent ~= LocalPlayer.Character then break end
 								if not v[1].Character:FindFirstChild('Torso') then continue end
-								CurrentClosest = v[1]
+								if (IsDown(v[1]) and library.flags['KillauraFinish'] ~= 'Regular') then continue end
 								local args = {
 									[1] = Weapon,
 									[2] = v[1].Character.Torso,
@@ -373,7 +403,7 @@ do
 									),
 									[6] = v[1].Character.Torso.Position,
 								} 
-								if modules['DataHandler'].getSessionDataRoduxStoreForPlayer(v[1]):getState().parry.isParrying == false then
+								if GetState(v[1]).parry.isParrying == false then
 									events.MeleeDamage:FireServer(unpack(args))
 									events.MeleeDamage:FireServer(unpack(args))
 								else
@@ -386,18 +416,132 @@ do
 				end)
 				executing = false
 			end
-		end)
+		end
+		local executing2 = false
+		local FinishLoop = function()
+			if executing2 == true then return end
+			if not library.flags['KillauraEnabled'] then return end
+			if not library.flags['KillauraFinish'] == 'Finish' then return end
+			local Closest = GetClosest(library.flags['KillauraDistance'],{onlyDown = true})
+			if Closest ~= nil then
+				executing2 = true
+				pcall(function()
+					local Weapon = LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
+					if Weapon and Weapon:FindFirstChild('Hitboxes') then
+						events.StartMeleeFinish:FireServer(Closest.Character,Weapon)
+						task.wait(.1)
+
+						events.MeleeFinishSlash:FireServer(Weapon,1)
+						task.wait(.1)
+
+						local args = {
+							[1] = Weapon,
+							[2] = Closest.Character.Head,
+							[3] = Weapon.Hitboxes.Hitbox,
+							[4] = Closest.Character.Head.Position,
+							[5] = CFrame.new(-0.9444122314453125, -0.4338388442993164, -0.5000076293945312) * CFrame.Angles(-0.8700763583183289, 0.338703989982605, 0.4835035502910614),
+							[6] = Vector3.new(0.5450236797332764, 0.5771650075912476, -0.6081362962722778),
+							[7] = 1,
+							[8] = Vector3.new(-0.15132836997509003, -0.9456773996353149, 0.28773969411849976)
+						}
+
+						events.MeleeFinish:FireServer(unpack(args))
+										
+					end
+				end)
+				executing2 = false
+			end
+		end
+		
+		RunService.Stepped:Connect(KillLoop)
+		RunService.Stepped:Connect(FinishLoop)
 		RunService.Stepped:Connect(function()
-			pcall(function()
-				if CurrentClosest and IsAlive(CurrentClosest) then
-					if library.flags['KillauraBehind'] then
-						LocalPlayer.Character.HumanoidRootPart.CFrame = CurrentClosest.Character.Torso.CFrame * CFrame.new(0,library.flags['KillauraBehindDistanceY'],library.flags['KillauraBehindDistance'])
-					end		
+			if IsAlive(LocalPlayer) and library.flags['KillauraBehind'] and library.flags['KillauraEnabled'] then
+				local Closest = GetClosest(library.flags['KillauraDistance'])
+				if not Closest then return end
+				local Weapon = LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
+				if Weapon and Weapon:FindFirstChild('Hitboxes') then
+					local LastPos = Closest.Character.HumanoidRootPart.CFrame
+					LocalPlayer.Character.HumanoidRootPart.CFrame = LastPos + LastPos.LookVector*-library.flags['KillauraBehindDistance']
+					LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(LocalPlayer.Character.HumanoidRootPart.CFrame.Position,Vector3.new(LastPos.X,LocalPlayer.Character.HumanoidRootPart.CFrame.Position.Y,LastPos.Z))
 				end
-			end)
+			end
 		end)
 	end
 	----------------------------------------------------------------------------
+	--[[ RANGED MODS ]]--
+	local rm = rage:Section{Name='Ranged',Side='Right'}
+	rm:Toggle{
+		Name = 'Instant Charge',
+		Callback = function(toggle)
+			Ranged:Fire('chargeOnDuration',toggle)
+			Ranged:Fire('chargeOffDuration',toggle)
+			Ranged:Fire('startShootingAfterCharge',toggle)
+		end
+	}
+	rm:Toggle{
+		Name = 'No Spread',
+		Callback = function(toggle)
+			Ranged:Fire('maxSpread',toggle)
+			Ranged:Fire('minSpread',toggle)
+		end
+	}	
+	rm:Toggle{
+		Name = 'No Dropoff',
+		Callback = function(toggle)
+			Ranged:Fire('gravity',toggle)
+		end
+	}
+	rm:Toggle{
+		Name = 'No Recoil',
+		Callback = function(toggle)
+			Ranged:Fire('recoilAmount',toggle)
+		end
+	}
+	rm:Toggle{
+		Name = 'No Slowdown',
+		Callback = function(toggle)
+			Ranged:Fire('recoilAmount',toggle)
+		end
+	}
+	rm:Toggle{
+		Name = 'No Reload Cancel',
+		Flag = 'NRC'
+	}
+	rm:Toggle{
+		Name = 'No Charge Cancel',
+		Flag = 'NCC'
+	}	
+	rm:Toggle{
+		Name = 'Infinite Range',
+		Callback = function(toggle)
+			Ranged:Fire('maxDistance',toggle)
+		end
+	}
+	rm:Toggle{
+		Name = 'Wallbang (breaks parkour)',
+		Callback = function(toggle)
+			if toggle then
+				game.CollectionService:AddTag(workspace.Map,'RANGED_CASTER_IGNORE_LIST')	
+				game.CollectionService:AddTag(workspace.Terrain,'RANGED_CASTER_IGNORE_LIST')				
+			else
+				game.CollectionService:RemoveTag(workspace.Map,'RANGED_CASTER_IGNORE_LIST')	
+				game.CollectionService:RemoveTag(workspace.Terrain,'RANGED_CASTER_IGNORE_LIST')				
+			end
+		end
+	}	
+	
+	do
+		local rwc = modules['RangedWeaponClient']
+		local old = rwc.cancelReload
+		rwc.cancelReload = function(...)
+			return library.flags['NRC'] and nil or old(...)
+		end
+		local old2 = rwc.cancelCharge
+		rwc.cancelCharge = function(...)
+			return library.flags['NCC'] and nil or old2(...)
+		end	
+	end
 	--[[ SILENT AIM ]]--
 	local sa = rage:Section{Name='Silent Aim',Side='Right'}
 	sa:Toggle{
@@ -417,18 +561,18 @@ do
 		Name = 'Draw FOV',
 		Flag = 'RageFOVDraw'
 	}:ColorPicker{
-		Default = Color3.fromRGB(255,255,255),
-		DefaultAlpha = 0,
+		--Default = Color3.fromRGB(255,255,255),
+		DefaultAlpha = 1,
 		Flag = 'RageFOVDrawColor'
 	}
 	
 	sa:Toggle{
-		Name =  'Filled FOV',
+		Name = 'Filled FOV',
 		Flag = 'RageFOVDrawFilled'
 	}	
 	
 	sa:Slider{
-		Name = 'FOV',
+		Name = 'FOV Thickness',
 		Min = 1,
 		Max = 10,
 		Default = 1,
@@ -444,10 +588,10 @@ do
 		RunService.Heartbeat:Connect(function()
 			Fov.Visible = library.flags['RageFOVDraw']
 
-			Fov.Transparency = 1-library.flags['RageFOVDrawColor'].A
+			Fov.Transparency = library.flags['RageFOVDrawColor'].A
 			
 			Fov.Color =  library.flags['RageFOVDrawColor']
-			Fov.Position = Vec2(Mouse.X, Mouse.Y + 36)
+			Fov.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
 			Fov.Radius = library.flags['RageFOV']
 			Fov.Thickness = library.flags['RageFOVDrawThickness']
 			Fov.Filled = library.flags['RageFOVDrawFilled']
@@ -467,6 +611,7 @@ do
 		local old=modules['RangedWeaponHandler'].calculateFireDirection
 		local closest
 		modules['RangedWeaponHandler'].calculateFireDirection=function(...)
+			if not library.flags['RageSilentAim'] then return old(...) end
 			closest = getClosestToMouse(library.flags['RageFOV'])
 			if closest ~= nil then
 				if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') and LocalPlayer.Character:FindFirstChildWhichIsA('Tool'):FindFirstChild('ClientAmmo') then
@@ -500,15 +645,21 @@ do
 	local misc2 = misc:Section{Name='Character Exploits',Side='Right'} -- skidded sort from pjhook prem
 	misc2:Toggle{
 		Name = 'No Jump Cooldown',
-		Flag = 'NJC'
+		Callback = function(toggle)
+			modules['JumpConstants'].JUMP_DELAY_ADD = toggle and 0 or 1
+		end
 	}
 	misc2:Toggle{
 		Name = 'No Dash Cooldown',
-		Flag = 'NDC'
+		Callback = function(toggle)
+			modules['DashConstants'].DASH_COOLDOWN = toggle and 0 or 3
+		end
 	}
 	misc2:Toggle{
 		Name = 'No Fall Damage',
-		Flag = 'NFD'
+		Callback = function(toggle)
+			GetState(LocalPlayer).fallDamageClient.isDisabled = toggle
+		end
 	}
 	misc2:Toggle{
 		Name = 'Infinite Stamina/Air',
@@ -518,36 +669,94 @@ do
 		Name = 'Infinite Jump',
 		Flag = 'InfJump'
 	}
-	
+	misc2:Toggle{
+		Name = 'Jump Whenever',
+		Flag = 'InfJump2'
+	}
 	misc2:Toggle{
 		Name = 'Fly',
-		Flag = 'Fly'
-	}:Keybind{
-		Blacklist = {Enum.UserInputType.MouseButton1},
-		Flag = 'FlyKey',
-		Mode = 'Toggle',
-		Callback = function(key,from)
-			if from then return end
+		Flag = 'Fly',
+		Callback = function(toggle)
 			if LocalPlayer.Character then
-				GetState(LocalPlayer).fly.isFlying = tbl.Toggle and tbl.Active
-				if library.flags['Fly'] then
+				GetState(LocalPlayer).fly.isFlying = toggle
+				if toggle then
 					getupvalue(modules['FlyHandlerClient']._startModule,2)(LocalPlayer.Character)
 				elseif LocalPlayer.Character:FindFirstChild('HumanoidRootPart') and LocalPlayer.Character:FindFirstChild('HumanoidRootPart'):FindFirstChild('LinearVelocity') then
 					LocalPlayer.Character:FindFirstChild('HumanoidRootPart'):FindFirstChild('LinearVelocity'):Destroy()
 				end
 			end			
 		end
+	}:Keybind{
+		Blacklist = blacklistedKeys,
+		Mode = 'Toggle',
 	}
 
 	misc2:Toggle{
 		Name = 'No Clip',
 		Flag = 'Noclip'
 	}:Keybind{
-		Blacklist = {Enum.UserInputType.MouseButton1},
-		Flag = 'NoclipKey',
+		Blacklist = blacklistedKeys,
 		Mode = 'Toggle',
 	}
+	
+	local charMov = misc:Section{Name = 'Character Movement',Side = 'Left'}
+	local tog = charMov:Toggle{
+		Name = 'Walk Speed',
+		Flag = 'WalkSpeed',
+		Callback = function(tog)
+			if not tog and IsAlive() then
+				LocalPlayer.Character.Humanoid.WalkSpeed = 16
+			end
+		end		
+	}
+	tog:Slider{
+		Min = 5,
+		Max = 75,
+		Default = 16,
+		Flag = 'Speed'
+	}
+	local tog = charMov:Toggle{
+		Name = 'Jump Power',
+		Flag = 'JumpPower',
+		Callback = function(tog)
+			if not tog and IsAlive() then
+				LocalPlayer.Character.Humanoid.JumpPower = 50
+			end
+		end
+	}
+	tog:Slider{
+		Min = 5,
+		Max = 150,
+		Default = 50,
+		Flag = 'Power'
+	}
+
+
+	local anti = misc:Section{Name = 'Anti',Side = 'Left'}
+	anti:Toggle{
+		Name = 'Ragdoll',
+		Flag = 'NoRagdoll'
+	}
+	
+	local auto = misc:Section{Name = 'Automatic',Side = 'Left'}
+	auto:Toggle{
+		Name = 'Equip Weapon',
+		Flag = 'AutoTool'
+	}
+	
+	local vexploits = misc:Section{Name = 'Visual Exploits',Side = 'Right'}
+	
+	vexploits:Toggle{
+		Name = 'Hide Overhead Name',
+		Flag = 'NoName',
+		Callback = function(tog)
+			if not tog then
+				game:GetService("ReplicatedStorage").Communication.Events.UpdateIsCrouching:FireServer(false)			
+			end
+		end
+	}
 	--[[ SHIT THAT ISNT HOOK BUT IDK HOW TO CALL LMAO ]]--
+	-- INF JUMP --
 	UserInputService.InputBegan:Connect(function(k,j)
 		if j then return end
 		if k.KeyCode ==  Enum.KeyCode.Space then
@@ -558,12 +767,68 @@ do
 			end
 		end
 	end)
+	-- EVERYTHING THAT NEEDS LOOP FOR --
+	RunService.Stepped:Connect(function()
+		if IsAlive(LocalPlayer) then
+			if library.flags['Noclip'] then
+				for i,v in pairs(LocalPlayer.Character:GetChildren()) do
+					if v:IsA("BasePart") then
+						v.CanCollide = false
+					end
+				end
+			end
+			if library.flags['WalkSpeed'] then
+				LocalPlayer.Character.Humanoid.WalkSpeed = library.flags['Speed']
+			end		
+			if library.flags['JumpPower'] then
+				LocalPlayer.Character.Humanoid.JumpPower = library.flags['Power']
+			end	
+			if library.flags['AutoTool'] then
+				local Weapon = LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
+				if not Weapon then
+					for i,v in pairs(LocalPlayer.Backpack:GetChildren()) do
+						if not v:IsA("Tool") then continue end --just in case
+						if v:FindFirstChild('Hitboxes') then
+							v.Parent = LocalPlayer.Character
+							break
+						end
+					end
+				end
+			end
+			if library.flags['NoName'] then
+				game:GetService("ReplicatedStorage").Communication.Events.UpdateIsCrouching:FireServer(true)	
+			end
+		end
+
+	end)
 	
 	--[[ HOOKS ]]--
-	-------------------STAMINA-------------------
-	local old = modules['Stamina'].getRealNewStaminaValue
-	modules['Stamina'].getRealNewStaminaValue = function(...)
-		return library.flags['InfStamina'] and 150 or old(...)
+	
+	-- STAMINA --
+	do
+		local old = modules['Stamina'].getRealNewStaminaValue
+		modules['Stamina'].getRealNewStaminaValue = function(...)
+			return library.flags['InfStamina'] and 150 or old(...)
+		end
+	end
+	
+	-- JUMP WHENEVER --
+	do
+		local old = modules['JumpHandlerClient'].getCanJump
+		modules['JumpHandlerClient'].getCanJump = function(...)
+			return library.flags['InfJump2'] and true or old(...)
+		end
+	end
+	
+	-- NO RAGDOLL --
+	do
+		local old = modules['RagdollHandlerClient'].toggleRagdoll
+		modules['RagdollHandlerClient'].toggleRagdoll = function(...)
+			if library.flags['NoRagdoll'] then
+				return
+			end
+			return old(...)
+		end
 	end
 end
 
@@ -578,7 +843,7 @@ do
 	--library:LoadConfig("config", true) -- load universal config
 	--library:LoadConfig("config") -- load game specific config
 
-	local configs = main:Tab("Configuration")
+	local configs = main:Tab("Config")
 
 	local themes = configs:Section{Name = "Theme", Side = "Left"}
 
