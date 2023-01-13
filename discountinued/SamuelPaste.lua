@@ -277,13 +277,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService") 
 local Lighting = game:GetService("Lighting") 
 local PlayerGui = LocalPlayer.PlayerGui
-local Crosshairs = PlayerGui['EEED-GUI'].Crosshairs
-local Crosshair = PlayerGui['EEED-GUI'].Crosshairs.Crosshair
+local Crosshairs = PlayerGui.GUI.Crosshairs
+local Crosshair = PlayerGui.GUI.Crosshairs.Crosshair
 local Mouse = LocalPlayer:GetMouse() 
 local Camera = workspace.CurrentCamera 
-local ClientScript = LocalPlayer.PlayerGui:FindFirstChildWhichIsA('LocalScript') 
+local ClientScript = LocalPlayer.PlayerGui.Client
 local Client = getsenv(ClientScript) 
-local ChatScript = getsenv(LocalPlayer.PlayerGui['EEED-GUI'].Main.Chats.DisplayChat)
+local ChatScript = getsenv(LocalPlayer.PlayerGui.Gui.Main.Chats.DisplayChat)
 
 repeat RunService.RenderStepped:Wait() until game:IsLoaded() 
 

@@ -105,6 +105,7 @@ do
 	function GetClosests(distane,addArgs)
 		if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild('HumanoidRootPart') then return end
 		local tbl = {}
+		local magnitudes = {}
 		local addArgs = addArgs or {}
 		--[[
 		onlyDown
@@ -121,19 +122,20 @@ do
 				local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
 				if mag < TargetDistance then
 					if addArgs['onlyDown'] and not IsDown(v) then continue end
-					table.insert(tbl,{v,mag})
+					table.insert(tbl,v)
+					magnitudes[v] = mag
 				end
 			end
 		end
 		table.sort(tbl,function(a,b)
-			return a[2] < b[2]
+			return magnitudes[a] < magnitudes[b]
 		end)
 		return tbl
 	end
 	function GetClosest(...) 
 		local Closests = GetClosests(...)
 		if not Closests[1] then return nil end
-		return Closests[1][1] 
+		return Closests[1]
 	end --im too lazy and it easiesr for me to modify code
 	function getClosestToMouse(distance)
 		local player, nearestDistance = nil, distance or 99999
@@ -164,6 +166,7 @@ do
 		local plr = plr or LocalPlayer
 		return GetState(plr).down.isDowned
 	end
+	
 end
 
 
@@ -285,20 +288,20 @@ do
 				gravity                   = data.gravity                  ,
 				reloadWalkSpeedMultiplier = data.reloadWalkSpeedMultiplier,
 				chargeOnDuration          = data.chargeOnDuration         ,
-				chargeOffDuration		  = data.chargeOffDuration		 ,
-				maxDistance 			  = data.maxDistance,
+				chargeOffDuration		  = data.chargeOffDuration		  ,
+				maxDistance 			  = data.maxDistance			  ,
 			}
 			local spoofedValues = {
-				maxSpread                 = 0                ,
-				minSpread                 = 0                ,
-			    recoilAmount              = 0                ,
-			    maxTotalBloom             = 0                ,
-			    startShootingAfterCharge  = true             ,
-			    gravity                   = Vector3.new()    ,
-			    reloadWalkSpeedMultiplier = 1                ,
-			    chargeOnDuration          = nil              ,
-				chargeOffDuration		  = nil              ,
-				maxDistance				  = 999999           ,
+				maxSpread                 = 0            ,
+				minSpread                 = 0            ,
+			    recoilAmount              = 0            ,
+			    maxTotalBloom             = 0            ,
+			    startShootingAfterCharge  = true         ,
+			    gravity                   = Vector3.new(),
+			    reloadWalkSpeedMultiplier = 1            ,
+			    chargeOnDuration          = nil          ,
+				chargeOffDuration		  = nil          ,
+				maxDistance				  = 999999       ,
 			}
 			Ranged:Connect(function(index,toggle)
 				data[index] = toggle and spoofedValues[index] or originalValues[index]
@@ -391,19 +394,19 @@ do
 							wait(.1)
 							for i,v in pairs(Closest) do
 								if Weapon.Parent ~= LocalPlayer.Character then break end
-								if not v[1].Character:FindFirstChild('Torso') then continue end
-								if (IsDown(v[1]) and library.flags['KillauraFinish'] ~= 'Regular') then continue end
+								if not v.Character:FindFirstChild('Torso') then continue end
+								if (IsDown(v) and library.flags['KillauraFinish'] ~= 'Regular') then continue end
 								local args = {
 									[1] = Weapon,
-									[2] = v[1].Character.Torso,
+									[2] = v.Character.Torso,
 									[3] = Weapon.Hitboxes.Hitbox,
-									[4] = v[1].Character.Torso.Position,
-									[5] = v[1].Character.Torso.CFrame:ToObjectSpace(
-										CFrame.new(v[1].Character.Torso.Position)
+									[4] = v.Character.Torso.Position,
+									[5] = v.Character.Torso.CFrame:ToObjectSpace(
+										CFrame.new(v.Character.Torso.Position)
 									),
-									[6] = v[1].Character.Torso.Position,
+									[6] = v.Character.Torso.Position,
 								} 
-								if GetState(v[1]).parry.isParrying == false then
+								if GetState(v).parry.isParrying == false then
 									events.MeleeDamage:FireServer(unpack(args))
 									events.MeleeDamage:FireServer(unpack(args))
 								else
@@ -831,7 +834,335 @@ do
 		end
 	end
 end
+--[[ VISUALS ]]--
+do
+	local sector = visuals:Section{Name='ESP'}
 
+	sector:Toggle{
+		Name = 'Boxes',
+		Flag = 'EspBoxes',
+	}:ColorPicker{
+		Flag = 'EspBoxesColor',
+	}
+
+	sector:Toggle{
+		Name = 'Name',
+		Flag = 'EspName',
+	}:ColorPicker{
+		Flag = 'EspNameColor',
+	}
+
+	sector:Toggle{
+		Name = 'HealthBar',
+		Flag = 'EspHealthBar',
+	}:ColorPicker{
+		Flag = 'EspHealthBarColor',
+		Default = Color3.fromRGB(0,255,0)
+	}
+
+	sector:Toggle{
+		Name = 'Health Percentage',
+		Flag = 'EspHealth',
+	}:ColorPicker{
+		Flag = 'EspHealthColor',
+	}
+
+	sector:Toggle{
+		Name = 'Distance',
+		Flag = 'EspDistance',
+	}:ColorPicker{
+		Flag = 'EspDistanceColor',
+	}
+
+	sector:Toggle{
+		Name = 'Tool',
+		Flag = 'EspTool',
+	}:ColorPicker{
+		Flag = 'EspToolColor',
+	}
+
+	sector:Dropdown{
+		Name = 'HealthBar Side',
+		Flag = 'EspHealthBarSide',
+		Content = {
+			'Left',
+			'Right'
+		},
+		Default = 'Left'
+	}
+	sector:Dropdown{
+		Name = 'Health Side',
+		Flag = 'EspHealthSide',
+		Content = {
+			'LeftUp',
+			'LeftCenter',
+			'LeftDown',
+			'RightUp',
+			'RightCenter',
+			'RightDown'
+		},
+		Default = 'LeftUp'
+	}
+	sector:Toggle{
+		Name = 'Health Visualization',
+		Flag = 'EspHealthBarVisualise',
+	}
+	sector:Toggle{
+		Name = 'Health Should Follow Bar',
+		Flag = 'EspHealthFollow',
+	}
+	sector:Dropdown{
+		Name = 'Text Fonts',
+		Flag = 'EspFonts',
+		Content = {
+			'Plex',
+			'Monospace',
+			'System',
+			'UI'
+		}
+	}
+	sector:Slider{
+		Name = 'Text Size',
+		Min = 6,
+		Max = 24,
+		Default = 13,
+		Flag = 'EspSize'
+	}
+
+	task.spawn(function()
+		local EspUtility = {
+			default = {
+				Square = {  
+					Visible = true,
+					Color = Color3.fromRGB(255,255,255),
+					Thickness = 1
+				},
+				Text = {
+					Size = 13,
+					Center = true,
+					Outline = true,
+					Font = Drawing.Fonts.Plex,
+					Color = Color3.fromRGB(255, 255, 255),
+					Visible = true        
+				}
+			},
+			Players = {},
+			data = {
+				HealthBar = {
+					Left   = function(pos,size) return Vector2.new(-15,0)       end,
+					Right  = function(pos,size) return Vector2.new(size.x+10,0) end
+				},
+				Health = {
+					LeftCenter  = function(pos,size,bound) return pos + Vector2.new(-bound.X/2+4,size.Y/2-13/2) end,
+					LeftUp      = function(pos,size,bound) return pos + Vector2.new(-bound.X/2+4,0)             end,
+					LeftDown    = function(pos,size,bound) return pos + Vector2.new(-bound.X/2+4,size.Y-14)     end,
+			
+					RightCenter = function(pos,size,bound) return pos + Vector2.new(size.X+bound.X/2+2,size.Y/2-13/2) end, 
+					RightUp     = function(pos,size,bound) return pos + Vector2.new(size.X+bound.X/2+2,0)             end,
+					RightDown   = function(pos,size,bound) return pos + Vector2.new(size.X+bound.X/2+2,size.Y-14)     end
+				},
+			}    
+		}
+		function EspUtility.draw(type,newargs)    
+			local args    = EspUtility.default[type]
+			local newargs = newargs or {}
+			local drawing = Drawing.new(type)
+			for i,v in pairs(args) do
+				drawing[i] = v
+			end
+			for i,v in pairs(newargs) do
+				drawing[i] = v
+			end
+			return drawing
+		end
+		for i,v in pairs(game.Players:GetPlayers()) do
+			if v == LocalPlayer then continue end
+			EspUtility.Players[v.Name] = {
+				box              = EspUtility.draw('Square',{ZIndex = 2}),
+				boxOutline       = EspUtility.draw('Square',{Color = Color3.new(0,0,0),Thickness =3}),
+				healthbar        = EspUtility.draw('Square',{ZIndex = 2,Filled = true}),
+				healthbarOutline = EspUtility.draw('Square',{Filled = true,Color = Color3.new()}),
+				
+				health           = EspUtility.draw('Text', {ZIndex=3}),
+				Name             = EspUtility.draw('Text'),
+				Distance         = EspUtility.draw('Text'),
+				Tool             = EspUtility.draw('Text')
+			}
+		end
+		Players.PlayerAdded:Connect(function(plr)
+			EspUtility.Players[plr.Name] = {
+				box              = EspUtility.draw('Square',{ZIndex = 2}),
+				boxOutline       = EspUtility.draw('Square',{Color = Color3.new(0,0,0),Thickness =3}),
+				healthbar        = EspUtility.draw('Square',{ZIndex = 2,Filled = true}),
+				healthbarOutline = EspUtility.draw('Square',{Filled = true,Color = Color3.new()}),
+				
+				health           = EspUtility.draw('Text', {ZIndex=3}),
+				Name             = EspUtility.draw('Text'),
+				Distance         = EspUtility.draw('Text'),
+				Tool             = EspUtility.draw('Text')
+			}    
+		end)
+		Players.PlayerRemoving:Connect(function(plr)
+			if EspUtility.Players[plr.Name] then
+				for i,v in pairs(EspUtility.Players[plr.Name]) do
+					if v then v:Remove() end
+					v = nil
+				end
+				EspUtility.Players[plr.Name] = nil
+			end
+		end)
+		
+		local Camera = workspace.CurrentCamera
+		local Mouse =   LocalPlayer:GetMouse()
+		local function lerp(a,b,t)
+			return a+(b-a)*t
+		end
+		game.RunService.Stepped:Connect(function()
+			for i,v in pairs(Players:GetPlayers()) do
+				if v.Character and v.Character:FindFirstChild('HumanoidRootPart') then
+					local drawings = EspUtility.Players[v.Name]
+					if not drawings then continue end
+					local root         = v.Character.HumanoidRootPart        
+					local pos,onscreen = Camera:WorldToViewportPoint(root.CFrame.p)
+		
+					local Size = (Camera:WorldToViewportPoint(root.Position - Vector3.new(0, 3, 0)).Y - Camera:WorldToViewportPoint(root.Position + Vector3.new(0, 2.6, 0)).Y) / 2
+					local BoxSize = Vector2.new(Size*1.5,Size*1.9)
+					local BoxPos = Vector2.new(pos.X - Size*1.5 / 2, (pos.Y - Size*1.6 / 2))
+					
+					drawings.box.Size     = BoxSize
+					drawings.box.Position = BoxPos
+					drawings.box.Color    = library.flags['EspBoxesColor']
+					drawings.box.Visible  = onscreen and library.flags['EspBoxes']
+					
+					drawings.boxOutline.Size     = BoxSize
+					drawings.boxOutline.Position = BoxPos
+					drawings.boxOutline.Visible  = onscreen and library.flags['EspBoxes']
+					
+					local bottom = Vector2.new(BoxPos.X,BoxPos.Y+BoxSize.Y)
+					
+					local health = v.Character.Humanoid.Health
+					local tool = v.Character:FindFirstChildWhichIsA('Tool')
+					local distance = (LocalPlayer.Character.HumanoidRootPart.Position-root.Position).Magnitude
+					
+					drawings.healthbar.Visible  = onscreen and library.flags['EspHealthBar']
+					drawings.healthbar.Position = bottom + EspUtility.data.HealthBar[library.flags['EspHealthBarSide']](BoxPos,BoxSize) 
+					drawings.healthbar.Size     = Vector2.new(5,lerp(0,-BoxSize.Y,health/100))
+					drawings.healthbar.Color    = not library.flags['EspHealthBarVisualise'] and library.flags['EspHealthBarColor'] or Color3.fromRGB(255,0,0):lerp(library.flags['EspHealthBarColor'],v.Character.Humanoid.Health/100)
+			
+					drawings.healthbarOutline.Visible  = onscreen and library.flags['EspHealthBar']
+					drawings.healthbarOutline.Position = BoxPos + EspUtility.data.HealthBar[library.flags['EspHealthBarSide']](BoxPos,BoxSize) + Vector2.new(-1,-1)
+					drawings.healthbarOutline.Size     = Vector2.new(7,BoxSize.Y+2)
+					
+					drawings.health.Visible  = onscreen and library.flags['EspHealth']
+					drawings.health.Text     = tostring(health/v.Character.Humanoid.MaxHealth*100)..'%'
+					drawings.health.Position = library.flags['EspHealthFollow'] and drawings.healthbar.Position + Vector2.new(3,drawings.healthbar.Size.Y) or EspUtility.data.Health[library.flags['EspHealthSide']](BoxPos,BoxSize,drawings.health.TextBounds)
+					drawings.health.Color    = library.flags['EspHealthColor']  
+					drawings.health.Font     = Drawing.Fonts[library.flags['EspFonts']]
+					drawings.health.Size	 = library.flags['EspSize']
+					
+					drawings.Name.Visible   = onscreen and library.flags['EspName']
+					drawings.Name.Position  = BoxPos+Vector2.new(BoxSize.X/2,-15)
+					drawings.Name.Text      = v.Name
+					drawings.Name.Color     = library.flags['EspNameColor']
+					drawings.Name.Font      = Drawing.Fonts[library.flags['EspFonts']]
+					drawings.Name.Size 		= library.flags['EspSize']
+					local offset = 5
+					
+					drawings.Distance.Visible  = onscreen and library.flags['EspDistance']
+					drawings.Distance.Position = bottom+Vector2.new(BoxSize.X/2,offset)
+					drawings.Distance.Text     = tostring(math.floor(distance*100)/100)..' studs'
+					drawings.Distance.Color    = library.flags['EspDistanceColor']
+					drawings.Distance.Font     = Drawing.Fonts[library.flags['EspFonts']]
+					drawings.Distance.Size 		= library.flags['EspSize']
+					
+					offset += library.flags['EspDistance'] and 15 or 0
+					
+					drawings.Tool.Visible  = onscreen and library.flags['EspTool']
+					drawings.Tool.Position = bottom+Vector2.new(BoxSize.X/2,offset)
+					drawings.Tool.Text     = tool ~= nil and tostring(tool) or 'None'
+					drawings.Tool.Color    = library.flags['EspToolColor']
+					drawings.Tool.Font     = Drawing.Fonts[library.flags['EspFonts']]
+					drawings.Tool.Size     = library.flags['EspSize']
+				end
+			end
+		end)    
+	end)
+	
+	
+	
+	task.spawn(function()
+		local highlights = {}
+		sector:Toggle{
+			Name = 'Chams',
+			Flag = 'EspChams',
+			Callback = function(tog)
+				for i,v in pairs(highlights) do
+					v.Enabled = tog
+				end
+			end
+		}:ColorPicker{
+			Flag = 'EspChamsOutline',
+			Default = Color3.froRGB(255,255,255),
+			DefaultAlpha = 0.5,
+			Callback = function(col)
+				for i,v in pairs(highlights) do
+					v.OutlineColor = col
+					v.OutlineTransparency = col.Transparency
+				end			
+			end
+		}:ColorPicker{
+			Flag = 'EspChamsFill',
+			Default = Color3.froRGB(255,0,0),
+			DefaultAlpha = 1,
+			Callback = function(col)
+				for i,v in pairs(highlights) do
+					v.FillColor = col
+					v.FillTransparency = col.Transparency
+				end			
+			end
+		}
+		local function addHighlight(instance)
+			local highlight = Instance.new('Highlight',instance)
+			highlight.Adornee = instance
+			highlight.Enabled = library.flags['EspChams']
+			highlight.OutlineColor = library.flags['EspChamsOutline']
+			highlight.OutlineTransparency = library.flags['EspChamsOutline'].Transparency
+			highlight.FillColor = library.flags['EspChamsFill']
+			highlight.FillTransparency = library.flags['EspChamsFill'].Transparency
+			
+			return highlight
+		end
+		for i,v in pairs(game.Players:GetPlayers()) do
+			if v == game.Players.LocalPlayer then continue end
+			if v.Character then
+				repeat wait() until v.Backpack:FindFirstChildWhichIsA("Tool")
+				highlights[v.Name] = addHighlight(v.Character)
+			end
+			v.CharacterAdded:Connect(function(chr)
+				repeat wait() until v.Backpack:FindFirstChildWhichIsA("Tool")
+				highlights[v.Name] = addHighlight(chr)
+			end)
+			v.CharacterRemoving:Connect(function()
+				highlights[v.Name] = nil
+				table.remove(highlights,table.find(highlights,v))
+			end)
+		end
+		game.Players.PlayerAdded:Connect(function(v)
+			v.CharacterAdded:Connect(function(chr)
+				repeat wait() until v.Backpack:FindFirstChildWhichIsA("Tool")
+				highlights[v.Name] = addHighlight(v.Character)
+			end)
+			v.CharacterRemoving:Connect(function()
+				table.remove(highlights,table.find(highlights,v.Name))
+			end)
+		end)
+		game.Players.PlayerRemoving:Connect(function(plr)
+			if highlights[plr.Name] then
+				table.remove(highlights,table.find(highlights,v.Name))
+			end
+		end)	
+	end)
+end
 --[[ CONFIGURTAION ]]--
 do
 	--library:SaveConfig("config", true) -- universal config

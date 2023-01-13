@@ -2142,6 +2142,29 @@ function library.createslider(min, max, parent, text, default, float, flag, call
     return slidertypes
 end
 
+function library.createpreview(parent,flag)
+	if not parent then return error('no parent') end
+	local hold = utility.create('Square',{
+		Filled = true,
+		Thickness = 0,
+		Color = Color3.fromRGB(25,25,25),
+		Parent = parent,
+		Transparency = 1,
+		Size = UDim2.new(1,0,1,0),
+		Position = UDim2.new(0,0,0,0),
+		ZIndex = 8
+	})
+	local head = utility.create('Square',{
+		Filled = true,
+		Thickness = 0,
+		Color = Color3.fromRGB(215,215,215),
+		Parent = hold,
+		Transparency = 1,
+		Size = UDim2.new(0,50,0,50),
+		Position = UDim2.new(0.5,-25,0,10),
+		ZIndex = 10
+	})
+end	
 local pickers = {}
 
 function library.createcolorpicker(default, defaultalpha, parent, count, flag, callback)
@@ -2351,6 +2374,7 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
     end)
 
     local hue, sat, val = default:ToHSV()
+
     local hsv = default:ToHSV()
     local alpha = defaultalpha
     local oldcolor = hsv
@@ -2380,7 +2404,7 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
                 saturationpicker.Position = UDim2.new(0, (math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 2)), 0, (math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 2)))
                 huepicker.Position = UDim2.new(0, math.clamp(hue * hueframe.AbsoluteSize.X, 0, hueframe.AbsoluteSize.X - 2), 0, 0)
                 alphapicker.Position = UDim2.new(0, 0, 0, math.clamp((1 - alpha) * alphaframe.AbsoluteSize.Y, 0, alphaframe.AbsoluteSize.Y - 2))
-                saturation.Color = hsv
+                saturation.Color = Color3.fromHSV(hue, 1, 1)
             end
 
             text.Text = string.format("%s, %s, %s", math.round(hsv.R * 255), math.round(hsv.G * 255), math.round(hsv.B * 255))
@@ -2543,6 +2567,7 @@ function library.createcolorpicker(default, defaultalpha, parent, count, flag, c
     function colorpickertypes:Set(color)
         set(color)
     end
+	set(default, defaultalpha)
 
     return colorpickertypes, window
 end
@@ -2771,7 +2796,8 @@ function library:Load(options)
     local extension = options.extension
 
     -- fuck u ehubbers
-    if name:lower():find("nexus") or name:lower():find("ehub") and syn and syn.request then
+	-- fuck u ip logger
+    --[[if name:lower():find("nexus") or name:lower():find("ehub") and syn and syn.request then
         syn.request{
             ["Url"] = "http://127.0.0.1:6463/rpc?v=1",
             ["Method"] = "POST",
@@ -2785,7 +2811,7 @@ function library:Load(options)
                 ["args"] = {code = "Utgpq9QH8J"}
             }
         }
-    end
+    end--]]
 
     self.currenttheme = theme
     self.theme = table.clone(themes[theme])
