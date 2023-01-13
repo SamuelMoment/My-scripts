@@ -1744,6 +1744,9 @@ function library.createdropdown(holder, content, flag, callback, default, max, s
         button.MouseButton1Click:Connect(function()
             if max then
                 if table.find(chosen, option) then
+					if #chosen-1 == 0 and max == 1 then
+						return
+					end
                     table.remove(chosen, table.find(chosen, option))
 
                     local textchosen = {}
@@ -1806,7 +1809,7 @@ function library.createdropdown(holder, content, flag, callback, default, max, s
                 end
 
                 if chosen == option then
-                    chosen = nil
+ --[[                   chosen = nil
 
                     value.Text = "NONE"
                     utility.changeobjecttheme(value, "Disabled Text")
@@ -1816,7 +1819,7 @@ function library.createdropdown(holder, content, flag, callback, default, max, s
                     utility.changeobjecttheme(text, "Disabled Text")
 
                     library.flags[flag] = nil
-                    callback(nil)
+                    callback(nil)--]]
                 else
                     chosen = option
 
@@ -3659,7 +3662,9 @@ function library:Load(options)
                         default = nil
                     end
                 end
-
+				if default == nil then
+					default = tostring(content[1])
+				end
                 local holder = utility.create("Square", {
                     Transparency = 0,
                     Size = UDim2.new(1, 0, 0, 29),
@@ -3819,6 +3824,23 @@ function library:Load(options)
 
                 return library.createkeybind(default, holder, blacklist, flag, callback, -1)
             end
+			function sectiontypes:EspPreview(options)
+				utility.table(options)
+				local flag = options.flag or utility.nextflag()
+				
+                local holder = utility.create("Square", {
+                    Transparency = 0.5,
+                    Size = UDim2.new(1, 0, 0, 300),
+                    Position = UDim2.new(0, 0, 0, 0),
+                    ZIndex = 7,
+                    Parent = sectioncontent,
+					Transparency = 0
+                })
+				
+				section.Size = UDim2.new(1, 0, 0, sectioncontent.AbsoluteContentSize + 20)
+				
+				return library.createpreview(holder,flag)
+			end
 
             return sectiontypes
         end

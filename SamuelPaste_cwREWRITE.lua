@@ -1102,7 +1102,7 @@ do
 			end
 		}:ColorPicker{
 			Flag = 'EspChamsOutline',
-			Default = Color3.froRGB(255,255,255),
+			Default = Color3.fromRGB(255,255,255),
 			DefaultAlpha = 0.5,
 			Callback = function(col)
 				for i,v in pairs(highlights) do
