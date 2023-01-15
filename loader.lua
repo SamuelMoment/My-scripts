@@ -1,6 +1,6 @@
 local function getGameAndLoad()
 	if game.GameId == 1390601379 then
-		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_cw.lua'))()
+		loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/SamuelPaste_cwREWRITE.lua'))()
 	end	
 end
 if shouldSkipGui then

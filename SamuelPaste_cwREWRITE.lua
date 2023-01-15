@@ -12,44 +12,14 @@ function removewithoutdupes(tab, thethingyouneedtoremove) -- my own code :sungla
 	if table.find(tab, thethingyouneedtoremove) then
 		table.remove(tab, table.find(tab, thethingyouneedtoremove))
 	end
-end	
---[[
-local Vec2 = Vector2.new
-local Vec3 = Vector3.new
-local CF = CFrame.new
-local INST = Instance.new
-local COL3 = Color3.new 
-local UDIM2 = UDim2.new
-
-local COL3RGB = Color3.fromRGB
-local COL3HSV = Color3.fromHSV
-local COL3HEX = Color3.fromHex
-
-local CLAMP = math.clamp 
-local FLOOR = math.floor 
-
-local RANDOM = math.random 
-
-local CFAngles = CFrame.Angles
-
-local FIND = string.find 
-local LEN = string.len 
-local SUB = string.sub 
-local GSUB = string.gsub 
-local RAY = Ray.new
-
-local INSERT = table.insert 
-local TBLFIND = table.find 
-local TBLREMOVE = table.remove
-local TBLSORT = table.sort 
---]]
+end
 
 local library,Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/library.lua"))()
 local blacklistedKeys = { --skidded cuz me lazy
 	Enum.KeyCode.Unknown,Enum.KeyCode.W,Enum.KeyCode.A,Enum.KeyCode.S,Enum.KeyCode.D,Enum.KeyCode.Slash,Enum.KeyCode.Tab,Enum.KeyCode.Backspace,Enum.KeyCode.Escape
 }
 
-local cacheModels = game:GetObjects("rbxassetid://11377511083")[1]
+--[[local cacheModels = game:GetObjects("rbxassetid://11377511083")[1]
 repeat wait() until cacheModels ~= nil
 local ChrModels = cacheModels:FindFirstChild('r6')
 repeat wait() until ChrModels ~= nil 
@@ -64,12 +34,10 @@ local ChinaHat = game:GetObjects('rbxassetid://11377527413')[1]
 repeat wait() until ChinaHat ~= nil
 
 local Effects = game:GetObjects('rbxassetid://11377514627')[1]
-repeat wait() until Effects ~= nil
+repeat wait() until Effects ~= nil--]]
 
 repeat wait() until game:IsLoaded()
 
---CreateHitElement(" Welcome, "..game.Players.LocalPlayer.Name.."!",MainUIColor,5)
---wait(0.5)
 
 local Players = game:GetService("Players") 
 local LocalPlayer = Players.LocalPlayer 
@@ -83,8 +51,47 @@ local Mouse = LocalPlayer:GetMouse()
 local modules = {}
 local events = game:GetService("ReplicatedStorage").Communication.Events
 local functions = game:GetService("ReplicatedStorage").Communication.Functions
-
+local messages = {
+	"Lost to SamuelPaste? Who woulda thought",
+	"what was that? Can't hear u over my kill sound",
+	"he swings! and he misses",
+	"SamuelPaste is pasted did you know?",
+	"This hack is approved by Y1K",
+	"fun fact: this person is using SamuelPaste",
+	"oww, thats gonna leave a bruise in the morning",
+	"this is a tough workout!",
+	"No way you're this bad?",
+	"Are you a train? Coz you're getting railed rn",
+	"Oops i forgot you were there, oh wait you actually dont exist anyways.",
+	"ez ez you got clapped by a low level haha!",
+	"🤓: you cant just exploit in here!!111!!111 its illegal!!!!",
+	"why are you dying to me bro fr fr",
+	"clapped by SamuelPaste user 💀",
+	"bro got clapped lol",
+	"'🤓: imagine being fatherless'  where are yours then go check 😁😁😁",
+	"sorry did my kill aura hit you?",
+	"fr fr SamuelPaste on top",
+	"wdym touch grass i have one of those on my feet",
+	"fortnite 19$ gift card who wants it!!!??",
+	--".gg/gswH7FGxyb <-- join for cool scripts (!!! real no fake !!!)",
+	"your dad never came back from the milk store for a reason",
+	"damn bro did your mother drop you when youre born",
+	"Who are you talking to? a kill say bot? 😅",
+	"damn bro you really need a therapist 😅😅",
+	"🤓: stop hacking!!!! its against the rules!!!",
+	"wenomechainsama tumajarbisaun",
+	"you should go back to kindergarden bro 😂",
+	"im just better than you!!!!!",
+	"SamuelPaste better than you smh smh smh 😅",
+	'Nya~'
+	
+}	
+		
 makefolder('SamuelPaste')
+makefolder('SamuelPaste/cw')
+if not isfile('SamuelPaste/cw/killsay.txt') then
+	writefile('SamuelPaste/cw/killsay.txt','abc')
+end
 --[[ MENU SETUP ]]--
 local main = library:Load{
     Name = "SamuelPaste $$$ > SamuelHook",
@@ -166,12 +173,7 @@ do
 		local plr = plr or LocalPlayer
 		return GetState(plr).down.isDowned
 	end
-	
 end
-
-
-
-
 --[[ BYPASS ]]--
 do
 	for i,v in pairs(getgc(true)) do
@@ -196,10 +198,8 @@ do
 		local args = {...}
 		local method = getnamecallmethod()
 		if method == 'Kick' then return wait(9e9) end
-		if self.Name == 'BAC' and not checkcaller() then
-			args[1] = {}
-			args[1][1] = args[1]
-		end
+		if self.Name == 'BAC' then return end
+		if self.Name == 'ExportClientErrors' then return end
 		return old_namecall(self,unpack(args))
 	end))
 	for i = 1,10 do -- inf jump bypass
@@ -236,33 +236,37 @@ do
 			if rawget(v,'removeKillFeedIdx') then
 				modules['killfeed'] = v
 			end
+			if rawget(v,'FireServer') then
+				modules['Network'] = v
+			end
 		end
 	end
 end
 
---[[ SIGNALS ]]--
 local Spawn = Signal.new()
 local Died = Signal.new()
 local KillFeed = Signal.new()
 local Ranged = Signal.new()
-
+--[[ SIGNALS ]]--
 do
-	--killfeed
-	local old;old = hookfunction(modules['killfeed'].render,function(a)
-		local props = a.props
-		local whoKilled = props.characterThatKilled
-		local whoDied = props.characterThatDied
-		if not (whoKilled or whoDied) then return end
-		KillFeed:Fire(tostring(whoKilled),tostring(whoDied))
-		
-		return old(a)
+	-- KILLFEED --
+	local old;old = hookfunction(modules['killfeed'].render,function(a,...)
+		pcall(function()
+			local props = a.props
+			local killfeedItemInfo = props.killfeedItemInfo
+			local whoKilled = killfeedItemInfo.characterThatKilled
+			local whoDied = killfeedItemInfo.characterThatDied
+
+			KillFeed:Fire(tostring(whoKilled),tostring(whoDied))
+		end)
+		return old(a,...)
 	end)
-	--spawn and death
+	-- SPAWN AND DEATH --
 	for i,v in pairs(getgc()) do
 		if getinfo(v).name == 'onSpawnCharacter' then
 			local old;old = hookfunction(v,function(...)
 				task.spawn(function()
-					repeat wait() until LocalPlayer.Character and LocalPlayer.Backpack:FindFirstChildWhichIsA('Tool')
+					repeat wait() until IsAlive()
 					LocalPlayer.Character:WaitForChild('Humanoid').Died:Connect(function()
 						Died:Fire()
 					end)
@@ -272,7 +276,7 @@ do
 			end)
 		end
 	end
-	-- ranged
+	-- RANGED --
 	do
 		local ids = {'weapon43','weapon44','utility9','weapon53'}
 		local metadata = modules['WeaponMetadata']
@@ -303,14 +307,15 @@ do
 				chargeOffDuration		  = nil          ,
 				maxDistance				  = 999999       ,
 			}
-			Ranged:Connect(function(index,toggle)
-				data[index] = toggle and spoofedValues[index] or originalValues[index]
+			Ranged:Connect(function(index,toggle,newval)
+				local newval = newval or spoofedValues[index]
+				data[index] = toggle and newval or originalValues[index]
 			end)
 		end
 	end
 end
 
---[[ MAIN ]]--
+--[[ RAGE ]]--
 do
 	--[[ TARGET INFO ]]--
 	
@@ -499,12 +504,13 @@ do
 		Name = 'No Recoil',
 		Callback = function(toggle)
 			Ranged:Fire('recoilAmount',toggle)
+			Ranged:Fire('maxTotalBloom',toggle)
 		end
 	}
 	rm:Toggle{
 		Name = 'No Slowdown',
 		Callback = function(toggle)
-			Ranged:Fire('recoilAmount',toggle)
+			Ranged:Fire('reloadWalkSpeedMultiplier',toggle)
 		end
 	}
 	rm:Toggle{
@@ -533,18 +539,6 @@ do
 			end
 		end
 	}	
-	
-	do
-		local rwc = modules['RangedWeaponClient']
-		local old = rwc.cancelReload
-		rwc.cancelReload = function(...)
-			return library.flags['NRC'] and nil or old(...)
-		end
-		local old2 = rwc.cancelCharge
-		rwc.cancelCharge = function(...)
-			return library.flags['NCC'] and nil or old2(...)
-		end	
-	end
 	--[[ SILENT AIM ]]--
 	local sa = rage:Section{Name='Silent Aim',Side='Right'}
 	sa:Toggle{
@@ -601,50 +595,172 @@ do
 		end)
 	end)
 	--sa:ToggleTrans', 'Highlight target')	
-	
-	task.spawn(function()
-		local blacklist = {
-			'getLedgeManifestAtCurrentPos',
-			'isLedgePositionObstructed',
-			'getFloorRayRes',
-			'detectGrabbableLedge',
-			'getLedgeManifest',
-			'detectLedgeVerticalCorner'
-		}
-		local old=modules['RangedWeaponHandler'].calculateFireDirection
-		local closest
-		modules['RangedWeaponHandler'].calculateFireDirection=function(...)
-			if not library.flags['RageSilentAim'] then return old(...) end
-			closest = getClosestToMouse(library.flags['RageFOV'])
-			if closest ~= nil then
-				if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') and LocalPlayer.Character:FindFirstChildWhichIsA('Tool'):FindFirstChild('ClientAmmo') then
-					local tool = LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
-					local firepos = tool:FindFirstChild('FirePoint',true)
-					if firepos then
-						return CFrame.new(firepos.WorldCFrame.Position,closest.Character.Head.Position).LookVector*30
-					end
-				end
-			end
-			return old(...)
-		end	
-		local oldNamecall; oldNamecall = hookmetamethod(game,'__namecall', function(self, ...) 
-			local method = tostring(getnamecallmethod()) 
-			local args = {...} 
-			if method == 'Raycast' and library.flags['RageSilentAim'] then
-				local a = getinfo(4)
-				if closest and closest.Character ~= nil and a and not table.find(blacklist,a.name) then
-					if (closest.Character.Head.Position-args[1]).Magnitude <= 15 then
-						args[2] = (closest.Character.Head.Position-args[1]).Unit * 100
-					end
-				end
-			end
-			return oldNamecall(self,unpack(args))
-		end)	
-	end)
+
 end
 
+--[[ LEGIT (REAL😱)]]--
+do
+	--[[ FALL DAMAGE MODIFIER ]]--
+	local modify = legit:Section{Name='Fall Damage Modifier',Side='Right'}
+	modify:Toggle{
+		Name = 'Less Fall Damage',
+		Flag = 'LegitFallDamage'
+	}
+	modify:Slider{
+		Name = 'Percentage Removed',
+		Min = 1,
+		Max = 100,
+		Default = 50,
+		Flag = 'LegitFallDamageSlider'
+	}
+	modify:Toggle{
+		Name = 'Never Fatal',
+		Flag = 'LegitFallDamageFatal'
+	}
+	--[[ RANGED MODS MODIFIER ]]--
+	local mods = legit:Section{Name='Ranged Mods',Side = 'Left'}
+	mods:Toggle{
+		Name = 'Drop Off Modifier',
+		Flag = 'LegitRangedDropOff',
+		Callback = function(val)
+			Ranged:Fire('gravity',val,Vector3.new(0,-(library.flags['LegitRangedDropOffVal'] or 0),0)) -- library calls callback for no fucking reason so i need "or 0"
+		end
+	}:Slider{
+		Min = -10,
+		Max = 0,
+		Text = '[value]/0 Studs Gravity',
+		Flag = 'LegitRangedDropOffVal',
+		Callback = function(val)
+			Ranged:Fire('gravity',library.flags['LegitRangedDropOff'],Vector3.new(0,-val,0))
+		end
+	}
+	
+	mods:Toggle{
+		Name = 'Spread Modifier',
+		Flag = 'LegitRangedSpread',
+		Callback = function(val)
+			Ranged:Fire('maxSpread',val,library.flags['LegitRangedSpreadVal'])
+			Ranged:Fire('minSpread',val,library.flags['LegitRangedSpreadVal'])
+		end
+	}:Slider{
+		Min = 0,
+		Max = 0.35,
+		Float = 0.05,
+		Flag = 'LegitRangedSpreadVal',
+		Callback = function(val)
+			Ranged:Fire('maxSpread',library.flags['LegitRangedSpread'],val)
+			Ranged:Fire('minSpread',library.flags['LegitRangedSpread'],val)
+		end
+	}
+	
+	mods:Toggle{
+		Name = 'Recoil Modifier',
+		Flag = 'LegitRangedRecoil',
+		Callback = function(val)
+			Ranged:Fire('recoilAmount',val,library.flags['LegitRangedRecoilVal'])
+		end
+	}:Slider{
+		Min = 0,
+		Max = 35,
+		Flag = 'LegitRangedRecoilVal',
+		Callback = function(val)
+			Ranged:Fire('recoilAmount',library.flags['LegitRangedRecoil'],val)
+		end
+	}	
+
+	mods:Toggle{
+		Name = 'Charge Time Modifier',
+		Flag = 'LegitRangedCharge',
+		Callback = function(val)
+			Ranged:Fire('chargeOnDuration',val,library.flags['LegitRangedChargeVal'])
+		end
+	}:Slider{
+		Min = 0,
+		Max = 0.45,
+		Float = 0.05,
+		Flag = 'LegitRangedChargeVal',
+		Callback = function(val)
+			Ranged:Fire('chargeOnDuration',library.flags['LegitRangedCharge'],val)
+		end
+	}		
+	
+	mods:Toggle{
+		Name = 'No Reload Cancel',
+		Flag = 'LegitNRC'
+	}
+	mods:Toggle{
+		Name = 'No Charge Cancel',
+		Flag = 'LegitNCC'
+	}	
+	--[[ NETWORK MANIPULATION ]]--
+	local oldFireServer = modules['Network'].FireServer
+	modules['Network'].FireServer = function(self,name,...)
+		local args = {...}
+		
+		if name == 'TakeFallDamage' and library.flags['LegitFallDamage'] then
+			local modifier = library.flags['LegitFallDamageSlider']
+			args[1] -= args[1] / 100 * modifier
+			local health = LocalPlayer.Character.Humanoid.Health
+			if health-args[1] >= 1 and library.flags['LegitFallDamageFatal'] then
+				if health >= 16 then
+					args[1] = health-10
+				else
+					args[1] = 2
+				end
+			end
+		end
+		return oldFireServer(self,name,unpack(args))
+	end
+end
+
+--[[ SILENT AIM HANDLER ]]--
+task.spawn(function()
+
+	local old=modules['RangedWeaponHandler'].calculateFireDirection
+	local closest
+	modules['RangedWeaponHandler'].calculateFireDirection=function(...)
+		if not library.flags['RageSilentAim'] then return old(...) end
+		closest = getClosestToMouse(library.flags['RageFOV'])
+		if closest ~= nil then
+			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') and LocalPlayer.Character:FindFirstChildWhichIsA('Tool'):FindFirstChild('ClientAmmo') then
+				local tool = LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
+				local firepos = tool:FindFirstChild('FirePoint',true)
+				if firepos then
+					return CFrame.new(firepos.WorldCFrame.Position,closest.Character.Head.Position).LookVector*30
+				end
+			end
+		end
+		return old(...)
+	end	
+	local oldNamecall; oldNamecall = hookmetamethod(game,'__namecall', function(self, ...) 
+		local method = tostring(getnamecallmethod()) 
+		local args = {...} 
+		if method == 'Raycast' and library.flags['RageSilentAim'] and closest and closest.Character then
+			local a = getinfo(4)
+			if a and a.name == 'SimulateCast' then
+				if (closest.Character.Head.Position-args[1]).Magnitude <= 15 then
+					args[2] = (closest.Character.Head.Position-args[1]).Unit * 100
+				end
+			end
+		end
+		return oldNamecall(self,unpack(args))
+	end)	
+end)
+--[[ RANGED MODS FOR LEGIT AND RAGE ]]--
+do
+	local rwc = modules['RangedWeaponClient']
+	local old = rwc.cancelReload
+	rwc.cancelReload = function(...)
+		return (library.flags['NRC'] or library.flags['LegitNRC']) and '' or old(...)
+	end
+	local old2 = rwc.cancelCharge
+	rwc.cancelCharge = function(...)
+		return (library.flags['NCC'] or library.flags['LegitNCC']) and 0 or old2(...)
+	end	
+end
 --[[ MISC ]]--
 do
+	--[[ CHARACTER EXPLOITS ]]--
 	local misc2 = misc:Section{Name='Character Exploits',Side='Right'} -- skidded sort from pjhook prem
 	misc2:Toggle{
 		Name = 'No Jump Cooldown',
@@ -701,7 +817,7 @@ do
 		Blacklist = blacklistedKeys,
 		Mode = 'Toggle',
 	}
-	
+	--[[ CHARACTER MOVEMENT ]]-- 
 	local charMov = misc:Section{Name = 'Character Movement',Side = 'Left'}
 	local tog = charMov:Toggle{
 		Name = 'Walk Speed',
@@ -734,7 +850,7 @@ do
 		Flag = 'Power'
 	}
 
-
+	--[[ ANTI ]]--
 	local anti = misc:Section{Name = 'Anti',Side = 'Left'}
 	anti:Toggle{
 		Name = 'Ragdoll',
@@ -746,7 +862,7 @@ do
 		Name = 'Equip Weapon',
 		Flag = 'AutoTool'
 	}
-	
+	--[[ VISUAL EXPLOITS ]]--
 	local vexploits = misc:Section{Name = 'Visual Exploits',Side = 'Right'}
 	
 	vexploits:Toggle{
@@ -758,7 +874,20 @@ do
 			end
 		end
 	}
-	--[[ SHIT THAT ISNT HOOK BUT IDK HOW TO CALL LMAO ]]--
+	--[[ CHAT RELATED ]]--
+	local chat = misc:Section{Name = 'Chat Related',Side = 'Left'}
+	chat:Toggle{
+		Name = 'Kill Say',
+		Flag = 'ChatKillSay'
+	}
+	chat:Toggle{
+		Name = 'Use Custom Kill Say',
+		Flag = 'ChatKillSayFile'
+	}
+	
+	
+	--[[ EXPLOITS WITHOUT HOOK ]]--
+	
 	-- INF JUMP --
 	UserInputService.InputBegan:Connect(function(k,j)
 		if j then return end
@@ -802,9 +931,20 @@ do
 				game:GetService("ReplicatedStorage").Communication.Events.UpdateIsCrouching:FireServer(true)	
 			end
 		end
-
 	end)
+	--[[ SIGNALS RELATED ]]--
 	
+	-- KILL SAY --	
+	KillFeed:Connect(function(whoKilled,whoDied)
+		if whoKilled == LocalPlayer.Name and whoDied ~= LocalPlayer.Name and library.flags['ChatKillSay'] then
+			local output = messages[math.random(1,#messages)]
+			if library.flags['ChatKillSayFile'] then
+				local compiled = readfile('SamuelPaste/cw/killsay.txt'):split('\n')
+				output = compiled[math.random(1,#compiled)]
+			end
+			game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(output)
+		end
+	end)
 	--[[ HOOKS ]]--
 	
 	-- STAMINA --
@@ -833,6 +973,7 @@ do
 			return old(...)
 		end
 	end
+		
 end
 --[[ VISUALS ]]--
 do
@@ -1092,7 +1233,7 @@ do
 	
 	task.spawn(function()
 		local highlights = {}
-		sector:Toggle{
+		local toggle = sector:Toggle{
 			Name = 'Chams',
 			Flag = 'EspChams',
 			Callback = function(tog)
@@ -1100,24 +1241,26 @@ do
 					v.Enabled = tog
 				end
 			end
-		}:ColorPicker{
+		}
+		toggle:ColorPicker{
 			Flag = 'EspChamsOutline',
 			Default = Color3.fromRGB(255,255,255),
-			DefaultAlpha = 0.5,
+			DefaultAlpha = 1,
 			Callback = function(col)
 				for i,v in pairs(highlights) do
 					v.OutlineColor = col
-					v.OutlineTransparency = col.Transparency
+					v.OutlineTransparency = 1-col.Transparency
 				end			
 			end
-		}:ColorPicker{
+		}
+		toggle:ColorPicker{
 			Flag = 'EspChamsFill',
-			Default = Color3.froRGB(255,0,0),
+			Default = Color3.fromRGB(255,0,0),
 			DefaultAlpha = 1,
 			Callback = function(col)
 				for i,v in pairs(highlights) do
 					v.FillColor = col
-					v.FillTransparency = col.Transparency
+					v.FillTransparency = 1-col.Transparency
 				end			
 			end
 		}
@@ -1126,20 +1269,20 @@ do
 			highlight.Adornee = instance
 			highlight.Enabled = library.flags['EspChams']
 			highlight.OutlineColor = library.flags['EspChamsOutline']
-			highlight.OutlineTransparency = library.flags['EspChamsOutline'].Transparency
+			highlight.OutlineTransparency = 1-library.flags['EspChamsOutline'].Transparency
 			highlight.FillColor = library.flags['EspChamsFill']
-			highlight.FillTransparency = library.flags['EspChamsFill'].Transparency
+			highlight.FillTransparency = 1-library.flags['EspChamsFill'].Transparency
 			
 			return highlight
 		end
 		for i,v in pairs(game.Players:GetPlayers()) do
 			if v == game.Players.LocalPlayer then continue end
 			if v.Character then
-				repeat wait() until v.Backpack:FindFirstChildWhichIsA("Tool")
+				repeat wait() until IsAlive(v)
 				highlights[v.Name] = addHighlight(v.Character)
 			end
 			v.CharacterAdded:Connect(function(chr)
-				repeat wait() until v.Backpack:FindFirstChildWhichIsA("Tool")
+				repeat wait() until IsAlive(v)
 				highlights[v.Name] = addHighlight(chr)
 			end)
 			v.CharacterRemoving:Connect(function()
@@ -1149,7 +1292,7 @@ do
 		end
 		game.Players.PlayerAdded:Connect(function(v)
 			v.CharacterAdded:Connect(function(chr)
-				repeat wait() until v.Backpack:FindFirstChildWhichIsA("Tool")
+				repeat wait() until IsAlive(v)
 				highlights[v.Name] = addHighlight(v.Character)
 			end)
 			v.CharacterRemoving:Connect(function()
