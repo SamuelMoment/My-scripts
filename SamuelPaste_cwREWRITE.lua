@@ -108,8 +108,9 @@ local visuals = main:Tab('Visuals')
 local skins   = main:Tab('Skins')
 
 --[[ FUNCTIONS ]]--
+local framework = {}
 do
-	function GetClosests(distane,addArgs)
+	function framework.GetClosests(distane,addArgs)
 		if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild('HumanoidRootPart') then return end
 		local tbl = {}
 		local magnitudes = {}
@@ -128,7 +129,7 @@ do
 				local TargetHRP = v.Character.HumanoidRootPart
 				local mag = (HumanoidRootPart.Position - TargetHRP.Position).magnitude
 				if mag < TargetDistance then
-					if addArgs['onlyDown'] and not IsDown(v) then continue end
+					if addArgs['onlyDown'] and not framework.IsDown(v) then continue end
 					table.insert(tbl,v)
 					magnitudes[v] = mag
 				end
@@ -139,12 +140,41 @@ do
 		end)
 		return tbl
 	end
-	function GetClosest(...) 
-		local Closests = GetClosests(...)
+	function framework.GetClosestsNN(distane,from) --NN means no namecall
+		if not LocalPlayer.Character or not LocalPlayer.Character.FindFirstChild(LocalPlayer.Character,'HumanoidRootPart') then return end
+		local tbl = {}
+		local magnitudes = {}
+		
+		local Character = LocalPlayer.Character
+		local HumanoidRootPart = Character and Character.HumanoidRootPart
+		
+		local from = from or HumanoidRootPart.CFrame.p
+		
+		local TargetDistance = distane or 50
+		local Target
+
+		for i, v in ipairs(Players.GetPlayers(Players)) do
+			if v ~= LocalPlayer and v.Character and v.Character.FindFirstChild(v.Character,"HumanoidRootPart") and v.Character.FindFirstChildWhichIsA(v.Character,"Humanoid").Health ~= 0 then
+				local TargetHRP = v.Character.HumanoidRootPart
+				local mag = (from - TargetHRP.Position).magnitude
+				if mag < TargetDistance then
+					--if addArgs['onlyDown'] and not IsDown(v) then continue end
+					table.insert(tbl,v)
+					magnitudes[v] = mag
+				end
+			end
+		end
+		table.sort(tbl,function(a,b)
+			return magnitudes[a] < magnitudes[b]
+		end)
+		return tbl
+	end
+	function framework.GetClosest(...) 
+		local Closests = framework.GetClosests(...)
 		if not Closests[1] then return nil end
 		return Closests[1]
 	end --im too lazy and it easiesr for me to modify code
-	function getClosestToMouse(distance)
+	function framework.getClosestToMouse(distance)
 		local player, nearestDistance = nil, distance or 99999
 		for i,v in pairs(Players:GetPlayers()) do
 			if v ~= Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -161,17 +191,17 @@ do
 		end
 		return player
 	end
-	function GetState(plr)
+	function framework.GetState(plr)
 		local plr = plr or LocalPlayer
 		return modules['DataHandler'].getSessionDataRoduxStoreForPlayer(plr):getState()
 	end	
-	function IsAlive(plr)
+	function framework.IsAlive(plr)
 		local plr = plr or LocalPlayer
 		return plr.Character and plr.Character:FindFirstChildWhichIsA('Humanoid') and (plr.Character:FindFirstChildWhichIsA('Tool') or plr.Backpack:FindFirstChildWhichIsA('Tool')) and true or false
 	end
-	function IsDown(plr)
+	function framework.IsDown(plr)
 		local plr = plr or LocalPlayer
-		return GetState(plr).down.isDowned
+		return framework.GetState(plr).down.isDowned
 	end
 end
 --[[ BYPASS ]]--
@@ -266,7 +296,7 @@ do
 		if getinfo(v).name == 'onSpawnCharacter' then
 			local old;old = hookfunction(v,function(...)
 				task.spawn(function()
-					repeat wait() until IsAlive()
+					repeat wait() until framework.IsAlive()
 					LocalPlayer.Character:WaitForChild('Humanoid').Died:Connect(function()
 						Died:Fire()
 					end)
@@ -378,7 +408,7 @@ do
 			if executing == true then return end
 			if not library.flags['KillauraEnabled'] then return end
 			Weapon = nil
-			local Closest = GetClosests(library.flags['KillauraDistance'])
+			local Closest = framework.GetClosests(library.flags['KillauraDistance'])
 			
 			if Closest ~= nil and #Closest ~= 0 then
 				if library.flags['KillauraPriority'] == 'Health' then
@@ -400,7 +430,7 @@ do
 							for i,v in pairs(Closest) do
 								if Weapon.Parent ~= LocalPlayer.Character then break end
 								if not v.Character:FindFirstChild('Torso') then continue end
-								if (IsDown(v) and library.flags['KillauraFinish'] ~= 'Regular') then continue end
+								if (framework.IsDown(v) and library.flags['KillauraFinish'] ~= 'Regular') then continue end
 								local args = {
 									[1] = Weapon,
 									[2] = v.Character.Torso,
@@ -411,7 +441,7 @@ do
 									),
 									[6] = v.Character.Torso.Position,
 								} 
-								if GetState(v).parry.isParrying == false then
+								if framework.GetState(v).parry.isParrying == false then
 									events.MeleeDamage:FireServer(unpack(args))
 									events.MeleeDamage:FireServer(unpack(args))
 								else
@@ -430,7 +460,7 @@ do
 			if executing2 == true then return end
 			if not library.flags['KillauraEnabled'] then return end
 			if not library.flags['KillauraFinish'] == 'Finish' then return end
-			local Closest = GetClosest(library.flags['KillauraDistance'],{onlyDown = true})
+			local Closest = framework.GetClosest(library.flags['KillauraDistance'],{onlyDown = true})
 			if Closest ~= nil then
 				executing2 = true
 				pcall(function()
@@ -464,8 +494,8 @@ do
 		RunService.Stepped:Connect(KillLoop)
 		RunService.Stepped:Connect(FinishLoop)
 		RunService.Stepped:Connect(function()
-			if IsAlive(LocalPlayer) and library.flags['KillauraBehind'] and library.flags['KillauraEnabled'] then
-				local Closest = GetClosest(library.flags['KillauraDistance'])
+			if framework.IsAlive(LocalPlayer) and library.flags['KillauraBehind'] and library.flags['KillauraEnabled'] then
+				local Closest = framework.GetClosest(library.flags['KillauraDistance'])
 				if not Closest then return end
 				local Weapon = LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
 				if Weapon and Weapon:FindFirstChild('Hitboxes') then
@@ -720,7 +750,7 @@ task.spawn(function()
 	local closest
 	modules['RangedWeaponHandler'].calculateFireDirection=function(...)
 		if not library.flags['RageSilentAim'] then return old(...) end
-		closest = getClosestToMouse(library.flags['RageFOV'])
+		closest = framework.getClosestToMouse(library.flags['RageFOV'])
 		if closest ~= nil then
 			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA('Tool') and LocalPlayer.Character:FindFirstChildWhichIsA('Tool'):FindFirstChild('ClientAmmo') then
 				local tool = LocalPlayer.Character:FindFirstChildWhichIsA('Tool')
@@ -733,13 +763,15 @@ task.spawn(function()
 		return old(...)
 	end	
 	local oldNamecall; oldNamecall = hookmetamethod(game,'__namecall', function(self, ...) 
-		local method = tostring(getnamecallmethod()) 
+		local method = getnamecallmethod()
 		local args = {...} 
-		if method == 'Raycast' and library.flags['RageSilentAim'] and closest and closest.Character then
-			local a = getinfo(4)
+		if method == 'Raycast' and library.flags['RageSilentAim'] then
+			local a = getinfo(3)
 			if a and a.name == 'SimulateCast' then
-				if (closest.Character.Head.Position-args[1]).Magnitude <= 15 then
-					args[2] = (closest.Character.Head.Position-args[1]).Unit * 100
+				print('a')
+				local closests = framework.GetClosestsNN(20,args[1])
+				if closests[1] then
+					args[2] = (closests[1].Character.Head.Position-args[1]).Unit * 100
 				end
 			end
 		end
@@ -777,7 +809,7 @@ do
 	misc2:Toggle{
 		Name = 'No Fall Damage',
 		Callback = function(toggle)
-			GetState(LocalPlayer).fallDamageClient.isDisabled = toggle
+			framework.GetState(LocalPlayer).fallDamageClient.isDisabled = toggle
 		end
 	}
 	misc2:Toggle{
@@ -797,7 +829,7 @@ do
 		Flag = 'Fly',
 		Callback = function(toggle)
 			if LocalPlayer.Character then
-				GetState(LocalPlayer).fly.isFlying = toggle
+				framework.GetState(LocalPlayer).fly.isFlying = toggle
 				if toggle then
 					getupvalue(modules['FlyHandlerClient']._startModule,2)(LocalPlayer.Character)
 				elseif LocalPlayer.Character:FindFirstChild('HumanoidRootPart') and LocalPlayer.Character:FindFirstChild('HumanoidRootPart'):FindFirstChild('LinearVelocity') then
