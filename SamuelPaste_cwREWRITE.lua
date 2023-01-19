@@ -139,6 +139,35 @@ do
 		end)
 		return tbl
 	end
+	function GetClosestsNN(distane,from) --NN means no namecall
+		if not LocalPlayer.Character or not LocalPlayer.Character.FindFirstChild(LocalPlayer.Character,'HumanoidRootPart') then return end
+		local tbl = {}
+		local magnitudes = {}
+		
+		local Character = LocalPlayer.Character
+		local HumanoidRootPart = Character and Character.HumanoidRootPart
+		
+		local from = from or HumanoidRootPart.CFrame.p
+		
+		local TargetDistance = distane or 50
+		local Target
+
+		for i, v in ipairs(Players.GetPlayers(Players)) do
+			if v ~= LocalPlayer and v.Character and v.Character.FindFirstChild(v.Character,"HumanoidRootPart") and v.Character.FindFirstChildWhichIsA(v.Character,"Humanoid").Health ~= 0 then
+				local TargetHRP = v.Character.HumanoidRootPart
+				local mag = (from - TargetHRP.Position).magnitude
+				if mag < TargetDistance then
+					--if addArgs['onlyDown'] and not IsDown(v) then continue end
+					table.insert(tbl,v)
+					magnitudes[v] = mag
+				end
+			end
+		end
+		table.sort(tbl,function(a,b)
+			return magnitudes[a] < magnitudes[b]
+		end)
+		return tbl
+	end
 	function GetClosest(...) 
 		local Closests = GetClosests(...)
 		if not Closests[1] then return nil end
@@ -733,13 +762,15 @@ task.spawn(function()
 		return old(...)
 	end	
 	local oldNamecall; oldNamecall = hookmetamethod(game,'__namecall', function(self, ...) 
-		local method = tostring(getnamecallmethod()) 
+		local method = getnamecallmethod())
 		local args = {...} 
-		if method == 'Raycast' and library.flags['RageSilentAim'] and closest and closest.Character then
+		if method == 'Raycast' and library.flags['RageSilentAim'] then
 			local a = getinfo(4)
 			if a and a.name == 'SimulateCast' then
-				if (closest.Character.Head.Position-args[1]).Magnitude <= 15 then
-					args[2] = (closest.Character.Head.Position-args[1]).Unit * 100
+				print('a')
+				local closests = GetClosestsNN(20,args[1])
+				if closests[1] then
+					args[2] = (closests[1].Character.Head.Position-args[1]).Unit * 100
 				end
 			end
 		end
