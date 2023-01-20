@@ -413,7 +413,7 @@ do
 			if Closest ~= nil and #Closest ~= 0 then
 				if library.flags['KillauraPriority'] == 'Health' then
 					table.sort(Closest,function(a,b)
-						return a[1].Character.Health < b[1].Character.Health
+						return a.Character.Health < b.Character.Health
 					end)
 				end
 				executing = true
