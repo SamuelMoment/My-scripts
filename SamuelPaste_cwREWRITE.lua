@@ -19,23 +19,6 @@ local blacklistedKeys = { --skidded cuz me lazy
 	Enum.KeyCode.Unknown,Enum.KeyCode.W,Enum.KeyCode.A,Enum.KeyCode.S,Enum.KeyCode.D,Enum.KeyCode.Slash,Enum.KeyCode.Tab,Enum.KeyCode.Backspace,Enum.KeyCode.Escape
 }
 
---[[local cacheModels = game:GetObjects("rbxassetid://11377511083")[1]
-repeat wait() until cacheModels ~= nil
-local ChrModels = cacheModels:FindFirstChild('r6')
-repeat wait() until ChrModels ~= nil 
-
-local ChrModels2 = cacheModels:FindFirstChild('r6 2')
-repeat wait() until ChrModels2 ~= nil 
-
-local ChrModels3 = cacheModels:FindFirstChild('r6 3')
-repeat wait() until ChrModels3 ~= nil
-
-local ChinaHat = game:GetObjects('rbxassetid://11377527413')[1]
-repeat wait() until ChinaHat ~= nil
-
-local Effects = game:GetObjects('rbxassetid://11377514627')[1]
-repeat wait() until Effects ~= nil--]]
-
 repeat wait() until game:IsLoaded()
 
 
@@ -768,7 +751,6 @@ task.spawn(function()
 		if method == 'Raycast' and library.flags['RageSilentAim'] then
 			local a = getinfo(3)
 			if a and a.name == 'SimulateCast' then
-				print('a')
 				local closests = frm.GetClosestsNN(20,args[1])
 				if closests[1] then
 					args[2] = (closests[1].Character.Head.Position-args[1]).Unit * 100
@@ -1337,6 +1319,24 @@ do
 			end
 		end)	
 	end)
+end
+--[[ SKINS ]]--
+do
+	--[[ CHARACTER CHANGER ]]--
+	local cacheModels = game:GetObjects("rbxassetid://12258574579")[1]
+	repeat wait() until cacheModels ~= nil
+	local R6Models = cacheModels:FindFirstChild('R6')
+	
+	local ChrModels  = R6Models:FindFirstChild('r6')
+	local ChrModels2 = R6Models:FindFirstChild('r6 2')
+	local ChrModels3 = R6Models:FindFirstChild('r6 3')
+
+	local ChinaHat   = game:GetObjects('rbxassetid://11377527413')[1]
+	local Effects    = game:GetObjects('rbxassetid://11377514627')[1]
+	repeat wait() until ChinaHat ~= nil
+	repeat wait() until Effects ~= nil	
+	
+	
 end
 --[[ CONFIGURTAION ]]--
 do

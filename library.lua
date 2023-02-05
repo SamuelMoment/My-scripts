@@ -2145,29 +2145,6 @@ function library.createslider(min, max, parent, text, default, float, flag, call
     return slidertypes
 end
 
-function library.createpreview(parent,flag)
-	if not parent then return error('no parent') end
-	local hold = utility.create('Square',{
-		Filled = true,
-		Thickness = 0,
-		Color = Color3.fromRGB(25,25,25),
-		Parent = parent,
-		Transparency = 1,
-		Size = UDim2.new(1,0,1,0),
-		Position = UDim2.new(0,0,0,0),
-		ZIndex = 8
-	})
-	local head = utility.create('Square',{
-		Filled = true,
-		Thickness = 0,
-		Color = Color3.fromRGB(215,215,215),
-		Parent = hold,
-		Transparency = 1,
-		Size = UDim2.new(0,50,0,50),
-		Position = UDim2.new(0.5,-25,0,10),
-		ZIndex = 10
-	})
-end	
 local pickers = {}
 
 function library.createcolorpicker(default, defaultalpha, parent, count, flag, callback)
