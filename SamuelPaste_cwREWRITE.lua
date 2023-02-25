@@ -189,24 +189,29 @@ do
 end
 --[[ BYPASS ]]--
 do
-	for i,v in pairs(getgc(true)) do
-		if typeof(v) ~= 'table' then continue end
-		if rawget(v, 'getIsBodyMoverCreatedByGame') then
-			v.getIsBodyMoverCreatedByGame = function(gg)
-				return true
-			end
-			
-		end
-		if rawget(v, 'connectCharacter') then
-			 v.connectCharacter = function(gg) return wait(9e9) end
-		end
-		if rawget(v,'Remote')  then
-			for i,v in pairs(getconnections(v.Remote:GetPropertyChangedSignal('Name'))) do
-				v:Disable()
-			end
-			v.Remote.Name = v.Name
-		end
-	end
+    local remotes = {}
+    for i,v in pairs(getgc(true)) do
+        if typeof(v) ~= 'table' then continue end
+        if rawget(v, 'getIsBodyMoverCreatedByGame') then
+            v.getIsBodyMoverCreatedByGame = function(gg)
+                return true
+            end
+            
+        end
+        if rawget(v, 'connectCharacter') then
+             v.connectCharacter = function(gg) return wait(9e9) end
+        end
+    	if rawget(v,'Remote')  then
+    		remotes[v.Remote] = v.Name
+    	end
+    end
+    local oldIndex;oldIndex = hookmetamethod(game,'__index',newcclosure(function(self,index)
+        if remotes[self] and checkcaller() then
+            return remotes[self]
+        end
+         
+        return oldIndex(self,index)
+    end))
 	local old_namecall;old_namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
 		local args = {...}
 		local method = getnamecallmethod()

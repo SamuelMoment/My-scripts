@@ -7,8 +7,9 @@ local Camera = workspace.CurrentCamera
 local BodyVelocity = Instance.new('BodyVelocity')
 local function GetChar() -- also checks if ur alive
     local char = LocalPlayer.Character 
-    local hrp = char:FindFirstChild('HumanoidRootPart')
-    local hmd = char:FindFirstChildWhichIsA("Humanoid")
+
+    local hrp = char and char:FindFirstChild('HumanoidRootPart')
+    local hmd = char and char:FindFirstChildWhichIsA("Humanoid")
     if char and hrp and hmd.Health >= 0 then
         return char
     end
