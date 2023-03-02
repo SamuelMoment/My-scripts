@@ -202,22 +202,15 @@ do
              v.connectCharacter = function(gg) return wait(9e9) end
         end
     	if rawget(v,'Remote')  then
-    		remotes[v.Remote] = v.Name
+    		v.Remote.Name = v.Name
     	end
     end
-    local oldIndex;oldIndex = hookmetamethod(game,'__index',newcclosure(function(self,index)
-        if remotes[self] and checkcaller() then
-            return remotes[self]
-        end
-         
-        return oldIndex(self,index)
-    end))
 	local old_namecall;old_namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
 		local args = {...}
 		local method = getnamecallmethod()
-		if method == 'Kick' then return wait(9e9) end
-		if self.Name == 'BAC' then return end
-		if self.Name == 'ExportClientErrors' then return end
+		if method:lower() == 'kick' then return wait(9e9) end
+		if tostring(self) == 'BAC' then return end
+		if tostring(self) == 'ExportClientErrors' then return end
 		return old_namecall(self,unpack(args))
 	end))
 	for i = 1,10 do -- inf jump bypass
