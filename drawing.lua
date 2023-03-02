@@ -12,7 +12,7 @@ local TabRemove = function(tab,value)
         table.remove(tab,table.find(tab,value))
     end
 end
-if library then
+if library and frame then
     library:Unload()
 end
 if frame and frame.exists then frame.Visible = false frame:Remove() end
@@ -184,14 +184,6 @@ local utility = {
         return tab
     end
 }
-local settings = {
-    Size = UDim2.new(0,600,0,700),
-    Theme = 'Vozoid',
-    Path = 'DrawingTesting'
-}
-makefolder(settings.Path)
-local Theme = settings.Theme or 'Vozoid'
-local path = settings.Path or '/'
 local Themes = {
     ['Vozoid'] = {
         Border = fromrgb(56, 56, 56),
@@ -238,6 +230,14 @@ local Themes = {
         error = fromrgb(255, 0, 0),
     }
 }
+local settings = {
+    Size = UDim2.new(0,600,0,700),
+    Theme = 'Vozoid',
+    Path = 'DrawingTesting'
+}
+local Theme = settings.Theme or 'Vozoid'
+local path = settings.Path or '/'
+
 local ThemeDrawings = {
     Border = {},
         
@@ -259,7 +259,7 @@ local ThemeDrawings = {
 }
 
 local premade = {-- same shit as make slider but 100% premade rather than connections                                                                                       idea was not totally skidded from vozoid trust
-    Dropdown = function(parent,name,choices,default,callback,min,max)
+    Dropdown = function(parent,choices,default,callback,min,max)
         local isOpen = false
         local chosen = {}
         local chosenHolders = {}
@@ -679,8 +679,16 @@ function library:Unload()
         connection:Disconnect()
     end
 end
-function library:init()
+
+function library:init(options)
+    local options = utility.table(options or {})
     
+    Theme = (options.theme and Themes[options.theme] and options.theme) or settings.Theme
+    path = options.folder or settings.Path
+    makefolder(path)
+    makefolder(path..'/themes')
+    makefolder(path..'/cfgs')
+
     getgenv().frame = utility:Draw('Square',{
         Thickness = 0,
         Color = Themes[Theme].WindowBackground,
@@ -715,7 +723,7 @@ function library:init()
         Transparency = 0
     })
     local name = utility:Draw('Text',{
-        Text = 'SamuelPaste $$$',
+        Text = options.name or 'SamuelPaste $$$',
         Size = 13,
         Font = Drawing.Fonts['Plex'],
         Color = Color3.fromRGB(255,255,255),
@@ -1260,6 +1268,8 @@ function library:init()
                         alphaPointer.Position = UDim2.new(0, 0, value, 0)
                         alpha = value
                         alphaButton.Transparency = alpha
+
+                        set(Color3.fromHSV(hue,saturation,val))
                     end},'Y')
                     --
                     library.UpdateByFlag[flag] = function(tab)
@@ -1397,7 +1407,7 @@ function library:init()
                     Outline = true
                 }))
 
-                local funcs,dropdownfuncs = premade.Dropdown(holder,name,dropdownOptions,default,function(value) library.flags[flag] = value rawcallback(value) end,min,max)
+                local funcs,dropdownfuncs = premade.Dropdown(holder,dropdownOptions,default,function(value) library.flags[flag] = value rawcallback(value) end,min,max)
 
                 library.UpdateByFlag[flag] = function(newchosen)
                     if typeof(newchosen) == 'table' then
@@ -1461,7 +1471,7 @@ function library:init()
                 local options = utility.table(options or {})
 
                 local choices = options.options or {NOT_DEFINED = {'__ANTI BREAKER__'}}
-                local name = options.name or {}
+                local name = options.name or ''
                 local default = options.default or choices[1]
                 local rawcallback = options.callback or function() end
                 local flag = options.flag or ''
@@ -1497,7 +1507,7 @@ function library:init()
 
                 local valueToReturn = {Dropdown = currentIndex,Scroll = choices[currentIndex][1]} -- concept taken from stormy
                 local updateFuncs = {}
-                local Dropdownfuncs,_,dropdown = premade.Dropdown(holder,name,indexNames,indexNames[1],function(choice)
+                local Dropdownfuncs,_,dropdown = premade.Dropdown(holder,indexNames,indexNames[1],function(choice)
                     if scrollOptions[choice] then
                         for i,v in pairs(scrollOptions)do
                             v.Visible = false
@@ -1540,7 +1550,9 @@ function library:init()
                 UpdateSize()
             end
             function sectionFuncs:Slider(options)
-                local name = options.Name or ''
+                local options = utility.table(options or {})
+
+                local name = options.name or ''
                 local min,max,default = options.min or 0,options.max or 100,options.default or 0
                 local floatValue = options.float or 1
    
@@ -1669,8 +1681,9 @@ function library:init()
 
                 UpdateSize()
             end
-            function sectionFuncs:Separator(options)
-                local name = options.name or ''
+            function sectionFuncs:Separator(name)
+			
+                local name = name or ''
 
 
                 local holder = utility:Draw('Square',{
@@ -2054,7 +2067,7 @@ function library:LoadSettingsTab()
     end}
 end
 
-library:init()
+--[[library:init()
 library:LoadSettingsTab()
 local tab1 = library:Tab('Hi')
 local section1 = tab1:Section({Name='Right',Side='Right'})
@@ -2081,4 +2094,125 @@ section2:Slider{Name = '',Min = 1,Max = 100,callback = function(val)
     print('Slider 2 is now '..val)
 end}
 section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
-section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
+section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}--]]
+
+Signal = {}
+Signal.__index = Signal
+Signal.ClassName = "Signal"
+
+--[=[
+	Returns whether a class is a signal
+	@param value any
+	@return boolean
+]=]
+function Signal.isSignal(value)
+	return type(value) == "table"
+		and getmetatable(value) == Signal
+end
+
+--[=[
+	Constructs a new signal.
+	@return Signal<T>
+]=]
+function Signal.new()
+	local self = setmetatable({}, Signal)
+
+	self._bindableEvent = Instance.new("BindableEvent")
+	self._argMap = {}
+	self._source = ENABLE_TRACEBACK and debug.traceback() or ""
+
+	-- Events in Roblox execute in reverse order as they are stored in a linked list and
+	-- new connections are added at the head. This event will be at the tail of the list to
+	-- clean up memory.
+	self._bindableEvent.Event:Connect(function(key)
+		self._argMap[key] = nil
+
+		-- We've been destroyed here and there's nothing left in flight.
+		-- Let's remove the argmap too.
+		-- This code may be slower than leaving this table allocated.
+		if (not self._bindableEvent) and (not next(self._argMap)) then
+			self._argMap = nil
+		end
+	end)
+
+	return self
+end
+
+--[=[
+	Fire the event with the given arguments. All handlers will be invoked. Handlers follow
+	@param ... T -- Variable arguments to pass to handler
+]=]
+local HttpService = game:GetService('HttpService')
+function Signal:Fire(...)
+	if not self._bindableEvent then
+		warn(("Signal is already destroyed. %s"):format(self._source))
+		return
+	end
+
+	local args = table.pack(...)
+
+	-- TODO: Replace with a less memory/computationally expensive key generation scheme
+	local key = HttpService:GenerateGUID(false)
+	self._argMap[key] = args
+
+	-- Queues each handler onto the queue.
+	self._bindableEvent:Fire(key)
+end
+
+--[=[
+	Connect a new handler to the event. Returns a connection object that can be disconnected.
+	@param handler (... T) -> () -- Function handler called when `:Fire(...)` is called
+	@return RBXScriptConnection
+]=]
+function Signal:Connect(handler)
+	if not (type(handler) == "function") then
+		error(("connect(%s)"):format(typeof(handler)), 2)
+	end
+
+	return self._bindableEvent.Event:Connect(function(key)
+		-- note we could queue multiple events here, but we'll do this just as Roblox events expect
+		-- to behave.
+
+		local args = self._argMap[key]
+		if args then
+			handler(table.unpack(args, 1, args.n))
+		else
+			error("Missing arg data, probably due to reentrance.")
+		end
+	end)
+end
+
+--[=[
+	Wait for fire to be called, and return the arguments it was given.
+	@yields
+	@return T
+]=]
+function Signal:Wait()
+	local key = self._bindableEvent.Event:Wait()
+	local args = self._argMap[key]
+	if args then
+		return table.unpack(args, 1, args.n)
+	else
+		error("Missing arg data, probably due to reentrance.")
+		return nil
+	end
+end
+
+--[=[
+	Disconnects all connected events to the signal. Voids the signal as unusable.
+	Sets the metatable to nil.
+]=]
+function Signal:Destroy()
+	if self._bindableEvent then
+		-- This should disconnect all events, but in-flight events should still be
+		-- executed.
+
+		self._bindableEvent:Destroy()
+		self._bindableEvent = nil
+	end
+
+	-- Do not remove the argmap. It will be cleaned up by the cleanup connection.
+
+	setmetatable(self, nil)
+end
+return library,Signal
