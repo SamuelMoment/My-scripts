@@ -385,7 +385,7 @@ do
 	----------------------------------------------------------------------------
 	do
 		local executing = false
-		local 		
+
 		local KillLoop = function()
 			if executing == true then return end
 			if not library.flags['KillauraEnabled'] then return end
