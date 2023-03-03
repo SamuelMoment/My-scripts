@@ -1902,11 +1902,12 @@ function library:SaveConfig(name)
     --gonna convert all color3 values to hex cuz json makes it null
     local fakeFlags = {}
     for flag,value in pairs(library.flags) do
+		local fakeValue = value
         if string.find(flag,'__Theme__') then continue end
         if typeof(value) == 'table' and value['Color'] then
-            value.Color = {R = value.Color.R,G = value.Color.G,B = value.Color.B}
+            fakeValue.Color = {R = value.Color.R,G = value.Color.G,B = value.Color.B}
         end
-        fakeFlags[flag] = value
+        fakeFlags[flag] = fakeValue
     end
     writefile(path..'/'..name..'.cfg',game.HttpService:JSONEncode(fakeFlags))
 end
@@ -1917,6 +1918,7 @@ function library:LoadConfig(name)
 
     for flag,value in pairs(flags) do
         --if value is color3, since i converted it, gonna convert it back
+		
         if string.find(flag,'__Theme__') then continue end
         if typeof(value) == 'table' and value.Color then
             value.Color = Color3.new(value.Color.R,value.Color.G,value.Color.B)
@@ -1932,11 +1934,13 @@ function library:SaveTheme(name)
     --gonna convert all color3 values to hex cuz json makes it null
     local fakeFlags = {}
     for flag,value in pairs(library.flags) do
+		
+		local fakeValue = value
         if not string.find(flag,'__Theme__') then continue end
         if  typeof(value) == 'table' and value['Color'] then
-            value.Color = {R = value.Color.R,G = value.Color.G,B = value.Color.B}
+            fakeValue.Color = {R = value.Color.R,G = value.Color.G,B = value.Color.B}
         end
-        fakeFlags[flag] = value
+        fakeFlags[flag] = fakeValue
     end
     writefile(path..'/themes/'..name..'.cfg',game.HttpService:JSONEncode(fakeFlags))
 end
