@@ -1905,6 +1905,7 @@ function library:SaveConfig(name)
 		local fakeValue = value
         if string.find(flag,'__Theme__') then continue end
         if typeof(value) == 'table' and value['Color'] then
+			fakeValue = {Color = value.Color,Transparency = value.Transparency}
             fakeValue.Color = {R = value.Color.R,G = value.Color.G,B = value.Color.B}
         end
         fakeFlags[flag] = fakeValue
@@ -1938,6 +1939,7 @@ function library:SaveTheme(name)
 		local fakeValue = value
         if not string.find(flag,'__Theme__') then continue end
         if  typeof(value) == 'table' and value['Color'] then
+			fakeValue = {Color = value.Color,Transparency = value.Transparency}
             fakeValue.Color = {R = value.Color.R,G = value.Color.G,B = value.Color.B}
         end
         fakeFlags[flag] = fakeValue
