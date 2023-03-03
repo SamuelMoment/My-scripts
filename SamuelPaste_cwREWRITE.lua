@@ -14,7 +14,7 @@ function removewithoutdupes(tab, thethingyouneedtoremove) -- my own code :sungla
 	end
 end
 
-local library,Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/drawing.lua"))()
+local library,Signal = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/libraryV2.lua"))()
 local blacklistedKeys = { --skidded cuz me lazy
 	Enum.KeyCode.Unknown,Enum.KeyCode.W,Enum.KeyCode.A,Enum.KeyCode.S,Enum.KeyCode.D,Enum.KeyCode.Slash,Enum.KeyCode.Tab,Enum.KeyCode.Backspace,Enum.KeyCode.Escape
 }
@@ -385,7 +385,7 @@ do
 	----------------------------------------------------------------------------
 	do
 		local executing = false
-		local Weapon
+		local 		
 		local KillLoop = function()
 			if executing == true then return end
 			if not library.flags['KillauraEnabled'] then return end
