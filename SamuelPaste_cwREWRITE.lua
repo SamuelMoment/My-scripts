@@ -190,7 +190,6 @@ do
 end
 --[[ BYPASS ]]--
 do
-    local remotes = {}
     for i,v in pairs(getgc(true)) do
         if typeof(v) ~= 'table' then continue end
         if rawget(v, 'getIsBodyMoverCreatedByGame') then

@@ -4,6 +4,33 @@ local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game.ReplicatedStorage
 local RunService = game.RunService
 
+--[[ BYPASS ]]--
+do
+    for i,v in pairs(getgc(true)) do
+        if typeof(v) ~= 'table' then continue end
+        if rawget(v, 'getIsBodyMoverCreatedByGame') then
+            v.getIsBodyMoverCreatedByGame = function(gg)
+                return true
+            end
+            
+        end
+        if rawget(v, 'connectCharacter') then
+             v.connectCharacter = function(gg) return wait(9e9) end
+        end
+    	if rawget(v,'Remote')  then
+    		v.Remote.Name = v.Name
+    	end
+    end
+	local old_namecall;old_namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+		local args = {...}
+		local method = getnamecallmethod()
+		if method:lower() == 'kick' then return wait(9e9) end
+		if tostring(self) == 'BAC' then return end
+		if tostring(self) == 'ExportClientErrors' then return end
+		return old_namecall(self,unpack(args))
+	end))
+end
+
 local library,Signal = loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/libraryV2.lua'))()
 
 local events = game:GetService("ReplicatedStorage").Communication.Events
@@ -92,10 +119,11 @@ local Died = Signal.new()
 local KillFeed = Signal.new()
 do -- signals set up
     local func = getupvalue(Framework:GetModule('RoduxHandlerClient')._startModule,7)
-    local old;old = hookfunction(func,function(killed,assisted,died,...)
+    local old = func
+    func = function(killed,assisted,died,...)
         KillFeed:Fire(killed,died,assisted)
         return old(killed,assisted,died,...)
-    end)
+    end
 end
 
 do -- RAGE --
@@ -105,12 +133,14 @@ do -- RAGE --
     kaSection:Dropdown{Name = 'Priority',Flag = 'RageKillauraPriority',Options = {'Distance','Health'},Min = 1,Max = 1}
 
     coroutine.wrap(function()
-        while RunService.Stepped:Wait() do
+        local running = false
+        library:Connect(RunService.Stepped,function()
+            running = true
             local weapon = Framework:GetMelee() --it also checks if ur alive
-            if not weapon then return end
+            if not weapon then running = false return end
 
             local closests = Framework:GetClosests(library.flags['RageKillauraDistance'])
-            if #closests == 0 then return end
+            if #closests == 0 then running = false return end
             for i = 1,3 do	
                 Framework:FireServer('MeleeSwing',weapon,i)
                 task.wait(.1)
@@ -136,7 +166,8 @@ do -- RAGE --
                     end
                 end
             end
-        end
+            running = false
+        end)
     end)()
 end
 

@@ -2202,7 +2202,12 @@ function library:LoadSettingsTab()
         end
     end}
 end
-
+function library:Connect(signal,func)
+    return utility.connect(signal,func)
+end
+function library:Disconnect(...) --forgor the args, maybe just a signal maybe not LOL
+    return utility.disconnect(...)
+end
 
 --[[
     
