@@ -1533,7 +1533,11 @@ function library:init(options)
                         keybind = key
                     end
                     if key then
-                        set(Enum.KeyCode[key])
+                        if typeof(key) == 'EnumItem' then
+                            set(key)
+                        else
+                            set(Enum.KeyCode[key])
+                        end
                     end
                     local binding
                     utility.connect(KeyHolder.MouseButton1Click,function()
@@ -2203,7 +2207,7 @@ function library:LoadSettingsTab()
             themeslist:UpdateOptions(themes,themes[1])
         end
     end}
-    configs:Toggle({Name = 'Toggle UI',Flag = 'fasdqweqweqeq'}):Keybind{Key = Enum.KeyCode.Insert}
+    configs:Toggle({Name = 'Toggle UI',Flag = 'fasdqweqweqeq',Callback = function() library:Toggle() end}):Keybind{Key = Enum.KeyCode.Insert}
 end
 function library:Connect(signal,func)
     return utility.connect(signal,func)
