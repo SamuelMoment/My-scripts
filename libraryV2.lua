@@ -1,5 +1,5 @@
-local drawing = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/drawing.lua"))()
---local drawing = loadstring(readfile('drawing.lua'))()
+--local drawing = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/drawing.lua"))()
+local drawing = loadstring(readfile('drawing.lua'))()
 
 local fromrgb = Color3.fromRGB
 local rand = math.random
@@ -1219,12 +1219,13 @@ function library:init(options)
                         Font = Drawing.Fonts["Plex"],
                         Size = 13,
                         Color = Themes[Theme].Text,
-                        Position = UDim2.new(0,1,0,0)
+                        Position = UDim2.new(0,1,0,0),
+                        Outline = true
                     })
                     TabInsert(ThemeDrawings.Object,handler)
                     TabInsert(ThemeDrawings.Border,utility:DoubleOutline(handler,Themes[Theme].Border,fromrgb()))
                     TabInsert(ThemeDrawings.Text,text)
-                    handler.Size = UDim2.new(0,text.TextBounds.X+2,0,15)
+                    handler.Size = UDim2.new(0,text.TextBounds.X+3,0,text.TextBounds.Y+2)
                     local loop
                     holder.MouseEnter:Connect(function()
                         handler.Visible = true
@@ -2203,7 +2204,8 @@ function library:LoadSettingsTab()
 end
 
 
-
+--[[
+    
 library:init()
 library:LoadSettingsTab()
 local tab1 = library:Tab('Hi')
@@ -2213,7 +2215,7 @@ tab1:Section({Name='Test Right',Side='Right'})
 section1:Toggle{Name = 'Toggle 1',Flag = 'hi',callback = function(val)
     
 end}
-local toggle1 = section1:Toggle{Name = 'Toggle 2',flag = 'something',tooltip = 'Sometimes, i dream about cheese'}
+local toggle1 = section1:Toggle{Name = 'Toggle 2',flag = 'something',tooltip = 'Sometimes, i dream about cheeseS'}
 toggle1:ColorPicker()
 local toggle2 = section1:Toggle{Name = 'Toggle 2',flag = 'something'}
 toggle2:Keybind()
@@ -2233,8 +2235,7 @@ end}
 section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
 section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
 
-
-
+--]]
 Signal = {}
 Signal.__index = Signal
 Signal.ClassName = "Signal"
