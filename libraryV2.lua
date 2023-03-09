@@ -826,7 +826,8 @@ function library:init(options)
         Size = settings.Size,
         ZIndex = library.zOrder.window,
         Filled = true,
-        Position = utility:GetCenter(settings.Size.X.Offset,settings.Size.Y.Offset)
+        Position = utility:GetCenter(settings.Size.X.Offset,settings.Size.Y.Offset),
+        Visible = false
     })
     TabInsert(ThemeDrawings.WindowBackground,frame)
     --
