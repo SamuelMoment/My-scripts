@@ -129,18 +129,20 @@ end
 do -- RAGE --
     local kaSection = Tabs.Rage:Section{Name = 'Killaura',Side = 'Left'}
     kaSection:Toggle{Name = 'Enabled',Flag = 'RageKillaura'}
-    kaSection:Slider{Name = 'Distance',Flag = 'RageKillauraDistance'}
+    kaSection:Slider{Name = 'Distance',Flag = 'RageKillauraDistance',min = 1,max = 13}
     kaSection:Dropdown{Name = 'Priority',Flag = 'RageKillauraPriority',Options = {'Distance','Health'},Min = 1,Max = 1}
 
     coroutine.wrap(function()
         local running = false
         library:Connect(RunService.Stepped,function()
-            running = true
+            if running then return end
             local weapon = Framework:GetMelee() --it also checks if ur alive
-            if not weapon then running = false return end
+            if not weapon then return end
 
             local closests = Framework:GetClosests(library.flags['RageKillauraDistance'])
-            if #closests == 0 then running = false return end
+            if #closests == 0 then return end
+            
+            running = true
             for i = 1,3 do	
                 Framework:FireServer('MeleeSwing',weapon,i)
                 task.wait(.1)
