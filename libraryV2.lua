@@ -13,10 +13,9 @@ local TabRemove = function(tab,value)
         table.remove(tab,table.find(tab,value))
     end
 end
-if library and frame then
+if library then
     library:Unload()
 end
-if frame and frame.exists then frame.Visible = false frame:Remove() end
 
 getgenv().library = {
     zOrder = {
