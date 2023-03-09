@@ -1,5 +1,5 @@
---local drawing = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/drawing.lua"))()
-local drawing = loadstring(readfile('drawing.lua'))()
+local drawing = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/drawing.lua"))()
+--local drawing = loadstring(readfile('drawing.lua'))()
 
 local fromrgb = Color3.fromRGB
 local rand = math.random
