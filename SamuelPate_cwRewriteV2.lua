@@ -4,6 +4,7 @@ local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game.ReplicatedStorage
 local RunService = game.RunService
 
+
 --[[ BYPASS ]]--
 do
     for i,v in pairs(getgc(true)) do
@@ -135,11 +136,12 @@ local Died = Signal.new()
 local KillFeed = Signal.new()
 do -- signals set up
     local func = Framework:GetReducer('KILL_FEED_LIST_ADD')
-    local old = func
-    func = function(tab,_)
+    old = library:HookFunction(function(tab,_)
+        print('called')
         KillFeed:Fire(tab.characterThatKilled,tab.characterThatDied,tab.charactersWhoAssisted)
         return old(tab,_)
-    end
+    end)
+    
 end
 
 do -- RAGE --
@@ -150,6 +152,35 @@ do -- RAGE --
     kaSection:Dropdown{Name = 'Kill Downed Players',Flag = 'RageKillauraDowned',options = {'Regular','Finish'},Min = 0,Max = 1}
     coroutine.wrap(function()
         local running = false
+        local running2 = false
+        library:Connect(RunService.RenderStepped,function()
+            if running2 then return end
+            if library.flags['RageKillauraDowned'] ~= 'Finish' then return end
+            local Weapon = Framework:GetMelee()
+            if not Weapon then return end
+            local closests = Framework:GetClosests(library.flags['RageKillauraDistance'])
+            if #closests == 0 then return end
+
+            running2 = true
+            for i2,plr in pairs(closests) do
+                
+                Framework:FireServer('StartMeleeFinish',plr.Character,Weapon) -- needed 
+                task.wait(.1)
+                local args = {
+                    [1] = Weapon,
+                    [2] = plr.Character.HumanoidRootPart,
+                    [3] = Weapon.Hitboxes.Hitbox,
+                    [4] = plr.Character.HumanoidRootPart.Position,
+                    [6] = Vector3.new(-0.77, 0, 0.63),
+                    [7] = 1,
+                    [8] = Vector3.new(0.2, -0.9, -0.3)
+                }
+                
+                Framework:FireServer("MeleeFinish",unpack(args)) 
+            end
+            running2 = false
+        end)
+
         library:Connect(RunService.Stepped,function()
             if running then return end
             local weapon = Framework:GetMelee() --it also checks if ur alive
@@ -189,38 +220,67 @@ do -- RAGE --
             end
             running = false
         end)
-        local running2 = false
-        library:Connect(RunService.Stepped,function()
-            if running2 then return end
-            if library.flags['RageKillauraDowned'] ~= 'Finish' then return end
-            local Weapon = Framework:GetMelee()
-            if not Weapon then return end
-            local closests = Framework:GetClosests(library.flags['RageKillauraDistance'])
-            if #closests == 0 then return end
-
-            running2 = true
-            for i2,plr in pairs(closests) do
-                
-                Framework:FireServer('StartMeleeFinish',plr.Character,Weapon) -- needed 
-                task.wait(.1)
-                local args = {
-                    [1] = Weapon,
-                    [2] = plr.Character.HumanoidRootPart,
-                    [3] = Weapon.Hitboxes.Hitbox,
-                    [4] = plr.Character.HumanoidRootPart.Position,
-                    [6] = Vector3.new(-0.77, 0, 0.63),
-                    [7] = 1,
-                    [8] = Vector3.new(0.2, -0.9, -0.3)
-                }
-                
-                Framework:FireServer("MeleeFinish",unpack(args)) 
-            end
-            running2 = false
-        end)
     end)()
 end
+local Types = {
+    Callback = {
+        ['SetValue'] = function(callback,boolean)
+            local hook = callback.HookValue
+            if boolean then -- if hooked value is false/original value is false it's gonna get wrong value otherwise
+                hook[1][hook[2]] = callback.Value
+            else
+                hook[1][hook[2]] = callback.OriginalValue
+            end
+        end,
+    },
+    Once = {
+        ['HookReducer'] = function(callback,flag)
+            old = library:HookFunction(callback.Reducer, function(tab,newValue)
+                if library.flags[flag] then
+                    newValue = callback.Value
+                end
+                return old(tab,newValue)
+            end)
+        end
+    }
+}
+local miscSetUp = { -- here comes the funny
+    [{Name = 'Character Exploits',Side = 'Left'}] = {
+        {
+            Name = 'No Dash Cooldown',
+            Flag = 'NDC',
+            Callback = {
+                Type = 'SetValue',
+                Value = 0,
+                HookValue = {Framework:GetModule('DashConstants'),'DASH_COOLDOWN'},
+                OriginalValue = 3.5
+            }
+        },
 
-
+        {
+            Name = 'Infinite Stamina',
+            Flag = 'InfStam',
+            Callback = {
+                Type = 'HookReducer',
+                Value = 100,
+                Reducer = Framework:GetReducer('STAMINA_CLIENT_CURRENT_CHANGE')
+            }
+        }
+    }
+}
+for section,toggles in pairs(miscSetUp) do
+    local sector = Tabs.Misc:Section(section)
+    for _,settings in pairs(toggles) do
+        local toggle = sector:Toggle{Name = settings.Name,Flag = settings.Flag,Callback = function(enabled)
+            if Types.Callback[settings.Callback.Type] then
+                Types.Callback[settings.Callback.Type](settings.Callback,enabled)
+            end
+        end}
+        if Types.Once[settings.Callback.Type] then
+            Types.Once[settings.Callback.Type](settings.Callback,settings.Flag)
+        end
+    end
+end
 
 
 

@@ -26,9 +26,11 @@ getgenv().library = {
     currentTab = nil,
     sectorHolders = {},
     flags = {},
+    unnamedFlags = {},
     UpdateByFlag = {}, --idgaf about the name, im too lazy to get something better
     connections = {},
-    location = ''
+    location = '',
+    hooks = {}
 }
 local utility = {
     Dragify = function(self,drag,frame)
@@ -1166,7 +1168,10 @@ function library:init(options)
 
                 local name = options.name or 'NOT DEFINED'
                 local callback = options.callback or function() end
-                local flag = options.flag or ''
+                local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
+                if not options.flag then
+                    table.insert(library.unnamedFlags,'1')
+                end
                 local tooltip = options.tooltip
 
                 library.flags[flag] = false
@@ -1594,7 +1599,10 @@ function library:init(options)
                 local dropdownOptions = options.options ~= nil and options.options or {}
 
                 local default = (options.default and table.find(dropdownOptions,options.default)) and options.default or (dropdownOptions[1] and dropdownOptions[1] or '__NONE__')
-                local flag = options.flag or ''
+                local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
+                if not options.flag then
+                    table.insert(library.unnamedFlags,'1')
+                end
 
                 local chosen = {}
                 local chosenHolders = {}
@@ -1647,7 +1655,10 @@ function library:init(options)
                 local name = options.name or {}
                 local default = options.default or choices[1]
                 local rawcallback = options.callback or function() end
-                local flag = options.flag or ''
+                local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
+                if not options.flag then
+                    table.insert(library.unnamedFlags,'1')
+                end
 
                 library.flags[flag] = default
                 
@@ -1692,7 +1703,10 @@ function library:init(options)
                 local name = options.name or ''
                 local default = options.default or choices[1]
                 local rawcallback = options.callback or function() end
-                local flag = options.flag or ''
+                local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
+                if not options.flag then
+                    table.insert(library.unnamedFlags,'1')
+                end
 
                 local indexNames = {}
                 for i,v in pairs(choices) do
@@ -1773,7 +1787,10 @@ function library:init(options)
                 local floatValue = options.float or 1
    
                 local callback = options.callback or function()end
-                local flag = options.flag or ''   
+                local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
+                if not options.flag then
+                    table.insert(library.unnamedFlags,'1')
+                end
                 
                 library.flags[flag] = default
 
@@ -1989,7 +2006,10 @@ function library:init(options)
                 local placeholder = options.placeholder or ''
                 local callback = options.callback or function() end
                 local finalcallback = options.finalcallback or function() end
-                local flag = options.flag or ''
+                local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
+                if not options.flag then
+                    table.insert(library.unnamedFlags,'1')
+                end
 
                 library.flags[flag] = ''
 
@@ -2032,6 +2052,9 @@ function library:init(options)
         game.ContextActionService:UnbindAction('disablekeyboard')
         for signal,connection in pairs(library.connections) do
             connection:Disconnect()
+        end
+        for _,func in pairs(library.hooks) do
+            hookfunction(func.current,func.old)
         end
     end
     function library:Toggle()
@@ -2217,6 +2240,18 @@ function library:Connect(signal,func)
 end
 function library:Disconnect(...) --forgor the args, maybe just a signal maybe not LOL
     return utility.disconnect(...)
+end
+function library:HookFunction(func,newfunc)
+    local old;old = hookfunction(func, newfunc)
+    table.insert(library.hooks,{current = newfunc,old = old})
+    return old
+end
+function library:UnHookFunction(currentfunc)
+    for i,func in pairs(library.hooks) do
+        if func.current == currentfunc then
+            hookfunction(func.current,func.old)
+        end
+    end
 end
 --[[
 library:init()
