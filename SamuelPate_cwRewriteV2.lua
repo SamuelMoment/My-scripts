@@ -37,9 +37,15 @@ local events = game:GetService("ReplicatedStorage").Communication.Events
 local functions = game:GetService("ReplicatedStorage").Communication.Functions
 
 local Modules = {Name = {},Id = {}}
+local Reducers = {}
+
 local Nevermore = require(ReplicatedStorage.Framework.Nevermore)
 local NevermoreModules = rawget(Nevermore, '_lookupTable') --credits to snnwer for that
 for i,v in pairs(NevermoreModules) do
+    if i:sub(-7,-1) == 'Reducer' or i:sub(-13,-1) == 'ReducerClient'  or i:sub(-17,-1) == 'ReducerInfoClient' then
+        table.insert(Reducers,getupvalue(require(v).reducer,2))
+        continue
+    end
     Modules.Name[i] = require(v)
     Modules.Id[v] = i
 end
@@ -53,6 +59,7 @@ local Framework = {
 
         local hrp = LocalPlayer.Character.HumanoidRootPart
         for i,plr in pairs(Players:GetPlayers()) do
+            if plr == LocalPlayer then continue end
             if not (plr.Character and plr.Character:FindFirstChild('HumanoidRootPart')) then continue end
 
             local mag = (hrp.Position-plr.Character.HumanoidRootPart.Position).Magnitude
@@ -75,6 +82,15 @@ local Framework = {
     GetModule = function(self,module)
         return Modules.Name[module] or Modules.Id[module]
     end,
+    GetReducer = function(self,type)
+        for i,tbl in pairs(Reducers) do
+            local index = table.find(tbl,type)
+            if index then
+                return tbl[index]
+            end
+        end
+        return nil
+    end,
     GetState = function(self,plr)
         local plr = plr or LocalPlayer
         return self:GetModule('DataHandler').getSessionDataRoduxStoreForPlayer(plr):getState()
@@ -87,7 +103,7 @@ local Framework = {
     IsDown = function(self,plr)
         local plr = plr or LocalPlayer
 
-        return self:GetState(plr).down.isDowned
+        return self:GetState(plr).down.isDowned or (plr.Character and plr.Character:FindFirstChildWhichIsA('Humanoid') and plr.Character.Humanoid.Health <= 15)
     end,
     GetMelee = function(self)
         if self:IsAlive() then
@@ -118,11 +134,11 @@ local Spawn = Signal.new()
 local Died = Signal.new()
 local KillFeed = Signal.new()
 do -- signals set up
-    local func = getupvalue(Framework:GetModule('RoduxHandlerClient')._startModule,7)
+    local func = Framework:GetReducer('KILL_FEED_LIST_ADD')
     local old = func
-    func = function(killed,assisted,died,...)
-        KillFeed:Fire(killed,died,assisted)
-        return old(killed,assisted,died,...)
+    func = function(tab,_)
+        KillFeed:Fire(tab.characterThatKilled,tab.characterThatDied,tab.charactersWhoAssisted)
+        return old(tab,_)
     end
 end
 
@@ -131,7 +147,7 @@ do -- RAGE --
     kaSection:Toggle{Name = 'Enabled',Flag = 'RageKillaura'}
     kaSection:Slider{Name = 'Distance',Flag = 'RageKillauraDistance',min = 1,max = 13}
     kaSection:Dropdown{Name = 'Priority',Flag = 'RageKillauraPriority',Options = {'Distance','Health'},Min = 1,Max = 1}
-
+    kaSection:Dropdown{Name = 'Kill Downed Players',Flag = 'RageKillauraDowned',options = {'Regular','Finish'},Min = 0,Max = 1}
     coroutine.wrap(function()
         local running = false
         library:Connect(RunService.Stepped,function()
@@ -141,7 +157,12 @@ do -- RAGE --
 
             local closests = Framework:GetClosests(library.flags['RageKillauraDistance'])
             if #closests == 0 then return end
-            
+            if library.flags['RageKillauraPriority'] == 'Health' then
+                table.sort(closests,function(plr1,plr2)
+                    return plr1.Character.Humanoid.Health < plr2.Character.Humanoid.Health
+                end)
+            end
+
             running = true
             for i = 1,3 do	
                 Framework:FireServer('MeleeSwing',weapon,i)
@@ -149,7 +170,7 @@ do -- RAGE --
                 for _,v in pairs(closests) do
                     if weapon.Parent ~= LocalPlayer.Character then break end
                     if not v.Character:FindFirstChild('Torso') then continue end
-
+                    if Framework:IsDown(v) and library.flags['RageKillauraDowned'] ~= 'Regular' then continue end
                     local args = {
                         [1] = weapon,
                         [2] = v.Character.Torso,
@@ -163,12 +184,38 @@ do -- RAGE --
                     if Framework:GetState(v).parry.isParrying == false then
                         Framework:FireServer('MeleeDamage',unpack(args))
                         Framework:FireServer('MeleeDamage',unpack(args))
-                    else
-                        continue
                     end
                 end
             end
             running = false
+        end)
+        local running2 = false
+        library:Connect(RunService.Stepped,function()
+            if running2 then return end
+            if library.flags['RageKillauraDowned'] ~= 'Finish' then return end
+            local Weapon = Framework:GetMelee()
+            if not Weapon then return end
+            local closests = Framework:GetClosests(library.flags['RageKillauraDistance'])
+            if #closests == 0 then return end
+
+            running2 = true
+            for i2,plr in pairs(closests) do
+                
+                Framework:FireServer('StartMeleeFinish',plr.Character,Weapon) -- needed 
+                task.wait(.1)
+                local args = {
+                    [1] = Weapon,
+                    [2] = plr.Character.HumanoidRootPart,
+                    [3] = Weapon.Hitboxes.Hitbox,
+                    [4] = plr.Character.HumanoidRootPart.Position,
+                    [6] = Vector3.new(-0.77, 0, 0.63),
+                    [7] = 1,
+                    [8] = Vector3.new(0.2, -0.9, -0.3)
+                }
+                
+                Framework:FireServer("MeleeFinish",unpack(args)) 
+            end
+            running2 = false
         end)
     end)()
 end

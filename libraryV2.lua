@@ -327,6 +327,8 @@ local settings = {
 local Theme = settings.Theme or 'Vozoid'
 local path = settings.Path or '/'
 
+local mouse = game.Players.LocalPlayer:GetMouse()
+
 local ThemeDrawings = {
     Border = {},
         
@@ -800,10 +802,44 @@ local create = {
             end)
         end)
         return boxFuncs
+    end,
+    Tooltip = function(holder,tooltip)
+        local handler = utility:Draw('Square',{
+            Parent = holder,
+            ZIndex = holder.ZIndex+5,
+            Size = UDim2.new(0,150,0,15),
+            Filled = true,
+            Color = Themes[Theme].Object,
+            Visible = false,
+        })
+        local text = utility:Draw('Text',{
+            Parent = handler,
+            ZIndex = handler.ZIndex+1,
+            Text = tooltip,
+            Center = false,
+            Font = Drawing.Fonts["Plex"],
+            Size = 13,
+            Color = Themes[Theme].Text,
+            Position = UDim2.new(0,1,0,0),
+            Outline = true
+        })
+        TabInsert(ThemeDrawings.Object,handler)
+        TabInsert(ThemeDrawings.Border,utility:DoubleOutline(handler,Themes[Theme].Border,fromrgb()))
+        TabInsert(ThemeDrawings.Text,text)
+        handler.Size = UDim2.new(0,text.TextBounds.X+3,0,text.TextBounds.Y+2)
+        local loop
+        holder.MouseEnter:Connect(function()
+            handler.Visible = true
+            loop = utility.connect(game.RunService.RenderStepped,function()
+                handler.Position = holder.AbsolutePosition-Vector2.new(-(mouse.X-holder.AbsolutePosition.X*2),-(mouse.Y+55-holder.AbsolutePosition.Y*2))--no absolute idea how it works
+            end)
+        end)
+        holder.MouseLeave:Connect(function()
+            handler.Visible = false
+            if loop then utility.disconnect(loop) end
+        end)
     end
 }
-
-local mouse = game.Players.LocalPlayer:GetMouse()
 
 local decode = (syn and syn.crypt.base64.decode) or (crypt and crypt.base64decode) or base64_decode
 local images = {
@@ -1192,40 +1228,7 @@ function library:init(options)
                 end
 
                 if tooltip then
-                    local handler = utility:Draw('Square',{
-                        Parent = holder,
-                        ZIndex = holder.ZIndex+5,
-                        Size = UDim2.new(0,150,0,15),
-                        Filled = true,
-                        Color = Themes[Theme].Object,
-                        Visible = false,
-                    })
-                    local text = utility:Draw('Text',{
-                        Parent = handler,
-                        ZIndex = handler.ZIndex+1,
-                        Text = tooltip,
-                        Center = false,
-                        Font = Drawing.Fonts["Plex"],
-                        Size = 13,
-                        Color = Themes[Theme].Text,
-                        Position = UDim2.new(0,1,0,0),
-                        Outline = true
-                    })
-                    TabInsert(ThemeDrawings.Object,handler)
-                    TabInsert(ThemeDrawings.Border,utility:DoubleOutline(handler,Themes[Theme].Border,fromrgb()))
-                    TabInsert(ThemeDrawings.Text,text)
-                    handler.Size = UDim2.new(0,text.TextBounds.X+3,0,text.TextBounds.Y+2)
-                    local loop
-                    holder.MouseEnter:Connect(function()
-                        handler.Visible = true
-                        loop = utility.connect(game.RunService.RenderStepped,function()
-                            handler.Position = holder.AbsolutePosition-Vector2.new(-(mouse.X-holder.AbsolutePosition.X*2),-(mouse.Y+55-holder.AbsolutePosition.Y*2))--no absolute idea how it works
-                        end)
-                    end)
-                    holder.MouseLeave:Connect(function()
-                        handler.Visible = false
-                        if loop then utility.disconnect(loop) end
-                    end)
+                    create.Tooltip(holder,tooltip)
                 end
 
                 library.UpdateByFlag[flag] = function(boolean)
@@ -2215,9 +2218,7 @@ end
 function library:Disconnect(...) --forgor the args, maybe just a signal maybe not LOL
     return utility.disconnect(...)
 end
-
 --[[
-    
 library:init()
 library:LoadSettingsTab()
 local tab1 = library:Tab('Hi')
@@ -2246,8 +2247,8 @@ section2:Slider{Name = '',Min = 1,Max = 100,callback = function(val)
 end}
 section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
 section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
-
 --]]
+
 Signal = {}
 Signal.__index = Signal
 Signal.ClassName = "Signal"
