@@ -2050,12 +2050,14 @@ function library:init(options)
             frame:Remove()
         end
         game.ContextActionService:UnbindAction('disablekeyboard')
+        table.clear(library.flags)
         for signal,connection in pairs(library.connections) do
             connection:Disconnect()
         end
         for _,func in pairs(library.hooks) do
             print(func.current,func.old)
             hookfunction(func.current,func.old)
+            print(func.current,func.current == func.old)
         end
     end
     function library:Toggle()
