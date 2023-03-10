@@ -2245,7 +2245,7 @@ function library:Disconnect(...) --forgor the args, maybe just a signal maybe no
     return utility.disconnect(...)
 end
 function library:HookFunction(func,newfunc)
-    local old;old = hookfunction(func, newfunc)
+    old = hookfunction(func, newfunc)
     table.insert(library.hooks,{current = newfunc,old = old})
     return old
 end

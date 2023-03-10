@@ -135,9 +135,7 @@ local Died = Signal.new()
 local KillFeed = Signal.new()
 do -- signals set up
     local func = Framework:GetReducer('KILL_FEED_LIST_ADD')
-    print(func)
     old = library:HookFunction(func,function(tab,_)
-        print('called')
         KillFeed:Fire(tab.characterThatKilled,tab.characterThatDied,tab.charactersWhoAssisted)
         return old(tab,_)
     end)
@@ -237,12 +235,24 @@ local Types = {
         ['HookReducer'] = function(callback,flag)
             callback2 = callback
             flag2 = flag
-            old = library:HookFunction(callback.Reducer, function(tab,newValue)
-                if library.flags[flag2] then
-                    newValue = callback2.Value
+            if typeof(callback.Reducer) == 'table' then
+                for i,v in pairs(callback.Reducer) do
+                    index = i
+                    print(v)
+                    old2 = library:HookFunction(v,function(...)
+                        print(...)
+                        return old2(...)
+                    end)
+                    print(old2)
                 end
-                return old(tab,newValue)
-            end)
+            else
+                old = library:HookFunction(callback.Reducer, function(tab,newValue)
+                    if library.flags[flag2] then
+                        newValue.payload     = callback2.Value
+                    end
+                    return old(tab,newValue)
+                end)
+            end
         end
     }
 }
@@ -264,8 +274,8 @@ local miscSetUp = { -- here comes the funny
             Flag = 'InfStam',
             Callback = {
                 Type = 'HookReducer',
-                Value = 100,
-                Reducer = Framework:GetReducer('STAMINA_CLIENT_CURRENT_CHANGE')
+                Value = {500,500},
+                Reducer = {Framework:GetReducer('STAMINA_CLIENT_CURRENT_CHANGE'),Framework:GetReducer('STAMINA_CLIENT_MAX_CHANGE')}
             }
         }
     }
