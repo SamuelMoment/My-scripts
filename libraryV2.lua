@@ -2054,6 +2054,7 @@ function library:init(options)
             connection:Disconnect()
         end
         for _,func in pairs(library.hooks) do
+            print(func.current,func.old)
             hookfunction(func.current,func.old)
         end
     end

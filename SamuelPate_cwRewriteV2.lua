@@ -85,9 +85,8 @@ local Framework = {
     end,
     GetReducer = function(self,type)
         for i,tbl in pairs(Reducers) do
-            local index = table.find(tbl,type)
-            if index then
-                return tbl[index]
+            if tbl[type] then
+                return tbl[type]
             end
         end
         return nil
@@ -136,7 +135,8 @@ local Died = Signal.new()
 local KillFeed = Signal.new()
 do -- signals set up
     local func = Framework:GetReducer('KILL_FEED_LIST_ADD')
-    old = library:HookFunction(function(tab,_)
+    print(func)
+    old = library:HookFunction(func,function(tab,_)
         print('called')
         KillFeed:Fire(tab.characterThatKilled,tab.characterThatDied,tab.charactersWhoAssisted)
         return old(tab,_)
@@ -235,9 +235,11 @@ local Types = {
     },
     Once = {
         ['HookReducer'] = function(callback,flag)
+            callback2 = callback
+            flag2 = flag
             old = library:HookFunction(callback.Reducer, function(tab,newValue)
-                if library.flags[flag] then
-                    newValue = callback.Value
+                if library.flags[flag2] then
+                    newValue = callback2.Value
                 end
                 return old(tab,newValue)
             end)
