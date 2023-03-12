@@ -411,7 +411,7 @@ local miscSetUp = { -- here comes the funny
         {
             Name = 'JumpPower',
             Flag = 'Jumppower',
-            Slider = {Name = 'Power',Min = 1,Max = 159,Default = 50,Flag = 'JumpPower_slider'},
+            Slider = {Name = 'Power',Min = 1,Max = 250,Default = 50,Flag = 'JumpPower_slider'},
             Callback = {
                 Type = {'SetValue','Loop'},
                 Callback = function(self,b)

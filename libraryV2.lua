@@ -2072,12 +2072,12 @@ function library:SaveConfig(name)
         end
         fakeFlags[flag] = fakeValue
     end
-    writefile(path..'/'..name..'.cfg',game.HttpService:JSONEncode(fakeFlags))
+    writefile(path..'/cfgs/'..name..'.cfg',game.HttpService:JSONEncode(fakeFlags))
 end
 function library:LoadConfig(name)
     local library = self -- it's easier for me to read library:Tab rather than self:Tab
 
-    local flags = game.HttpService:JSONDecode(readfile(path..'/'..name..'.cfg'))
+    local flags = game.HttpService:JSONDecode(readfile(path..'/cfgs/'..name..'.cfg'))
 
     for flag,value in pairs(flags) do
         --if value is color3, since i converted it, gonna convert it back
