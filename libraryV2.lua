@@ -2054,11 +2054,6 @@ function library:init(options)
         for signal,connection in pairs(library.connections) do
             connection:Disconnect()
         end
-        for _,func in pairs(library.hooks) do
-            print(func.current,func.old)
-            hookfunction(func.current,func.old)
-            print(func.current,func.current == func.old)
-        end
     end
     function library:Toggle()
         frame.Visible = not frame.Visible
@@ -2131,9 +2126,9 @@ function library:LoadTheme(name)
 end
 function library:GetConfigs()
     local cfgnames = {}
-    for i,v in pairs(listfiles(path)) do
+    for i,v in pairs(listfiles(path..'/cfgs')) do
         if isfolder(v) then continue end
-        cfgnames[#cfgnames+1] = string.gsub(v:sub(0,-5),(path..[[\]]),'')
+        cfgnames[#cfgnames+1] = string.gsub(v:sub(0,-5),(path..'/cfgs'..[[\]]),'')
     end
     return cfgnames
 end
@@ -2244,18 +2239,7 @@ end
 function library:Disconnect(...) --forgor the args, maybe just a signal maybe not LOL
     return utility.disconnect(...)
 end
-function library:HookFunction(func,newfunc)
-    old = hookfunction(func, newfunc)
-    table.insert(library.hooks,{current = newfunc,old = old})
-    return old
-end
-function library:UnHookFunction(currentfunc)
-    for i,func in pairs(library.hooks) do
-        if func.current == currentfunc then
-            hookfunction(func.current,func.old)
-        end
-    end
-end
+
 --[[
 library:init()
 library:LoadSettingsTab()

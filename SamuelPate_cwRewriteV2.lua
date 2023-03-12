@@ -4,38 +4,43 @@ local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game.ReplicatedStorage
 local RunService = game.RunService
 
-
 --[[ BYPASS ]]--
 do
     for i,v in pairs(getgc(true)) do
         if typeof(v) ~= 'table' then continue end
         if rawget(v, 'getIsBodyMoverCreatedByGame') then
-            v.getIsBodyMoverCreatedByGame = function(gg)
+            v.getIsBodyMoverCreatedByGame = function()
                 return true
             end
-            
         end
         if rawget(v, 'connectCharacter') then
-             v.connectCharacter = function(gg) return wait(9e9) end
+             v.connectCharacter = function() return wait(9e9) end
         end
-    	if rawget(v,'Remote')  then
-    		v.Remote.Name = v.Name
-    	end
     end
 	local old_namecall;old_namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
 		local args = {...}
 		local method = getnamecallmethod()
-		if method:lower() == 'kick' then return wait(9e9) end
+		if method:lower() == 'kick' then return end
 		if tostring(self) == 'BAC' then return end
 		if tostring(self) == 'ExportClientErrors' then return end
 		return old_namecall(self,unpack(args))
 	end))
+    for i,v in pairs(getreg()) do -- anti sanity checks
+        if not (type(v) == 'thread') then continue end
+        
+        local source = debug.info(v,1,'s')
+        if source and source:sub(-18,-1) == 'SanityChecksClient' then
+            task.cancel(v)
+        end
+    end
+    if LocalPlayer.Character then
+        for i,v in pairs(getconnections(LocalPlayer.Character:WaitForChild('Humanoid'):GetPropertyChangedSignal('WalkSpeed'))) do
+            v:Disable()
+        end
+    end
 end
 
 local library,Signal = loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/libraryV2.lua'))()
-
-local events = game:GetService("ReplicatedStorage").Communication.Events
-local functions = game:GetService("ReplicatedStorage").Communication.Functions
 
 local Modules = {Name = {},Id = {}}
 local Reducers = {}
@@ -50,6 +55,7 @@ for i,v in pairs(NevermoreModules) do
     Modules.Name[i] = require(v)
     Modules.Id[v] = i
 end
+local Remotes = getupvalue(getfenv(getupvalue(rawget(getrawmetatable(Modules.Name['Network']),'__index'),1).FireServer).GetEventHandler,1)
 
 local Framework = {
     GetClosests = function(self,distance)
@@ -83,10 +89,10 @@ local Framework = {
     GetModule = function(self,module)
         return Modules.Name[module] or Modules.Id[module]
     end,
-    GetReducer = function(self,type)
+    GetReducerOf = function(self,type)
         for i,tbl in pairs(Reducers) do
             if tbl[type] then
-                return tbl[type]
+                return tbl
             end
         end
         return nil
@@ -114,15 +120,31 @@ local Framework = {
         end
         return nil
     end,
+    GetRemoteHandler = function(self,name)
+        return Remotes[name]
+    end,
+    GetCallbacks = function(self,remote)
+        local callbacks = {}
+        local remote = self:GetRemoteHandler(remote)
+        if not remote then return error(tostring(remote)..'doesnt exist!') end
+
+        for i,func in pairs(remote.Callbacks) do
+            table.insert(callbacks,getupvalue(func,5))
+        end
+        return callbacks
+    end,
     FireServer = function(self,name,...)
-        local remote = events:FindFirstChild(name)
+        local remote = Remotes[name]
         if remote then
-            remote:FireServer(...)
+            remote.Remote:FireServer(...)
         end
     end,
+    InvokeServer = function(self,...)
+        return self:FireServer(...)
+    end
 }
 
-library:init()
+library:init{Folder = 'SamuelPaste_CW'}
 local Tabs = {
     Rage = library:Tab('Rage'),
     Legit = library:Tab('Legit'),
@@ -134,14 +156,20 @@ local Spawn = Signal.new()
 local Died = Signal.new()
 local KillFeed = Signal.new()
 do -- signals set up
-    local func = Framework:GetReducer('KILL_FEED_LIST_ADD')
-    old = library:HookFunction(func,function(tab,_)
+    local reducer = Framework:GetReducerOf('KILL_FEED_LIST_ADD')
+    local old = reducer.KILL_FEED_LIST_ADD
+    reducer.KILL_FEED_LIST_ADD = function(tab,_)
         KillFeed:Fire(tab.characterThatKilled,tab.characterThatDied,tab.charactersWhoAssisted)
         return old(tab,_)
-    end)
+    end
     
+    local func = Framework:GetCallbacks('SpawnCharacter')[1]
+    local old;old = replaceclosure(func, function(...)
+        local returns = {old(...)}    
+        Spawn:Fire(LocalPlayer.Character)
+        return unpack(returns)
+    end)
 end
-
 do -- RAGE --
     local kaSection = Tabs.Rage:Section{Name = 'Killaura',Side = 'Left'}
     kaSection:Toggle{Name = 'Enabled',Flag = 'RageKillaura'}
@@ -161,20 +189,24 @@ do -- RAGE --
 
             running2 = true
             for i2,plr in pairs(closests) do
-                
-                Framework:FireServer('StartMeleeFinish',plr.Character,Weapon) -- needed 
+                if Weapon.Parent ~= LocalPlayer.Character then break end
+                local part = plr.Character:FindFirstChild('Torso') or plr.Character:FindFirstChild('Head') or plr.Character.PrimaryPart
+                if not part then continue end
+
+                Framework:FireServer('StartMeleeFinish',plr.Character,Weapon)
                 task.wait(.1)
                 local args = {
                     [1] = Weapon,
-                    [2] = plr.Character.HumanoidRootPart,
+                    [2] = part,
                     [3] = Weapon.Hitboxes.Hitbox,
-                    [4] = plr.Character.HumanoidRootPart.Position,
+                    [4] = part.Position,
                     [6] = Vector3.new(-0.77, 0, 0.63),
                     [7] = 1,
                     [8] = Vector3.new(0.2, -0.9, -0.3)
                 }
                 
                 Framework:FireServer("MeleeFinish",unpack(args)) 
+                Framework:FireServer("StopMeleeFinish",Weapon)
             end
             running2 = false
         end)
@@ -198,17 +230,18 @@ do -- RAGE --
                 task.wait(.1)
                 for _,v in pairs(closests) do
                     if weapon.Parent ~= LocalPlayer.Character then break end
-                    if not v.Character:FindFirstChild('Torso') then continue end
+                    local part = v.Character:FindFirstChild('Torso') or v.Character:FindFirstChild('Head') or v.Character.PrimaryPart
+                    if not part then continue end
                     if Framework:IsDown(v) and library.flags['RageKillauraDowned'] ~= 'Regular' then continue end
                     local args = {
                         [1] = weapon,
-                        [2] = v.Character.Torso,
+                        [2] = part,
                         [3] = weapon.Hitboxes.Hitbox,
-                        [4] = v.Character.Torso.Position,
-                        [5] = v.Character.Torso.CFrame:ToObjectSpace(
-                            CFrame.new(v.Character.Torso.Position)
+                        [4] = part.Position,
+                        [5] = part.CFrame:ToObjectSpace(
+                            CFrame.new(part.Position)
                         ),
-                        [6] = v.Character.Torso.Position,
+                        [6] = part.Position,
                     } 
                     if Framework:GetState(v).parry.isParrying == false then
                         Framework:FireServer('MeleeDamage',unpack(args))
@@ -220,11 +253,16 @@ do -- RAGE --
         end)
     end)()
 end
+local LoopFuncs = {}
 local Types = {
     Callback = {
         ['SetValue'] = function(callback,boolean)
             local hook = callback.HookValue
-            if boolean then -- if hooked value is false/original value is false it's gonna get wrong value otherwise
+            if callback.Callback then
+                callback:Callback(boolean)
+                if not hook then return end
+            end
+            if boolean then -- if hooked value is false/original value is false it's gonna get original value instead, so theres if condition
                 hook[1][hook[2]] = callback.Value
             else
                 hook[1][hook[2]] = callback.OriginalValue
@@ -232,40 +270,88 @@ local Types = {
         end,
     },
     Once = {
-        ['HookReducer'] = function(callback,flag)
-            callback2 = callback
-            flag2 = flag
+        ['HookReducer'] = function(callback,flag) -- technically it's overwriting but who gives a shit
             if typeof(callback.Reducer) == 'table' then
                 for i,v in pairs(callback.Reducer) do
-                    index = i
-                    print(v)
-                    old2 = library:HookFunction(v,function(...)
-                        print(...)
-                        return old2(...)
-                    end)
-                    print(old2)
+                    local reducer = Framework:GetReducerOf(v)
+                    local old = reducer[v]
+                    reducer[v] = function(...)
+                        if library.flags[flag] then
+                            select(2,...).payload  = callback.Value[i]
+                        end
+                        return old(...)
+                    end
                 end
             else
-                old = library:HookFunction(callback.Reducer, function(tab,newValue)
-                    if library.flags[flag2] then
-                        newValue.payload     = callback2.Value
+                local reducer = Framework:GetReducerOf(callback.Reducer)
+                local old = reducer[callback.Reducer];
+                reducer[callback.Reducer] =  function(...)
+                    if library.flags[flag] then
+                        select(2,...).payload  = callback.Value
                     end
-                    return old(tab,newValue)
+                    return old(...)
+                end
+            end
+        end,
+        ['SetValue'] = function(callback,flag)
+            if callback.CallOnSpawn then
+                Spawn:Connect(function()
+                    local hook = callback.HookValue
+                    if callback.Callback then
+                        callback:Callback(library.flags[flag])
+                        if not hook then return end
+                    end
+                    if library.flags[flag]   then -- if hooked value is false/original value is false it's gonna get original value instead, so theres if condition
+                        hook[1][hook[2]] = callback.Value
+                    else
+                        hook[1][hook[2]] = callback.OriginalValue
+                    end
                 end)
             end
+        end,
+        ['Loop'] = function(callback,flag)
+            table.insert(LoopFuncs,{callback,flag})
         end
     }
 }
 local miscSetUp = { -- here comes the funny
     [{Name = 'Character Exploits',Side = 'Left'}] = {
         {
-            Name = 'No Dash Cooldown',
-            Flag = 'NDC',
+            Name = 'No Jump Cooldown',
+            Flag = 'NJC',
             Callback = {
                 Type = 'SetValue',
                 Value = 0,
+                HookValue = {Framework:GetModule('JumpConstants'),'JUMP_DELAY_ADD'},
+                OriginalValue = 1
+            }
+        },
+        {
+            Name = 'No Fall Damage',
+            Tooltip = 'Instead of disabling fall damage, It disables fall handler completely.',
+            Flag = 'NJC',
+            Callback = {
+                Type = 'SetValue',
+                Value = true,
+                HookValue = {Framework:GetState().fallDamageClient,'isDisabled'},
+                OriginalValue = false
+            }
+        },
+        {
+            Name = 'No Dash Cooldown',
+            Flag = 'NDC',
+            Callback = {
+                Type = {'SetValue','Loop'},
+                Value = 0,
+                OriginalValue = 3,
                 HookValue = {Framework:GetModule('DashConstants'),'DASH_COOLDOWN'},
-                OriginalValue = 3.5
+
+                Callback = function(self,flag)
+                    local state = Framework:GetState()
+                    if state and flag then
+                        state.dashClient.isDashing = false
+                    end
+                end
             }
         },
 
@@ -273,9 +359,71 @@ local miscSetUp = { -- here comes the funny
             Name = 'Infinite Stamina',
             Flag = 'InfStam',
             Callback = {
-                Type = 'HookReducer',
-                Value = {500,500},
-                Reducer = {Framework:GetReducer('STAMINA_CLIENT_CURRENT_CHANGE'),Framework:GetReducer('STAMINA_CLIENT_MAX_CHANGE')}
+                Type = 'SetValue',
+                Callback = function(self,b)
+                    local value = b and 1000000 or 115
+                    local stamina = Framework:GetModule('DefaultStaminaHandlerClient').getDefaultStamina()
+                    if stamina and (b or stamina:getMaxStamina() == 1000000)  then
+                        rawset(stamina,'_maxStamina',value)
+                        rawset(stamina,'_stamina',value)
+                    end
+                end,
+                CallOnSpawn = true
+            }
+        },
+        {
+            Name = 'Infinite Air',
+            Flag = 'InfAir',
+            Tooltip = 'Infinite air in water.',
+            Callback = {
+                Type = 'SetValue',
+                Callback = function(self,b)
+                    local value = b and 1000000 or 100
+                    local air = getupvalue(Framework:GetModule('AirHandlerClient')._startModule,2)
+                    if air and (b or air:getMaxStamina() == 1000000)  then
+                        rawset(air,'_maxStamina',value)
+                        rawset(air,'_stamina',value)
+                    end
+                end,
+                CallOnSpawn = true
+            }
+        },
+    },
+    [{Name = 'Character Exploits',Side = 'Right'}] = {
+        {
+            Name = 'WalkSpeed',
+            Flag = 'Walkspeed',
+            Slider = {Name = 'Speed',Min = 1,Max = 75,Default = 16,Flag = 'WalkSpeed_slider'},
+            Callback = {
+                Type = {'SetValue','Loop'},
+                Callback = function(self,b)
+                    if Framework:IsAlive() and not b then
+                        LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').WalkSpeed = 16
+                    end
+                end,
+                LoopCallback = function(self,b)
+                    if Framework:IsAlive() and b then
+                        LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').WalkSpeed = library.flags['WalkSpeed_slider']
+                    end
+                end
+            }
+        },
+        {
+            Name = 'JumpPower',
+            Flag = 'Jumppower',
+            Slider = {Name = 'Power',Min = 1,Max = 159,Default = 50,Flag = 'JumpPower_slider'},
+            Callback = {
+                Type = {'SetValue','Loop'},
+                Callback = function(self,b)
+                    if Framework:IsAlive() and not b then
+                        LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').JumpPower = 50
+                    end
+                end,
+                LoopCallback = function(self,b)
+                    if Framework:IsAlive() and b then
+                        LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').JumpPower = library.flags['JumpPower_slider']
+                    end
+                end
             }
         }
     }
@@ -283,17 +431,52 @@ local miscSetUp = { -- here comes the funny
 for section,toggles in pairs(miscSetUp) do
     local sector = Tabs.Misc:Section(section)
     for _,settings in pairs(toggles) do
-        local toggle = sector:Toggle{Name = settings.Name,Flag = settings.Flag,Callback = function(enabled)
+        --------------------
+        local toggle = sector:Toggle{Name = settings.Name,Flag = settings.Flag,Tooltip = settings.Tooltip or nil,Callback = function(enabled)
             if Types.Callback[settings.Callback.Type] then
                 Types.Callback[settings.Callback.Type](settings.Callback,enabled)
+            elseif typeof(settings.Callback.Type) == 'table' then
+                for i,v in pairs(settings.Callback.Type) do
+                    if Types.Callback[v] then
+                        Types.Callback[v](settings.Callback,enabled)
+                    end
+                end
             end
         end}
         if Types.Once[settings.Callback.Type] then
             Types.Once[settings.Callback.Type](settings.Callback,settings.Flag)
+        elseif typeof(settings.Callback.Type) == 'table' then
+            for i,v in pairs(settings.Callback.Type) do
+                if Types.Once[v] then
+                    Types.Once[v](settings.Callback,settings.Flag)
+                end
+            end
+        end
+        --------------------
+        if settings.Slider then
+            sector:Slider(settings.Slider)
         end
     end
 end
-
+library:Connect(RunService.Stepped,function()
+    if Framework:IsAlive() then
+        for i,v in pairs(LoopFuncs) do
+            local callback = v[1]
+            local flag = v[2]
+            local hook = callback.HookValue
+            if callback.LoopCallback or callback.Callback then
+                local loop = callback.LoopCallback or callback.Callback
+                loop(callback,library.flags[flag])
+                continue
+            end
+            if library.flags[flag] then
+                hook[1][hook[2]] = callback.Value
+            elseif callback.OriginalValue then
+                hook[1][hook[2]] = callback.OriginalValue
+            end
+        end
+    end
+end)
 
 
 
