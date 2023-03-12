@@ -1527,8 +1527,8 @@ function library:init(options)
                     KeyHolder.Position = UDim2.new(1,-KeyHolder.AbsoluteSize.X+2,0,-2)
                     local keybind
                     local function set(key)
-                        library.flags[flag] = keys[key] or tostring(key):gsub("Enum.KeyCode.", "")
-                        local newkey = keys[key] or tostring(key):gsub("Enum.KeyCode.", "")
+                        local newkey = keys[key] or tostring(key):gsub("Enum.KeyCode.", "") 
+                        library.flags[flag] = key
 
                         keyText.Color = ((key == 'NONE' or key == '...') and Themes[Theme].InActiveText) or Themes[Theme].Text
 

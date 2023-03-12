@@ -190,6 +190,7 @@ do -- RAGE --
             running2 = true
             for i2,plr in pairs(closests) do
                 if Weapon.Parent ~= LocalPlayer.Character then break end
+                if not plr.Character then continue end
                 local part = plr.Character:FindFirstChild('Torso') or plr.Character:FindFirstChild('Head') or plr.Character.PrimaryPart
                 if not part then continue end
 
@@ -230,6 +231,7 @@ do -- RAGE --
                 task.wait(.1)
                 for _,v in pairs(closests) do
                     if weapon.Parent ~= LocalPlayer.Character then break end
+                    if not v.Character then continue end
                     local part = v.Character:FindFirstChild('Torso') or v.Character:FindFirstChild('Head') or v.Character.PrimaryPart
                     if not part then continue end
                     if Framework:IsDown(v) and library.flags['RageKillauraDowned'] ~= 'Regular' then continue end
