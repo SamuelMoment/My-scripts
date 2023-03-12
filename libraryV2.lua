@@ -2055,8 +2055,8 @@ function library:init(options)
             connection:Disconnect()
         end
     end
-    function library:Toggle()
-        frame.Visible = not frame.Visible
+    function library:Set(set)
+        frame.Visible = set
     end
 end
 function library:SaveConfig(name)
@@ -2232,7 +2232,7 @@ function library:LoadSettingsTab()
             themeslist:UpdateOptions(themes,themes[1])
         end
     end}
-    configs:Toggle({Name = 'Toggle UI',Flag = 'fasdqweqweqeq',Callback = function() library:Toggle() end}):Keybind{Key = Enum.KeyCode.Insert}
+    configs:Toggle({Name = 'Toggle UI',Flag = 'fasdqweqweqeq',Default = true,Callback = function(b) library:Set(b) end}):Keybind{Key = Enum.KeyCode.Insert}
 end
 function library:Connect(signal,func)
     return utility.connect(signal,func)
