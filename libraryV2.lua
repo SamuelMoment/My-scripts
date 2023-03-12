@@ -1528,7 +1528,7 @@ function library:init(options)
                     local keybind
                     local function set(key)
                         local newkey = keys[key] or tostring(key):gsub("Enum.KeyCode.", "") 
-                        library.flags[flag] = key
+                        library.flags[flag] = tostring(key):gsub("Enum.KeyCode.", ""):gsub('Enum.UserInputType.','')
 
                         keyText.Color = ((key == 'NONE' or key == '...') and Themes[Theme].InActiveText) or Themes[Theme].Text
 
@@ -1584,7 +1584,7 @@ function library:init(options)
                     end)
 
                     library.UpdateByFlag[flag] = function(key)
-                        set(key)
+                        set(Enum.KeyCode[key] or Enum.UserInputType[key])
                     end
                 end
                 return togglefuncs
@@ -2076,7 +2076,8 @@ function library:SaveConfig(name)
 end
 function library:LoadConfig(name)
     local library = self -- it's easier for me to read library:Tab rather than self:Tab
-
+    print(path..'/cfgs/'..name..'.cfg')
+    print(isfile(path..'/cfgs/'..name..'.cfg'))
     local flags = game.HttpService:JSONDecode(readfile(path..'/cfgs/'..name..'.cfg'))
 
     for flag,value in pairs(flags) do
@@ -2240,8 +2241,8 @@ function library:Disconnect(...) --forgor the args, maybe just a signal maybe no
     return utility.disconnect(...)
 end
 
---[[
-library:init()
+
+library:init{folder = 'test'}
 library:LoadSettingsTab()
 local tab1 = library:Tab('Hi')
 local section1 = tab1:Section({Name='Right',Side='Right'})
@@ -2269,7 +2270,7 @@ section2:Slider{Name = '',Min = 1,Max = 100,callback = function(val)
 end}
 section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
 section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
---]]
+
 
 Signal = {}
 Signal.__index = Signal
