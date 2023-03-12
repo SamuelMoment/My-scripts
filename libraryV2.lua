@@ -728,7 +728,7 @@ local create = {
             callback(BoxPlaceholder.Text)
         end
         function boxFuncs:set(text)
-            if BoxPlaceholder.Color == placeholderColor then 
+            if BoxPlaceholder.Color == placeholderColor and text ~= '' then 
                 BoxPlaceholder.Color = Themes[Theme].Text 
                 TabRemove(ThemeDrawings.InActiveText,BoxPlaceholder)
                 TabInsert(ThemeDrawings.Text,BoxPlaceholder)
