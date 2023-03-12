@@ -733,7 +733,7 @@ local create = {
                 TabRemove(ThemeDrawings.InActiveText,BoxPlaceholder)
                 TabInsert(ThemeDrawings.Text,BoxPlaceholder)
             end
-            if BoxPlaceholder.Text == '' then
+            if text == '' then
                 BoxPlaceholder.Color = placeholderColor
                 BoxPlaceholder.Text = placeholder
                 TabInsert(ThemeDrawings.InActiveText,BoxPlaceholder)
