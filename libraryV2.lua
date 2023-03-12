@@ -1584,7 +1584,7 @@ function library:init(options)
                     end)
 
                     library.UpdateByFlag[flag] = function(key)
-                        set(Enum.KeyCode[key] or Enum.UserInputType[key])
+                        set(key)
                     end
                 end
                 return togglefuncs
