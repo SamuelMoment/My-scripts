@@ -2240,7 +2240,7 @@ end
 function library:Disconnect(...) --forgor the args, maybe just a signal maybe not LOL
     return utility.disconnect(...)
 end
-
+--[[
 
 library:init{folder = 'test'}
 library:LoadSettingsTab()
@@ -2270,7 +2270,7 @@ section2:Slider{Name = '',Min = 1,Max = 100,callback = function(val)
 end}
 section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
 section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
-
+--]]
 
 Signal = {}
 Signal.__index = Signal
