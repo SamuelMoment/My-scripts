@@ -1596,7 +1596,7 @@ function library:init(options)
                 local name = options.name and options.name or ''
                 local dropdownOptions = options.options ~= nil and options.options or {}
 
-                local default = max == 1 and dropdownOptions[1] or dropdownOptions
+                local default = '__NONE__'
                 if options.default and table.find(options.default,dropdownOptions) then
                     default = dropdownOptions[table.find(options.default,dropdownOptions)]
                 end
@@ -1611,7 +1611,7 @@ function library:init(options)
                 local holdersName = {}
 
                 local rawcallback = options.callback or function()end
-                library.flags[flag] = default
+                library.flags[flag] = max == 1 and default or {}
 
                 local holder = utility:Draw('Square',{
                     Parent = contentHolder,
