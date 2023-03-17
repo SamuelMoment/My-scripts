@@ -451,7 +451,7 @@ local create = {
                 label.Color = Themes[Theme].InActiveText
                 TabRemove(chosenHolders,holder)
                 TabRemove(chosen,label.Text)
-                callback(max == 1 and chosen[1] or chosen)
+                callback((max == 1 and chosen[1] ~= nil and chosen[1]) or chosen)
                 --library.flags[flag] = max == 1 and chosen[1] or chosen                    
             else
                 if #chosen == max then
@@ -471,9 +471,7 @@ local create = {
             TabInsert(draw,openText)
             TabRemove(reversed,openText)
 
-            local value = (max == 1 and chosen[1] == nil and 1 or chosen[1]) or chosen
-            if typeof(value) == 'number' then value = nil end
-            callback(value)
+            callback((max == 1 and chosen[1] ~= nil and chosen[1]) or chosen)
             --library.flags[flag] = value 
 
         end

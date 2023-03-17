@@ -206,7 +206,7 @@ do -- RAGE --
                     [8] = Vector3.new(0.2, -0.9, -0.3)
                 }
                 
-                Framework:FireServer("MeleeFinish",unpack(args)) 
+                pcall(Framework.FireServer,Framework,"MeleeFinish",unpack(args)) 
                 Framework:FireServer("StopMeleeFinish",Weapon)
             end
             running2 = false
@@ -230,6 +230,7 @@ do -- RAGE --
                 Framework:FireServer('MeleeSwing',weapon,i)
                 task.wait(.1)
                 for _,v in pairs(closests) do
+                    
                     if weapon.Parent ~= LocalPlayer.Character then break end
                     if not v.Character then continue end
                     local part = v.Character:FindFirstChild('Torso') or v.Character:FindFirstChild('Head') or v.Character.PrimaryPart
@@ -254,234 +255,179 @@ do -- RAGE --
             running = false
         end)
     end)()
+    local autokick = Tabs.Rage:Section{Name = 'Auto Kick',Side = 'Right'}
+    autokick:Toggle{Name = 'Enabled',Flag = 'RageKick'}
+    autokick:Dropdown{Name = 'Ignore When',Flag = 'RageKickIgnore',Max = 99,Min = 0,Options = {'Player is Ragdolled','No Weapon Equipped'}}
+    autokick:Slider{Name = 'Distance',Flag = 'RageKickDistance',min = 1,max = 13}
+    coroutine.wrap(function()
+        local executing = false
+        library:Connect(RunService.Stepped,function()
+            if executing then return end
+            if not Framework:IsAlive() then return end
+            if not library.flags['RageKick'] then return end
+            if table.find(library.flags['RageKickIgnore'],'No Weapon Equipped') and not Framework:GetWeapon() then return end
+            local args = {
+                [1] = game:GetService("Players").LocalPlayer.Character.Stomp,
+                [3] = game:GetService("Players").LocalPlayer.Character.Stomp.Hitboxes.RightLegHitbox,
+            }
+            local weapon = LocalPlayer.Character:FindFirstChild('Stomp')
+            local hitbox = weapon and weapon.Hitboxes.RightLegHitbox
+            if not weapon then return end
+
+            local closests = Framework:GetClosests(library.flags['RageKickDistance'])
+            if #closests == 0 then return end
+            executing = true
+            for i=1,3 do
+                Framework:FireServer('MeleeSwing',weapon,i)
+                task.wait(.1)
+                for i,plr in pairs(closests) do
+                    if not Framework:IsAlive(plr) then continue end
+                    if not Framework:GetState(plr).parry.isParried then continue end   
+
+                    local part = plr.Character:FindFirstChild('Torso') or plr.Character:FindFirstChild('Head') or plr.Character.PrimaryPart
+                    if not part then continue end
+
+                    local args = {
+                        weapon,
+                        part,
+                        hitbox,
+                        part.Position,
+                        part.CFrame:ToObjectSpace(
+                            CFrame.new(part.Position)
+                        ),
+                        part.Position,
+                    }
+                    pcall(Framework.FireServer,Framework,"MeleeFinish",unpack(args)) 
+                end
+            end
+            executing = false
+        end)
+    end)()
+
 end
-local LoopFuncs = {}
-local Types = {
-    Callback = {
-        ['SetValue'] = function(callback,boolean)
-            local hook = callback.HookValue
-            if callback.Callback then
-                callback:Callback(boolean)
-                if not hook then return end
-            end
-            if boolean then -- if hooked value is false/original value is false it's gonna get original value instead, so theres if condition
-                hook[1][hook[2]] = callback.Value
-            else
-                hook[1][hook[2]] = callback.OriginalValue
-            end
-        end,
-    },
-    Once = {
-        ['HookReducer'] = function(callback,flag) -- technically it's overwriting but who gives a shit
-            if typeof(callback.Reducer) == 'table' then
-                for i,v in pairs(callback.Reducer) do
-                    local reducer = Framework:GetReducerOf(v)
-                    local old = reducer[v]
-                    reducer[v] = function(...)
-                        if library.flags[flag] then
-                            select(2,...).payload  = callback.Value[i]
-                        end
-                        return old(...)
-                    end
-                end
-            else
-                local reducer = Framework:GetReducerOf(callback.Reducer)
-                local old = reducer[callback.Reducer];
-                reducer[callback.Reducer] =  function(...)
-                    if library.flags[flag] then
-                        select(2,...).payload  = callback.Value
-                    end
-                    return old(...)
-                end
-            end
-        end,
-        ['SetValue'] = function(callback,flag)
-            if callback.CallOnSpawn then
-                Spawn:Connect(function()
-                    local hook = callback.HookValue
-                    if callback.Callback then
-                        callback:Callback(library.flags[flag])
-                        if not hook then return end
-                    end
-                    if library.flags[flag]   then -- if hooked value is false/original value is false it's gonna get original value instead, so theres if condition
-                        hook[1][hook[2]] = callback.Value
-                    else
-                        hook[1][hook[2]] = callback.OriginalValue
-                    end
-                end)
-            end
-        end,
-        ['Loop'] = function(callback,flag)
-            table.insert(LoopFuncs,{callback,flag})
+local function BetterHookFunction(func,newfunc) -- prevents upvalues shit
+    return hookfunction(func,function(...)
+        return newfunc(...)
+    end)
+end
+do
+    ------------------------------------------------
+    local charExploits = Tabs.Misc:Section{Name = 'Character Exploits',Side = 'Left'}
+    charExploits:Toggle{Name = 'No Jump Cooldown',Flag = 'NJC',Callback = function(enabled)
+        Framework:GetModule('JumpConstants').JUMP_DELAY_ADD = enabled and 0 or 1
+    end}
+    charExploits:Toggle{Name = 'No Dash Cooldown',Flag = 'NDC',Callback = function(enabled)
+        Framework:GetModule('DashConstants').DASH_COOLDOWN = enabled and 0 or 3
+    end}
+    charExploits:Toggle{Name = 'No Fall Damage',Flag = 'NFD',Callback = function(enabled)
+        Framework:GetState().fallDamageClient.isDisabled = enabled
+    end}
+    ------------------------------------------------
+    charExploits:Toggle{Name = 'Infinite Stamina',Flag = 'InfStam', Callback = function(enabled)
+        local value = enabled and 1000000 or 150
+        local stamina = Framework:GetModule('DefaultStaminaHandlerClient').getDefaultStamina()
+        if stamina and (enabled or stamina:getMaxStamina() == 1000000)  then
+            rawset(stamina,'_maxStamina',value)
+            rawset(stamina,'_stamina',value)
         end
-    }
-}
-local miscSetUp = { -- here comes the funny
-    [{Name = 'Character Exploits',Side = 'Left'}] = {
-        {
-            Name = 'No Jump Cooldown',
-            Flag = 'NJC',
-            Callback = {
-                Type = 'SetValue',
-                Value = 0,
-                HookValue = {Framework:GetModule('JumpConstants'),'JUMP_DELAY_ADD'},
-                OriginalValue = 1
-            }
-        },
-        {
-            Name = 'No Fall Damage',
-            Tooltip = 'Instead of disabling fall damage, It disables fall handler completely.',
-            Flag = 'NJC',
-            Callback = {
-                Type = 'SetValue',
-                Value = true,
-                HookValue = {Framework:GetState().fallDamageClient,'isDisabled'},
-                OriginalValue = false
-            }
-        },
-        {
-            Name = 'No Dash Cooldown',
-            Flag = 'NDC',
-            Callback = {
-                Type = {'SetValue','Loop'},
-                Value = 0,
-                OriginalValue = 3,
-                HookValue = {Framework:GetModule('DashConstants'),'DASH_COOLDOWN'},
+    end}
+    charExploits:Toggle{Name = 'Infinite Air',Flag = 'InfAir',Callback = function(enabled)
+        local value = enabled and 1000000 or 100
+        local air = getupvalue(Framework:GetModule('AirHandlerClient')._startModule,2)
+        if air and (enabled or air:getMaxStamina() == 1000000)  then
+            rawset(air,'_maxStamina',value)
+            rawset(air,'_stamina',value)
+        end
+    end}
+    ------------------------------------------------
+    charExploits:Toggle{Name = 'Disable Env. Damage',Flag = 'NoEnvDmg',Tooltip = 'Disables damage from bear traps and fire.',}
+    ------------------------------------------------
+    local anti = Tabs.Misc:Section{Name = 'Anti',Side = 'Left'}
+    anti:Toggle{Name = 'Anti Knockback',Flag = 'Antiknock'}
+    anti:Toggle{Name = 'Anti Ragdoll',Flag = 'AntiRagdoll',}
+    ------------------------------------------------
+    local charMov = Tabs.Misc:Section{Name = 'Character Movement',Side = 'Right'}
+    charMov:Toggle{Name = 'WalkSpeed',Flag = 'Walkspeed',Callback = function(enabled)
+        if Framework:IsAlive() and not enabled then
+            LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').WalkSpeed = 16
+        end
+    end}
+    charMov:Slider{Name = 'Speed',Min = 1,Max = 75,Default = 16,Flag = 'WalkSpeed_slider'}
+    charMov:Toggle{Name = 'JumpPower',Flag = 'Jumppower',Callback = function(enabled)
+        if Framework:IsAlive() and not enabled then
+            LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').JumpPower = 50
+        end
+    end}
+    charMov:Slider{Name = 'Speed',Min = 1,Max = 250,Default = 50,Flag = 'JumpPower_slider',Callback = function(enabled)
+        if Framework:IsAlive() and not enabled then
+            LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').JumpPower = 50
+        end
+    end}
+    ------------------------------------------------
+    local other = Tabs.Misc:Section{Name = 'Other',Side = 'Right'}
+    other:Toggle{Name = 'Unlock All Servers',Flag = 'UnlockServers',Tooltip = 'Allows you to join all servers. Exceptions are beginner servers and vc only.'}
 
-                Callback = function(self,flag)
-                    local state = Framework:GetState()
-                    if state and flag then
-                        state.dashClient.isDashing = false
-                    end
-                end
-            }
-        },
+    ------------------------------------------------
+    library:Connect(RunService.Stepped,function()
+        if Framework:IsAlive() then
+            local state = Framework:GetState()
+            if library.flags['NDC'] then
+                state.dashClient.isDashing = false
+            end
+            if library.flags['Walkspeed'] then
+                LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').WalkSpeed = library.flags['WalkSpeed_slider']
+            end
+            if library.flags['Jumppower'] then
+                LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').JumpPower = library.flags['JumpPower_slider']
+            end
 
-        {
-            Name = 'Infinite Stamina',
-            Flag = 'InfStam',
-            Callback = {
-                Type = 'SetValue',
-                Callback = function(self,b)
-                    local value = b and 1000000 or 115
-                    local stamina = Framework:GetModule('DefaultStaminaHandlerClient').getDefaultStamina()
-                    if stamina and (b or stamina:getMaxStamina() == 1000000)  then
-                        rawset(stamina,'_maxStamina',value)
-                        rawset(stamina,'_stamina',value)
-                    end
-                end,
-                CallOnSpawn = true
-            }
-        },
-        {
-            Name = 'Infinite Air',
-            Flag = 'InfAir',
-            Tooltip = 'Infinite air in water.',
-            Callback = {
-                Type = 'SetValue',
-                Callback = function(self,b)
-                    local value = b and 1000000 or 100
-                    local air = getupvalue(Framework:GetModule('AirHandlerClient')._startModule,2)
-                    if air and (b or air:getMaxStamina() == 1000000)  then
-                        rawset(air,'_maxStamina',value)
-                        rawset(air,'_stamina',value)
-                    end
-                end,
-                CallOnSpawn = true
-            }
-        },
-    },
-    [{Name = 'Character Exploits',Side = 'Right'}] = {
-        {
-            Name = 'WalkSpeed',
-            Flag = 'Walkspeed',
-            Slider = {Name = 'Speed',Min = 1,Max = 75,Default = 16,Flag = 'WalkSpeed_slider'},
-            Callback = {
-                Type = {'SetValue','Loop'},
-                Callback = function(self,b)
-                    if Framework:IsAlive() and not b then
-                        LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').WalkSpeed = 16
-                    end
-                end,
-                LoopCallback = function(self,b)
-                    if Framework:IsAlive() and b then
-                        LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').WalkSpeed = library.flags['WalkSpeed_slider']
-                    end
-                end
-            }
-        },
-        {
-            Name = 'JumpPower',
-            Flag = 'Jumppower',
-            Slider = {Name = 'Power',Min = 1,Max = 250,Default = 50,Flag = 'JumpPower_slider'},
-            Callback = {
-                Type = {'SetValue','Loop'},
-                Callback = function(self,b)
-                    if Framework:IsAlive() and not b then
-                        LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').JumpPower = 50
-                    end
-                end,
-                LoopCallback = function(self,b)
-                    if Framework:IsAlive() and b then
-                        LocalPlayer.Character:FindFirstChildWhichIsA('Humanoid').JumpPower = library.flags['JumpPower_slider']
-                    end
-                end
+            
+        end
+    end)
+    ------------------------------------------------
+    local oldNamecall;oldNamecall = hookmetamethod(game,'__namecall',function(self,...)
+        local args = {...}
+        local method = getnamecallmethod()
+
+        if tostring(self) == 'GotHitRE' and library.flags['NoEnvDmg'] then
+            return
+        end
+
+        return oldNamecall(self,unpack(args))
+    end)
+    ------------------------------------------------
+    do
+        ------------------------------------------------
+        local knockback = Framework:GetModule('KnockbackHandler')
+        local ReturnFuncs = {
+            Antiknock = {
+                knockback.knockbackPartAngular,
+                knockback.knockbackCharacterPart,
+            },
+            AntiRagdoll = {
+                Framework:GetModule('RagdollHandlerClient').toggleRagdoll
             }
         }
-    }
-}
-for section,toggles in pairs(miscSetUp) do
-    local sector = Tabs.Misc:Section(section)
-    for _,settings in pairs(toggles) do
-        --------------------
-        local toggle = sector:Toggle{Name = settings.Name,Flag = settings.Flag,Tooltip = settings.Tooltip or nil,Callback = function(enabled)
-            if Types.Callback[settings.Callback.Type] then
-                Types.Callback[settings.Callback.Type](settings.Callback,enabled)
-            elseif typeof(settings.Callback.Type) == 'table' then
-                for i,v in pairs(settings.Callback.Type) do
-                    if Types.Callback[v] then
-                        Types.Callback[v](settings.Callback,enabled)
+        for flag,funcs in pairs(ReturnFuncs) do
+            for _,func in pairs(funcs) do
+                local old;old = BetterHookFunction(func,function(...)
+                    if library.flags[flag] then
+                        return
                     end
-                end
-            end
-        end}
-        if Types.Once[settings.Callback.Type] then
-            Types.Once[settings.Callback.Type](settings.Callback,settings.Flag)
-        elseif typeof(settings.Callback.Type) == 'table' then
-            for i,v in pairs(settings.Callback.Type) do
-                if Types.Once[v] then
-                    Types.Once[v](settings.Callback,settings.Flag)
-                end
+                    return old(...)
+                end)
             end
         end
-        --------------------
-        if settings.Slider then
-            sector:Slider(settings.Slider)
-        end
+        ------------------------------------------------
+        local old;old = BetterHookFunction(Framework:GetModule('ServerUtilClient').getCanJoinServer,function(...)
+            if library.flags['UnlockServers'] then
+                return true
+            end
+            return old(...)
+        end)
     end
+    ------------------------------------------------
 end
-library:Connect(RunService.Stepped,function()
-    if Framework:IsAlive() then
-        for i,v in pairs(LoopFuncs) do
-            local callback = v[1]
-            local flag = v[2]
-            local hook = callback.HookValue
-            if callback.LoopCallback or callback.Callback then
-                local loop = callback.LoopCallback or callback.Callback
-                loop(callback,library.flags[flag])
-                continue
-            end
-            if library.flags[flag] then
-                hook[1][hook[2]] = callback.Value
-            elseif callback.OriginalValue then
-                hook[1][hook[2]] = callback.OriginalValue
-            end
-        end
-    end
-end)
-
-
-
 
 
 library:LoadSettingsTab()
