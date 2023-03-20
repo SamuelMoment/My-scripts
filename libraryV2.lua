@@ -2052,6 +2052,7 @@ function library:init(options)
         end
         game.ContextActionService:UnbindAction('disablekeyboard')
         table.clear(library.flags)
+        game.RunService.Heartbeat:Wait() -- waiting for all stuff to finish
         for signal,connection in pairs(library.connections) do
             connection:Disconnect()
         end
