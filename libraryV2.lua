@@ -1155,6 +1155,10 @@ function library:init(options)
                     task.wait(1)
                     text.Color = Themes[Theme].Text
                 end)
+                if options.tooltip then
+                    create.Tooltip(button,options.tooltip)
+                end
+
                 section.Size = UDim2.new(1,0,0,contentHolder.AbsoluteContentSize+20) 
                 local old = section.Parent.Position    
                 section.Parent.Position = UDim2.new()
