@@ -534,6 +534,7 @@ local create = {
                         TabInsert(ThemeDrawings.Text,t)
                     end
                 end)
+                callback((max == 1 and chosen[1] ~= nil and chosen[1]) or chosen)
                 options.Size = UDim2.new(1,0,0,optionsHolder.AbsoluteContentSize+4)
                 local old = optionsHolder.Parent.Position
                 optionsHolder.Parent.Position = UDim2.new()
