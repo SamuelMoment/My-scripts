@@ -386,17 +386,17 @@ local create = {
         TabInsert(ThemeDrawings.Text,isOpened)
         local openText = utility:Draw('Text',{
             Parent = dropdown,
-            Text = default=='__NONE__' and 'NONE' or default,
+            Text = not default and 'NONE' or default,
             Font = Drawing.Fonts["Plex"],
             Size = 13,
             ZIndex = library.zOrder.window+11,
             Position = UDim2.new(0,3,0,0),
             Visible = true,
             Center = false,
-            Color = default=='__NONE__' and Themes[Theme].InActiveText or Themes[Theme].Text,
+            Color = not default and Themes[Theme].InActiveText or Themes[Theme].Text,
             Outline = true                   
         })
-        TabInsert(ThemeDrawings[default == '__NONE__' and 'InActiveText' or 'Text'],openText)
+        TabInsert(ThemeDrawings[not default and 'InActiveText' or 'Text'],openText)
         local optionsHolder = utility:Draw('Square',{
             Parent = dropdown,
             Position = UDim2.new(0,2,1,5),
@@ -1596,7 +1596,7 @@ function library:init(options)
                 local name = options.name and options.name or ''
                 local dropdownOptions = options.options ~= nil and options.options or {}
 
-                local default = '__NONE__'
+                local default = nil
                 if options.default and table.find(options.default,dropdownOptions) then
                     default = dropdownOptions[table.find(options.default,dropdownOptions)]
                 end
