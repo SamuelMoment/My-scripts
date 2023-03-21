@@ -1611,7 +1611,7 @@ function library:init(options)
                 local holdersName = {}
 
                 local rawcallback = options.callback or function()end
-                library.flags[flag] = max == 1 and default or {}
+                library.flags[flag] = max ~= 1 and {} or default
 
                 local holder = utility:Draw('Square',{
                     Parent = contentHolder,
