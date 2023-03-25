@@ -1682,7 +1682,7 @@ function library:init(options)
                 local dropdownOptions = options.options ~= nil and options.options or {}
 
                 local default = nil
-                if options.default and table.find(options.default,dropdownOptions) then
+                if options.default and table.find(dropdownOptions,options.default) then
                     default = dropdownOptions[table.find(options.default,dropdownOptions)]
                 end
                 local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
