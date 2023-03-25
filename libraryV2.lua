@@ -440,19 +440,28 @@ local create = {
                     return
                 end
                 label.Color = Themes[Theme].InActiveText
+                TabInsert(ThemeDrawings.InActiveText,label)
+                TabRemove(ThemeDrawings.Text,label)
+
                 TabRemove(chosenHolders,holder)
                 TabRemove(chosen,label.Text)
                 callback((max == 1 and chosen[1] ~= nil and chosen[1]) or chosen)
                 --library.flags[flag] = max == 1 and chosen[1] or chosen                    
             else
                 if #chosen == max then
-                    chosenHolders[1]:GetChildren()[1].Color = Themes[Theme].InActiveText
+                    local l = chosenHolders[1]:GetChildren()[1]
+                    l.Color = Themes[Theme].InActiveText
+                    TabInsert(ThemeDrawings.InActiveText,l)
+                    TabRemove(ThemeDrawings.Text,l)
+
                     table.remove(chosen,1)
                     table.remove(chosenHolders,1)
                 end
                 table.insert(chosen,name)
                 table.insert(chosenHolders,holder)
                 label.Color = Themes[Theme].Text
+                TabInsert(ThemeDrawings.Text,label)
+                TabRemove(ThemeDrawings.InActiveText,label)
             end 
         
             UpdateText()
@@ -946,12 +955,13 @@ function library:init(options)
         local tab = utility:Draw('Square',{
             Parent = TabsHolder,
             Filled = true,
-            Color = fromrgb(26,26,29),
+            Color = Themes[Theme].SectorsBackground,
             Position = UDim2.new(0,0,0,0),
             Size = UDim2.new(0,0,0,18),
             Visible = true,
             ZIndex = library.zOrder.window+6
         })
+        TabInsert(ThemeDrawings.SectorsBackground,tab)
 
         library.currentTab = library.currentTab or tab
         utility.connect(tab.MouseButton1Down,function()
@@ -1592,6 +1602,7 @@ function library:init(options)
                         Position = UDim2.new()
                     })
                     TabInsert(ThemeDrawings.InActiveText,keyText)
+
                     KeyHolder.Size = UDim2.new(0,keyText.TextBounds.X,1,2)
                     KeyHolder.Position = UDim2.new(1,-KeyHolder.AbsoluteSize.X+2,0,-2)
                     local keybind
@@ -1599,7 +1610,10 @@ function library:init(options)
                         local newkey = keys[key] or tostring(key):gsub("Enum.KeyCode.", "") 
                         library.flags[flag] = tostring(key):gsub("Enum.KeyCode.", ""):gsub('Enum.UserInputType.','')
 
-                        keyText.Color = ((key == 'NONE' or key == '...') and Themes[Theme].InActiveText) or Themes[Theme].Text
+                        local clr = ((key == 'NONE' or key == '...') and 'InActiveText') or 'Text'
+                        keyText.Color = Themes[Theme][clr]
+                        TabInsert(ThemeDrawings[clr],keyText)
+                        TabRemove(ThemeDrawings[clr == 'Text' and 'InActiveText' or 'Text'],keyText)
 
                         keyText.Text = '['..newkey..']'
                         
@@ -2099,7 +2113,7 @@ function library:init(options)
                     callback(t)
                 end,function(t)
                     library.flags[flag] = t
-                    callback(t)
+                    finalcallback(t)
                 end)
 
                 library.UpdateByFlag[flag] = function(text)
@@ -2165,39 +2179,6 @@ function library:LoadConfig(name)
         end
     end
 end
-makefolder(path..'/themes')
-function library:SaveTheme(name)
-    local library = self -- it's easier for me to read library:Tab rather than self:Tab
-    --gonna convert all color3 values to hex cuz json makes it null
-    local fakeFlags = {}
-    for flag,value in pairs(library.flags) do
-		
-		local fakeValue = value
-        if not string.find(flag,'__Theme__') then continue end
-        if  typeof(value) == 'table' and value['Color'] then
-			fakeValue = {Color = value.Color,Transparency = value.Transparency}
-            fakeValue.Color = {R = value.Color.R,G = value.Color.G,B = value.Color.B}
-        end
-        fakeFlags[flag] = fakeValue
-    end
-    writefile(path..'/themes/'..name..'.cfg',game.HttpService:JSONEncode(fakeFlags))
-end
-function library:LoadTheme(name)
-    local library = self -- it's easier for me to read library:Tab rather than self:Tab
-
-    local flags = game.HttpService:JSONDecode(readfile(path..'/themes/'..name..'.cfg'))
-
-    for flag,value in pairs(flags) do
-        --if value is color3, since i converted it, gonna convert it back
-        if not string.find(flag,'__Theme__') then continue end
-        if typeof(value) == 'table' and value.Color then
-            value.Color = Color3.new(value.Color.R,value.Color.G,value.Color.B)
-        end
-        if library.UpdateByFlag[flag] then
-            library.UpdateByFlag[flag](value)
-        end
-    end
-end
 function library:GetConfigs()
     local cfgnames = {}
     for i,v in pairs(listfiles(path..'/cfgs')) do
@@ -2206,10 +2187,53 @@ function library:GetConfigs()
     end
     return cfgnames
 end
+local UpdateTheme = {}
+
+makefolder(path..'/themes')
+function library:SaveTheme(name)
+    local library = self
+
+    local flags = {}
+    for type,color in pairs(Themes[Theme]) do
+        local color = {R = color.R,G = color.G,B = color.B}
+        flags[type] = color
+    end
+
+    writefile(path..'/themes/'..name..'.cfg',game.HttpService:JSONEncode(flags))
+end
+function library:LoadTheme(name)
+    local library = self -- it's easier for me to read library:Tab rather than self:Tab
+
+    if isfile(path..'/themes/'..name..'.cfg') then
+        local flags = game.HttpService:JSONDecode(readfile(path..'/themes/'..name..'.cfg'))
+
+        Themes[name] = {}
+        for flag,clr in pairs(flags) do
+            local color = Color3.new(clr.R,clr.G,clr.B)
+
+            if not UpdateTheme[flag] then continue end
+            UpdateTheme[flag](color)
+            Themes[name][flag] = color
+        end
+        Theme = name   
+    elseif Themes[name] then
+        for type,color in pairs(Themes[name]) do
+            if not UpdateTheme[type] then continue end
+            UpdateTheme[type](color)
+        end
+        Theme = name
+    end
+end
 function library:GetThemes()
     local cfgnames = {}
+    for theme,_ in pairs(Themes) do
+        if theme == 'Custom' then continue end
+        cfgnames[#cfgnames+1] = theme
+    end
     for i,v in pairs(listfiles(path..'/themes')) do
-        cfgnames[#cfgnames+1] = string.gsub(v:sub(0,-5),(path..'/themes'..[[\]]),'')
+        local name = string.gsub(v:sub(0,-5),(path..'/themes'..[[\]]),'')
+        if table.find(cfgnames,name) then continue end
+        cfgnames[#cfgnames+1] = name
     end
     return cfgnames
 end
@@ -2230,21 +2254,29 @@ function library:LoadSettingsTab()
     }
     for rawname,tab in pairs(ThemeDrawings) do
         local name = themeTab[rawname] or rawname
-        local defaultcolor = Themes[Theme][rawname]
     
         theme:Toggle({Name = name,Flag = '__Theme__'..rawname, callback = function(toggle)
-            local color = (toggle and library.flags['__Theme__'..rawname..'_Color'].Color) or defaultcolor
+            local color = (toggle and library.flags['__Theme__'..rawname..'_Color'].Color) or Themes[Theme][rawname]
             for i,v in pairs(tab) do
                 v.Color = color
             end
             Themes[Theme][rawname] = color
-        end}):ColorPicker{Default = defaultcolor,Flag = '__Theme__'..rawname..'_Color',callback = function(color)
-            local color = library.flags['__Theme__'..rawname] and color.Color or defaultcolor
+        end}):ColorPicker{Default = Themes[Theme][rawname],Flag = '__Theme__'..rawname..'_Color',callback = function(color)
+            local color = library.flags['__Theme__'..rawname] and color.Color or Themes[Theme][rawname]
             for i,v in pairs(tab) do
                 v.Color = color
             end   
             Themes[Theme][rawname] = color
         end}
+        UpdateTheme[rawname] = function(newval)
+            local color = typeof(newval) == 'Color3' and newval or newval.Color
+
+
+            library.UpdateByFlag['__Theme__'..rawname..'_Color']({Color = color,Transparency = 0})
+            for i,v in pairs(tab) do
+                v.Color = color
+            end  
+        end
     end
     local configs = tab:Section{Name = 'Configs',side = 'Left'}
     local cfglist = configs:Dropdown{Name = 'Config',Options = library:GetConfigs(),Max=1,Min=0,Flag = 'ConfigChosen'}
@@ -2276,6 +2308,10 @@ function library:LoadSettingsTab()
             cfglist:UpdateOptions(cfgs,cfgs[1])
         end
     end}
+
+
+
+
     local themes = tab:Section{Name = 'Themes',Side = 'Left'}
     local themeslist = themes:Dropdown{Name = 'Theme',Options = library:GetThemes(),Max=1,Min=0,Flag = 'ThemeChosen'}
     themes:Button{Name = 'Load Theme',Callback = function()
@@ -2292,7 +2328,7 @@ function library:LoadSettingsTab()
         if library.flags['ThemeChosen'] ~= nil then
             delfile(path..'/themes/'..library.flags['ThemeChosen']..'.cfg')
             local themes = library:GetThemes()
-            cfglist:UpdateOptions(themes,themes[1])
+            themeslist:UpdateOptions(themes,themes[1])
         end
     end}    
     themes:Box{placeholder = 'Theme Name',Flag = 'ThemeChosen_Text'}
