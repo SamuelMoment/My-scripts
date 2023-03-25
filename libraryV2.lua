@@ -534,7 +534,7 @@ local create = {
                         TabInsert(ThemeDrawings.Text,t)
                     end
                 end)
-                callback((max == 1 and chosen[1] ~= nil and chosen[1]) or chosen)
+                callback((max == 1 and chosen[1]) or chosen)
                 options.Size = UDim2.new(1,0,0,optionsHolder.AbsoluteContentSize+4)
                 local old = optionsHolder.Parent.Position
                 optionsHolder.Parent.Position = UDim2.new()
@@ -1681,20 +1681,15 @@ function library:init(options)
                 local name = options.name and options.name or ''
                 local dropdownOptions = options.options ~= nil and options.options or {}
 
-                local default = options.default
-                
+                local default = options.default or nil
+
                 local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
                 if not options.flag then
                     table.insert(library.unnamedFlags,'1')
                 end
 
-                local chosen = {}
-                local chosenHolders = {}
-                local holders = {}
-                local holdersName = {}
-
                 local rawcallback = options.callback or function()end
-                library.flags[flag] = max ~= 1 and {} or default
+                library.flags[flag] = max > 1 and {} or default
 
                 local holder = utility:Draw('Square',{
                     Parent = contentHolder,
