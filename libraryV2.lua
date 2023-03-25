@@ -284,9 +284,6 @@ local Themes = {
         WindowBackground = fromrgb(30,30,35),
         TabBackground = fromrgb(20,20,25),
 
-        ActiveTab = fromrgb(35,35,40),
-        InActiveTab = fromrgb(25, 25, 25),
-
         Sectors = fromrgb(27, 27, 31),
         SectorsBackground = fromrgb(26, 26, 29),
 
@@ -305,9 +302,6 @@ local Themes = {
 
         WindowBackground = fromrgb(30,30,35),
         TabBackground = fromrgb(20,20,25),
-
-        ActiveTab = fromrgb(35,35,40),
-        InActiveTab = fromrgb(25, 25, 25),
 
         Sectors = fromrgb(27, 27, 31),
         SectorsBackground = fromrgb(26, 26, 29),
@@ -339,9 +333,6 @@ local ThemeDrawings = {
 
     WindowBackground = {},
     TabBackground = {},
-
-    ActiveTab = {},
-    InActiveTab = {},
 
     Sectors = {},
     SectorsBackground = {},
@@ -503,7 +494,7 @@ local create = {
                 })
                 TabInsert(ThemeDrawings.InActiveText,t)
                  --
-                if v == default then
+                if v == default or (typeof(default) == 'table' and table.find(default,v)) then
                     TabInsert(chosen,v)
                     TabInsert(chosenHolders,holder)
                     t.Color = Themes[Theme].Text
@@ -914,7 +905,7 @@ function library:init(options)
         Thickness = 0
     })
     TabInsert(ThemeDrawings.TabBackground,backgroundTab)
-    local border = utility:DoubleOutline(backgroundTab,fromrgb(10,10,10),Themes[Theme].Border)
+    local border = utility:Outline(backgroundTab,Themes[Theme].Border)
     TabInsert(ThemeDrawings.Border,border)
     -- Tabs handler
 
@@ -930,31 +921,54 @@ function library:init(options)
     TabInsert(ThemeDrawings.SectorsBackground,TabsHolder)
     local border = utility:DoubleOutline(TabsHolder,Themes[Theme].Border,fromrgb(10,10,10))
     TabInsert(ThemeDrawings.Border,border)
+
+    TabInsert(ThemeDrawings.Border,utility:Draw('Square',{
+        Parent = TabsHolder,
+        Position = UDim2.new(0,0,0,18),
+        Size = UDim2.new(1,0,0,1),
+        Filled = true,
+        ZIndex = TabsHolder.ZIndex+1,
+        Color = Themes[Theme].Border
+    }))
+
+    local TabSelector = utility:Draw('Square',{
+        Size = UDim2.new(1,0,0,1),
+        Position = UDim2.new(0,0,0,1),
+        Filled = true,
+        Visible = true,
+        Color = Themes[Theme].Ascent,
+        ZIndex = library.zOrder.window+7
+    })
+
+
+
     function library:Tab(name)  
         local tab = utility:Draw('Square',{
             Parent = TabsHolder,
             Filled = true,
-            Color = fromrgb(32, 32, 32),
+            Color = fromrgb(26,26,29),
             Position = UDim2.new(0,0,0,0),
-            Size = UDim2.new(0,0,0,15),
+            Size = UDim2.new(0,0,0,18),
             Visible = true,
-            ZIndex = library.zOrder.window+4
+            ZIndex = library.zOrder.window+6
         })
-        local border = utility:Outline(tab,Themes[Theme].Border)
-        TabInsert(ThemeDrawings.Border,border)
+
         library.currentTab = library.currentTab or tab
         utility.connect(tab.MouseButton1Down,function()
-            library.currentTab.Color = Themes[Theme].InActiveTab
+            library.currentTab.Size -= UDim2.new(0,0,0,1)
             if library.sectorHolders[library.currentTab] then
                 library.sectorHolders[library.currentTab].Visible = false
-            end                
+            end               
+
             library.currentTab = tab
-            tab.Color = Themes[Theme].ActiveTab
+            TabSelector.Parent = tab
+            tab.Size += UDim2.new(0,0,0,1)
+
             if library.sectorHolders[tab] then
                 library.sectorHolders[tab].Visible = true
             end            
         end)
-        TabInsert(ThemeDrawings.Border,utility:Draw('Square',{ -- additional outline
+        --[[TabInsert(ThemeDrawings.Border,utility:Draw('Square',{ -- additional outline
             Parent = tab,
             Filled = true,
             Color = Themes[Theme].Border,
@@ -962,7 +976,7 @@ function library:init(options)
             Size = UDim2.new(0,1,1,0),
             Visible = true,
             ZIndex = library.zOrder.window+5
-        }))
+        }))--]]
         
         local text = utility:Draw('Text',{
             Text = name,
@@ -972,7 +986,7 @@ function library:init(options)
             Parent = tab,
             Center = true,
             Outline = true,
-            ZIndex = library.zOrder.window+5,
+            ZIndex = tab.ZIndex+1,
             Position = UDim2.new(0.5,0,0.5,7)
         })
         ---------
@@ -983,13 +997,8 @@ function library:init(options)
             v.Size = UDim2.new(0,tabSize,0,18)
             v.Position = UDim2.new(0,tabSize*(i-1),0,0)
             if library.currentTab == v then
-                v.Color = Themes[Theme].ActiveTab
-                TabInsert(ThemeDrawings.ActiveTab,v)
-                TabRemove(ThemeDrawings.InActiveTab,v)
-            else
-                v.Color = Themes[Theme].InActiveTab
-                TabInsert(ThemeDrawings.InActiveTab,v)
-                TabRemove(ThemeDrawings.ActiveTab,v)
+                TabSelector.Parent = v
+                v.Size += UDim2.new(0,0,0,1)
             end
             if library.sectorHolders[v] then
                 library.sectorHolders[v].Position = UDim2.new(0,-tabSize*(i-1),1,1)
@@ -1003,7 +1012,6 @@ function library:init(options)
 
 
         local sectorsFuncs = {}
-        local sectors = {right={},left={}} 
         local sectorsHolder = utility:Draw('Square',{
             Parent = tab,
             Size = TabsHolder.AbsoluteSize-Vector2.new(0,19),
@@ -1053,13 +1061,26 @@ function library:init(options)
                 Parent = side == 'Left' and LeftHolder or RightHolder,
             })
             TabInsert(ThemeDrawings.Sectors,section)
-            local outline1,outline2 = utility:DoubleOutline(section,Themes[Theme].Border,fromrgb(10,10,10))
-            TabInsert(ThemeDrawings.Border,outline1)
-            outline1.Position = Vector2.new(-1,0)
-            outline1.Size = UDim2.new(1,2,1,1)
+            
+            
+            local border,border2 = utility:DoubleOutline(section,Themes[Theme].Border,fromrgb(10,10,10))
+            TabInsert(ThemeDrawings.Border,border)
+            border.Position = Vector2.new(-1,0)
+            border.Size = UDim2.new(1,2,1,1)
 
+            border2.Position = UDim2.new(0,-2,0,0)
+            border2.Size = UDim2.new(1,4,1,2)
 
-            local outlineUpRight = utility:Draw('Square',{
+            utility:Draw('Square',{
+                Parent = section,
+                Size = UDim2.new(0,1,0,-2),
+                Position = UDim2.new(0,-2,0,0),
+                Filled = true,
+                Color = fromrgb(10,10,10),
+                ZIndex = border.ZIndex-1
+            })
+
+            local BorderRight = utility:Draw('Square',{
                 Parent = section,
                 ZIndex = section.ZIndex+1,
                 Position = UDim2.new(0,-1,0,-1),
@@ -1068,7 +1089,7 @@ function library:init(options)
                 Visible = true,
                 Color = Themes[Theme].Border
             })
-            local outlineUpLeft = utility:Draw('Square',{
+            local BorderLeft = utility:Draw('Square',{
                 Parent = section,
                 ZIndex = section.ZIndex+1,
                 Position = UDim2.new(1,1,0,-1),
@@ -1076,24 +1097,69 @@ function library:init(options)
                 Size = Vector2.new(-10,1),
                 Visible = true,
                 Color = Themes[Theme].Border
-            })          
+            })
+            local BorderRight2 = utility:Draw('Square',{
+                Parent = section,
+                ZIndex = BorderRight.ZIndex-1,
+                Position = UDim2.new(0,-1,0,-2),
+                Filled = true,
+                Size = Vector2.new(10,1),
+                Visible = true,
+                Color = fromrgb(10,10,10)
+            })
+            local BorderLeft2 = utility:Draw('Square',{
+                Parent = section,
+                ZIndex = section.ZIndex+1,
+                Position = UDim2.new(1,1,0,-2),
+                Filled = true,
+                Size = Vector2.new(-10,1),
+                Visible = true,
+                Color = fromrgb(10,10,10)
+            })
+
+            local AscentBorderRight = utility:Draw('Square',{
+                Parent = section,
+                ZIndex = BorderRight.ZIndex-1,
+                Position = UDim2.new(0,0,0,0),
+                Filled = true,
+                Size = Vector2.new(10,1),
+                Visible = true,
+                Color = Themes[Theme].Ascent
+            })
+            local AscentBorderLeft = utility:Draw('Square',{
+                Parent = section,
+                ZIndex = section.ZIndex+1,
+                Position = UDim2.new(1,0,0,0),
+                Filled = true,
+                Size = Vector2.new(-10,1),
+                Visible = true,
+                Color = Themes[Theme].Ascent
+            })
+            TabInsert(ThemeDrawings.Ascent,AscentBorderRight)
+            TabInsert(ThemeDrawings.Ascent,AscentBorderLeft)
+
             local sectionName = utility:Draw('Text',{
                 Parent = section,
                 Text = name,
                 Size = 13,
                 Font = Drawing.Fonts["Plex"],
-                --Position = UDim2.new(0.25,0,0,0),
                 ZIndex = section.ZIndex + 2,
                 Color = Themes[Theme].Text,
                 Center = false,
                 Outline = true
             })
-            TabInsert(ThemeDrawings.Border,outlineUpRight)
-            TabInsert(ThemeDrawings.Border,outlineUpLeft)
+            TabInsert(ThemeDrawings.Border,BorderRight)
+            TabInsert(ThemeDrawings.Border,BorderLeft)
             TabInsert(ThemeDrawings.Text,sectionName)
-            sectionName.Position = UDim2.new(0,35,0,-(sectionName.TextBounds.Y/2)-3)
-            outlineUpRight.Size = Vector2.new((sectionName.AbsolutePosition.X+sectionName.TextBounds.X-outlineUpRight.AbsolutePosition.X-sectionName.TextBounds.X)-5,1)
-            outlineUpLeft.Size = Vector2.new((sectionName.AbsolutePosition.X+sectionName.TextBounds.X-outlineUpLeft.AbsolutePosition.X)+5,1)
+
+            sectionName.Position = UDim2.new(0,35,0,-(sectionName.TextBounds.Y/2)-2)
+
+            BorderRight.Size = Vector2.new((sectionName.AbsolutePosition.X+sectionName.TextBounds.X-BorderRight.AbsolutePosition.X-sectionName.TextBounds.X)-4,1)
+            BorderLeft.Size = Vector2.new((sectionName.AbsolutePosition.X+sectionName.TextBounds.X-BorderLeft.AbsolutePosition.X)+4,1)
+            BorderRight2.Size = BorderRight.Size
+            BorderLeft2.Size = BorderLeft.Size
+            AscentBorderRight.Size = BorderRight.Size - Vector2.new(1,0)
+            AscentBorderLeft.Size = BorderLeft.Size + Vector2.new(1,0)
             --
             local contentHolder = utility:Draw('Square',{
                 Parent = section,
@@ -2153,9 +2219,7 @@ function library:LoadSettingsTab()
     local theme = tab:Section({Name='Theme Editor',Side='Right'})
     local themeTab = {
         WindowBackground = 'Window Background',
-        ActiveTab = 'Chosen Tab',
         Ascent = 'Ascent',
-        InActiveTab = 'Unchosen Tab',
         InActiveText = 'Inactive Text',
         Text = 'Text',
         Object = 'Ascent Background', -- idfk how to name it
@@ -2247,14 +2311,14 @@ end
 function library:Disconnect(...) --forgor the args, maybe just a signal maybe not LOL
     return utility.disconnect(...)
 end
---[[
+
 
 library:init{folder = 'test'}
 library:LoadSettingsTab()
 local tab1 = library:Tab('Hi')
 local section1 = tab1:Section({Name='Right',Side='Right'})
 
-tab1:Section({Name='Test Right',Side='Right'})
+tab1:Section({Name='Main',Side='Right'})
 section1:Toggle{Name = 'Toggle 1',Flag = 'hi',callback = function(val)
     
 end}
@@ -2277,6 +2341,11 @@ section2:Slider{Name = '',Min = 1,Max = 100,callback = function(val)
 end}
 section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
 section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
+
+library:Tab('test')
+library:Tab('test2')
+library:Tab('test3')
+library:Tab('test4')
 --]]
 
 Signal = {}
