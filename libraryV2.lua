@@ -2349,7 +2349,7 @@ function library:Disconnect(...) --forgor the args, maybe just a signal maybe no
 end
 
 
-library:init{folder = 'test'}
+--[[library:init{folder = 'test'}
 library:LoadSettingsTab()
 local tab1 = library:Tab('Hi')
 local section1 = tab1:Section({Name='Right',Side='Right'})
@@ -2381,7 +2381,7 @@ section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi3'
 library:Tab('test')
 library:Tab('test2')
 library:Tab('test3')
-library:Tab('test4')
+library:Tab('test4')--]]
 --]]
 
 Signal = {}
