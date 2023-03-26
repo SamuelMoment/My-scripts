@@ -941,12 +941,13 @@ function library:init(options)
     }))
 
     local TabSelector = utility:Draw('Square',{
-        Size = UDim2.new(1,0,0,1),
+        Size = UDim2.new(),
         Position = UDim2.new(0,0,0,1),
         Filled = true,
         Visible = true,
         Color = Themes[Theme].Ascent,
-        ZIndex = library.zOrder.window+7
+        ZIndex = library.zOrder.window+7,
+        Parent = TabsHolder -- shouldnt affect anything at all
     })
 
 
@@ -971,7 +972,10 @@ function library:init(options)
             end               
 
             library.currentTab = tab
-            TabSelector.Parent = tab
+
+            TabSelector.Position = tab.Position
+            TabSelector.Size = UDim2.new(0,tab.AbsoluteSize.X,0,1)
+
             tab.Size += UDim2.new(0,0,0,1)
 
             if library.sectorHolders[tab] then
@@ -1007,7 +1011,8 @@ function library:init(options)
             v.Size = UDim2.new(0,tabSize,0,18)
             v.Position = UDim2.new(0,tabSize*(i-1),0,0)
             if library.currentTab == v then
-                TabSelector.Parent = v
+                TabSelector.Position = v.Position
+                TabSelector.Size = UDim2.new(0,v.AbsoluteSize.X,0,1)
                 v.Size += UDim2.new(0,0,0,1)
             end
             if library.sectorHolders[v] then
@@ -2353,7 +2358,7 @@ function library:Disconnect(...) --forgor the args, maybe just a signal maybe no
     return utility.disconnect(...)
 end
 
---[[
+
 library:init{folder = 'test'}
 library:LoadSettingsTab()
 local tab1 = library:Tab('Hi')
@@ -2380,7 +2385,7 @@ local section2 = tab2:Section({Name='Left',Side='Left'})
 
 section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
 section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi','hi','hi','hi3','hi4','test','hi','hi2','hi3','hi','hi','hi2','hi4','test','hi','hi2','hi3','hi4','test','hi','hi2','hi3','hi4','test','hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
---]]
+
 
 
 
