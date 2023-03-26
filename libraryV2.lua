@@ -1830,7 +1830,11 @@ function library:init(options)
                     end
                 end,1,1)
                 dropdown.Size = UDim2.new(1,-4,0,15)
-                local biggestHolder
+                local contentsize
+
+                local maxSize = sectorsHolder.AbsoluteSize.Y-20
+                print(maxSize)
+
                 for i,v in pairs(choices) do 
                     local choicesHolder,funcs = create.Scroll(holder,v,v[1],function(choice) 
                         valueToReturn.Scroll = choice 
@@ -1843,13 +1847,21 @@ function library:init(options)
                     scrollOptions[i] = choicesHolder
                     updateFuncs[i] = funcs
                     choicesHolder.Visible = currentIndex == i
-                    if not biggestHolder then
-                        biggestHolder = choicesHolder
-                    elseif biggestHolder.AbsoluteContentSize <= choicesHolder.AbsoluteContentSize then
-                        biggestHolder = choicesHolder
+
+                    local y = choicesHolder.AbsolutePosition.Y+choicesHolder.AbsoluteSize.Y-sectorsHolder.AbsolutePosition.Y
+                    if y >= maxSize then 
+                        choicesHolder:MakeScrollable()
+                        choicesHolder.Parent.Size += UDim2.new(0,0,0,maxSize-y-3)
+                    end
+                    
+                    if not contentsize then
+                        contentsize = choicesHolder.AbsoluteSize.Y
+                    elseif contentsize <= choicesHolder.AbsoluteContentSize then
+                        contentsize = choicesHolder.AbsoluteSize.Y
                     end
                 end
-                holder.Size = UDim2.new(1,4,0,biggestHolder.AbsoluteContentSize+35)
+
+                holder.Size = UDim2.new(1,4,0,contentsize+35)
                 section.Size = UDim2.new(1,0,0,contentHolder.AbsoluteContentSize+20) 
                 library.UpdateByFlag[flag] = function(newchosen)
                     Dropdownfuncs.Update(table.find(indexNames,newchosen.Dropdown),true)
@@ -2341,8 +2353,8 @@ function library:Disconnect(...) --forgor the args, maybe just a signal maybe no
     return utility.disconnect(...)
 end
 
-
---[[library:init{folder = 'test'}
+--[[
+library:init{folder = 'test'}
 library:LoadSettingsTab()
 local tab1 = library:Tab('Hi')
 local section1 = tab1:Section({Name='Right',Side='Right'})
@@ -2365,17 +2377,12 @@ section1:Dropdown{name = 'Dropdown',options = {'option 1','option 2'},max = 2,Fl
 section1:Dropdown{name = 'Dropdown Min 1',options = {'option 1','option 2'},min = 1}
 local tab2 = library:Tab('ab')
 local section2 = tab2:Section({Name='Left',Side='Left'})
-section2:Slider{Name = '',Min = 1,Max = 100,callback = function(val)
-    print('Slider 2 is now '..val)
-end}
-section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
-section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
 
-library:Tab('test')
-library:Tab('test2')
-library:Tab('test3')
-library:Tab('test4')--]]
+section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
+section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi','hi','hi','hi3','hi4','test','hi','hi2','hi3','hi','hi','hi2','hi4','test','hi','hi2','hi3','hi4','test','hi','hi2','hi3','hi4','test','hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
 --]]
+
+
 
 Signal = {}
 Signal.__index = Signal
