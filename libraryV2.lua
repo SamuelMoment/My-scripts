@@ -343,12 +343,13 @@ local ThemeDrawings = {
 }
 
 local create = {
-    Dropdown = function(parent,choices,default,callback,min,max)
+    Dropdown = function(parent,choices,default,callback,min,max,limit)
         local isOpen = false
         local chosen = {}
         local chosenHolders = {}
         local holders = {}
         local holdersName = {}
+        local limit = limit or 9999
 
         local callback = callback or function()end
 
@@ -486,7 +487,7 @@ local create = {
                     Position = UDim2.new(0,2,0,0),
                     Size = UDim2.new(1,-4,0,15),
                     Color = Themes[Theme].Object,
-                    Visible = true
+                    Transparency = 0,
                 })
                 TabInsert(ThemeDrawings.Object,holder)
                 local t = utility:Draw('Text',{
@@ -536,6 +537,11 @@ local create = {
                 end)
                 callback((max == 1 and chosen[1]) or chosen)
                 options.Size = UDim2.new(1,0,0,optionsHolder.AbsoluteContentSize+4)
+                if optionsHolder.AbsoluteContentSize >= limit then
+                    optionsHolder.Size = UDim2.new(1,0,0,limit-5)
+                    options.Size = UDim2.new(1,0,0,optionsHolder.AbsoluteSize.Y)
+                    optionsHolder:MakeScrollable()
+                end
                 local old = optionsHolder.Parent.Position
                 optionsHolder.Parent.Position = UDim2.new()
                 optionsHolder.Parent.Position = old
@@ -2135,6 +2141,65 @@ function library:init(options)
                 section.Parent.Position = UDim2.new()
                 section.Parent.Position = old               
             end
+            function sectionFuncs:PlayerList(options) -- same behavior as dropdown but who gives a shit
+                local options = utility.table(options or {})
+                
+                local min = options.min or 0
+                local max = options.max or 1
+
+                local name = options.name and options.name or ''
+                local limit = options.limit or 99999
+
+                local playerNames = {}
+                for i,v in pairs(game.Players:GetPlayers()) do
+                    if v == game.Players.LocalPlayer then continue end
+                    table.insert(playerNames,v.Name)
+                end
+
+                local default = options.default or nil
+
+                local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
+                if not options.flag then
+                    table.insert(library.unnamedFlags,'1')
+                end
+
+                local rawcallback = options.callback or function()end
+                library.flags[flag] = max > 1 and {} or default
+
+                local holder = utility:Draw('Square',{
+                    Parent = contentHolder,
+                    ZIndex = library.zOrder.window+9,
+                    Visible = true,
+                    Filled = true,
+                    Size = UDim2.new(1,0,0,34),
+                    Transparency = 0
+                })
+                TabInsert(ThemeDrawings.Text,utility:Draw('Text',{
+                    Parent = holder,
+                    Text = name,
+                    Font = Drawing.Fonts["Plex"],
+                    Size = 13,
+                    ZIndex = library.zOrder.window+10,
+                    Position = UDim2.new(0,0,0,-3),
+                    Visible = true,
+                    Center = false,
+                    Color = Themes[Theme].Text,
+                    Outline = true
+                }))
+
+                local funcs,dropdownfuncs = create.Dropdown(holder,playerNames,default,function(value) library.flags[flag] = value rawcallback(value) end,min,max,limit)
+
+                library:Connect(game.Players.PlayerAdded,function(plr)
+                    TabInsert(playerNames,plr.Name)
+                    dropdownfuncs:UpdateOptions(playerNames)
+                end)
+                
+                library:Connect(game.Players.PlayerRemoving,function(plr)
+                    TabRemove(playerNames,plr.Name)
+                    dropdownfuncs:UpdateOptions(playerNames)
+                end)
+                UpdateSize()
+            end
             return sectionFuncs
         end
         
@@ -2357,7 +2422,7 @@ end
 function library:Disconnect(...) --forgor the args, maybe just a signal maybe not LOL
     return utility.disconnect(...)
 end
---[[
+
 
 library:init{folder = 'test'}
 library:LoadSettingsTab()
@@ -2386,7 +2451,7 @@ local section2 = tab2:Section({Name='Left',Side='Left'})
 section2:Scroll{Name = 'Test',Flag = 'sarwqe',Options = {'Hi','ScrollTest','ScrollTest3'}}
 section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi','hi','hi','hi3','hi4','test','hi','hi2','hi3','hi','hi','hi2','hi4','test','hi','hi2','hi3','hi4','test','hi','hi2','hi3','hi4','test','hi','hi2','hi3','hi4','test'},b = {'sup','sup2','sup3'}}}
 
---]]
+section1:PlayerList{Name = 'Reggin',Limit = 300}
 
 
 Signal = {}
