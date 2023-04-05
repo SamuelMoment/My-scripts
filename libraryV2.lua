@@ -1,5 +1,124 @@
 local drawing = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/drawing.lua"))()
 --local drawing = loadstring(readfile('drawing.lua'))()
+local Signal = {}
+Signal.__index = Signal
+Signal.ClassName = "Signal"
+
+--[=[
+	Returns whether a class is a signal
+	@param value any
+	@return boolean
+]=]
+function Signal.isSignal(value)
+	return type(value) == "table"
+		and getmetatable(value) == Signal
+end
+
+--[=[
+	Constructs a new signal.
+	@return Signal<T>
+]=]
+function Signal.new()
+	local self = setmetatable({}, Signal)
+
+	self._bindableEvent = Instance.new("BindableEvent")
+	self._argMap = {}
+	self._source = ENABLE_TRACEBACK and debug.traceback() or ""
+
+	-- Events in Roblox execute in reverse order as they are stored in a linked list and
+	-- new connections are added at the head. This event will be at the tail of the list to
+	-- clean up memory.
+	self._bindableEvent.Event:Connect(function(key)
+		self._argMap[key] = nil
+
+		-- We've been destroyed here and there's nothing left in flight.
+		-- Let's remove the argmap too.
+		-- This code may be slower than leaving this table allocated.
+		if (not self._bindableEvent) and (not next(self._argMap)) then
+			self._argMap = nil
+		end
+	end)
+
+	return self
+end
+
+--[=[
+	Fire the event with the given arguments. All handlers will be invoked. Handlers follow
+	@param ... T -- Variable arguments to pass to handler
+]=]
+local HttpService = game:GetService('HttpService')
+function Signal:Fire(...)
+	if not self._bindableEvent then
+		warn(("Signal is already destroyed. %s"):format(self._source))
+		return
+	end
+
+	local args = table.pack(...)
+
+	-- TODO: Replace with a less memory/computationally expensive key generation scheme
+	local key = HttpService:GenerateGUID(false)
+	self._argMap[key] = args
+
+	-- Queues each handler onto the queue.
+	self._bindableEvent:Fire(key)
+end
+
+--[=[
+	Connect a new handler to the event. Returns a connection object that can be disconnected.
+	@param handler (... T) -> () -- Function handler called when `:Fire(...)` is called
+	@return RBXScriptConnection
+]=]
+function Signal:Connect(handler)
+	if not (type(handler) == "function") then
+		error(("connect(%s)"):format(typeof(handler)), 2)
+	end
+
+	return self._bindableEvent.Event:Connect(function(key)
+		-- note we could queue multiple events here, but we'll do this just as Roblox events expect
+		-- to behave.
+
+		local args = self._argMap[key]
+		if args then
+			handler(table.unpack(args, 1, args.n))
+		else
+			error("Missing arg data, probably due to reentrance.")
+		end
+	end)
+end
+
+--[=[
+	Wait for fire to be called, and return the arguments it was given.
+	@yields
+	@return T
+]=]
+function Signal:Wait()
+	local key = self._bindableEvent.Event:Wait()
+	local args = self._argMap[key]
+	if args then
+		return table.unpack(args, 1, args.n)
+	else
+		error("Missing arg data, probably due to reentrance.")
+		return nil
+	end
+end
+
+--[=[
+	Disconnects all connected events to the signal. Voids the signal as unusable.
+	Sets the metatable to nil.
+]=]
+function Signal:Destroy()
+	if self._bindableEvent then
+		-- This should disconnect all events, but in-flight events should still be
+		-- executed.
+
+		self._bindableEvent:Destroy()
+		self._bindableEvent = nil
+	end
+
+	-- Do not remove the argmap. It will be cleaned up by the cleanup connection.
+
+	setmetatable(self, nil)
+end
 
 local fromrgb = Color3.fromRGB
 local rand = math.random
@@ -1844,7 +1963,6 @@ function library:init(options)
                 local contentsize
 
                 local maxSize = sectorsHolder.AbsoluteSize.Y-20
-                print(maxSize)
 
                 for i,v in pairs(choices) do 
                     local choicesHolder,funcs = create.Scroll(holder,v,v[1],function(choice) 
@@ -2205,6 +2323,7 @@ function library:init(options)
         
         return sectorsFuncs
     end
+    library.OnUnload = Signal.new()
     function library:Unload()
         if frame.exists then
             frame.Visible = false
@@ -2212,6 +2331,8 @@ function library:init(options)
         end
         game.ContextActionService:UnbindAction('disablekeyboard')
         table.clear(library.flags)
+        library.OnUnload:Fire()
+        
         game.RunService.Heartbeat:Wait() -- waiting for all stuff to finish
         for signal,connection in pairs(library.connections) do
             connection:Disconnect()
@@ -2238,8 +2359,6 @@ function library:SaveConfig(name)
 end
 function library:LoadConfig(name)
     local library = self -- it's easier for me to read library:Tab rather than self:Tab
-    print(path..'/cfgs/'..name..'.cfg')
-    print(isfile(path..'/cfgs/'..name..'.cfg'))
     local flags = game.HttpService:JSONDecode(readfile(path..'/cfgs/'..name..'.cfg'))
 
     for flag,value in pairs(flags) do
@@ -2454,123 +2573,4 @@ section2:ScrollDrop{Name = 'Test',Flag = 'test',Options = {a = {'hi','hi2','hi',
 section1:PlayerList{Name = 'Reggin',Limit = 300}
 --]]
 
-Signal = {}
-Signal.__index = Signal
-Signal.ClassName = "Signal"
-
---[=[
-	Returns whether a class is a signal
-	@param value any
-	@return boolean
-]=]
-function Signal.isSignal(value)
-	return type(value) == "table"
-		and getmetatable(value) == Signal
-end
-
---[=[
-	Constructs a new signal.
-	@return Signal<T>
-]=]
-function Signal.new()
-	local self = setmetatable({}, Signal)
-
-	self._bindableEvent = Instance.new("BindableEvent")
-	self._argMap = {}
-	self._source = ENABLE_TRACEBACK and debug.traceback() or ""
-
-	-- Events in Roblox execute in reverse order as they are stored in a linked list and
-	-- new connections are added at the head. This event will be at the tail of the list to
-	-- clean up memory.
-	self._bindableEvent.Event:Connect(function(key)
-		self._argMap[key] = nil
-
-		-- We've been destroyed here and there's nothing left in flight.
-		-- Let's remove the argmap too.
-		-- This code may be slower than leaving this table allocated.
-		if (not self._bindableEvent) and (not next(self._argMap)) then
-			self._argMap = nil
-		end
-	end)
-
-	return self
-end
-
---[=[
-	Fire the event with the given arguments. All handlers will be invoked. Handlers follow
-	@param ... T -- Variable arguments to pass to handler
-]=]
-local HttpService = game:GetService('HttpService')
-function Signal:Fire(...)
-	if not self._bindableEvent then
-		warn(("Signal is already destroyed. %s"):format(self._source))
-		return
-	end
-
-	local args = table.pack(...)
-
-	-- TODO: Replace with a less memory/computationally expensive key generation scheme
-	local key = HttpService:GenerateGUID(false)
-	self._argMap[key] = args
-
-	-- Queues each handler onto the queue.
-	self._bindableEvent:Fire(key)
-end
-
---[=[
-	Connect a new handler to the event. Returns a connection object that can be disconnected.
-	@param handler (... T) -> () -- Function handler called when `:Fire(...)` is called
-	@return RBXScriptConnection
-]=]
-function Signal:Connect(handler)
-	if not (type(handler) == "function") then
-		error(("connect(%s)"):format(typeof(handler)), 2)
-	end
-
-	return self._bindableEvent.Event:Connect(function(key)
-		-- note we could queue multiple events here, but we'll do this just as Roblox events expect
-		-- to behave.
-
-		local args = self._argMap[key]
-		if args then
-			handler(table.unpack(args, 1, args.n))
-		else
-			error("Missing arg data, probably due to reentrance.")
-		end
-	end)
-end
-
---[=[
-	Wait for fire to be called, and return the arguments it was given.
-	@yields
-	@return T
-]=]
-function Signal:Wait()
-	local key = self._bindableEvent.Event:Wait()
-	local args = self._argMap[key]
-	if args then
-		return table.unpack(args, 1, args.n)
-	else
-		error("Missing arg data, probably due to reentrance.")
-		return nil
-	end
-end
-
---[=[
-	Disconnects all connected events to the signal. Voids the signal as unusable.
-	Sets the metatable to nil.
-]=]
-function Signal:Destroy()
-	if self._bindableEvent then
-		-- This should disconnect all events, but in-flight events should still be
-		-- executed.
-
-		self._bindableEvent:Destroy()
-		self._bindableEvent = nil
-	end
-
-	-- Do not remove the argmap. It will be cleaned up by the cleanup connection.
-
-	setmetatable(self, nil)
-end
 return library,Signal
