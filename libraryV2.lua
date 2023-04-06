@@ -2330,9 +2330,13 @@ function library:init(options)
             frame:Remove()
         end
         game.ContextActionService:UnbindAction('disablekeyboard')
+        for flag,set in pairs(library.UpdateByFlag) do
+            if typeof(library.flags[flag]) == 'boolean' then
+                set(false)
+            end
+        end
         table.clear(library.flags)
         library.OnUnload:Fire()
-        
         game.RunService.Heartbeat:Wait() -- waiting for all stuff to finish
         for signal,connection in pairs(library.connections) do
             connection:Disconnect()
