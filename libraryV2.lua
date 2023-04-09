@@ -2322,6 +2322,8 @@ function library:init(options)
             return SetupSection(section)
         end
         function sectorsFuncs:MultiSection(options)
+            local options = utility.table(options or {})
+
             local sections,multiSectionFuncs = {},{}
             local side = options.side or 'Left'
 
@@ -2610,7 +2612,7 @@ end
 function library:Disconnect(...) --forgor the args, maybe just a signal maybe not LOL
     return utility.disconnect(...)
 end
---[[
+
 
 library:init{folder = 'test'}
 library:LoadSettingsTab()
@@ -2635,7 +2637,7 @@ section1:Dropdown{name = 'Dropdown Min 1',options = {'option 1','option 2'},min 
 
 
 local tab2 = library:Tab('ab')
-local section2 = tab2:MultiSection{Side='Left'}
+local section2 = tab2:MultiSection{Side='Right'}
 
 
 
