@@ -1041,7 +1041,7 @@ local function SetupSection(section,update)
             create.Tooltip(button,options.tooltip)
         end
 
-UpdateSize() 
+    UpdateSize() 
     end
     function sectionFuncs:Toggle(options)
         local options = utility.table(options or {})
@@ -1572,7 +1572,7 @@ UpdateSize()
         holder.Size = UDim2.new(1,4,0,choiceHolder.AbsoluteContentSize+11)
         section.Size = UDim2.new(1,0,0,contentHolder.AbsoluteContentSize+20) 
 
-UpdateSize() 
+    UpdateSize() 
     end
     function sectionFuncs:ScrollDrop(options)
         local options = utility.table(options or {})
@@ -2613,7 +2613,7 @@ function library:Disconnect(...) --forgor the args, maybe just a signal maybe no
     return utility.disconnect(...)
 end
 
-
+--[[
 library:init{folder = 'test'}
 library:LoadSettingsTab()
 local tab1 = library:Tab('Hi')
