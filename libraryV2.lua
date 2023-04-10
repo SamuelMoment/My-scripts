@@ -1672,8 +1672,8 @@ local function SetupSection(section,update)
         local options = utility.table(options or {})
 
         local name = options.name or ''
-        local min,max,default = options.min or 0,options.max or 100,options.default or 0
-        local floatValue = options.float or 1
+        local min,max,default = options.min or 0,options.max or 100,options.default or options.min or 0
+        local floatValue = options.float or 0.1
 
         local callback = options.callback or function()end
         local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
@@ -1763,7 +1763,9 @@ local function SetupSection(section,update)
         --valueSlider.Position = UDim2.new(0.5,(valueSlider.TextBounds.X/2),0,0)
         local sliding = false
         local function set(value)
-            filledSlider.Size = UDim2.new((tonumber(value)-min+floatValue)/(max-min+floatValue), 0, 1, 0)
+            value = tonumber(value)
+            
+            filledSlider.Size = UDim2.new((value-min+floatValue)/(max-min+floatValue), 0, 1, 0)
             valueSlider.Text = tostring(value)..'/'..tostring(max)
             
             callback(value)
@@ -2613,9 +2615,9 @@ function library:Disconnect(...) --forgor the args, maybe just a signal maybe no
     return utility.disconnect(...)
 end
 
---[[
+
 library:init{folder = 'test'}
-library:LoadSettingsTab()
+
 local tab1 = library:Tab('Hi')
 local section1 = tab1:Section({Name='Right',Side='Right'})
 
@@ -2633,35 +2635,9 @@ section1:Separator('Separator')
 section1:Label{name = 'Label'}
 section1:Dropdown{name = 'Dropdown',options = {'option 1','option 2'},max = 2,Flag = 'sup'}
 section1:Dropdown{name = 'Dropdown Min 1',options = {'option 1','option 2'},min = 1}
+section1:Slider{Name = 's',Min=5,Max=10}
 
-
-
-local tab2 = library:Tab('ab')
-local section2 = tab2:MultiSection{Side='Right'}
-
-
-
-local mutliSectionTest = section2:AddSection{Name='s'}
-local section1 = tab2:Section({Name='Right',Side='Left'})
-
-section1:Toggle{Name = 'Toggle 1',Flag = 'hi',callback = function(val)
-    
-end}
-
-mutliSectionTest:Toggle{Name = 'test',flag='sex'}
-mutliSectionTest:Toggle{Name = 'test',flag='sex'}
-mutliSectionTest:Toggle{Name = 'test',flag='sex'}
-mutliSectionTest:Toggle{Name = 'test',flag='sex'}
-mutliSectionTest:Toggle{Name = 'test',flag='sex'}
-task.wait(3)
-local mutliSectionTest2 = section2:AddSection{Name='s2'}
-mutliSectionTest2:Toggle{Name = 'test2',flag='sex2'}
-mutliSectionTest2:Toggle{Name = 'test2',flag='sex2'}
-mutliSectionTest2:Toggle{Name = 'test2',flag='sex2'}
-mutliSectionTest2:Toggle{Name = 'test2',flag='sex2'}
-mutliSectionTest2:Toggle{Name = 'test2',flag='sex2'}
-mutliSectionTest2:Toggle{Name = 'test2',flag='sex2'}
-section2:ChangeSection('s2')
+library:LoadSettingsTab()
 --]]
 
 return library,Signal
