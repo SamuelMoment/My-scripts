@@ -711,7 +711,8 @@ local create = {
         }
         return funcs,dropdownFuncs,dropdown
     end,
-    Scroll = function(parent,choices,default,callback)
+    Scroll = function(parent,choices,default,callback,limit)
+        local limit = limit or math.huge
         local scroll = utility:Draw('Square',{
             Parent = parent,
             Size = UDim2.new(1,-4,0,50),
@@ -790,8 +791,12 @@ local create = {
             end)
 
             holders[v] = text
-            scroll.Size = UDim2.new(1,-4,0,choicesHolder.AbsoluteContentSize+4)
-
+            if i > limit then
+                choicesHolder:MakeScrollable()
+                --choicesHolder.Size = UDim2.new(1,0,0,1)
+            else
+                scroll.Size = UDim2.new(1,-4,0,choicesHolder.AbsoluteContentSize+4)
+            end
         end
 
         local scrollFuncs = {}
@@ -972,7 +977,7 @@ local create = {
         end)
     end
 }
-local function SetupSection(section,update)
+local function SetupSection(section,update,sectorsHolder)
     local sectionFuncs = {}
 
     local contentHolder = utility:Draw('Square',{
@@ -1563,13 +1568,21 @@ local function SetupSection(section,update)
         local choiceHolder,funcs = create.Scroll(holder,choices,default,function(choice)
             library.flags[flag] = choice
             rawcallback(choice)
-        end)
+        end,options.limit)
+        local maxSize = sectorsHolder.AbsoluteSize.Y-14
+
+        local y = choiceHolder.AbsolutePosition.Y+choiceHolder.AbsoluteSize.Y-sectorsHolder.AbsolutePosition.Y
+        if y >= maxSize then 
+            choiceHolder:MakeScrollable()
+            choiceHolder.Parent.Size += UDim2.new(0,0,0,maxSize-y-3)
+        end
+        
 
         library.UpdateByFlag[flag] = function(chosen)
             funcs:Update(chosen)
         end
 
-        holder.Size = UDim2.new(1,4,0,choiceHolder.AbsoluteContentSize+11)
+        holder.Size = UDim2.new(1,4,0,choiceHolder.AbsoluteSize.Y+11)
         section.Size = UDim2.new(1,0,0,contentHolder.AbsoluteContentSize+20) 
 
     UpdateSize() 
@@ -1579,7 +1592,7 @@ local function SetupSection(section,update)
 
         local choices = options.options or {NOT_DEFINED = {'__ANTI BREAKER__'}}
         local name = options.name or ''
-        local default = options.default or choices[1]
+        --local default = options.default or choices[1]
         local rawcallback = options.callback or function() end
         local flag = options.flag or ('UNNAMED__'..tostring(#library.unnamedFlags))
         if not options.flag then
@@ -1631,16 +1644,16 @@ local function SetupSection(section,update)
         dropdown.Size = UDim2.new(1,-4,0,15)
         local contentsize
 
-        local maxSize = sectorsHolder.AbsoluteSize.Y-20
+        local maxSize = sectorsHolder.AbsoluteSize.Y-14
 
         for i,v in pairs(choices) do 
             local choicesHolder,funcs = create.Scroll(holder,v,v[1],function(choice) 
                 valueToReturn.Scroll = choice 
                 library.flags[flag] = valueToReturn 
                 rawcallback(valueToReturn) 
-            end)
+            end,options.limit)
             choicesHolder.Parent.Position = UDim2.new(0,0,0,35)
-            choicesHolder.Parent.Size = UDim2.new(1,-4,0,choicesHolder.AbsoluteContentSize+4)
+            --choicesHolder.Parent.Size = UDim2.new(1,-4,0,choicesHolder.AbsoluteContentSize+4)
 
             scrollOptions[i] = choicesHolder
             updateFuncs[i] = funcs
@@ -2321,7 +2334,7 @@ function library:init(options)
             TabInsert(ThemeDrawings.Sectors,section)
             
             SetupBorder(section,name)
-            return SetupSection(section)
+            return SetupSection(section,nil,sectorsHolder)
         end
         function sectorsFuncs:MultiSection(options)
             local options = utility.table(options or {})
@@ -2374,7 +2387,7 @@ function library:init(options)
                         holder.Parent.Position = UDim2.new()
                         holder.Parent.Position = old 
                     end
-                end)
+                end,sectorsHolder)
             end
             function multiSectionFuncs:ChangeSection(name)
                 if not sections[name] then return end
@@ -2627,15 +2640,11 @@ toggle1:ColorPicker()
 
 local toggle2 = section1:Toggle{Name = 'Toggle 2',flag = 'something'}
 toggle2:Keybind()
-
+section1:ScrollDrop{Name='b',Options = {test = {'qsqwe','qsq6we','qsqwe5','qsq4we','qsq2we','qsqwe123'},test2 = {'qsqwe','qsqwe','qsqwe','qsqwe'}},limit = 5}
 section1:Box{Name = 'B',placeholder = 'Box',callback = function(text)end}
 
 
 section1:Separator('Separator')
-section1:Label{name = 'Label'}
-section1:Dropdown{name = 'Dropdown',options = {'option 1','option 2'},max = 2,Flag = 'sup'}
-section1:Dropdown{name = 'Dropdown Min 1',options = {'option 1','option 2'},min = 1}
-section1:Slider{Name = 's',Min=5,Max=10}
 
 library:LoadSettingsTab()
 --]]
