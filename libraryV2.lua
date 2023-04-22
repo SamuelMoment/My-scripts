@@ -2104,9 +2104,6 @@ local function SetupBorder(section,name)
     AscentBorderLeft.Size = BorderLeft.Size + Vector2.new(1,0)
     --
 end
-local function lerp(a,b,t)
-    return a*(1-t)+b*t
-end
 
 function library:init(options)
     local options = utility.table(options or {})
@@ -2630,6 +2627,7 @@ end
 function library:Disconnect(...) --forgor the args, maybe just a signal maybe not LOL
     return utility.disconnect(...)
 end
+
 --[[
 library:init{folder = 'test'}
 
