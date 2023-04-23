@@ -4,6 +4,8 @@ local Signal = {}
 Signal.__index = Signal
 Signal.ClassName = "Signal"
 
+local tweenservice = game.TweenService
+local rs = game.RunService
 --[=[
 	Returns whether a class is a signal
 	@param value any
@@ -132,7 +134,7 @@ local TabRemove = function(tab,value)
         table.remove(tab,table.find(tab,value))
     end
 end
-if library then
+if library and library.Unload then
     library:Unload()
 end
 
@@ -2405,12 +2407,77 @@ function library:init(options)
         
         return sectorsFuncs
     end
+    local notifsHolder = utility:Draw('Square',{
+        ZIndex = 1,
+        Size = UDim2.new(0,500,99999,0),
+        Position = UDim2.new(0,20,0,40),
+        Visible = true,
+        Filled = true,
+        Transparency = 0,
+    })
+    notifsHolder:AddListLayout(20)
+
+    
+    function library:Notify(message)
+        coroutine.wrap(function()
+            local holder = utility:Draw('Square',{
+                Parent = notifsHolder,
+                Position = UDim2.new(0,0,0,0),
+                Visible = true,
+                Size = UDim2.new(0,300,0,25),
+                ZIndex = 2,
+                Filled = true,
+                Color = Themes[Theme].Object
+            })
+            local border,border2 = utility:DoubleOutline(holder,Themes[Theme].Border)
+            local text = utility:Draw('Text',{
+                Parent = holder,
+                Text = '',
+                ZIndex = 3,
+                Visible = true,
+                Color = Themes[Theme].Text,
+                Size = 13,
+                Font = Drawing.Fonts.Plex,
+                Position = UDim2.new(0,5,0,3)
+            })
+            for i=1,#message do
+                text.Text = text.Text..message:sub(i,i)
+                holder.Size = UDim2.new(0,text.TextBounds.X+10,0,21)
+                --notifsHolder.Position = UDim2.new()
+                notifsHolder.Position = UDim2.new(0,20,0,40)
+    
+                task.wait(.05)
+            end
+            task.wait(1.5)
+            for i=#message,1,-1 do
+                text.Text = text.Text:sub(1,i)
+                holder.Size = UDim2.new(0,text.TextBounds.X+10,0,21)
+                --notifsHolder.Position = UDim2.new()
+                notifsHolder.Position = UDim2.new(0,20,0,40)
+    
+                task.wait(.025)
+            end
+            text.Text = ''
+            holder.Size = UDim2.new(0,text.TextBounds.X+10,0,21)
+            for i=1,0,-0.02 do
+                holder.Transparency = tweenservice:GetValue(i,Enum.EasingStyle.Quad,Enum.EasingDirection.In)
+                border.Transparency = holder.Transparency
+                border2.Transparency = holder.Transparency
+                text.Transparency = holder.Transparency
+                rs.RenderStepped:Wait()
+            end
+            holder:Remove()
+            --notifsHolder.Position = UDim2.new()
+            notifsHolder.Position = UDim2.new(0,20,0,40)
+        end)()
+    end
     library.OnUnload = Signal.new()
     function library:Unload()
         if frame.exists then
             frame.Visible = false
             frame:Remove()
         end
+        notifsHolder:Remove()
         game.ContextActionService:UnbindAction('disablekeyboard')
         for flag,set in pairs(library.UpdateByFlag) do
             if typeof(library.flags[flag]) == 'boolean' and not string.find(flag,'__Theme__') then
@@ -2471,8 +2538,6 @@ local UpdateTheme = {}
 
 makefolder(path..'/themes')
 function library:SaveTheme(name)
-    local library = self
-
     local flags = {}
     for type,color in pairs(Themes[Theme]) do
         local color = {R = color.R,G = color.G,B = color.B}
@@ -2482,8 +2547,6 @@ function library:SaveTheme(name)
     writefile(path..'/themes/'..name..'.cfg',game.HttpService:JSONEncode(flags))
 end
 function library:LoadTheme(name)
-    local library = self -- it's easier for me to read library:Tab rather than self:Tab
-
     if isfile(path..'/themes/'..name..'.cfg') then
         local flags = game.HttpService:JSONDecode(readfile(path..'/themes/'..name..'.cfg'))
 
@@ -2628,7 +2691,7 @@ function library:Disconnect(...) --forgor the args, maybe just a signal maybe no
     return utility.disconnect(...)
 end
 
---[[
+
 library:init{folder = 'test'}
 
 local tab1 = library:Tab('Hi')
@@ -2637,6 +2700,9 @@ local section1 = tab1:Section({Name='Right',Side='Right'})
 section1:Toggle{Name = 'Toggle 1',Flag = 'hi',callback = function(val)end}
 local toggle1 = section1:Toggle{Name = 'Toggle 2',flag = 'something',tooltip = 'Sometimes, i dream about cheeseS'}
 toggle1:ColorPicker()
+section1:Button{Name = 'Notify Test',Callback = function() 
+    library:Notify('hallo') 
+end}
 
 local toggle2 = section1:Toggle{Name = 'Toggle 2',flag = 'something'}
 toggle2:Keybind()
@@ -2647,6 +2713,5 @@ section1:Box{Name = 'B',placeholder = 'Box',callback = function(text)end}
 section1:Separator('Separator')
 
 library:LoadSettingsTab()
---]]
 
 return library,Signal
