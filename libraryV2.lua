@@ -1,7 +1,7 @@
 --[[ 
     CONTACT SamuelThe2nd#7767 (1026401232547487754) IF YOU HAVE ANY PROBLEMS WITH LIBRARY
 --]]
-local drawing = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/drawing.lua"))()
+local drawing = loadstring(game:HttpGet("https://raw.githubusercontent.com/SamuelMoment/My-scripts/main/drawing.lua"))()
 
 local Signal = {}
 Signal.__index = Signal
@@ -9,20 +9,12 @@ Signal.ClassName = "Signal"
 
 local tweenservice = game.TweenService
 local rs = game.RunService
---[=[
-	Returns whether a class is a signal
-	@param value any
-	@return boolean
-]=]
+
 function Signal.isSignal(value)
 	return type(value) == "table"
 		and getmetatable(value) == Signal
 end
 
---[=[
-	Constructs a new signal.
-	@return Signal<T>
-]=]
 function Signal.new()
 	local self = setmetatable({}, Signal)
 
@@ -30,15 +22,9 @@ function Signal.new()
 	self._argMap = {}
 	self._source = ENABLE_TRACEBACK and debug.traceback() or ""
 
-	-- Events in Roblox execute in reverse order as they are stored in a linked list and
-	-- new connections are added at the head. This event will be at the tail of the list to
-	-- clean up memory.
 	self._bindableEvent.Event:Connect(function(key)
 		self._argMap[key] = nil
 
-		-- We've been destroyed here and there's nothing left in flight.
-		-- Let's remove the argmap too.
-		-- This code may be slower than leaving this table allocated.
 		if (not self._bindableEvent) and (not next(self._argMap)) then
 			self._argMap = nil
 		end
@@ -47,10 +33,6 @@ function Signal.new()
 	return self
 end
 
---[=[
-	Fire the event with the given arguments. All handlers will be invoked. Handlers follow
-	@param ... T -- Variable arguments to pass to handler
-]=]
 local HttpService = game:GetService('HttpService')
 function Signal:Fire(...)
 	if not self._bindableEvent then
@@ -68,20 +50,12 @@ function Signal:Fire(...)
 	self._bindableEvent:Fire(key)
 end
 
---[=[
-	Connect a new handler to the event. Returns a connection object that can be disconnected.
-	@param handler (... T) -> () -- Function handler called when `:Fire(...)` is called
-	@return RBXScriptConnection
-]=]
 function Signal:Connect(handler)
 	if not (type(handler) == "function") then
 		error(("connect(%s)"):format(typeof(handler)), 2)
 	end
 
 	return self._bindableEvent.Event:Connect(function(key)
-		-- note we could queue multiple events here, but we'll do this just as Roblox events expect
-		-- to behave.
-
 		local args = self._argMap[key]
 		if args then
 			handler(table.unpack(args, 1, args.n))
@@ -91,11 +65,6 @@ function Signal:Connect(handler)
 	end)
 end
 
---[=[
-	Wait for fire to be called, and return the arguments it was given.
-	@yields
-	@return T
-]=]
 function Signal:Wait()
 	local key = self._bindableEvent.Event:Wait()
 	local args = self._argMap[key]
@@ -107,21 +76,11 @@ function Signal:Wait()
 	end
 end
 
---[=[
-	Disconnects all connected events to the signal. Voids the signal as unusable.
-	Sets the metatable to nil.
-]=]
 function Signal:Destroy()
 	if self._bindableEvent then
-		-- This should disconnect all events, but in-flight events should still be
-		-- executed.
-
 		self._bindableEvent:Destroy()
 		self._bindableEvent = nil
 	end
-
-	-- Do not remove the argmap. It will be cleaned up by the cleanup connection.
-
 	setmetatable(self, nil)
 end
 

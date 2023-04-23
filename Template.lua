@@ -1,5 +1,5 @@
 local BeforeLoad = tick()
-local library,Signal = loadstring(game:HttpGet('https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/libraryV2.lua'))()
+local library,Signal = loadstring(game:HttpGet('https://raw.githubusercontent.com/SamuelMoment/My-scripts/main/libraryV2.lua'))()
 
 library:init()
 local Tabs = {
