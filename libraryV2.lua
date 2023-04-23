@@ -2691,7 +2691,7 @@ function library:Disconnect(...) --forgor the args, maybe just a signal maybe no
     return utility.disconnect(...)
 end
 
-
+--[[
 library:init{folder = 'test'}
 
 local tab1 = library:Tab('Hi')
@@ -2713,5 +2713,5 @@ section1:Box{Name = 'B',placeholder = 'Box',callback = function(text)end}
 section1:Separator('Separator')
 
 library:LoadSettingsTab()
-
+--]]
 return library,Signal
