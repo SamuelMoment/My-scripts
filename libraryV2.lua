@@ -1,5 +1,8 @@
+--[[ 
+    CONTACT SamuelThe2nd#7767 (1026401232547487754) IF YOU HAVE ANY PROBLEMS WITH LIBRARY
+--]]
 local drawing = loadstring(game:HttpGet("https://gitfront.io/r/Samuel/fZWDTqaU51W4/My-scripts/raw/drawing.lua"))()
---local drawing = loadstring(readfile('drawing.lua'))()
+
 local Signal = {}
 Signal.__index = Signal
 Signal.ClassName = "Signal"
