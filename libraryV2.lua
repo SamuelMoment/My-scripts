@@ -101,8 +101,9 @@ if library and library.Unload then
 end
 
 getgenv().library = {
-    zOrder = {
-        window = 1000
+    ZIndexes = {
+        Window = 1000,
+        Outline = 999,
     },
     tabs = {},
     tabsText = {},
@@ -165,7 +166,7 @@ local utility = {
     Outline = function(self,draw,color)
         local frame = self:Draw('Square',{
             Filled = true,
-            ZIndex = draw.ZIndex-1,
+            ZIndex = library.ZIndexes.Outline,
             Color = color,
             Parent = draw,  
             Size = UDim2.new(1,2,1,2),
@@ -177,7 +178,7 @@ local utility = {
     DoubleOutline = function(self,draw,color,color2)
         local frame = self:Draw('Square',{
             Filled = true,
-            ZIndex = draw.ZIndex-1,
+            ZIndex = library.ZIndexes.Outline,
             Color = color,
             Parent = draw,  
             Size = UDim2.new(1,2,1,2),
@@ -185,7 +186,6 @@ local utility = {
             Thickness = 0
         })
         local frame2 = self:Outline(draw,color2)
-        frame2.ZIndex -= 1
         frame2.Position = UDim2.new(0,-2,0,-2)
         frame2.Size = UDim2.new(1,4,1,4)
         return frame,frame2
@@ -445,7 +445,7 @@ local create = {
         local dropdown = utility:Draw('Square',{
             Parent = parent,
             Position = UDim2.new(0,0,0,15),
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Size = UDim2.new(1,0,0,15),
             Filled = true,
             Color = Themes[Theme].Object
@@ -456,7 +456,7 @@ local create = {
             Text = '+',
             Font = Drawing.Fonts["Plex"],
             Size = 13,
-            ZIndex = library.zOrder.window+11,
+            ZIndex = library.ZIndexes.Window+11,
             Position = UDim2.new(1,-13,0,0),
             Visible = true,
             Center = false,
@@ -469,7 +469,7 @@ local create = {
             Text = not default and 'NONE' or default,
             Font = Drawing.Fonts["Plex"],
             Size = 13,
-            ZIndex = library.zOrder.window+11,
+            ZIndex = library.ZIndexes.Window+11,
             Position = UDim2.new(0,3,0,0),
             Visible = true,
             Center = false,
@@ -489,7 +489,7 @@ local create = {
             Filled = true,
             Position = UDim2.new(0,0,1,3),
             Size = UDim2.new(1,0,0,15),
-            ZIndex = library.zOrder.window+15,
+            ZIndex = library.ZIndexes.Window+15,
             Color = Themes[Theme].Object,
             Visible = false
         })                
@@ -683,7 +683,7 @@ local create = {
             Visible = true,
             Filled = true,
             Position = UDim2.new(0,0,0,10),
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Color = Themes[Theme].Object
         })
         TabInsert(ThemeDrawings.Object,scroll)
@@ -972,7 +972,7 @@ local function SetupSection(section,update,sectorsHolder)
             Parent = contentHolder,
             Position = UDim2.new(0,0,1,-13),
             Size = UDim2.new(1,-1,0,15),
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Filled = true,
             Color = Themes[Theme].Object
         })
@@ -982,7 +982,7 @@ local function SetupSection(section,update,sectorsHolder)
             Text = name,
             Font = Drawing.Fonts["Plex"],
             Size = 13,
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             --Position = UDim2.new(0.5,0,0.20,0),
             Visible = true,
             Center = true,
@@ -1028,7 +1028,7 @@ local function SetupSection(section,update,sectorsHolder)
 
         local holder = utility:Draw('Square',{
             Parent = contentHolder,
-            ZIndex = library.zOrder.window+12,
+            ZIndex = library.ZIndexes.Window+12,
             Visible = true,
             Filled = true,
             Position = UDim2.new(0,0,1,-10),
@@ -1037,7 +1037,7 @@ local function SetupSection(section,update,sectorsHolder)
         })
         local toggle = utility:Draw('Square',{
             Parent = holder,
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Visible = true,
             Color = Themes[Theme].Object,
             Filled = true,
@@ -1052,7 +1052,7 @@ local function SetupSection(section,update,sectorsHolder)
             Text = name,
             Font = Drawing.Fonts["Plex"],
             Size = 13,
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             --Position = UDim2.new(0.5,0,0.20,0),
             Visible = true,
             Center = false,
@@ -1110,7 +1110,7 @@ local function SetupSection(section,update,sectorsHolder)
                 Size = UDim2.new(0,15,0,10),
                 Position = UDim2.new(1,-(15*(#colorpickers+1)+1),0,0),
                 Visible = true,
-                ZIndex = library.zOrder.window+13,
+                ZIndex = library.ZIndexes.Window+13,
                 Filled = true,
                 Color = fromrgb(255,0,0)
             })
@@ -1133,7 +1133,7 @@ local function SetupSection(section,update,sectorsHolder)
                 Size = UDim2.new(0,210,0,199),
                 Position = UDim2.new(0,0,1,3),
                 Filled = true,
-                ZIndex = library.zOrder.window+20,
+                ZIndex = library.ZIndexes.Window+20,
                 Visible = false,
                 Color = Themes[Theme].Object
             })
@@ -1464,7 +1464,7 @@ local function SetupSection(section,update,sectorsHolder)
 
         local holder = utility:Draw('Square',{
             Parent = contentHolder,
-            ZIndex = library.zOrder.window+9,
+            ZIndex = library.ZIndexes.Window+9,
             Visible = true,
             Filled = true,
             Size = UDim2.new(1,0,0,34),
@@ -1475,7 +1475,7 @@ local function SetupSection(section,update,sectorsHolder)
             Text = name,
             Font = Drawing.Fonts["Plex"],
             Size = 13,
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Position = UDim2.new(0,0,0,-3),
             Visible = true,
             Center = false,
@@ -1523,7 +1523,7 @@ local function SetupSection(section,update,sectorsHolder)
             Size = 13,
             Font = Drawing.Fonts["Plex"],
             Color = Themes[Theme].Text,
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Outline = true,
             Text = name,
             Position = UDim2.new(0,0,0,-7)
@@ -1570,7 +1570,7 @@ local function SetupSection(section,update,sectorsHolder)
 
         local holder = utility:Draw('Square',{
             Parent = contentHolder,
-            ZIndex = library.zOrder.window+9,
+            ZIndex = library.ZIndexes.Window+9,
             Visible = true,
             Filled = true,
             Size = UDim2.new(1,0,0,100),
@@ -1581,7 +1581,7 @@ local function SetupSection(section,update,sectorsHolder)
             Text = name,
             Font = Drawing.Fonts["Plex"],
             Size = 13,
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Position = UDim2.new(0,0,0,-3),
             Visible = true,
             Center = false,
@@ -1662,7 +1662,7 @@ local function SetupSection(section,update,sectorsHolder)
 
         local holder = utility:Draw('Square',{
             Parent = contentHolder,
-            ZIndex = library.zOrder.window+9,
+            ZIndex = library.ZIndexes.Window+9,
             Visible = true,
             Filled = true,
             Position = UDim2.new(0,0,1,-15),
@@ -1671,7 +1671,7 @@ local function SetupSection(section,update,sectorsHolder)
         })
         local slider = utility:Draw('Square',{
             Parent = holder,
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Position = UDim2.new(0,0,0,13),
             Size = UDim2.new(1,0,0,15),
             Visible = true,
@@ -1717,7 +1717,7 @@ local function SetupSection(section,update,sectorsHolder)
             Text = name,
             Font = Drawing.Fonts["Plex"],
             Size = 13,
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Position = UDim2.new(0,0,0,-4),
             Visible = true,
             Center = false,
@@ -1789,7 +1789,7 @@ local function SetupSection(section,update,sectorsHolder)
 
         local holder = utility:Draw('Square',{
             Parent = contentHolder,
-            ZIndex = library.zOrder.window+9,
+            ZIndex = library.ZIndexes.Window+9,
             Visible = true,
             Filled = true,
             Size = UDim2.new(1,0,0,10),
@@ -1846,7 +1846,7 @@ local function SetupSection(section,update,sectorsHolder)
 
         local holder = utility:Draw('Square',{
             Parent = contentHolder,
-            ZIndex = library.zOrder.window+9,
+            ZIndex = library.ZIndexes.Window+9,
             Visible = true,
             Filled = true,
             Position = UDim2.new(0,0,1,-5),
@@ -1883,7 +1883,7 @@ local function SetupSection(section,update,sectorsHolder)
 
         local holder = utility:Draw('Square',{
             Parent = contentHolder,
-            ZIndex = library.zOrder.window+9,
+            ZIndex = library.ZIndexes.Window+9,
             Visible = true,
             Filled = true,
             Position = UDim2.new(0,0,1,-5),
@@ -1934,7 +1934,7 @@ local function SetupSection(section,update,sectorsHolder)
 
         local holder = utility:Draw('Square',{
             Parent = contentHolder,
-            ZIndex = library.zOrder.window+9,
+            ZIndex = library.ZIndexes.Window+9,
             Visible = true,
             Filled = true,
             Size = UDim2.new(1,0,0,34),
@@ -1945,7 +1945,7 @@ local function SetupSection(section,update,sectorsHolder)
             Text = name,
             Font = Drawing.Fonts["Plex"],
             Size = 13,
-            ZIndex = library.zOrder.window+10,
+            ZIndex = library.ZIndexes.Window+10,
             Position = UDim2.new(0,0,0,-3),
             Visible = true,
             Center = false,
@@ -2082,7 +2082,7 @@ function library:init(options)
         Thickness = 0,
         Color = Themes[Theme].WindowBackground,
         Size = settings.Size,
-        ZIndex = library.zOrder.window,
+        ZIndex = library.ZIndexes.Window,
         Filled = true,
         Position = utility:GetCenter(settings.Size.X.Offset,settings.Size.Y.Offset),
         Visible = false
@@ -2096,7 +2096,7 @@ function library:init(options)
         Parent = frame,
         Visible = true,
         Transparency = 0,
-        ZIndex = library.zOrder.window+1,
+        ZIndex = library.ZIndexes.Window+1,
         Size = UDim2.new(1,0,1,0),
         Color = Color3.fromRGB(255,255,255),
         Filled = true
@@ -2107,7 +2107,7 @@ function library:init(options)
         Size = UDim2.new(1,0,1,0),
         Position = UDim2.new(0,5,0,5),
         Parent = frame,
-        ZIndex = library.zOrder.window+1,
+        ZIndex = library.ZIndexes.Window+1,
         Filled = true,
         Visible = true,
         Transparency = 0
@@ -2120,7 +2120,7 @@ function library:init(options)
         Parent = holder,
         Center = false,
         Outline = true,
-        ZIndex = library.zOrder.window+1
+        ZIndex = library.ZIndexes.Window+1
     })
     holder.Size = name.TextBounds
 
@@ -2130,7 +2130,7 @@ function library:init(options)
         Position = UDim2.new(0,7,0,25),
         Size =  UDim2.new(1,-14,1,-32),
         Filled = true,
-        ZIndex = library.zOrder.window+2,
+        ZIndex = library.ZIndexes.Window+2,
         Color = Themes[Theme].TabBackground,
         Thickness = 0
     })
@@ -2145,7 +2145,7 @@ function library:init(options)
         Size = UDim2.new(1,-16,1,-16),
         Visible = true,
         Filled = true,
-        ZIndex = library.zOrder.window+3,
+        ZIndex = library.ZIndexes.Window+3,
         Color  = Themes[Theme].SectorsBackground
     })
     TabInsert(ThemeDrawings.SectorsBackground,TabsHolder)
@@ -2167,7 +2167,7 @@ function library:init(options)
         Filled = true,
         Visible = true,
         Color = Themes[Theme].Ascent,
-        ZIndex = library.zOrder.window+7,
+        ZIndex = library.ZIndexes.Window+7,
         Parent = TabsHolder -- shouldnt affect anything at all
     })
 
@@ -2181,7 +2181,7 @@ function library:init(options)
             Position = UDim2.new(0,0,0,0),
             Size = UDim2.new(0,0,0,18),
             Visible = true,
-            ZIndex = library.zOrder.window+6
+            ZIndex = library.ZIndexes.Window+6
         })
         TabInsert(ThemeDrawings.SectorsBackground,tab)
 
@@ -2210,7 +2210,7 @@ function library:init(options)
             Position = UDim2.new(1,0,0,0),
             Size = UDim2.new(0,1,1,0),
             Visible = true,
-            ZIndex = library.zOrder.window+5
+            ZIndex = library.ZIndexes.Window+5
         }))--]]
         
         local text = utility:Draw('Text',{
@@ -2255,7 +2255,7 @@ function library:init(options)
             Filled = true,
             Color = fromrgb(rand(1,255),rand(1,255),rand(1,255)),
             Visible = library.currentTab == tab,
-            ZIndex = library.zOrder.window+6,
+            ZIndex = library.ZIndexes.Window+6,
             Transparency = 0
         })
         library.sectorHolders[tab] = sectorsHolder
@@ -2267,13 +2267,13 @@ function library:init(options)
             Parent = sectorsHolder,
             Position = UDim2.new(0,6,0,20),
             Size = UDim2.new(0.5,-10,99999,1),
-            ZIndex = library.zOrder.window+7,
+            ZIndex = library.ZIndexes.Window+7,
             Visible = true,
             Transparency = 0
         })
         local RightHolder = utility:Draw('Square',{
             Parent = sectorsHolder,
-            ZIndex = library.zOrder.window+7,
+            ZIndex = library.ZIndexes.Window+7,
             Position = UDim2.new(0.5,4,0,20),
             Size = UDim2.new(0.5,-10,99999,0),
             Filled = true,
@@ -2289,7 +2289,7 @@ function library:init(options)
 
             local section = utility:Draw('Square',{
                 Size = UDim2.new(1,0,0,31),
-                ZIndex = library.zOrder.window+8,
+                ZIndex = library.ZIndexes.Window+8,
                 Color = Themes[Theme].Sectors,
                 Filled = true,
                 --Position = UDim2.new(0,0,0,offsets[side:lower()])
@@ -2308,7 +2308,7 @@ function library:init(options)
 
             local holder = utility:Draw('Square',{
                 Size = UDim2.new(1,0,0,31),
-                --ZIndex = library.zOrder.window+10,
+                --ZIndex = library.ZIndexes.Window+10,
                 Color = Color3.fromRGB(255,255,255),
                 Filled = true,
                 --Position = UDim2.new(0,0,0,offsets[side:lower()])
@@ -2325,7 +2325,7 @@ function library:init(options)
     
                 local section = utility:Draw('Square',{
                     Size = UDim2.new(1,0,0,31),
-                    ZIndex = library.zOrder.window+8,
+                    ZIndex = library.ZIndexes.Window+8,
                     Color = Themes[Theme].Sectors,
                     Filled = true,
                     --Position = UDim2.new(0,0,0,offsets[side:lower()])
