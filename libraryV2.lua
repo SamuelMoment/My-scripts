@@ -1,5 +1,5 @@
 --[[ 
-    CONTACT SamuelThe2nd#7767 (1026401232547487754) IF YOU HAVE ANY PROBLEMS WITH LIBRARY
+    discountinued
 --]]
 local drawing = loadstring(game:HttpGet("https://raw.githubusercontent.com/SamuelMoment/My-scripts/main/drawing.lua"))()
 
